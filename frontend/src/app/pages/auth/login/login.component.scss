@@ -1,0 +1,180 @@
+
+
+
+.login-container {
+  @apply min-h-screen flex items-center justify-center bg-slate-900;
+}
+
+.login-card {
+  @apply w-full max-w-md p-8 space-y-6 backdrop-blur-md rounded-2xl shadow-2xl border border-slate-700;
+  background-color: rgba(30, 41, 59, 0.5);
+}
+
+.header-container {
+  @apply flex flex-col items-center;
+}
+
+.welcome-text {
+  @apply text-xl font-medium text-slate-300 mb-2;
+}
+
+.brand-logo {
+  @apply h-28 w-auto object-contain drop-shadow-lg mt-2 mb-2;
+}
+
+.subtitle-text {
+  @apply text-sm text-slate-400 mt-2;
+}
+
+.login-form {
+  @apply space-y-4;
+}
+
+.form-group {
+  @apply flex flex-col;
+}
+
+.form-label {
+  @apply block text-sm font-medium text-slate-300 mb-1;
+}
+
+.form-input {
+  @apply w-full px-4 py-2 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all;
+  background-color: rgba(15, 23, 42, 0.5);
+}
+
+.form-actions {
+  @apply flex items-center justify-between text-sm mt-2 mb-4;
+}
+
+.checkbox-container {
+  @apply flex items-center text-slate-300 cursor-pointer;
+}
+
+.form-checkbox {
+  @apply mr-2 rounded border-slate-600 text-emerald-500 focus:ring-emerald-500 bg-slate-900;
+}
+
+.forgot-link {
+  @apply text-emerald-400 hover:text-emerald-300 transition-colors;
+}
+
+.submit-btn {
+  @apply w-full py-3 px-4 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold rounded-lg shadow-lg shadow-emerald-500 transition-all transform hover:-translate-y-0.5;
+}
+
+// --- PASSWORD WRAPPER & TOGGLE ---
+.password-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+
+  .form-input {
+    padding-right: 40px;
+    width: 100%;
+  }
+
+  .toggle-password-btn {
+    position: absolute;
+    right: 10px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #10b981;
+    opacity: 0.9;
+    
+    svg {
+      width: 100%;
+      height: 100%;
+    }
+  }
+}
+
+.save-password-btn {
+  background: linear-gradient(135deg, #10B981, #059669);
+}
+
+// --- ACCESSIBILITY WIDGET ---
+.accessibility-widget {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  z-index: 9999;
+
+  .accessibility-btn {
+    background-color: #f59e0b;
+    padding: 0.5rem;
+    border-radius: 9999px;
+    border: 2px solid #0F172A;
+    cursor: pointer;
+    box-shadow: 0 10px 15px -3px rgba(245, 158, 11, 0.3);
+    transition: transform 0.3s;
+    
+    &:hover {
+      transform: scale(1.1);
+      background-color: #fbbf24;
+    }
+
+    svg {
+      width: 24px;
+      height: 24px;
+      color: #0f172a;
+    }
+  }
+
+  .accessibility-menu {
+    position: absolute;
+    bottom: 4rem;
+    right: 0;
+    background-color: #1e293b;
+    border-radius: 0.75rem;
+    width: 14rem;
+    overflow: hidden;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+
+    .menu-header {
+      padding: 0.75rem 1rem;
+      background-color: rgba(15, 23, 42, 0.8);
+      border-bottom: 1px solid #334155;
+
+      p {
+        color: #f59e0b;
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        margin: 0;
+      }
+    }
+
+    button {
+      width: 100%;
+      text-align: left;
+      padding: 0.75rem 1rem;
+      font-size: 0.875rem;
+      color: #e2e8f0;
+      border: none;
+      cursor: pointer;
+      background-color: transparent;
+      border-bottom: 1px solid rgba(51, 65, 85, 0.5);
+
+      &:hover {
+        background-color: #334155;
+      }
+
+      &.active {
+        background-color: #334155;
+      }
+
+      &:last-child {
+        border-bottom: none;
+      }
+    }
+  }
+}
+

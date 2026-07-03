@@ -1,0 +1,209 @@
+<div class="dashboard-layout" [attr.data-daltonism]="accessibilityService.currentMode()">
+  
+  <!-- GLOBAL HEADER -->
+  <header class="global-header">
+    <div class="header-left">
+      <div class="logo-container">
+        <img src="assets/images/Logos/GESTIVAPYME(7).png" alt="GestivaPyme" class="main-logo-img">
+        <span class="badge-plan" [ngClass]="tipoEmpresaClass">{{tipoEmpresa}}</span>
+      </div>
+    </div>
+    
+    <div class="header-right">
+      <div class="welcome-text">
+        <h1>Hola, {{ user?.nombres || 'Administrador' }} 👋</h1>
+        <p>Bienvenido de vuelta a tu centro de control.</p>
+      </div>
+      <div class="topbar-actions">
+        <div class="user-profile" [ngClass]="tipoEmpresaClass">
+          <div class="avatar">{{ user?.nombres?.charAt(0) || 'A' }}</div>
+          <button class="btn-logout" (click)="logout()">Cerrar Sesión</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN BODY -->
+  <div class="main-body">
+    
+    <!-- SIDEBAR -->
+    <aside class="sidebar" [class.collapsed]="isSidebarCollapsed">
+      <!-- Botón Toggle (Flecha) -->
+      <button class="toggle-btn" (click)="toggleSidebar()" title="Colapsar menú">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+          <path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/>
+        </svg>
+      </button>
+  
+      <nav class="nav-menu">
+        @if(isCompanyInactive) {
+          <a class="nav-item" [class.active]="currentModule === 'pagos'" (click)="switchModule('pagos')">
+            <svg class="icon" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Z" /></svg>
+            <span class="nav-label">Pagos Pendientes</span>
+          </a>
+        } @else {
+          <a class="nav-item" [class.active]="currentModule === 'administracion'" (click)="switchModule('administracion')">
+            <svg class="icon" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /></svg>
+            <span class="nav-label">Administración</span>
+          </a>
+          <a class="nav-item" [class.active]="currentModule === 'inicio'" (click)="switchModule('inicio')">
+            <svg class="icon" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" /></svg>
+            <span class="nav-label">Inicio</span>
+          </a>
+          <a class="nav-item" [class.active]="currentModule === 'empleados'" (click)="switchModule('empleados')">
+            <svg class="icon" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" /></svg>
+            <span class="nav-label">Empleados</span>
+          </a>
+          @if (modulosActivos['s_crm'] || modulosActivos['v_cxc']) {
+            <a class="nav-item" [class.active]="currentModule === 'clientes'" (click)="switchModule('clientes')">
+              <svg class="icon" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" /></svg>
+              <span class="nav-label">Clientes</span>
+            </a>
+          }
+          @if(hasServicios) {
+            @if (modulosActivos['s_age'] || modulosActivos['s_cat']) {
+              <a class="nav-item" [class.active]="currentModule === 'servicios'" (click)="switchModule('servicios')">
+                <svg class="icon" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 14.15v4.25c0 1.094-.787 2.036-1.872 2.18-2.087.277-4.216.42-6.378.42s-4.291-.143-6.378-.42c-1.085-.144-1.872-1.086-1.872-2.18v-4.25m16.5 0a2.18 2.18 0 0 0 .75-1.661V8.706c0-1.081-.768-2.015-1.837-2.175a48.114 48.114 0 0 0-3.413-.387m4.5 8.006c-.194.165-.42.295-.673.38A23.978 23.978 0 0 1 12 15.75c-2.648 0-5.195-.429-7.577-1.22a2.016 2.016 0 0 1-.673-.38m0 0A2.18 2.18 0 0 1 3 12.489V8.706c0-1.081.768-2.015 1.837-2.175a48.111 48.111 0 0 1 3.413-.387m7.5 0V5.25A2.25 2.25 0 0 0 13.5 3h-3a2.25 2.25 0 0 0-2.25 2.25v.894m7.5 0a48.667 48.667 0 0 0-7.5 0M12 12.75h.008v.008H12v-.008Z" /></svg>
+                <span class="nav-label">Servicios</span>
+              </a>
+            }
+          }
+          @if(hasVentas) {
+            @if (modulosActivos['v_inv']) {
+              <a class="nav-item" [class.active]="currentModule === 'inventario'" (click)="switchModule('inventario')">
+                <svg class="icon" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21 7.5l-9-5.25L3 7.5m18 0l-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9" /></svg>
+                <span class="nav-label">Inventario</span>
+              </a>
+            }
+            @if (modulosActivos['v_pos'] || modulosActivos['v_rep']) {
+              <a class="nav-item" [class.active]="currentModule === 'ventas'" (click)="switchModule('ventas')">
+                <svg class="icon" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" /></svg>
+                <span class="nav-label">Ventas</span>
+              </a>
+            }
+          }
+          @if (modulosActivos['r_tur']) {
+            <a class="nav-item" [class.active]="currentModule === 'tiempos'" (click)="switchModule('tiempos')">
+              <svg class="icon" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>
+              <span class="nav-label">Gestión de Tiempos</span>
+            </a>
+          }
+        }
+      </nav>
+    </aside>
+  
+    <!-- MAIN CONTENT AREA -->
+    <main class="content-area">
+        
+      @if (currentModule === 'inicio') {
+        <!-- FAKE METRICS CARDS -->
+        <div class="metrics-grid">
+          <div class="metric-card">
+            <div class="metric-icon blue">
+              <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="icon-md"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>
+            </div>
+            <div class="metric-info">
+              <span class="label">Ventas Hoy</span>
+              <span class="value">$2.450.000</span>
+            </div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-icon green">
+              <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="icon-md"><path stroke-linecap="round" stroke-linejoin="round" d="M21 7.5l-9-5.25L3 7.5m18 0l-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9" /></svg>
+            </div>
+            <div class="metric-info">
+              <span class="label">Órdenes Activas</span>
+              <span class="value">14</span>
+            </div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-icon purple">
+              <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="icon-md"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" /></svg>
+            </div>
+            <div class="metric-info">
+              <span class="label">Nuevos Clientes</span>
+              <span class="value">8</span>
+            </div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-icon orange">
+              <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="icon-md"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3Z" /></svg>
+            </div>
+            <div class="metric-info">
+              <span class="label">Stock Bajo</span>
+              <span class="value">3 ítems</span>
+            </div>
+          </div>
+        </div>
+  
+        <!-- FAKE RECENT ACTIVITY -->
+        <div class="recent-activity-card glass-panel">
+          <h3>Actividad Reciente</h3>
+          <div class="empty-state">
+            El módulo está en construcción. Pronto verás los datos reales aquí.
+          </div>
+        </div>
+      } @else if (currentModule === 'empleados') {
+        <!-- Módulo de Empleados -->
+        <app-empleados></app-empleados>
+      } @else if (currentModule === 'administracion') {
+        <!-- Módulo de Administración -->
+        <app-administracion></app-administracion>
+      } @else if (currentModule === 'pagos') {
+        <!-- Módulo de Pagos (Bloqueo) -->
+        <app-pagos></app-pagos>
+      } @else {
+        <div class="recent-activity-card glass-panel">
+          <h3>Módulo en Construcción</h3>
+          <div class="empty-state">
+            Pronto podrás disfrutar de este módulo.
+          </div>
+        </div>
+      }
+  
+        <!-- FOOTER MARCA REGISTRADA -->
+        <footer class="app-footer">
+          <p>COPYRIGHT © 2026 GestivaPyme S.A.S. Todos los derechos reservados.</p>
+        </footer>
+
+      </main>
+    </div>
+
+    <!-- ACCESIBILIDAD FLOTANTE (Igual que en Login) -->
+    <div class="accessibility-widget">
+      
+      <!-- Botón -->
+      <button 
+        (click)="toggleAccessibilityMenu()"
+        class="accessibility-btn"
+        title="Opciones de Accesibilidad Visual">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+        </svg>
+      </button>
+  
+      <!-- Menú Desplegable -->
+      @if(isAccessibilityMenuOpen) {
+        <div class="accessibility-menu">
+          <div class="menu-header">
+            <p>Daltonismo</p>
+          </div>
+          <button (click)="setDaltonismMode('normal')" [class.active]="accessibilityService.currentMode() === 'normal'">
+            Estándar
+          </button>
+          <button (click)="setDaltonismMode('protanopia')" [class.active]="accessibilityService.currentMode() === 'protanopia'">
+            Protanopia
+          </button>
+          <button (click)="setDaltonismMode('deuteranopia')" [class.active]="accessibilityService.currentMode() === 'deuteranopia'">
+            Deuteranopia
+          </button>
+          <button (click)="setDaltonismMode('tritanopia')" [class.active]="accessibilityService.currentMode() === 'tritanopia'">
+            Tritanopia
+          </button>
+        </div>
+      }
+    </div>
+  </div>
+

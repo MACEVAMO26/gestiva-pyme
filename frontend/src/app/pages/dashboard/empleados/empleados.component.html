@@ -1,0 +1,137 @@
+<div class="module-container">
+  <div class="module-header">
+    <div class="header-info">
+      <h2>Gestión de Empleados</h2>
+      <p>Administra los accesos y roles de tu equipo de trabajo.</p>
+    </div>
+    <button class="btn-primary" (click)="openModal()">
+      <i class="icon">+</i> Nuevo Empleado
+    </button>
+  </div>
+
+  <!-- Tabla -->
+  <div class="table-card glass-panel">
+    <div class="table-responsive">
+      <table class="premium-table">
+        <thead>
+          <tr>
+            <th>Nombre Completo</th>
+            <th>Documento</th>
+            <th>Correo</th>
+            <th>Cargo</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (empleado of empleados; track empleado.id) {
+            <tr>
+              <td>
+                <div class="user-cell">
+                  <div class="avatar">{{empleado.nombres.charAt(0)}}{{empleado.apellidos.charAt(0)}}</div>
+                  <div class="user-info">
+                    <span class="name">{{empleado.nombres}} {{empleado.apellidos}}</span>
+                  </div>
+                </div>
+              </td>
+              <td>{{empleado.documento}}</td>
+              <td>{{empleado.email}}</td>
+              <td>
+                <span class="badge-role">{{ empleado.cargo?.nombre || 'Empleado' }}</span>
+              </td>
+              <td>
+                <span class="status-badge" [ngClass]="empleado.activo ? 'status-active' : 'status-inactive'">
+                  {{empleado.activo ? 'Activo' : 'Inactivo'}}
+                </span>
+              </td>
+              <td>
+                <div class="actions">
+                  <button class="action-btn edit-btn" (click)="openModal(empleado)" title="Editar">âœï¸</button>
+                  <button class="action-btn toggle-btn" (click)="toggleStatus(empleado.id)" [title]="empleado.activo ? 'Inactivar' : 'Activar'">
+                    {{empleado.activo ? 'âŒ' : 'âœ…'}}
+                  </button>
+                </div>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="6" class="empty-state">
+                No hay empleados registrados. ¡Agrega el primero!
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+@if(isModalOpen) {
+  <div class="modal-overlay">
+    <div class="modal-content animate-slide-up">
+      <div class="modal-header">
+        <h3>{{isEditMode ? 'Editar Empleado' : 'Nuevo Empleado'}}</h3>
+        <button class="close-btn" (click)="closeModal()">í—</button>
+      </div>
+      
+      <form (ngSubmit)="saveEmpleado()" class="modal-form">
+        
+        @if(!isEditMode) {
+          <div class="alert-info">
+            <span class="alert-icon">â„¹ï¸</span>
+            <p>La contraseña inicial será el <strong>Número de Documento</strong>. El sistema obligará al empleado a cambiarla cuando ingrese por primera vez.</p>
+          </div>
+        }
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Nombres</label>
+            <input type="text" name="nombres" [(ngModel)]="currentEmpleado.nombres" required class="form-input">
+          </div>
+          
+          <div class="form-group">
+            <label>Apellidos</label>
+            <input type="text" name="apellidos" [(ngModel)]="currentEmpleado.apellidos" required class="form-input">
+          </div>
+
+          <div class="form-group">
+            <label>Documento</label>
+            <input type="text" name="documento" [(ngModel)]="currentEmpleado.documento" required class="form-input">
+          </div>
+
+          <div class="form-group">
+            <label>Correo Electrónico</label>
+            <input type="email" name="email" [(ngModel)]="currentEmpleado.email" required class="form-input">
+          </div>
+
+          <div class="form-group">
+            <label>Cargo</label>
+            <select name="cargo_id" [(ngModel)]="currentEmpleado.cargo_id" required class="form-input">
+              <option value="" disabled>Seleccione un cargo...</option>
+              @for (cargo of cargos; track cargo.id) {
+                <option [value]="cargo.id">{{cargo.nombre}}</option>
+              }
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Rol de Acceso</label>
+            <select name="rol_id" [(ngModel)]="currentEmpleado.rol_id" required class="form-input">
+              <option value="" disabled>Seleccione un rol...</option>
+              @for (rol of roles; track rol.id) {
+                <option [value]="rol.id">{{rol.nombre}}</option>
+              }
+            </select>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn-secondary" (click)="closeModal()">Cancelar</button>
+          <button type="submit" class="btn-primary">Guardar Empleado</button>
+        </div>
+      </form>
+    </div>
+  </div>
+}
+

@@ -1,0 +1,44 @@
+import { Injectable, inject } from '@angular/core';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Observable } from 'rxjs';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class EmpresaService {
+  private http = inject(HttpClient);
+  // Usa la ruta que definiste en Laravel API
+  private apiUrl = 'http://127.0.0.1:8000/api/empresas';
+
+  // Obtener todas las empresas
+  private getHeaders() { const token = sessionStorage.getItem('auth_token'); return new HttpHeaders().set('Authorization', `Bearer ${token}`); }
+
+  getEmpresas(): Observable<any[]> {
+    return this.http.get<any[]>(this.apiUrl, { headers: this.getHeaders() });
+  }
+
+  getSuscripcionesStats(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/stats/suscripciones`, { headers: this.getHeaders() });
+  }
+
+  getSystemStats(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/stats/system`, { headers: this.getHeaders() });
+  }
+
+  // Crear una nueva empresa
+  createEmpresa(data: any): Observable<any> {
+    return this.http.post<any>(this.apiUrl, data, { headers: this.getHeaders() });
+  }
+
+  // Actualizar una empresa existente
+  updateEmpresa(id: number, data: any): Observable<any> {
+    return this.http.put<any>(`${this.apiUrl}/${id}`, data, { headers: this.getHeaders() });
+  }
+
+  // Cambiar estado activo/inactivo
+  toggleStatus(id: number, accion: string = ''): Observable<any> {
+    return this.http.patch(`${this.apiUrl}/${id}/status`, { accion }, { headers: this.getHeaders() });
+  }
+}
+
+
