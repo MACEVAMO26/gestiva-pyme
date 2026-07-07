@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -40,6 +40,11 @@ Route::post('/change-initial-password', [AuthController::class, 'changeInitialPa
 Route::get('/empresas/{id}/modulos', [\App\Http\Controllers\ModulosController::class, 'getModulosPorEmpresa']);
 Route::post('/empresas/{id}/modulos/{moduloId}/toggle', [\App\Http\Controllers\ModulosController::class, 'toggleModuloEmpresa']);
 Route::post('/empresas/{id}/modulos/paquete', [\App\Http\Controllers\ModulosController::class, 'updatePaqueteEmpresa']);
+
+// Rutas Globales de Módulos (Master)
+Route::post('/modulos', [\App\Http\Controllers\ModulosController::class, 'store']);
+Route::put('/modulos/{id}', [\App\Http\Controllers\ModulosController::class, 'update']);
+Route::delete('/modulos/{id}', [\App\Http\Controllers\ModulosController::class, 'destroy']);
 
 // Rutas Protegidas (Requieren token)
 
@@ -99,6 +104,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/leads', [\App\Http\Controllers\LeadController::class, 'index']);
     Route::patch('/leads/{id}', [\App\Http\Controllers\LeadController::class, 'update']);
     Route::delete('/leads/{id}', [\App\Http\Controllers\LeadController::class, 'destroy']);
+    Route::post('/comercial/enviar-masivo', [\App\Http\Controllers\LeadController::class, 'enviarMasivo']);
 
     // Maestros
     Route::apiResource('categorias', CategoriaController::class);

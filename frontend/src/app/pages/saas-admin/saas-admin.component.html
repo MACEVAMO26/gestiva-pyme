@@ -1,4 +1,4 @@
-<div class="saas-layout" [attr.data-daltonism]="accessibilityService.currentMode()">
+﻿<div class="saas-layout" [attr.data-daltonism]="accessibilityService.currentMode()">
   
   <!-- GLOBAL HEADER -->
   <header class="global-header">
@@ -422,98 +422,80 @@
         }
 
         @if (currentView === 'comercial') {
-          <div class="glass-panel mt-2rem p-6">
-            <h2 class="text-2xl font-bold text-white mb-6">Módulo Comercial</h2>
+          <div class="neu-dark-panel p-8 mt-6">
+            <h2 class="text-3xl font-bold text-white mb-8 tracking-wide">Módulo Comercial</h2>
             
-            <div class="border-b border-gray-700 mb-6 flex justify-between items-end">
-                <nav class="-mb-px flex space-x-8">
-                  <button class="px-4 py-2 font-medium text-sm transition-colors border-b-2"
-                    [class.text-blue-400]="comercialTab === 'interesados'"
-                    [class.border-blue-400]="comercialTab === 'interesados'"
-                    [class.text-gray-400]="comercialTab !== 'interesados'"
-                    [class.border-transparent]="comercialTab !== 'interesados'"
-                    (click)="setComercialTab('interesados')">
-                    Interesados
-                  </button>
-                  <button class="px-4 py-2 font-medium text-sm transition-colors border-b-2"
-                    [class.text-blue-400]="comercialTab === 'correos'"
-                    [class.border-blue-400]="comercialTab === 'correos'"
-                    [class.text-gray-400]="comercialTab !== 'correos'"
-                    [class.border-transparent]="comercialTab !== 'correos'"
-                    (click)="setComercialTab('correos')">
-                    Enviar Correos Masivos
-                  </button>
-                </nav>
-                
-                @if (comercialTab === 'interesados') {
-                  <button (click)="cargarLeads()" class="mb-2 mr-2 text-xs text-blue-400 hover:text-blue-300 flex items-center gap-1 transition-colors">
-                    <i class="fas fa-sync-alt"></i> Actualizar lista
-                  </button>
-                }
+            <div class="mb-8 flex justify-between items-center flex-wrap gap-4 border-b border-gray-700 pb-4">
+              <div class="flex gap-4">
+                <button class="neu-dark-button"
+                  [class.active]="comercialTab === 'interesados'"
+                  (click)="setComercialTab('interesados')">
+                  Interesados
+                </button>
+                <button class="neu-dark-button"
+                  [class.active]="comercialTab === 'correos'"
+                  (click)="setComercialTab('correos')">
+                  Enviar Correos Masivos
+                </button>
               </div>
+              
+              @if (comercialTab === 'interesados') {
+                <button (click)="cargarLeads()" class="text-xs text-blue-400 hover:text-blue-300 flex items-center gap-2 transition-colors font-semibold bg-blue-500/10 px-4 py-2 rounded-lg">
+                  <i class="fas fa-sync-alt"></i> Actualizar lista
+                </button>
+              }
+            </div>
 
             @if (comercialTab === 'interesados') {
               <div class="overflow-x-auto">
-                <table class="data-table">
+                <table class="w-full text-left border-collapse">
                   <thead>
-                    <tr>
-                      <th>Nombre</th>
-                      <th>Teléfono</th>
-                      <th>Correo</th>
-                      <th>Horario Ideal</th>
-                      <th>Mensaje</th>
-                      <th>Estado</th>
-                      <th>Acciones</th>
+                    <tr class="border-b border-gray-700 text-gray-400 text-sm uppercase tracking-wider">
+                      <th class="p-4">Nombre</th>
+                      <th class="p-4">Teléfono</th>
+                      <th class="p-4">Correo</th>
+                      <th class="p-4">Horario Ideal</th>
+                      <th class="p-4">Mensaje</th>
+                      <th class="p-4">Estado</th>
+                      <th class="p-4">Acciones</th>
                     </tr>
                   </thead>
-                  <tbody>
+                  <tbody class="text-sm">
                     @for (lead of leads; track lead.id) {
-                      <tr>
-                        <td>{{lead.nombre}}</td>
-                        <td>{{lead.telefono}}</td>
-                        <td>{{lead.correo}}</td>
-                        <td>{{lead.horario_llamada || 'Cualquier hora'}}</td>
-                        <td class="max-w-xs truncate" title="{{lead.mensaje}}">{{lead.mensaje || '-'}}</td>
-                        <td>
-                          <span class="status-badge" [ngClass]="{
-                            'status-pending': lead.estado === 'pendiente',
-                            'status-active': lead.estado === 'contactado'
+                      <tr class="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
+                        <td class="p-4 text-white font-medium">{{lead.nombre}}</td>
+                        <td class="p-4 text-gray-300">{{lead.telefono}}</td>
+                        <td class="p-4 text-gray-300">{{lead.correo}}</td>
+                        <td class="p-4 text-gray-400">{{lead.horario_llamada || 'Cualquier hora'}}</td>
+                        <td class="p-4 text-gray-400 max-w-xs truncate" title="{{lead.mensaje}}">{{lead.mensaje || '-'}}</td>
+                        <td class="p-4">
+                          <span class="px-3 py-1 rounded-full text-xs font-semibold" [ngClass]="{
+                            'bg-blue-500/20 text-blue-400': lead.estado === 'pendiente',
+                            'bg-green-500/20 text-green-400': lead.estado === 'contactado',
+                            'bg-yellow-500/20 text-yellow-400': lead.estado === 'archivado'
                           }">{{lead.estado}}</span>
                         </td>
-                        <td class="actions">
-                          @if (lead.estado === 'pendiente') {
-                            <div class="flex flex-col gap-1 items-start">
-                              <button (click)="cambiarEstadoLead(lead.id, 'contactado')" class="text-green-500 hover:text-green-400 text-xs font-semibold flex items-center gap-1">
-                                <i class="fas fa-check"></i> Contactado
-                              </button>
-                              <button (click)="cambiarEstadoLead(lead.id, 'archivado')" class="text-yellow-500 hover:text-yellow-400 text-xs font-semibold flex items-center gap-1">
-                                <i class="fas fa-phone-slash"></i> No Responde
-                              </button>
-                              <button (click)="eliminarLead(lead.id)" class="text-red-500 hover:text-red-400 text-xs font-semibold flex items-center gap-1">
-                                <i class="fas fa-trash"></i> Eliminar
-                              </button>
-                            </div>
-                          } @else if (lead.estado === 'archivado') {
-                            <div class="flex flex-col gap-1 items-start">
-                              <span class="text-yellow-500 text-sm">⚠ No Respondió</span>
-                              <button (click)="eliminarLead(lead.id)" class="text-red-500 hover:text-red-400 text-xs font-semibold flex items-center gap-1">
-                                <i class="fas fa-trash"></i> Eliminar
-                              </button>
-                            </div>
-                          } @else {
-                            <div class="flex flex-col gap-1 items-start">
-                              <span class="text-gray-500 text-sm">✓ Gestionado</span>
-                              <button (click)="eliminarLead(lead.id)" class="text-red-500 hover:text-red-400 text-xs font-semibold flex items-center gap-1">
-                                <i class="fas fa-trash"></i> Eliminar
-                              </button>
-                            </div>
-                          }
+                        <td class="p-4">
+                          <div class="flex items-center gap-3">
+                            <button class="neu-action-btn neu-action-check" title="Marcar Contactado" (click)="cambiarEstadoLead(lead.id, 'contactado')">
+                              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+                            </button>
+                            <button class="neu-action-btn neu-action-block" title="No Responde" (click)="cambiarEstadoLead(lead.id, 'archivado')">
+                              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" /></svg>
+                            </button>
+                            <button class="neu-action-btn neu-action-trash" title="Eliminar" (click)="eliminarLead(lead.id)">
+                              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                            </button>
+                            <button class="neu-action-btn neu-action-notes ml-2" title="Notas" (click)="abrirModalNotas(lead)">
+                              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     }
                     @if (leads.length === 0) {
                       <tr>
-                        <td colspan="7" class="text-center text-gray-500 py-4">No hay interesados registrados aún.</td>
+                        <td colspan="7" class="text-center text-gray-500 py-8">No hay interesados registrados aún.</td>
                       </tr>
                     }
                   </tbody>
@@ -522,12 +504,72 @@
             }
             
             @if (comercialTab === 'correos') {
-              <div class="text-center py-12 border-2 border-dashed border-gray-700 rounded-lg">
-                <svg class="mx-auto h-12 w-12 text-gray-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                </svg>
-                <h3 class="mt-2 text-sm font-semibold text-white">Módulo en Configuración</h3>
-                <p class="mt-1 text-sm text-gray-500">Pronto podrás enviar correos masivos a tus interesados desde aquí.</p>
+              <div class="soft-ui-panel-dark p-8 animate-fade-in-up mt-6">
+                <div class="flex items-center gap-4 mb-8">
+                  <div class="bg-cyan-500/20 text-cyan-400 w-12 h-12 rounded-full flex items-center justify-center border border-cyan-500/30 shadow-[0_0_15px_rgba(6,182,212,0.3)]">
+                    <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 class="text-xl font-bold text-white tracking-wide mb-1">Campaña de Correo (Brevo)</h3>
+                    <p class="text-sm text-gray-400">Envía correos masivos a todos los interesados registrados.</p>
+                  </div>
+                </div>
+
+                <div class="space-y-6 max-w-4xl mx-auto">
+                  <div class="saas-form-group">
+                    <label class="saas-label text-cyan-50">Asunto del Correo</label>
+                    <input
+                      type="text"
+                      [(ngModel)]="asuntoBrevo"
+                      placeholder="Ej. ¡Descubre nuestras nuevas funciones!"
+                      class="saas-input w-full bg-[#111827] text-white border-gray-700 focus:border-cyan-500"
+                    />
+                  </div>
+
+                  <div class="saas-form-group">
+                    <label class="saas-label text-cyan-50">Mensaje de la Campaña</label>
+                    <textarea
+                      [(ngModel)]="mensajeBrevo"
+                      rows="8"
+                      placeholder="Redacta el mensaje aquí..."
+                      class="saas-input w-full bg-[#111827] text-white border-gray-700 focus:border-cyan-500 resize-none font-inter text-sm"
+                    ></textarea>
+                  </div>
+
+                  <div class="saas-form-group">
+                    <label class="saas-label text-cyan-50">Adjuntar Flyer o Imagen (Opcional)</label>
+                    <input
+                      type="file"
+                      (change)="onFileSelected($event)"
+                      accept="image/*,.pdf"
+                      class="saas-input w-full bg-[#111827] text-white border-gray-700 focus:border-cyan-500 font-inter text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-cyan-500/20 file:text-cyan-400 hover:file:bg-cyan-500/30"
+                    />
+                  </div>
+
+                  <div class="flex justify-end pt-4">
+                    <button
+                      (click)="enviarCampanaBrevo()"
+                      [disabled]="isEnviandoBrevo"
+                      class="px-8 py-3 rounded-full font-bold text-sm tracking-wide transition-all duration-300 flex items-center gap-2 shadow-[0_0_20px_rgba(6,182,212,0.3)]"
+                      [ngClass]="isEnviandoBrevo ? 'bg-cyan-600/50 text-white cursor-not-allowed' : 'bg-cyan-500 hover:bg-cyan-400 text-white hover:-translate-y-1 hover:shadow-[0_0_25px_rgba(6,182,212,0.5)]'"
+                    >
+                      @if (isEnviandoBrevo) {
+                        <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Enviando...
+                      } @else {
+                        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                        </svg>
+                        Enviar Campaña a Interesados
+                      }
+                    </button>
+                  </div>
+                </div>
               </div>
             }
           </div>
@@ -658,6 +700,76 @@
         <button (click)="cerrarSuccessModal()" class="saas-success-btn">Ir al Dashboard</button>
       </div>
     </div>
+  <!-- Modal Agregar / Editar Conector -->
+  <div *ngIf="showAddonModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+    <div class="soft-ui-panel-dark w-full max-w-md p-6 relative animate-fade-in-up">
+      <button (click)="cerrarAddonModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white">
+        &times;
+      </button>
+      <h3 class="text-xl font-bold text-white mb-2">
+        {{ editingAddonId ? 'Editar Conector / API' : 'Crear Nuevo Conector / API' }}
+      </h3>
+      <p class="text-gray-400 text-sm mb-6">
+        {{ editingAddonId ? 'Actualiza el nombre de este conector en el catálogo.' : 'Esta opción añadirá un nuevo conector al catálogo de tu cliente.' }}
+      </p>
+      
+      <div class="mb-6">
+        <label class="block text-gray-300 text-sm font-bold mb-2">Nombre del Conector</label>
+        <input 
+          type="text" 
+          [(ngModel)]="nombreNuevoAddon" 
+          placeholder="Ej: CRM Hubspot, SAP Integración..." 
+          class="form-input soft-ui-input w-full"
+        >
+      </div>
+
+      <div class="flex justify-end gap-3">
+        <button (click)="cerrarAddonModal()" class="px-4 py-2 rounded-xl text-gray-300 hover:bg-gray-800 transition-colors">Cancelar</button>
+        <button (click)="guardarNuevoAddon()" class="soft-ui-btn px-6">Crear Conector</button>
+      </div>
+    </div>
+  </div>
+  <!-- Modal Notas -->
+  <div *ngIf="showNotasModal" class="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 backdrop-blur-sm">
+    <div class="neu-dark-panel w-full max-w-lg p-6 relative animate-fade-in-up">
+      <button (click)="cerrarModalNotas()" class="absolute top-4 right-4 text-gray-400 hover:text-white">
+        &times;
+      </button>
+      <h3 class="text-xl font-bold text-white mb-2 flex items-center gap-2">
+        <svg class="w-6 h-6 text-cyan-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+        Notas: {{ leadSeleccionadoParaNotas?.nombre }}
+      </h3>
+      <p class="text-gray-400 text-sm mb-6">Agrega apuntes sobre este interesado. Las notas se eliminan a los 3 meses.</p>
+      
+      <div class="mb-6 flex gap-2">
+        <input 
+          type="text" 
+          [(ngModel)]="nuevaNotaTexto" 
+          (keyup.enter)="agregarNota()"
+          placeholder="Escribe una nueva nota..." 
+          class="neu-dark-input flex-1"
+        >
+        <button (click)="agregarNota()" class="neu-dark-button text-cyan-400 hover:text-cyan-300">
+          Guardar
+        </button>
+      </div>
+
+      <div class="space-y-3 max-h-64 overflow-y-auto pr-2 custom-scrollbar">
+        @for (nota of leadSeleccionadoParaNotas?.notas; track nota.id) {
+          <div class="bg-gray-800/50 p-3 rounded-lg border border-gray-700 relative group">
+            <p class="text-gray-300 text-sm pr-6">{{ nota.texto }}</p>
+            <span class="text-xs text-gray-500 mt-1 block">{{ nota.fecha | date:'short' }}</span>
+            <button (click)="eliminarNota(nota.id)" class="absolute top-2 right-2 text-red-500/50 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity">
+              <i class="fas fa-trash text-xs"></i>
+            </button>
+          </div>
+        }
+        @if (!leadSeleccionadoParaNotas?.notas?.length) {
+          <p class="text-center text-gray-500 text-sm py-4">No hay notas registradas.</p>
+        }
+      </div>
+    </div>
+  </div>
 
   <!-- Botón Accesibilidad Daltonismo -->
   <div class="saas-floating-widget">

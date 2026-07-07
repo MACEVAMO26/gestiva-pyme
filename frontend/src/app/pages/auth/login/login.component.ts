@@ -41,7 +41,7 @@ export class LoginComponent {
   private router = inject(Router);
   public accessibilityService = inject(AccessibilityService);
 
-  // MenÃº Accesibilidad
+  // Menú Accesibilidad
   toggleAccessibilityMenu() {
     this.isAccessibilityMenuOpen = !this.isAccessibilityMenuOpen;
   }
@@ -58,7 +58,7 @@ export class LoginComponent {
     newPassword: ''
   };
 
-  // AutenticaciÃ³n
+  // Autenticación
   onSubmit(): void {
     if (this.requiresPasswordChange) {
       this.submitNewPassword();
@@ -73,10 +73,10 @@ export class LoginComponent {
           return;
         }
 
-        // LÃ³gica de ruteo universal (SaaS Master vs Cliente)
+        // Lógica de ruteo universal (SaaS Master vs Cliente)
         const user = response.user;
         if (user && user.empresa_id === null) {
-          this.router.navigate(['/saas-admin']); // Redirigir al panel de la dueÃ±a
+          this.router.navigate(['/saas-admin']); // Redirigir al panel de la dueña
         } else {
           this.router.navigate(['/dashboard']);  // Redirigir al panel del cliente
         }
@@ -101,7 +101,7 @@ export class LoginComponent {
   submitNewPassword(): void {
     const payload = {
       email: this.credentials.email,
-      current_password: this.credentials.password, // El documento que ingresÃ³
+      current_password: this.credentials.password, // El documento que ingresó
       new_password: this.changePasswordData.newPassword
     };
 
@@ -116,7 +116,7 @@ export class LoginComponent {
           const firstError = Object.values(err.error.errors)[0] as string[];
           alert(firstError[0]);
         } else {
-          alert('OcurriÃ³ un error al cambiar la contraseÃ±a. AsegÃºrate de cumplir con los requisitos.');
+          alert('Ocurrió un error al cambiar la contraseña. Asegúrate de cumplir con los requisitos.');
         }
       }
     });

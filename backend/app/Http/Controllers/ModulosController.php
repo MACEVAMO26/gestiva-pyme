@@ -153,4 +153,54 @@ class ModulosController extends Controller
 
         return response()->json(['message' => 'Paquete actualizado correctamente']);
     }
+
+    // CRUD Global de Módulos (para Addons)
+    public function store(Request $request)
+    {
+        $request->validate([
+            'id' => 'required|string|unique:modulos,id',
+            'nombre' => 'required|string',
+            'paquete' => 'required|string'
+        ]);
+
+        $modulo = Modulo::create([
+            'id' => $request->id,
+            'nombre' => $request->nombre,
+            'paquete' => $request->paquete,
+            'activo' => false
+        ]);
+
+        return response()->json(['message' => 'Módulo creado', 'modulo' => $modulo]);
+    }
+
+    public function update(Request $request, $id)
+    {
+        $modulo = Modulo::find($id);
+        if (!$modulo) {
+            return response()->json(['error' => 'Módulo no encontrado'], 404);
+        }
+
+        $request->validate([
+            'nombre' => 'required|string'
+        ]);
+
+        $modulo->nombre = $request->nombre;
+        $modulo->save();
+
+        return response()->json(['message' => 'Módulo actualizado', 'modulo' => $modulo]);
+    }
+
+    public function destroy($id)
+    {
+        $modulo = Modulo::find($id);
+        if (!$modulo) {
+            return response()->json(['error' => 'Módulo no encontrado'], 404);
+        }
+
+        // Eliminar asignaciones en pivot
+        DB::table('empresa_modulo')->where('modulo_id', $id)->delete();
+        $modulo->delete();
+
+        return response()->json(['message' => 'Módulo eliminado correctamente']);
+    }
 }

@@ -29,7 +29,9 @@ class Empresa extends Model
         'logo_url',        // <-- NUEVO
         'color_primario',  // <-- NUEVO
         'ciudad',
-        'activo'
+        'activo',
+        'estado_servidor',
+        'ultimo_ping'
     ];
 
     public function modulos()

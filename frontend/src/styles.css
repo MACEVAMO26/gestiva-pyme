@@ -1,0 +1,46 @@
+﻿
+/* Neumorfismo Oscuro (Dark Neumorphism) conservando colores de marca */
+.neu-dark-panel {
+  background: #111827; /* gray-900 */
+  box-shadow: 8px 8px 16px #0b0f19, -8px -8px 16px #172135;
+  border-radius: 1rem;
+}
+
+.neu-dark-button {
+  background: #111827;
+  box-shadow: 4px 4px 8px #0b0f19, -4px -4px 8px #172135;
+  border-radius: 0.5rem;
+  transition: all 0.2s ease-in-out;
+}
+
+.neu-dark-button:hover {
+  box-shadow: inset 4px 4px 8px #0b0f19, inset -4px -4px 8px #172135;
+}
+
+.neu-dark-button.active {
+  box-shadow: inset 4px 4px 8px #0b0f19, inset -4px -4px 8px #172135;
+  color: #06b6d4; /* cyan-500 */
+}
+
+/* Botones de acción compactos */
+.neu-action-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: #111827;
+  box-shadow: 3px 3px 6px #0b0f19, -3px -3px 6px #172135;
+  transition: all 0.2s;
+  cursor: pointer;
+  border: 1px solid transparent;
+}
+.neu-action-btn:hover {
+  box-shadow: inset 2px 2px 5px #0b0f19, inset -2px -2px 5px #172135;
+}
+
+.neu-action-check { color: #10b981; } /* emerald-500 */
+.neu-action-block { color: #f59e0b; } /* amber-500 */
+.neu-action-trash { color: #ef4444; } /* red-500 */
+.neu-action-notes { color: #06b6d4; } /* cyan-500 */

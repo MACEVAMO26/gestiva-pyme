@@ -20,13 +20,13 @@ export class DashboardComponent implements OnInit {
   public accessibilityService = inject(AccessibilityService);
   isAccessibilityMenuOpen = false;
 
-  // Permisos de mÃ³dulos
+  // Permisos de módulos
   hasVentas = false;
   hasServicios = false;
   modulosActivos: Record<string, boolean> = {};
   private modulosService = inject(ModulosService);
 
-  // Estado del Sidebar y MÃ³dulo Actual
+  // Estado del Sidebar y Módulo Actual
   isSidebarCollapsed = false;
   currentModule = 'inicio';
   isCompanyInactive = false;
@@ -40,13 +40,13 @@ export class DashboardComponent implements OnInit {
   ngOnInit(): void {
     this.user = this.authService.getUser();
     
-    // Determinar quÃ© mÃ³dulos tiene activos su empresa
+    // Determinar qué módulos tiene activos su empresa
     if (this.user && this.user.empresa) {
       const tipo = this.user.empresa.tipo_empresa;
-      this.tipoEmpresa = tipo;
+      this.tipoEmpresa = tipo.replace(/solo /i, '').toUpperCase();
       this.tipoEmpresaClass = tipo === 'Ventas y Servicios' ? 'mixto' : tipo.toLowerCase();
-      this.hasVentas = tipo === 'Ventas' || tipo === 'Ventas y Servicios';
-      this.hasServicios = tipo === 'Servicios' || tipo === 'Ventas y Servicios';
+      this.hasVentas = tipo.toLowerCase().includes('ventas');
+      this.hasServicios = tipo.toLowerCase().includes('servicios');
       
       if (this.user.empresa.estado_pago === 'mora') {
         this.isCompanyInactive = true;
@@ -69,7 +69,7 @@ export class DashboardComponent implements OnInit {
         }
       },
       error: (err: any) => {
-        console.error('Error al cargar mÃ³dulos del Dashboard:', err);
+        console.error('Error al cargar módulos del Dashboard:', err);
       }
     });
   }
@@ -95,4 +95,6 @@ export class DashboardComponent implements OnInit {
     this.authService.logout();
   }
 }
+
+
 

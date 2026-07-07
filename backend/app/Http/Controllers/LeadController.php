@@ -39,10 +39,18 @@ class LeadController extends Controller
         $lead = Lead::findOrFail($id);
         
         $validated = $request->validate([
-            'estado' => 'required|in:pendiente,contactado,archivado'
+            'estado' => 'sometimes|in:pendiente,contactado,archivado',
+            'notas' => 'sometimes|array'
         ]);
 
-        $lead->estado = $validated['estado'];
+        if (isset($validated['estado'])) {
+            $lead->estado = $validated['estado'];
+        }
+        
+        if (isset($validated['notas'])) {
+            $lead->notas = $validated['notas'];
+        }
+
         $lead->save();
 
         return response()->json($lead);
@@ -54,5 +62,42 @@ class LeadController extends Controller
         $lead->delete();
 
         return response()->json(['message' => 'Lead eliminado correctamente.']);
+    }
+
+    public function enviarMasivo(Request $request)
+    {
+        $validated = $request->validate([
+            'asunto' => 'required|string',
+            'mensaje' => 'required|string',
+            'adjunto' => 'nullable|file|max:5120' // Máximo 5MB
+        ]);
+
+        $leads = Lead::whereNotNull('correo')->get();
+        $cantidad = 0;
+
+        foreach ($leads as $lead) {
+            try {
+                \Illuminate\Support\Facades\Mail::html(nl2br(e($validated['mensaje'])), function ($message) use ($lead, $validated, $request) {
+                    $message->to($lead->correo)
+                            ->subject($validated['asunto']);
+                            
+                    if ($request->hasFile('adjunto')) {
+                        $file = $request->file('adjunto');
+                        $message->attach($file->getRealPath(), [
+                            'as' => $file->getClientOriginalName(),
+                            'mime' => $file->getMimeType(),
+                        ]);
+                    }
+                });
+                $cantidad++;
+            } catch (\Exception $e) {
+                \Illuminate\Support\Facades\Log::error('Error enviando correo a ' . $lead->correo . ': ' . $e->getMessage());
+            }
+        }
+
+        return response()->json([
+            'message' => 'Campaña procesada.',
+            'cantidad_enviados' => $cantidad
+        ]);
     }
 }

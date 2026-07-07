@@ -33,7 +33,7 @@ class ModuloSeeder extends Seeder
             ['id' => 'r_vac', 'nombre' => 'Gestión de Vacaciones', 'paquete' => 'rrhh'],
             
             // Add-ons
-            ['id' => 'a_helisa', 'nombre' => 'Conector Contable (Helisa)', 'paquete' => 'addons'],
+            ['id' => 'a_contable', 'nombre' => 'Conector Contable', 'paquete' => 'addons'],
         ];
 
         foreach ($modulos as $mod) {

@@ -30,6 +30,9 @@ export class SaasAdminComponent implements OnInit {
   empresaDestacadaId: number | null = null;
   showModal = false;
   showSuccessModal = false;
+  showAddonModal = false;
+  nombreNuevoAddon = '';
+  editingAddonId: string | null = null;
   createdAdminEmail = '';
   toastMessage: string | null = null;
 
@@ -48,69 +51,8 @@ export class SaasAdminComponent implements OnInit {
   solicitudes: any[] = [];
   solicitudesPendientes: number = 0;
 
-  // Módulos (Mock Data)
-  paquetesModulos = [
-    {
-      id: 'ventas',
-      nombre: 'Paquete VENTAS',
-      descripcion: 'Para comercios y tiendas de productos físicos.',
-      icono: 'fas fa-shopping-cart',
-      color: 'blue',
-      activo: true,
-      submodulos: [
-        { id: 'v_pos', nombre: 'Interfaz de Venta Rápida (POS)', activo: true },
-        { id: 'v_inv', nombre: 'Inventario y Alertas', activo: true },
-        { id: 'v_cxc', nombre: 'Cuentas por Cobrar (Cartera)', activo: true },
-        { id: 'v_rep', nombre: 'Reportes de Ventas', activo: true },
-      ],
-    },
-    {
-      id: 'servicios',
-      nombre: 'Paquete SERVICIOS',
-      descripcion: 'Para agendas, barberías, consultorios y talleres.',
-      icono: 'fas fa-calendar-alt',
-      color: 'purple',
-      activo: true,
-      submodulos: [
-        { id: 's_age', nombre: 'Agenda y Calendario', activo: true },
-        { id: 's_crm', nombre: 'CRM (Gestión de Clientes)', activo: true },
-        { id: 's_cat', nombre: 'Catálogo de Servicios', activo: true },
-      ],
-    },
-    {
-      id: 'finanzas',
-      nombre: 'Transversal: Caja y Facturación',
-      descripcion: 'Registro de pagos y cobro por servicios o productos.',
-      icono: 'fas fa-cash-register',
-      color: 'yellow',
-      activo: true,
-      submodulos: [{ id: 'f_caja', nombre: 'Caja y Pre-facturación', activo: true }],
-    },
-    {
-      id: 'rrhh',
-      nombre: 'Transversal: RRHH (Personal)',
-      descripcion: 'Gestión de empleados, turnos y vacaciones. Disponible para todos.',
-      icono: 'fas fa-users',
-      color: 'indigo',
-      activo: true,
-      submodulos: [
-        { id: 'r_tur', nombre: 'Horarios y Turnos', activo: true },
-        { id: 'r_aus', nombre: 'Control de Horas Extras y Ausencias', activo: true },
-        { id: 'r_vac', nombre: 'Gestión de Vacaciones', activo: true },
-      ],
-    },
-    {
-      id: 'addons',
-      nombre: 'Módulos Adicionales (Add-ons)',
-      descripcion: 'Conectores y herramientas extra que se cobran por separado.',
-      icono: 'fas fa-plug',
-      color: 'green',
-      activo: true,
-      submodulos: [
-        { id: 'a_helisa', nombre: 'Conector Contable (Helisa)', activo: false }, // Inactivo por defecto/mantenimiento
-      ],
-    },
-  ];
+  // Módulos
+  paquetesModulos: any[] = [];
 
   // Suscripciones
   statsSuscripciones = {
@@ -123,9 +65,11 @@ export class SaasAdminComponent implements OnInit {
   suscripcionesList: any[] = [];
 
   // Monitor de Estado
-  serverStatus = {
+  serverStatus: any = {
+    status: 'online',
     generalUptime: '99.9%',
     dbConnection: 'Estable',
+
     lastBackup: 'Hace 2 horas',
     lastActivity: 'Desconocida',
   };
@@ -135,6 +79,66 @@ export class SaasAdminComponent implements OnInit {
   // Comercial
   comercialTab: 'interesados' | 'correos' = 'interesados';
   leads: any[] = [];
+  
+  // Notas
+  showNotasModal = false;
+  leadSeleccionadoParaNotas: any = null;
+  nuevaNotaTexto = '';
+
+  abrirModalNotas(lead: any) {
+    this.leadSeleccionadoParaNotas = lead;
+    if (!this.leadSeleccionadoParaNotas.notas) {
+      this.leadSeleccionadoParaNotas.notas = [];
+    }
+    // Filtrar notas caducadas (más de 90 días)
+    const tresMesesAtras = new Date();
+    tresMesesAtras.setDate(tresMesesAtras.getDate() - 90);
+    this.leadSeleccionadoParaNotas.notas = this.leadSeleccionadoParaNotas.notas.filter((n: any) => new Date(n.fecha) > tresMesesAtras);
+    
+    this.showNotasModal = true;
+  }
+
+  cerrarModalNotas() {
+    this.showNotasModal = false;
+    this.leadSeleccionadoParaNotas = null;
+    this.nuevaNotaTexto = '';
+  }
+
+  agregarNota() {
+    if (!this.nuevaNotaTexto.trim()) return;
+    
+    const nuevaNota = {
+      id: Date.now().toString(),
+      texto: this.nuevaNotaTexto,
+      fecha: new Date().toISOString()
+    };
+
+    this.leadSeleccionadoParaNotas.notas.unshift(nuevaNota);
+    this.nuevaNotaTexto = '';
+    this.guardarNotasEnBackend();
+  }
+
+  eliminarNota(notaId: string) {
+    this.leadSeleccionadoParaNotas.notas = this.leadSeleccionadoParaNotas.notas.filter((n: any) => n.id !== notaId);
+    this.guardarNotasEnBackend();
+  }
+
+  guardarNotasEnBackend() {
+    const token = sessionStorage.getItem('auth_token');
+    const headers = { Authorization: `Bearer ${token}` };
+    this.http
+      .patch(`http://127.0.0.1:8000/api/leads/${this.leadSeleccionadoParaNotas.id}`, { notas: this.leadSeleccionadoParaNotas.notas }, { headers })
+      .subscribe({
+        next: () => {},
+        error: () => alert('Error al guardar la nota.')
+      });
+  }
+
+  // Brevo
+  asuntoBrevo: string = '';
+  mensajeBrevo: string = '';
+  isEnviandoBrevo: boolean = false;
+  archivoAdjuntoBrevo: File | null = null;
 
   debugError: string | null = null;
 
@@ -162,6 +166,10 @@ export class SaasAdminComponent implements OnInit {
     if (this.user && this.user.empresa_id !== null) {
       this.router.navigate(['/dashboard']);
     }
+
+    this.modulosService.getCatalogoModulos().subscribe(catalog => {
+      this.paquetesModulos = catalog;
+    });
 
     this.cargarEmpresas();
     this.cargarSolicitudes();
@@ -209,6 +217,52 @@ export class SaasAdminComponent implements OnInit {
         this.debugError = 'Error cargando leads: ' + err.message;
         this.cdr.detectChanges();
       },
+    });
+  }
+
+  onFileSelected(event: any) {
+    const file = event.target.files[0];
+    if (file) {
+      this.archivoAdjuntoBrevo = file;
+    }
+  }
+
+  enviarCampanaBrevo() {
+    if (!this.asuntoBrevo.trim() || !this.mensajeBrevo.trim()) {
+      alert('El asunto y el mensaje son obligatorios.');
+      return;
+    }
+
+    this.isEnviandoBrevo = true;
+    this.toastMessage = 'Enviando campaña a través de Brevo...';
+
+    const token = sessionStorage.getItem('auth_token');
+    
+    const formData = new FormData();
+    formData.append('asunto', this.asuntoBrevo);
+    formData.append('mensaje', this.mensajeBrevo);
+    if (this.archivoAdjuntoBrevo) {
+      formData.append('adjunto', this.archivoAdjuntoBrevo);
+    }
+
+    this.http.post(`http://127.0.0.1:8000/api/comercial/enviar-masivo`, formData, { 
+      headers: { Authorization: `Bearer ${token}` }
+    }).subscribe({
+      next: (res: any) => {
+        this.isEnviandoBrevo = false;
+        this.toastMessage = `¡Campaña enviada exitosamente a ${res.cantidad_enviados || 'todos los'} interesados!`;
+        this.asuntoBrevo = '';
+        this.mensajeBrevo = '';
+        this.archivoAdjuntoBrevo = null;
+        this.comercialTab = 'interesados';
+        setTimeout(() => this.toastMessage = null, 4000);
+      },
+      error: (err) => {
+        this.isEnviandoBrevo = false;
+        console.error('Error enviando campaña:', err);
+        alert('Hubo un error al enviar la campaña. Revisa la consola o asegúrate de haber autorizado la IP en Brevo.');
+        this.toastMessage = null;
+      }
     });
   }
 
@@ -359,6 +413,92 @@ export class SaasAdminComponent implements OnInit {
     this.showModal = true;
   }
 
+  agregarConector() {
+    this.nombreNuevoAddon = '';
+    this.showAddonModal = true;
+  }
+
+  cerrarAddonModal() {
+    this.showAddonModal = false;
+    this.nombreNuevoAddon = '';
+    this.editingAddonId = null;
+  }
+
+  abrirEditAddon(addon: any) {
+    this.editingAddonId = addon.id;
+    this.nombreNuevoAddon = addon.nombre;
+    this.showAddonModal = true;
+  }
+
+  eliminarAddon(id: string) {
+    if (confirm('¿Estás seguro de que deseas eliminar este conector permanentemente del sistema?')) {
+      this.modulosService.eliminarModuloGlobal(id).subscribe({
+        next: () => {
+          const addonsPaquete = this.paquetesModulos.find(p => p.id === 'addons');
+          if (addonsPaquete) {
+            addonsPaquete.submodulos = addonsPaquete.submodulos.filter((s: any) => s.id !== id);
+          }
+          this.toastMessage = `Conector eliminado exitosamente.`;
+          setTimeout(() => this.toastMessage = null, 3000);
+        },
+        error: (err) => {
+          console.error(err);
+          alert('Error al eliminar el conector en el servidor.');
+        }
+      });
+    }
+  }
+
+  guardarNuevoAddon() {
+    if (!this.nombreNuevoAddon.trim()) {
+      alert('Por favor, ingresa un nombre para el conector.');
+      return;
+    }
+
+    const addonsPaquete = this.paquetesModulos.find(p => p.id === 'addons');
+    if (!addonsPaquete) return;
+
+    if (this.editingAddonId) {
+      // Editar existente
+      this.modulosService.editarModuloGlobal(this.editingAddonId, this.nombreNuevoAddon.trim()).subscribe({
+        next: () => {
+          const sub = addonsPaquete.submodulos.find((s: any) => s.id === this.editingAddonId);
+          if (sub) {
+            sub.nombre = this.nombreNuevoAddon.trim();
+          }
+          this.toastMessage = `¡Conector "${this.nombreNuevoAddon}" actualizado exitosamente!`;
+          setTimeout(() => this.toastMessage = null, 3000);
+          this.cerrarAddonModal();
+        },
+        error: (err) => {
+          console.error(err);
+          alert('Error al actualizar el conector en el servidor.');
+        }
+      });
+    } else {
+      // Generamos un ID seguro para el frontend/backend
+      const newId = 'a_' + this.nombreNuevoAddon.toLowerCase().replace(/[^a-z0-9]/g, '_');
+      
+      this.modulosService.crearModuloGlobal(newId, this.nombreNuevoAddon.trim(), 'addons').subscribe({
+        next: () => {
+          addonsPaquete.submodulos.push({
+            id: newId,
+            nombre: this.nombreNuevoAddon.trim(),
+            activo: false
+          });
+          
+          this.toastMessage = `¡Conector "${this.nombreNuevoAddon}" agregado exitosamente al catálogo global!`;
+          setTimeout(() => this.toastMessage = null, 3000);
+          this.cerrarAddonModal();
+        },
+        error: (err) => {
+          console.error(err);
+          alert('Error al guardar el conector en el servidor. Puede que el ID ya exista.');
+        }
+      });
+    }
+  }
+
   toggleSubmodulo(paqueteId: string, submoduloId: string) {
     if (!this.empresaSeleccionadaId) {
       alert('Por favor selecciona una empresa primero.');
@@ -366,10 +506,10 @@ export class SaasAdminComponent implements OnInit {
     }
     const paquete = this.paquetesModulos.find((p) => p.id === paqueteId);
     if (paquete) {
-      const sub = paquete.submodulos.find((s) => s.id === submoduloId);
+      const sub = paquete.submodulos.find((s: any) => s.id === submoduloId);
       if (sub) {
         sub.activo = !sub.activo;
-        paquete.activo = paquete.submodulos.some((s) => s.activo); // Sincronizar
+        paquete.activo = paquete.submodulos.some((s: any) => s.activo); // Sincronizar
       }
     }
   }
@@ -382,7 +522,7 @@ export class SaasAdminComponent implements OnInit {
     const paquete = this.paquetesModulos.find((p) => p.id === paqueteId);
     if (paquete) {
       paquete.activo = activar; // FIX: Actualizar el master toggle
-      paquete.submodulos.forEach((sub) => {
+      paquete.submodulos.forEach((sub: any) => {
         if (sub.activo !== activar) {
           sub.activo = activar;
         }
@@ -397,11 +537,11 @@ export class SaasAdminComponent implements OnInit {
     }
     const paquete = this.paquetesModulos.find((p) => p.id === paqueteId);
     if (paquete) {
-      const modulosState = paquete.submodulos.map(sub => ({
+      const modulosState = paquete.submodulos.map((sub: any) => ({
         id: sub.id,
         activo: sub.activo
       }));
-
+      this.toastMessage = 'Guardando cambios...';
       this.modulosService.updatePaqueteEmpresa(this.empresaSeleccionadaId, modulosState).subscribe({
         next: (res) => {
           console.log(`Paquete ${paquete.nombre} actualizado masivamente`, res);
@@ -424,6 +564,13 @@ export class SaasAdminComponent implements OnInit {
   seleccionarEmpresaModulos(event: any) {
     this.empresaSeleccionadaId = event.target.value;
     console.log('Empresa seleccionada para módulos:', this.empresaSeleccionadaId);
+
+    const empresa = this.empresas.find(e => e.id == this.empresaSeleccionadaId);
+    if (empresa) {
+      this.serverStatus.status = empresa.estado_servidor || 'online';
+      this.serverStatus.lastActivity = empresa.ultimo_ping ? new Date(empresa.ultimo_ping).toLocaleString() : 'Hace unos instantes';
+    }
+
     if (this.empresaSeleccionadaId) {
       this.cargarModulosDeEmpresa(this.empresaSeleccionadaId);
     }
@@ -451,16 +598,31 @@ export class SaasAdminComponent implements OnInit {
       );
       if (paqueteUI) {
         const subsDB = modulosBD[paqueteClave]; // array de submódulos
-        // Actualizamos o añadimos a la UI
-        paqueteUI.submodulos = subsDB.map((s: any) => ({
-          id: s.id,
-          nombre: s.nombre,
-          activo: s.activo,
-        }));
+        
+        // En lugar de sobrescribir, actualizamos el estado 'activo' de los que coincidan
+        // o añadimos los nuevos si no existían (vital para los Addons dinámicos)
+        subsDB.forEach((sDB: any) => {
+          const subUI = paqueteUI.submodulos.find((sUI: any) => sUI.id === sDB.id);
+          
+          if (subUI) {
+                subUI.activo = sDB.activo;
+                // Actualizar el nombre si es un Addon global editado
+                if (paqueteClave === 'addons') {
+                  subUI.nombre = sDB.nombre;
+                }
+              } else {
+                // Si el submódulo viene de la BD pero no está en la UI, lo agregamos!
+                paqueteUI.submodulos.push({
+                  id: sDB.id,
+                  nombre: sDB.nombre,
+                  activo: sDB.activo
+                });
+              }
+            });
 
-        // Sincronizar el master toggle basado en si los submódulos están activos
-        paqueteUI.activo = paqueteUI.submodulos.some((s) => s.activo);
-      }
+          // Sincronizar el master toggle basado en si los submódulos están activos
+          paqueteUI.activo = paqueteUI.submodulos.some((s: any) => s.activo);
+        }
     });
     this.cdr.detectChanges();
   }
@@ -537,3 +699,5 @@ export class SaasAdminComponent implements OnInit {
     this.authService.logout();
   }
 }
+
+

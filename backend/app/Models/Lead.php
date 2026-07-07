@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 namespace App\Models;
 
@@ -15,6 +15,11 @@ class Lead extends Model
         'correo',
         'horario_llamada',
         'mensaje',
-        'estado'
+        'estado',
+        'notas'
+    ];
+
+    protected $casts = [
+        'notas' => 'array'
     ];
 }

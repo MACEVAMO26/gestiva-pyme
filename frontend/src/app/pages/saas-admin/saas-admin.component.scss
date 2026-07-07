@@ -1,6 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
-// --- VARIABLES GLOBALES SAAS MASTER ---
+/* --- 1. VARIABLES GLOBALES --- */
 $primary-color: #6366f1; // Indigo
 $primary-hover: #4f46e5;
 $bg-color: #0f172a; // Slate 900 (Fondo oscuro por defecto para SaaS Master)
@@ -34,7 +34,7 @@ $transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   font-family: 'Inter', sans-serif;
 }
 
-// --- LAYOUT ---
+/* --- 2. LAYOUT PRINCIPAL --- */
 .saas-layout {
   display: flex;
   height: 100vh;
@@ -43,11 +43,11 @@ $transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   overflow: hidden;
 }
 
-$sidebar-bg: #b1d0e2; // Azul clarítico solicitado
+$sidebar-bg: #b1e5ef; // Azul clarítico solicitado
 $sidebar-text: #0f172a; // Texto oscuro para el sidebar
 $sidebar-text-muted: #0f172a; // Texto oscuro silenciado
 
-// --- LAYOUT ---
+/* --- 2. LAYOUT PRINCIPAL --- */
 .saas-layout {
   display: flex;
   flex-direction: column;
@@ -57,7 +57,7 @@ $sidebar-text-muted: #0f172a; // Texto oscuro silenciado
   overflow: hidden;
 }
 
-// --- GLOBAL HEADER ---
+/* --- 3. CABECERA (HEADER) --- */
 .global-header {
   height: 56px;
   background-color: #1e293b; // Slate 800 para que contraste con el fondo azul de sidebar y app oscura
@@ -70,7 +70,7 @@ $sidebar-text-muted: #0f172a; // Texto oscuro silenciado
   box-shadow: $shadow-sm;
 
   .header-left {
-    width: 176px;
+    width: 205px;
     height: 100%;
     display: flex;
     align-items: center;
@@ -178,22 +178,25 @@ $sidebar-text-muted: #0f172a; // Texto oscuro silenciado
   overflow: hidden;
 }
 
-// --- SIDEBAR ---
+/* --- 4. BARRA LATERAL (SIDEBAR) --- */
 .sidebar-saas {
-  width: 176px;
-  background-color: $sidebar-bg;
-  border-right: 1px solid rgba(0, 0, 0, 0.1);
+  width: 205px; /* Más ancha para que los botones grandes no se salgan */
+  background-color: $sidebar-bg; /* Fondo claro original */
+  border-right: none;
   display: flex;
   flex-direction: column;
-  padding: 1.5rem;
-  box-shadow: $shadow-lg;
+  padding: 1.5rem 1rem; /* Ajustado el padding lateral */
+  /* Sombra Neumórfica adaptada para fondo claro */
+  box-shadow:
+    10px 0 20px rgba(0, 0, 0, 0.08),
+    -1px 0 5px rgba(255, 255, 255, 0.5);
   z-index: 10;
   transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
 
   &.collapsed {
-    width: 70px;
-    padding: 1.5rem 0.75rem;
+    width: 80px; /* Un poco más ancha para que respiren los botones Neumórficos */
+    padding: 1.5rem 0.5rem;
 
     .nav-menu .nav-item {
       justify-content: center;
@@ -240,18 +243,23 @@ $sidebar-text-muted: #0f172a; // Texto oscuro silenciado
     .nav-item {
       display: flex;
       align-items: center;
-      gap: 10px;
-      padding: 0.85rem 1.25rem;
-      border-radius: 50px; /* Forma de píldora */
-      border: 1px solid rgba(0, 0, 0, 0.08); /* Bordesito para los inactivos */
+      gap: 12px;
+      padding: 1rem 1.25rem; /* Padding corregido para no desbordar */
+      border-radius: 50px; /* Forma de píldora neumórfica */
+      border: 1px solid rgba(255, 255, 255, 0.4); /* Borde claro para resaltar sobre el fondo azul clarítico */
       background: transparent;
-      color: $sidebar-text-muted;
-      font-size: 0.9rem;
+      color: #334155; /* Texto oscuro para contrastar en fondo claro */
+      font-size: 1.05rem;
       font-weight: 600;
       text-decoration: none;
       cursor: pointer;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: all 0.3s ease;
       white-space: nowrap;
+
+      /* Estado inactivo: Botón levantado suave (Soft UI claro) */
+      box-shadow:
+        5px 5px 12px rgba(100, 140, 160, 0.25),
+        -5px -5px 12px rgba(255, 255, 255, 0.7);
 
       .icon {
         width: 19px;
@@ -262,34 +270,40 @@ $sidebar-text-muted: #0f172a; // Texto oscuro silenciado
       }
 
       .notification-bubble {
-        background: #ef4444; // Rojo para alertar (o amarillo, como prefieras)
+        background: #ef4444;
         color: white;
         padding: 0.1rem 0.5rem;
         border-radius: 40px;
         font-size: 0.75rem;
         font-weight: bold;
         margin-left: auto;
+        box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.15);
       }
 
       &:hover {
-        background-color: rgba(0, 0, 0, 0.03);
-        border-color: rgba(0, 0, 0, 0.15);
-        color: $sidebar-text;
-        transform: translateX(3px);
+        background: rgba(255, 255, 255, 0.2);
+        color: #0f172a;
+        transform: translateY(-1px);
+        box-shadow:
+          6px 6px 14px rgba(100, 140, 160, 0.3),
+          -6px -6px 14px rgba(255, 255, 255, 0.8);
       }
 
       &.active {
-        background-color: $primary-color; /* Devolver el moradito/indigo original */
-        color: #FFFFFF; /* Texto blanco para contrastar */
-        border: 1px solid transparent;
-        box-shadow: 0 8px 16px -4px rgba(99, 102, 241, 0.4), 0 4px 6px -2px rgba(99, 102, 241, 0.2); /* Sombra 3D morada */
-        transform: translateX(3px);
+        background: rgba(255, 255, 255, 0.1);
+        color: #500075; /* Morado solicitado para el módulo seleccionado */
+        /* Efecto hundido Neumórfico para estado activo */
+        box-shadow:
+          inset 4px 4px 8px rgba(100, 140, 160, 0.35),
+          inset -4px -4px 8px rgba(255, 255, 255, 0.8);
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        transform: translateY(1px);
       }
     }
   }
 }
 
-// --- MAIN CONTENT ---
+/* --- 5. CONTENIDO PRINCIPAL --- */
 .main-content {
   flex: 1;
   display: flex;
@@ -1436,7 +1450,7 @@ $sidebar-text-muted: #0f172a; // Texto oscuro silenciado
   background-color: #334155;
 }
 
-/* --- DISEÑO SOFT UI OSCURO (Paquete Ventas) --- */
+/* --- 9. DISEÑO SOFT UI (MÓDULOS Y PAQUETES) --- */
 .soft-ui-card {
   /* Fondo súper limpio y oscuro */
   background: #111827; /* Gris muy oscuro, casi azul marino */
@@ -1479,88 +1493,206 @@ $sidebar-text-muted: #0f172a; // Texto oscuro silenciado
 
 /* Fila de submódulo (Estilo píldora) */
 .soft-ui-row {
-  background: rgba(255, 255, 255, 0.02);
-  border-radius: 16px;
-  padding: 0.8rem 1.25rem;
+  background: #111827; /* Fondo oscuro del card */
+  border-radius: 20px; /* Bordes muy redondeados tipo píldora */
+  padding: 1.25rem 1.5rem; /* Más espacio interno para que respire */
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border: 1px solid rgba(255, 255, 255, 0.02);
-  transition: all 0.2s ease;
-  margin-bottom: 0.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.03); /* Ligero borde superior para el bisel */
+
+  /* Sombras Neumórficas oscuras (Soft UI) */
+  box-shadow:
+    8px 8px 16px rgba(0, 0, 0, 0.4),
+    -8px -8px 16px rgba(255, 255, 255, 0.02);
+
+  transition: all 0.3s ease;
+  /* El margin-bottom ya no es necesario gracias al gap del contenedor */
 
   &:hover {
-    background: rgba(255, 255, 255, 0.04);
+    box-shadow:
+      10px 10px 20px rgba(0, 0, 0, 0.5),
+      -10px -10px 20px rgba(255, 255, 255, 0.03);
+    transform: translateY(-2px);
   }
 }
 
+/* --- 10. BOTONES Y COMPONENTES SOFT UI --- */
 /* Botón estilo píldora */
 .soft-ui-btn {
-  background: linear-gradient(135deg, #10b981, #059669); /* Verde Corporativo */
+  background: #5eb59e; /* Verde menta/corporativo mate de la imagen */
   color: white;
   font-weight: 600;
   padding: 0.75rem 1.75rem;
   border-radius: 50px; /* Píldora perfecta */
 
+  /* Sombra interna suave (Neumorfismo mate), sin luz rara */
   box-shadow:
-    0 10px 20px -5px rgba(16, 185, 129, 0.4),
-    inset 2px 2px 4px rgba(255, 255, 255, 0.2);
+    inset 2px 2px 4px rgba(255, 255, 255, 0.2),
+    inset -2px -2px 4px rgba(0, 0, 0, 0.1),
+    0 4px 6px rgba(0, 0, 0, 0.1);
 
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.3s ease;
   border: none;
+  cursor: pointer;
 
   &:hover {
-    transform: translateY(-3px);
-    box-shadow:
-      0 15px 25px -5px rgba(16, 185, 129, 0.5),
-      inset 2px 2px 5px rgba(255, 255, 255, 0.3);
+    background: #4ea58f;
+    transform: translateY(-1px);
   }
 
   &:active {
     transform: translateY(1px);
-    box-shadow:
-      0 5px 10px -5px rgba(16, 185, 129, 0.4),
-      inset 0px 4px 6px rgba(0, 0, 0, 0.2);
+    box-shadow: inset 0px 4px 6px rgba(0, 0, 0, 0.2);
   }
 }
 
-/* Toggle Switch gordito Soft UI */
+/* Toggle Switch gordito Soft UI (Estilo Cuadrado Redondeado) */
 .soft-ui-toggle {
-  width: 48px;
-  height: 26px;
-  border-radius: 26px;
+  width: 60px;
+  height: 32px;
+  border-radius: 10px;
   box-shadow:
     inset 2px 2px 5px rgba(0, 0, 0, 0.4),
     inset -2px -2px 5px rgba(255, 255, 255, 0.05);
-  transition: background-color 0.3s ease;
+  transition: all 0.3s ease;
   position: relative;
   border: none;
   cursor: pointer;
+  display: flex;
+  align-items: center;
 
   &.active {
-    background: #10b981;
-    box-shadow:
-      inset 2px 2px 5px rgba(0, 0, 0, 0.2),
-      0 0 10px rgba(16, 185, 129, 0.3);
+    background: #50c1d0; /* Cyan pastelado de la imagen */
+    /* Quitada la "luz rara" externa */
+    box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.2);
+
+    .toggle-icon-on {
+      opacity: 1;
+      transform: scale(1) translateY(-50%);
+    }
+    .toggle-icon-off {
+      opacity: 0;
+      transform: scale(0.5) translateY(-50%);
+    }
   }
 
   &.inactive {
     background: rgba(255, 255, 255, 0.05);
+
+    .toggle-icon-on {
+      opacity: 0;
+      transform: scale(0.5) translateY(-50%);
+    }
+    .toggle-icon-off {
+      opacity: 1;
+      transform: scale(1) translateY(-50%);
+    }
+  }
+
+  .toggle-icon-on,
+  .toggle-icon-off {
+    position: absolute;
+    top: 50%;
+    width: 16px;
+    height: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+  }
+
+  .toggle-icon-on {
+    left: 8px;
+    color: white; /* Check blanco */
+  }
+
+  .toggle-icon-off {
+    right: 8px;
+    color: #94a3b8; /* X gris */
   }
 
   .soft-ui-toggle-thumb {
     position: absolute;
     top: 3px;
     left: 3px;
-    width: 20px;
-    height: 20px;
-    background: white;
-    border-radius: 50%;
+    width: 26px;
+    height: 26px;
+    background: linear-gradient(135deg, #e2e8f0, #cbd5e1);
+    border-radius: 8px; /* Cuadradito redondeado */
     box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition:
+      transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+      background 0.3s ease;
   }
 
   &.active .soft-ui-toggle-thumb {
-    transform: translateX(22px);
+    transform: translateX(28px); /* 60 - 26 - 6 = 28 */
+    background: linear-gradient(135deg, #ffffff, #cffafe); /* Tint cyan cuando está activo */
+  }
+
+  /* Modificador para submódulos más pequeños */
+  &.toggle-sm {
+    width: 48px;
+    height: 26px;
+    border-radius: 8px;
+
+    .toggle-icon-on,
+    .toggle-icon-off {
+      width: 12px;
+      height: 12px;
+    }
+    .toggle-icon-on {
+      left: 6px;
+    }
+    .toggle-icon-off {
+      right: 6px;
+    }
+
+    .soft-ui-toggle-thumb {
+      width: 20px;
+      height: 20px;
+      border-radius: 6px;
+      top: 3px;
+      left: 3px;
+    }
+
+    &.active .soft-ui-toggle-thumb {
+      transform: translateX(22px); /* 48 - 20 - 6 = 22 */
+    }
+  }
+}
+
+/* Paneles genéricos oscuros Soft UI */
+.soft-ui-panel-dark {
+  background: #111827; /* Fondo oscuro */
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.03);
+  box-shadow:
+    4px 4px 10px rgba(0, 0, 0, 0.4),
+    -4px -4px 10px rgba(255, 255, 255, 0.02);
+  transition: all 0.3s ease;
+}
+
+/* Inputs oscuros Soft UI */
+.soft-ui-input {
+  background: #111827;
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  box-shadow:
+    inset 2px 2px 5px rgba(0, 0, 0, 0.5),
+    inset -2px -2px 5px rgba(255, 255, 255, 0.02);
+  transition: all 0.3s ease;
+  outline: none;
+
+  &:focus {
+    border-color: rgba(6, 182, 212, 0.5);
+    box-shadow:
+      inset 2px 2px 5px rgba(0, 0, 0, 0.5),
+      inset -2px -2px 5px rgba(255, 255, 255, 0.02),
+      0 0 8px rgba(6, 182, 212, 0.2);
   }
 }
