@@ -666,17 +666,26 @@ $sidebar-text-muted: #0f172a;
           margin-top: 0.25rem;
         }
 
-        .type-pago {
+        .type-pago, .type-PAGO {
           color: #2563eb;
           font-weight: bold;
+          font-size: 0.85rem;
         }
-        .type-migracion {
+        .type-migracion, .type-MIGRACION {
           color: #dc2626;
           font-weight: bold;
+          font-size: 0.85rem;
         }
-        .type-soporte {
+        .type-soporte, .type-SOPORTE {
           color: #d97706;
           font-weight: bold;
+          font-size: 0.85rem;
+        }
+        .type-cambio_datos, .type-CAMBIO_DATOS {
+          color: #9333ea; /* Purple color for novelty */
+          font-weight: bold;
+          font-size: 0.85rem;
+          text-shadow: none; /* In case any global glitch text-shadow is affecting it */
         }
 
         .status-pendiente {

@@ -730,4 +730,9 @@ export class SaasAdminComponent implements OnInit {
   logout(): void {
     this.authService.logout();
   }
+
+  formatTipo(tipo: string): string {
+    if (!tipo) return '';
+    return tipo.replace(/_/g, ' ');
+  }
 }
