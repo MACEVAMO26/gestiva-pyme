@@ -418,7 +418,9 @@
       @if (currentView === 'solicitudes') {
         <!-- BANDEJA DE SOLICITUDES -->
         <div class="glass-panel mt-2rem">
-          <h2 class="text-3xl font-bold text-white mb-8 tracking-wide text-center uppercase">Bandeja de Solicitudes</h2>
+          <h2 class="text-3xl font-bold text-white mb-8 tracking-wide text-center uppercase">
+            Bandeja de Solicitudes
+          </h2>
           @if (solicitudes.length > 0) {
             <div class="request-list">
               @for (solicitud of solicitudes; track solicitud.id) {
@@ -535,55 +537,157 @@
 
       @if (currentView === 'modulos') {
         <div class="glass-panel mt-2rem">
-          <div class="flex justify-between items-start mb-4">
-            <div>
-              <h3 class="panel-title">Gestión de Módulos por Empresa</h3>
-              <p class="text-gray-400 font-inter text-sm">
-                Selecciona una empresa para activar o desactivar sus sub-módulos individualmente o
-                por bloque.
-              </p>
-            </div>
+          <div class="mb-8">
+            <h2 class="text-3xl font-bold text-white tracking-wide text-center uppercase mb-6">
+              GESTIÓN DE MÓDULOS POR EMPRESA
+            </h2>
 
-            <!-- Monitor de Estado -->
-            <div class="bg-gray-800 border border-gray-700 p-3 rounded-lg flex items-center gap-4">
-              <div class="flex flex-col">
-                <span class="text-xs text-gray-400 uppercase tracking-wider">Estado Servidor</span>
-                <div class="flex items-center gap-2">
-                  <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-                  <span class="text-sm text-green-400 font-bold">En Línea</span>
+            <!-- Monitores de Estado -->
+            <div class="flex flex-wrap justify-center items-center gap-6">
+              
+              <!-- Monitor Global (Siempre visible) -->
+              <div class="bg-gray-800 border border-gray-700 p-3 rounded-lg flex items-center gap-4 shadow-sm">
+                <div class="flex flex-col">
+                  <span class="text-xs text-gray-400 uppercase tracking-wider">Servidor Principal</span>
+                  <div class="flex items-center gap-2 mt-1">
+                    <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                    <span class="text-sm text-green-400 font-bold">En Línea (Estable)</span>
+                  </div>
                 </div>
               </div>
-              <div class="h-8 w-px bg-gray-700"></div>
-              <div class="flex flex-col">
-                <span class="text-xs text-gray-400 uppercase tracking-wider">Última Actividad</span>
-                <span class="text-sm text-gray-300">{{ serverStatus.lastActivity }}</span>
-              </div>
+
+              <!-- Monitor Empresarial (Solo al seleccionar empresa) -->
+              @if (empresaSeleccionadaId) {
+                <div class="bg-[#0f172a] border border-[#1e293b] p-3 rounded-lg flex items-center gap-4 shadow-sm">
+                  <div class="flex flex-col">
+                    <span class="text-xs text-blue-300 uppercase tracking-wider">Servidor Empresarial</span>
+                    <div class="flex items-center gap-2 mt-1">
+                      <span class="w-2 h-2 rounded-full bg-blue-400 animate-pulse"></span>
+                      <span class="text-sm text-blue-400 font-bold">Conectado</span>
+                    </div>
+                  </div>
+                  <div class="h-8 w-px bg-[#1e293b]"></div>
+                  <div class="flex flex-col">
+                    <span class="text-xs text-gray-400 uppercase tracking-wider">Última Actividad</span>
+                    <span class="text-sm text-gray-300 mt-1">{{ serverStatus.lastActivity }}</span>
+                  </div>
+                </div>
+              }
             </div>
           </div>
 
           <!-- Selector de Empresas -->
           <div
-            class="mb-6 bg-gray-900 p-4 rounded-lg border border-gray-700 flex items-center gap-4"
+            class="mb-6 bg-gray-900 p-4 rounded-lg border border-gray-700 flex flex-col md:flex-row items-start md:items-center gap-4"
           >
             <label class="text-gray-300 font-inter font-bold whitespace-nowrap"
               >Empresa a gestionar:</label
             >
             <select
-              class="form-input bg-gray-800 text-white border-gray-600 focus:border-blue-500 max-w-md"
+              class="form-input bg-gray-800 text-white border-gray-600 focus:border-blue-500 w-full md:w-auto md:max-w-md"
               (change)="seleccionarEmpresaModulos($event)"
             >
-              <option value="" disabled selected>-- Selecciona una empresa --</option>
+              <option value="" disabled selected>Selecciona una empresa</option>
               @for (emp of empresas; track emp.id) {
                 <option [value]="emp.id">{{ emp.razon_social }} (NIT: {{ emp.nit }})</option>
               }
             </select>
           </div>
 
-          <div
-            class="grid grid-cols-1 gap-6"
-            [class.opacity-50]="!empresaSeleccionadaId"
-            [class.pointer-events-none]="!empresaSeleccionadaId"
-          >
+          @if (empresaSeleccionadaId) {
+            <div class="grid grid-cols-1 gap-6">
+            <!-- MÓDULO ADMINISTRACIÓN (POR DEFECTO) -->
+            <div class="soft-ui-card">
+              <div class="flex items-center justify-between gap-4 mb-6">
+                <div class="flex items-center gap-4">
+                  <div class="soft-ui-icon-box text-gray-400">
+                    <svg
+                      class="w-7 h-7"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke-width="1.5"
+                      stroke="currentColor"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M10.343 3.94c.09-.542.56-.94 1.11-.94h1.093c.55 0 1.02.398 1.11.94l.149.894c.07.424.384.764.78.93.398.164.855.142 1.205-.108l.737-.527a1.125 1.125 0 011.45.12l.773.774c.39.389.44 1.002.12 1.45l-.527.737c-.25.35-.272.806-.107 1.204.165.397.505.71.93.78l.893.15c.543.09.94.56.94 1.109v1.094c0 .55-.397 1.02-.894 1.11l-.894.149c-.424.07-.764.383-.929.78-.165.398-.143.854.107 1.204l.527.738c.32.447.269 1.06-.12 1.45l-.774.773a1.125 1.125 0 01-1.449.12l-.738-.527c-.35-.25-.806-.272-1.203-.107-.398.165-.71.505-.781.929l-.149.894c-.09.542-.56.94-1.11.94h-1.094c-.55 0-1.019-.398-1.11-.94l-.148-.894c-.071-.424-.384-.764-.781-.93-.398-.164-.854-.142-1.204.108l-.738.527c-.447.32-1.06.269-1.45-.12l-.773-.774a1.125 1.125 0 01-.12-1.45l.527-.737c.25-.35.273-.806.108-1.204-.165-.397-.505-.71-.93-.78l-.894-.15c-.542-.09-.94-.56-.94-1.109v-1.094c0-.55.398-1.02.94-1.11l.894-.149c.424-.07.765-.383.93-.78.165-.398.143-.854-.107-1.204l-.527-.738a1.125 1.125 0 01.12-1.45l.773-.773a1.125 1.125 0 011.45-.12l.737.527c.35.25.807.272 1.204.107.397-.165.71-.505.78-.929l.15-.894z"
+                      />
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                      />
+                    </svg>
+                  </div>
+                  <div>
+                    <h4 class="text-white font-inter font-bold text-lg">Módulo ADMINISTRACIÓN</h4>
+                    <p class="text-sm text-gray-400 mt-1">
+                      Configuración y gestión de roles (Administrador).
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="space-y-3">
+                <div class="soft-ui-row">
+                  <span class="text-gray-300 font-inter font-medium text-base"
+                    >Gestión de Accesos y Roles</span
+                  >
+                  <span class="text-xs font-bold text-green-500">Módulo Base</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- MÓDULO AUTOGESTIÓN (POR DEFECTO) -->
+            <div class="soft-ui-card">
+              <div class="flex items-center justify-between gap-4 mb-6">
+                <div class="flex items-center gap-4">
+                  <div class="soft-ui-icon-box text-blue-400">
+                    <svg class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h4 class="text-white font-inter font-bold text-lg">Módulo AUTOGESTIÓN</h4>
+                    <p class="text-sm text-gray-400 mt-1">
+                      Portal de uso interno y personal para los empleados.
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="space-y-3">
+                <div class="soft-ui-row">
+                  <span class="text-gray-300 font-inter font-medium text-base">Portal de Autogestión</span>
+                  <span class="text-xs font-bold text-green-500">Módulo Base</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- MÓDULO GESTIÓN DE TAREAS (POR DEFECTO) -->
+            <div class="soft-ui-card">
+              <div class="flex items-center justify-between gap-4 mb-6">
+                <div class="flex items-center gap-4">
+                  <div class="soft-ui-icon-box text-orange-400">
+                    <svg class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25zM6.75 12h.008v.008H6.75V12zm0 3h.008v.008H6.75V15zm0 3h.008v.008H6.75V18z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h4 class="text-white font-inter font-bold text-lg">Módulo GESTIÓN DE TAREAS</h4>
+                    <p class="text-sm text-gray-400 mt-1">
+                      Checklist y asignación de tareas por sección.
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="space-y-3">
+                <div class="soft-ui-row">
+                  <span class="text-gray-300 font-inter font-medium text-base">Checklist de Tareas</span>
+                  <span class="text-xs font-bold text-green-500">Módulo Base</span>
+                </div>
+              </div>
+            </div>
+
             @for (paquete of paquetesModulos; track paquete.id) {
               <div class="soft-ui-card">
                 <div class="flex items-center justify-between gap-4 mb-6">
@@ -685,46 +789,62 @@
                   </div>
                 </div>
 
-                <div class="space-y-0">
-                  @for (sub of paquete.submodulos; track sub.id) {
-                    <div class="soft-ui-row">
-                      <span class="text-gray-300 font-inter font-medium text-sm">{{
-                        sub.nombre
-                      }}</span>
-                      <button
-                        (click)="toggleSubmodulo(paquete.id, sub.id)"
-                        [class]="'soft-ui-toggle ' + (sub.activo ? 'active' : 'inactive')"
-                      >
-                        <div class="soft-ui-toggle-thumb"></div>
-                      </button>
-                    </div>
-                  }
-                </div>
+                @if (paquete.activo) {
+                  <div class="space-y-3">
+                    @for (sub of paquete.submodulos; track sub.id) {
+                      <div class="soft-ui-row">
+                        <span class="text-gray-300 font-inter font-medium text-base">{{ sub.nombre }}</span>
+                        <button
+                          (click)="toggleSubmodulo(paquete.id, sub.id)"
+                          [class]="'soft-ui-toggle ' + (sub.activo ? 'active' : 'inactive')"
+                        >
+                          <div class="soft-ui-toggle-thumb"></div>
+                        </button>
+                      </div>
+                    }
+                  </div>
 
-                <div class="mt-8 flex justify-end">
-                  <button
-                    (click)="guardarPaquete(paquete.id)"
-                    class="soft-ui-btn flex items-center gap-2"
-                  >
-                    <svg
-                      class="w-5 h-5"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke-width="2"
-                      stroke="currentColor"
+                  <div class="mt-8 flex justify-between items-center">
+                    <div>
+                      @if (paquete.id === 'addons') {
+                        <button (click)="anexarAddon()" class="text-sm text-blue-400 hover:text-blue-300 font-inter font-bold flex items-center gap-1 transition-colors">
+                          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                          </svg>
+                          Anexar Módulo
+                        </button>
+                      }
+                    </div>
+                    <button
+                      (click)="guardarPaquete(paquete.id)"
+                      class="soft-ui-btn flex items-center gap-2"
                     >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d="M16.5 3.75V16.5L12 14.25 7.5 16.5V3.75m9 0H18A2.25 2.25 0 0120.25 6v12A2.25 2.25 0 0118 20.25H6A2.25 2.25 0 013.75 18V6A2.25 2.25 0 016 3.75h1.5m9 0h-9"
-                      />
-                    </svg>
-                    Guardar Cambios
-                  </button>
-                </div>
+                      <svg
+                        class="w-5 h-5"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke-width="2"
+                        stroke="currentColor"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          d="M16.5 3.75V16.5L12 14.25 7.5 16.5V3.75m9 0H18A2.25 2.25 0 0120.25 6v12A2.25 2.25 0 0118 20.25H6A2.25 2.25 0 013.75 18V6A2.25 2.25 0 016 3.75h1.5m9 0h-9"
+                        />
+                      </svg>
+                      Guardar Cambios
+                    </button>
+                  </div>
+                }
               </div>
             }
-          </div>
+            </div>
+          } @else {
+            <div class="empty-state mt-8">
+              <i class="fas fa-hand-pointer text-4xl mb-4 text-gray-500"></i>
+              <p>Por favor selecciona una empresa en el menú de arriba para ver y gestionar sus módulos.</p>
+            </div>
+          }
         </div>
       }
 
@@ -1089,27 +1209,49 @@
       <div class="saas-modal-content max-w-2xl">
         <h2 class="text-2xl font-bold text-white mb-6 border-b border-gray-700 pb-2">
           Detalle de la Solicitud
-          <span class="ml-3 px-3 py-1 bg-cyan-500/20 text-cyan-400 text-xs rounded-full uppercase">{{ formatTipo(solicitudSeleccionada.tipo) | uppercase }}</span>
+          <span
+            class="ml-3 px-3 py-1 bg-cyan-500/20 text-cyan-400 text-xs rounded-full uppercase"
+            >{{ formatTipo(solicitudSeleccionada.tipo) | uppercase }}</span
+          >
         </h2>
 
         <div class="text-gray-300 space-y-2 mb-6">
-          <p><strong class="text-white">Empresa:</strong> {{ solicitudSeleccionada.empresa?.razon_social }}</p>
-          <p><strong class="text-white">Fecha:</strong> {{ solicitudSeleccionada.created_at | date: 'medium' }}</p>
+          <p>
+            <strong class="text-white">Empresa:</strong>
+            {{ solicitudSeleccionada.empresa?.razon_social }}
+          </p>
+          <p>
+            <strong class="text-white">Fecha:</strong>
+            {{ solicitudSeleccionada.created_at | date: 'medium' }}
+          </p>
 
           @if (solicitudSeleccionada.tipo === 'pago') {
             <div class="mb-4">
-              <strong class="text-white">Banco:</strong> {{ solicitudSeleccionada.banco_origen || 'No especificado' }}<br /><br />
+              <strong class="text-white">Banco:</strong>
+              {{ solicitudSeleccionada.banco_origen || 'No especificado' }}<br /><br />
               @if (solicitudSeleccionada.comprobante_path) {
                 <strong class="text-white">Comprobante Adjunto:</strong>
                 <div class="mt-2 bg-[#111827] border border-gray-700 rounded p-4 text-center">
                   <a
-                    [href]="'http://127.0.0.1:8000/storage/' + solicitudSeleccionada.comprobante_path"
+                    [href]="
+                      'http://127.0.0.1:8000/storage/' + solicitudSeleccionada.comprobante_path
+                    "
                     target="_blank"
                     class="text-blue-400 hover:text-blue-300 flex items-center justify-center gap-2 font-medium"
                   >
                     Ver Comprobante (Click para abrir)
-                    <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244" />
+                    <svg
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke-width="1.5"
+                      stroke="currentColor"
+                      class="w-5 h-5"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244"
+                      />
                     </svg>
                   </a>
                 </div>
@@ -1129,7 +1271,9 @@
 
         @if (solicitudSeleccionada.estado === 'pendiente') {
           <div class="saas-form-group mb-6">
-            <label class="saas-label">Mensaje / Notas para el Cliente (Obligatorio para rechazar)</label>
+            <label class="saas-label"
+              >Mensaje / Notas para el Cliente (Obligatorio para rechazar)</label
+            >
             <textarea
               [(ngModel)]="mensajeRespuesta"
               rows="3"
@@ -1139,29 +1283,44 @@
           </div>
 
           <div class="flex items-center justify-end gap-4 mt-6 pt-4 border-t border-gray-700">
-            <button (click)="cerrarModalSolicitud()" class="saas-btn-cancel">
-              Cancelar
-            </button>
+            <button (click)="cerrarModalSolicitud()" class="saas-btn-cancel">Cancelar</button>
             <button
               (click)="procesarSolicitud('rechazado')"
               class="px-6 py-2 bg-red-600 hover:bg-red-500 text-white rounded-lg font-bold flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               [disabled]="!mensajeRespuesta || mensajeRespuesta.trim() === ''"
             >
               Rechazar
-              <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+              <svg
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.5"
+                stroke="currentColor"
+                class="w-5 h-5"
+              >
                 <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
               </svg>
             </button>
-            <button (click)="procesarSolicitud('aprobado')" class="px-6 py-2 bg-green-600 hover:bg-green-500 text-white rounded-lg font-bold flex items-center gap-2 transition-colors">
+            <button
+              (click)="procesarSolicitud('aprobado')"
+              class="px-6 py-2 bg-green-600 hover:bg-green-500 text-white rounded-lg font-bold flex items-center gap-2 transition-colors"
+            >
               Aprobar
-              <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+              <svg
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.5"
+                stroke="currentColor"
+                class="w-5 h-5"
+              >
                 <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
               </svg>
             </button>
           </div>
         } @else {
           <div class="mt-6 pt-4 border-t border-gray-700 text-center">
-            <span class="inline-block px-4 py-2 bg-gray-800 text-gray-300 rounded-full text-sm font-semibold mb-6">
+            <span
+              class="inline-block px-4 py-2 bg-gray-800 text-gray-300 rounded-full text-sm font-semibold mb-6"
+            >
               Esta solicitud ya fue {{ solicitudSeleccionada.estado | uppercase }}.
             </span>
             <div class="flex justify-center">

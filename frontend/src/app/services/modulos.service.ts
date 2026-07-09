@@ -71,6 +71,8 @@ export class ModulosService {
           { id: 's_age', nombre: 'Agenda y Calendario', activo: false },
           { id: 's_crm', nombre: 'CRM (Gestión de Clientes)', activo: false },
           { id: 's_cat', nombre: 'Catálogo de Servicios', activo: false },
+          { id: 's_ope', nombre: 'Gestión de Operarios', activo: false },
+          { id: 's_rep', nombre: 'Reportes de Servicios', activo: false },
         ],
       },
       {
@@ -92,8 +94,7 @@ export class ModulosService {
         submodulos: [
           { id: 'r_tur', nombre: 'Horarios y Turnos', activo: false },
           { id: 'r_aus', nombre: 'Control de Horas Extras y Ausencias', activo: false },
-          { id: 'r_vac', nombre: 'Gestión de Vacaciones', activo: false },
-          { id: 'r_aut', nombre: 'Autogestión (Fijo)', activo: true, fijo: true },
+          { id: 'r_vac', nombre: 'Gestión de Vacaciones', activo: false }
         ],
       },
       {

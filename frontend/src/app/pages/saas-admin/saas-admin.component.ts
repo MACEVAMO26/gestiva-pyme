@@ -568,6 +568,10 @@ export class SaasAdminComponent implements OnInit {
     }
   }
 
+  anexarAddon() {
+    alert('Funcionalidad en desarrollo: Aquí se desplegará el catálogo de conectores externos (Ej. APIs, Software Contable, etc.) de los cuales GestivaPyme ofrece integración.');
+  }
+
   guardarPaquete(paqueteId: string) {
     if (!this.empresaSeleccionadaId) {
       alert('Por favor selecciona una empresa primero.');
