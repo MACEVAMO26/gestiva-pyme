@@ -1,4 +1,5 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+<USER_REQUEST>
+revisa @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 $primary-color: #6366f1;
 $primary-hover: #4f46e5;
 $bg-color: #4c808a;
@@ -451,9 +452,9 @@ $sidebar-text-muted: #0f172a;
   }
 
   .glass-panel {
-    background: linear-gradient(135deg, #0d3454 0%, #19527f 100%);
+    background: #021729;
     border-radius: 20px;
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.03);
     padding: 1.5rem;
     box-shadow:
       4px 4px 10px rgba(0, 0, 0, 0.4),
@@ -469,10 +470,10 @@ $sidebar-text-muted: #0f172a;
     .empty-state {
       padding: 3rem;
       text-align: center;
-      color: #cbd5e1;
-      background: rgba(0, 0, 0, 0.2);
+      color: #0f172a;
+      background: rgba(255, 255, 255, 0.4);
       border-radius: 10px;
-      border: 1px dashed rgba(255, 255, 255, 0.1);
+      border: 1px dashed rgba(0, 0, 0, 0.1);
     }
 
     .table-header {
@@ -588,9 +589,7 @@ $sidebar-text-muted: #0f172a;
           cursor: pointer;
           font-size: 0.7rem;
           font-weight: 500;
-          transition:
-            transform 0.1s ease,
-            box-shadow 0.1s ease;
+          transition: transform 0.1s ease, box-shadow 0.1s ease;
           &:active {
             transform: scale(0.95);
           }
@@ -1315,7 +1314,7 @@ $sidebar-text-muted: #0f172a;
   border: 1px solid rgba(255, 255, 255, 0.1);
   color: white;
   outline: none;
-
+  
   option {
     background: #1e293b;
     color: white;
@@ -1475,18 +1474,19 @@ $sidebar-text-muted: #0f172a;
 
 /* --- 22. DISEÑO SOFT UI --- */
 .soft-ui-card {
-  background: #0d3454; /* Dark blue background like glass-panel */
-  border-radius: 20px;
+  background: #19527f;
+
+  border-radius: 28px;
   padding: 1.5rem;
   box-shadow:
-    4px 4px 10px rgba(0, 0, 0, 0.4),
-    -4px -4px 10px rgba(255, 255, 255, 0.02);
+    15px 15px 35px rgba(0, 0, 0, 0.4),
+    -10px -10px 25px rgba(255, 255, 255, 0.02);
   transition: all 0.3s ease;
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.03);
   &:hover {
     box-shadow:
-      6px 6px 15px rgba(0, 0, 0, 0.5),
-      -4px -4px 15px rgba(255, 255, 255, 0.03);
+      15px 15px 40px rgba(0, 0, 0, 0.5),
+      -10px -10px 30px rgba(255, 255, 255, 0.03);
     transform: translateY(-2px);
   }
 }
@@ -1514,87 +1514,131 @@ $sidebar-text-muted: #0f172a;
 }
 
 .soft-ui-row {
-  background: #111827; /* Dark grayish-black for rows */
+  background: #a2bbd4;
   border-radius: 20px;
-  padding: 1rem 1.5rem;
+  padding: 0.75rem 1.25rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border: 1px solid rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.03);
   box-shadow:
-    4px 4px 10px rgba(0, 0, 0, 0.4),
-    -4px -4px 10px rgba(255, 255, 255, 0.02);
+    8px 8px 16px rgba(0, 0, 0, 0.4),
+    -8px -8px 16px rgba(255, 255, 255, 0.02);
   transition: all 0.3s ease;
   &:hover {
     box-shadow:
-      6px 6px 15px rgba(0, 0, 0, 0.5),
-      -4px -4px 15px rgba(255, 255, 255, 0.03);
+      10px 10px 20px rgba(0, 0, 0, 0.5),
+      -10px -10px 20px rgba(255, 255, 255, 0.03);
     transform: translateY(-2px);
   }
 }
 
 /* --- 23. BOTONES SOFT UI --- */
 .soft-ui-btn {
-  background: #069c6a; /* Bright green like Ver Detalles */
+  background: #069c6a;
   color: white;
   font-weight: 600;
-  padding: 0.5rem 1.25rem;
+  padding: 0.75rem 1.75rem;
   border-radius: 50px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+
+  box-shadow:
+    inset 2px 2px 4px rgba(255, 255, 255, 0.2),
+    inset -2px -2px 4px rgba(0, 0, 0, 0.1),
+    0 4px 6px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
   border: none;
   cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
   &:hover {
-    background: #05875b;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.4);
+    background: #4ea58f;
+    transform: translateY(-1px);
   }
+
   &:active {
+    transform: translateY(1px);
     box-shadow: inset 0px 4px 6px rgba(0, 0, 0, 0.2);
   }
 }
 
 .soft-ui-toggle {
-  background: rgba(255, 255, 255, 0.1);
-  width: 48px;
-  height: 26px;
+  background: #4a3434;
+  width: 44px;
+  height: 24px;
   flex-shrink: 0;
-  border-radius: 13px;
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
+  box-shadow:
+    inset 2px 2px 5px rgba(0, 0, 0, 0.4),
+    inset -2px -2px 5px rgba(255, 255, 255, 0.05);
   transition: all 0.3s ease;
   position: relative;
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: none;
   cursor: pointer;
   display: flex;
   align-items: center;
-
   &.active {
-    background: linear-gradient(135deg, #06b6d4, #3b82f6);
-    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2), 0 0 10px rgba(6, 182, 212, 0.3);
+    background: #50c1d0;
+    box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.2);
+    .toggle-icon-on {
+      opacity: 1;
+      transform: scale(1) translateY(-50%);
+    }
+    .toggle-icon-off {
+      opacity: 0;
+      transform: scale(0.5) translateY(-50%);
+    }
   }
 
   &.inactive {
-    background: rgba(0, 0, 0, 0.2);
+    background: rgba(255, 255, 255, 0.05);
+    .toggle-icon-on {
+      opacity: 0;
+      transform: scale(0.5) translateY(-50%);
+    }
+    .toggle-icon-off {
+      opacity: 1;
+      transform: scale(1) translateY(-50%);
+    }
+  }
+
+  .toggle-icon-on,
+  .toggle-icon-off {
+    position: absolute;
+    top: 50%;
+    width: 12px;
+    height: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+  }
+
+  .toggle-icon-on {
+    left: 6px;
+    color: white;
+  }
+
+  .toggle-icon-off {
+    right: 6px;
+    color: #94a3b8;
   }
 
   .soft-ui-toggle-thumb {
     position: absolute;
-    top: 2px;
-    left: 2px;
-    width: 20px;
-    height: 20px;
-    background: #ffffff;
-    border-radius: 50%;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), background 0.3s ease;
+    top: 3px;
+    left: 3px;
+    width: 18px;
+    height: 18px;
+    background: linear-gradient(135deg, #e2e8f0, #cbd5e1);
+    border-radius: 6px;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+    transition:
+      transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+      background 0.3s ease;
   }
 
   &.active .soft-ui-toggle-thumb {
-    transform: translateX(22px);
-    background: #ffffff;
+    transform: translateX(20px);
+    background: linear-gradient(135deg, #ffffff, #cffafe);
   }
 
   &.toggle-sm {
@@ -1663,68 +1707,7 @@ $sidebar-text-muted: #0f172a;
       0 0 8px rgba(6, 182, 212, 0.2);
   }
 }
-
-/* --- CLASES NEU-DARK RESTAURADAS --- */
-.neu-dark-panel {
-  background: #0d3454;
-  border-radius: 20px;
-  padding: 1.5rem;
-  box-shadow:
-    4px 4px 10px rgba(0, 0, 0, 0.4),
-    -4px -4px 10px rgba(255, 255, 255, 0.02);
-  transition: all 0.3s ease;
-  border: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-.neu-dark-button {
-  background: #069c6a;
-  color: white;
-  font-weight: 600;
-  padding: 0.5rem 1.25rem;
-  border-radius: 50px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-  transition: all 0.3s ease;
-  border: none;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  &:hover {
-    background: #05875b;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.4);
-  }
-}
-
-.neu-dark-input {
-  @extend .soft-ui-input;
-}
-
-.neu-action-btn {
-  color: white;
-  padding: 0.5rem;
-  border-radius: 50%;
-  width: 2.5rem;
-  height: 2.5rem;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-  transition: all 0.3s ease;
-  border: none;
-  cursor: pointer;
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.4);
-  }
-}
-
-.neu-action-check {
-  background: #069c6a;
-  &:hover { background: #05875b; }
-}
-
-.neu-action-close {
-  background: #e11d48;
-  &:hover { background: #be123c; }
-}
+</USER_REQUEST>
+<ADDITIONAL_METADATA>
+The current local time is: 2026-07-09T03:52:21-05:00.
+</ADDITIONAL_METADATA>

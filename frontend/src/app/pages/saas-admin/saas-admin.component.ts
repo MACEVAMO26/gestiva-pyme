@@ -1,5 +1,6 @@
 import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { DashboardSaasComponent } from '../dashboard-saas/dashboard-saas.component';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
 import {
@@ -15,7 +16,7 @@ import { ModulosService } from '../../services/modulos.service';
 @Component({
   selector: 'app-saas-admin',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, DashboardSaasComponent],
   templateUrl: './saas-admin.component.html',
   styleUrls: ['./saas-admin.component.scss'],
 })
@@ -238,7 +239,6 @@ export class SaasAdminComponent implements OnInit {
         this.asuntoBrevo = '';
         this.mensajeBrevo = '';
         this.archivoAdjuntoBrevo = null;
-        this.comercialTab = 'interesados';
         this.cdr.detectChanges();
         setTimeout(() => {
           this.toastMessage = null;

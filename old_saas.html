@@ -14,55 +14,11 @@
         <h1>Hola, Maria Vanegas</h1>
         <p>Panel de Control de GestivaPyme.</p>
       </div>
-      <div class="topbar-actions flex items-center gap-4">
+      <div class="topbar-actions">
         <!-- Perfil y Logout -->
         <div class="user-profile">
           <div class="avatar">M</div>
           <button class="btn-logout" (click)="logout()">Cerrar Sesión</button>
-        </div>
-
-        <!-- Botón Accesibilidad Daltonismo -->
-        <div class="saas-floating-widget relative">
-          <button 
-            (click)="toggleAccessibilityMenu()"
-            class="saas-btn-access flex items-center justify-center bg-yellow-500 hover:bg-yellow-400 text-white rounded-full p-2 shadow-md transition-colors w-10 h-10"
-            title="Ajustes de Accesibilidad (Daltonismo)">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
-              <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-            </svg>
-          </button>
-        
-          <!-- Menú Desplegable -->
-          @if (isAccessibilityMenuOpen) {
-            <div class="saas-access-menu absolute right-0 top-12 mt-2 w-56 bg-gray-800 rounded-lg shadow-xl border border-gray-700 overflow-hidden z-50">
-              <div class="saas-access-header bg-gray-900 p-3 border-b border-gray-700">
-                <p class="saas-access-title text-sm font-semibold text-white m-0">Daltonismo</p>
-              </div>
-              <div class="flex flex-col">
-                <button (click)="setDaltonismMode('normal')" 
-                  [style.background-color]="accessibilityService.currentMode() === 'normal' ? '#334155' : 'transparent'" 
-                  class="text-left px-4 py-3 text-sm text-gray-300 hover:bg-gray-700 transition-colors border-b border-gray-700/50">
-                  Vista Normal (Desactivado)
-                </button>
-                <button (click)="setDaltonismMode('protanopia')" 
-                  [style.background-color]="accessibilityService.currentMode() === 'protanopia' ? '#334155' : 'transparent'" 
-                  class="text-left px-4 py-3 text-sm text-gray-300 hover:bg-gray-700 transition-colors border-b border-gray-700/50">
-                  Protanopía (Rojo débil)
-                </button>
-                <button (click)="setDaltonismMode('deuteranopia')" 
-                  [style.background-color]="accessibilityService.currentMode() === 'deuteranopia' ? '#334155' : 'transparent'" 
-                  class="text-left px-4 py-3 text-sm text-gray-300 hover:bg-gray-700 transition-colors border-b border-gray-700/50">
-                  Deuteranopía (Verde débil)
-                </button>
-                <button (click)="setDaltonismMode('tritanopia')" 
-                  [style.background-color]="accessibilityService.currentMode() === 'tritanopia' ? '#334155' : 'transparent'" 
-                  class="text-left px-4 py-3 text-sm text-gray-300 hover:bg-gray-700 transition-colors">
-                  Tritanopía (Azul débil)
-                </button>
-              </div>
-            </div>
-          }
         </div>
       </div>
     </div>
@@ -116,13 +72,91 @@
     <main class="content-area content-area-styled">
       
       @if (currentView === 'dashboard') {
-        <app-dashboard-saas
-          [empresas]="empresas"
-          [empresasEnMora]="empresasEnMora"
-          [solicitudesPendientes]="solicitudesPendientes"
-          (changeView)="cambiarVista($event)">
-        </app-dashboard-saas>
+        <!-- FAKE METRICS CARDS -->
+        <div class="metrics-grid">
+          <div class="metric-card metric-card-styled">
+            <div class="metric-card-header">
+              <div class="metric-info">
+                <span class="label">Crecimiento Empresas</span>
+                <span class="value">{{ empresas.length }}</span>
+              </div>
+              </div>
+            <!-- Mini Gráfica CSS -->
+            <div class="chart-container">
+              <div class="chart-bar-1"></div>
+              <div class="chart-bar-2"></div>
+              <div class="chart-bar-3"></div>
+              <div class="chart-bar-4"></div>
+              <div class="chart-bar-5"></div>
+            </div>
+            <div class="chart-labels">
+              <span>Feb</span>
+              <span>Mar</span>
+              <span>Abr</span>
+              <span>May</span>
+              <span>Jun</span>
+            </div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-info">
+              <span class="label">MRR (Ingreso Mensual)</span>
+              <span class="value">$12,500</span>
+            </div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-info">
+              <span class="label">Tickets Pendientes</span>
+              <span class="value">{{ solicitudesPendientes }}</span>
+            </div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-info">
+              <span class="label">Usuarios Totales</span>
+              <span class="value">845</span>
+            </div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-info">
+              <span class="label">Tickets Pendientes</span>
+              <span class="value">{{ solicitudesPendientes }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- PANEL RESUMEN DEL SISTEMA -->
+        <div class="glass-panel dashboard-welcome">
+          <h3 style="display:flex; align-items:center; gap:0.5rem;"><svg class="icon-24-inline" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z" /></svg> Resumen del Sistema</h3>
+          <div class="status-cards-grid">
+            <div class="status-card active-card">
+              <span class="card-icon"><svg class="icon-24-inline" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg></span>
+              <span class="card-label">Total Empresas</span>
+              <span class="card-value">{{ empresas.length }}</span>
+            </div>
+            <div class="status-card mora-card">
+              <span class="card-icon"><svg class="icon-24-inline" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3Z" /></svg></span>
+              <span class="card-label">En Mora</span>
+              <span class="card-value">{{ empresasEnMora }}</span>
+            </div>
+            <div class="status-card pending-card">
+              <span class="card-icon"><svg class="icon-24-inline" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" /></svg></span>
+              <span class="card-label">Solicitudes Pendientes</span>
+              <span class="card-value">{{ solicitudesPendientes }}</span>
+            </div>
+          </div>
+          <div class="quick-actions">
+            <h4>Acciones Rápidas</h4>
+            <button class="btn-action primary-action" (click)="cambiarVista('empresas')">
+              <svg class="icon-16-inline" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21m-3.75 3.75h.008v.008h-.008v-.008Zm0 3h.008v.008h-.008v-.008Zm0 3h.008v.008h-.008v-.008Z" /></svg>
+              Ver Empresas
+            </button>
+            <button class="btn-action secondary-action" (click)="cambiarVista('solicitudes')">
+              <svg class="icon-16-inline" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Z" /></svg>
+              Ver Solicitudes
+            </button>
+          </div>
+        </div>
       }
+
       @if (currentView === 'empresas' || currentView === 'dashboard') {
         <!-- COMPANIES TABLE -->
         <div class="glass-panel mt-2rem">
@@ -162,11 +196,6 @@
                       }
                     </td>
                     <td class="actions">
-                      <!-- Editar -->
-                      <button (click)="editarEmpresa(empresa)" class="btn-editar" title="Editar detalles">
-                        <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="icon-16-inline"><path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125" /></svg> Editar
-                      </button>
-
                       <!-- Botón de Cobrar -->
                       <button class="btn-cobrar" title="Enviar recordatorio de pago (5 días antes)">
                         <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="icon-16-inline"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" /></svg> Cobrar
@@ -394,9 +423,9 @@
 
         @if (currentView === 'comercial') {
           <div class="neu-dark-panel p-8 mt-6">
-            <h2 class="text-3xl font-bold text-white mb-8 tracking-wide text-center uppercase">Módulo Comercial</h2>
+            <h2 class="text-3xl font-bold text-white mb-8 tracking-wide">Módulo Comercial</h2>
             
-            <div class="mb-8 flex flex-col sm:flex-row justify-center items-center gap-4 border-b border-gray-700 pb-4 relative">
+            <div class="mb-8 flex justify-between items-center flex-wrap gap-4 border-b border-gray-700 pb-4">
               <div class="flex gap-4">
                 <button class="neu-dark-button"
                   [class.active]="comercialTab === 'interesados'"
@@ -411,7 +440,7 @@
               </div>
               
               @if (comercialTab === 'interesados') {
-                <button (click)="cargarLeads()" class="sm:absolute right-0 text-xs text-blue-400 hover:text-blue-300 flex items-center gap-2 transition-colors font-semibold bg-blue-500/10 px-4 py-2 rounded-lg mt-4 sm:mt-0">
+                <button (click)="cargarLeads()" class="text-xs text-blue-400 hover:text-blue-300 flex items-center gap-2 transition-colors font-semibold bg-blue-500/10 px-4 py-2 rounded-lg">
                   <i class="fas fa-sync-alt"></i> Actualizar lista
                 </button>
               }
@@ -427,8 +456,8 @@
                       <th class="p-4">Correo</th>
                       <th class="p-4">Horario Ideal</th>
                       <th class="p-4">Mensaje</th>
-                      <th class="p-4 text-center">Estado</th>
-                      <th class="p-4 text-center">Acciones</th>
+                      <th class="p-4">Estado</th>
+                      <th class="p-4">Acciones</th>
                     </tr>
                   </thead>
                   <tbody class="text-sm">
@@ -439,26 +468,26 @@
                         <td class="p-4 text-gray-300">{{lead.correo}}</td>
                         <td class="p-4 text-gray-400">{{lead.horario_llamada || 'Cualquier hora'}}</td>
                         <td class="p-4 text-gray-400 max-w-xs truncate" title="{{lead.mensaje}}">{{lead.mensaje || '-'}}</td>
-                        <td class="p-4 text-center">
-                          <span class="px-3 py-1 rounded-full text-xs font-semibold uppercase" [ngClass]="{
+                        <td class="p-4">
+                          <span class="px-3 py-1 rounded-full text-xs font-semibold" [ngClass]="{
                             'bg-blue-500/20 text-blue-400': lead.estado === 'pendiente',
                             'bg-green-500/20 text-green-400': lead.estado === 'contactado',
                             'bg-yellow-500/20 text-yellow-400': lead.estado === 'archivado'
                           }">{{lead.estado}}</span>
                         </td>
                         <td class="p-4">
-                          <div class="flex items-center justify-center gap-3">
-                            <button class="flex items-center justify-center w-10 h-10 rounded-full bg-[#06133d] hover:bg-[#040a1f] transition-colors" title="Marcar Contactado" (click)="cambiarEstadoLead(lead.id, 'contactado')">
-                              <svg class="w-5 h-5 text-[#10b981]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+                          <div class="flex items-center gap-3">
+                            <button class="neu-action-btn neu-action-check" title="Marcar Contactado" (click)="cambiarEstadoLead(lead.id, 'contactado')">
+                              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
                             </button>
-                            <button class="flex items-center justify-center w-10 h-10 rounded-full bg-[#06133d] hover:bg-[#040a1f] transition-colors" title="No Responde" (click)="cambiarEstadoLead(lead.id, 'archivado')">
-                              <svg class="w-5 h-5 text-[#f59e0b]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" /></svg>
+                            <button class="neu-action-btn neu-action-block" title="No Responde" (click)="cambiarEstadoLead(lead.id, 'archivado')">
+                              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" /></svg>
                             </button>
-                            <button class="flex items-center justify-center w-10 h-10 rounded-full bg-[#06133d] hover:bg-[#040a1f] transition-colors" title="Eliminar" (click)="eliminarLead(lead.id)">
-                              <svg class="w-5 h-5 text-[#ef4444]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                            <button class="neu-action-btn neu-action-trash" title="Eliminar" (click)="eliminarLead(lead.id)">
+                              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
                             </button>
-                            <button class="flex items-center justify-center w-10 h-10 rounded-full bg-[#06133d] hover:bg-[#040a1f] transition-colors" title="Notas" (click)="abrirModalNotas(lead)">
-                              <svg class="w-5 h-5 text-[#d946ef]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+                            <button class="neu-action-btn neu-action-notes ml-2" title="Notas" (click)="abrirModalNotas(lead)">
+                              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
                             </button>
                           </div>
                         </td>
@@ -519,11 +548,11 @@
                     />
                   </div>
 
-                  <div class="flex justify-center pt-4">
+                  <div class="flex justify-end pt-4">
                     <button
                       (click)="enviarCampanaBrevo()"
                       [disabled]="isEnviandoBrevo"
-                      class="px-8 py-3 rounded-full font-bold text-sm tracking-wide transition-all duration-300 flex items-center justify-center gap-2 min-w-[280px] shadow-[0_0_20px_rgba(6,182,212,0.3)]"
+                      class="px-8 py-3 rounded-full font-bold text-sm tracking-wide transition-all duration-300 flex items-center gap-2 shadow-[0_0_20px_rgba(6,182,212,0.3)]"
                       [ngClass]="isEnviandoBrevo ? 'bg-cyan-600/50 text-white cursor-not-allowed' : 'bg-cyan-500 hover:bg-cyan-400 text-white hover:-translate-y-1 hover:shadow-[0_0_25px_rgba(6,182,212,0.5)]'"
                     >
                       @if (isEnviandoBrevo) {
@@ -762,7 +791,49 @@
     </div>
   </div>
 
-
+  <!-- Botón Accesibilidad Daltonismo -->
+  <div class="saas-floating-widget">
+    <button 
+      (click)="toggleAccessibilityMenu()"
+      class="saas-btn-access"
+      title="Ajustes de Accesibilidad (Daltonismo)">
+      
+      <!-- Icono de ojo o accesibilidad -->
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="saas-access-icon">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
+        <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+      </svg>
+    </button>
+  
+    <!-- Menú Desplegable -->
+    @if (isAccessibilityMenuOpen) {
+      <div class="saas-access-menu">
+        <div class="saas-access-header">
+          <p class="saas-access-title">Daltonismo</p>
+        </div>
+        <button (click)="setDaltonismMode('normal')" 
+          [style.background-color]="accessibilityService.currentMode() === 'normal' ? '#334155' : 'transparent'" 
+          class="saas-access-btn">
+          Vista Normal (Desactivado)
+        </button>
+        <button (click)="setDaltonismMode('protanopia')" 
+          [style.background-color]="accessibilityService.currentMode() === 'protanopia' ? '#334155' : 'transparent'" 
+          class="saas-access-btn">
+          Protanopía (Rojo débil)
+        </button>
+        <button (click)="setDaltonismMode('deuteranopia')" 
+          [style.background-color]="accessibilityService.currentMode() === 'deuteranopia' ? '#334155' : 'transparent'" 
+          class="saas-access-btn">
+          Deuteranopía (Verde débil)
+        </button>
+        <button (click)="setDaltonismMode('tritanopia')" 
+          [style.background-color]="accessibilityService.currentMode() === 'tritanopia' ? '#334155' : 'transparent'" 
+          class="saas-access-btn" style="border-bottom: none;">
+          Tritanopía (Azul débil)
+        </button>
+      </div>
+    }
+  </div>
 
   @if (toastMessage) {
     <div class="fixed bottom-10 right-10 z-[100] flex items-center p-4 bg-[#059669]/90 text-white rounded-lg shadow-2xl backdrop-blur-md border border-white/20 animate-bounce">
