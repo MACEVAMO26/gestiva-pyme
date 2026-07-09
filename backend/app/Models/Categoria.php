@@ -9,13 +9,13 @@ class Categoria extends Model
 {
     use HasFactory;
 
-    // Tabla
+    // --- TABLA ---
     protected $table = 'categorias';
 
-    // Timestamps
+    // --- TIMESTAMPS ---
     public $timestamps = false;
 
-    // Campos
+    // --- CAMPOS ---
     protected $fillable = [
         'empresa_id', 
         'nombre', 
@@ -25,7 +25,7 @@ class Categoria extends Model
         'fecha_inactivacion'
     ];
 
-    // Relaciones
+    // --- RELACIONES ---
     public function empresa()
     {
         return $this->belongsTo(Empresa::class, 'empresa_id');

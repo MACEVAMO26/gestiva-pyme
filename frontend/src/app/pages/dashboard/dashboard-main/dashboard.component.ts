@@ -1,49 +1,49 @@
 import { Component, OnInit, inject } from '@angular/core';
-import { AuthService } from '../../services/auth.service';
-import { AccessibilityService, DaltonismMode } from '../../services/accessibility/accessibility.service';
-import { ModulosService } from '../../services/modulos.service';
+import { AuthService } from '../../../services/auth.service';
+import { HttpClient } from '@angular/common/http';
+import { AccessibilityService, DaltonismMode } from '../../../services/accessibility/accessibility.service';
+import { ModulosService } from '../../../services/modulos.service';
 import { CommonModule } from '@angular/common';
-import { EmpleadosComponent } from './empleados/empleados.component';
-import { AdministracionComponent } from './administracion/administracion.component';
-import { PagosComponent } from './pagos/pagos.component';
+import { EmpleadosComponent } from '../empleados/empleados.component';
+import { AdministracionComponent } from '../administracion/administracion.component';
+import { PagosComponent } from '../pagos/pagos.component';
+
+import { AutogestionComponent } from '../autogestion/autogestion';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, EmpleadosComponent, AdministracionComponent, PagosComponent],
+  imports: [CommonModule, EmpleadosComponent, AdministracionComponent, PagosComponent, AutogestionComponent],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss'
 })
 export class DashboardComponent implements OnInit {
 
+  // --- VARIABLES DE ESTADO ---
   user: any = null;
-  public accessibilityService = inject(AccessibilityService);
   isAccessibilityMenuOpen = false;
-
-  // Permisos de módulos
   hasVentas = false;
   hasServicios = false;
   modulosActivos: Record<string, boolean> = {};
-  private modulosService = inject(ModulosService);
-
-  // Estado del Sidebar y Módulo Actual
   isSidebarCollapsed = false;
   currentModule = 'inicio';
   isCompanyInactive = false;
-
-  // Tipo de empresa para estilos
   tipoEmpresa = '';
   tipoEmpresaClass = '';
+
+  public accessibilityService = inject(AccessibilityService);
+  private http = inject(HttpClient);
+  private modulosService = inject(ModulosService);
 
   constructor(private authService: AuthService) { }
 
   ngOnInit(): void {
     this.user = this.authService.getUser();
     
-    // Determinar qué módulos tiene activos su empresa
+    // Determina los módulos activos de la empresa
     if (this.user && this.user.empresa) {
       const tipo = this.user.empresa.tipo_empresa;
-      this.tipoEmpresa = tipo.replace(/solo /i, '').toUpperCase();
+      this.tipoEmpresa = tipo === 'Mixto' ? 'VENTAS Y SERVICIOS' : tipo.toUpperCase().replace(/SOLO\s+/g, '');
       this.tipoEmpresaClass = tipo === 'Ventas y Servicios' ? 'mixto' : tipo.toLowerCase();
       this.hasVentas = tipo.toLowerCase().includes('ventas');
       this.hasServicios = tipo.toLowerCase().includes('servicios');
@@ -89,6 +89,23 @@ export class DashboardComponent implements OnInit {
 
   switchModule(moduleName: string) {
     this.currentModule = moduleName;
+  }
+
+  changeAvatar() {
+    const seed = Math.random().toString(36).substring(7);
+    const newAvatarUrl = `https://api.dicebear.com/8.x/adventurer/svg?seed=${seed}`;
+    
+    const token = sessionStorage.getItem('auth_token');
+    if (!token) return;
+
+    this.http.post('http://127.0.0.1:8000/api/user/avatar', { avatar_url: newAvatarUrl }, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    }).subscribe({
+      next: (res: any) => {
+        this.user.avatar_url = res.avatar_url;
+      },
+      error: (err) => console.error('Error al cambiar avatar', err)
+    });
   }
 
   logout(): void {

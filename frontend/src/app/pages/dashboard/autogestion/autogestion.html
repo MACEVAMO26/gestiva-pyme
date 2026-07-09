@@ -1,0 +1,150 @@
+<div class="autogestion-container fade-in">
+  <!-- HTML ENCABEZADO -->
+  <div class="module-header">
+    <div class="header-content">
+      <h2>Autogestión del Empleado</h2>
+      <p>Administra tu perfil, solicita tiempos y mantén tus documentos al día.</p>
+    </div>
+  </div>
+
+  <div class="autogestion-grid">
+    
+    <!-- HTML COLUMNA IZQUIERDA -->
+    <div class="left-column">
+      
+      <!-- HTML TARJETA PERFIL -->
+      <div class="neu-dark-panel profile-card">
+        <div class="profile-header">
+          @if (user?.avatar_url) {
+            <img [src]="user.avatar_url" alt="Avatar" class="profile-avatar">
+          } @else {
+            <div class="profile-avatar-placeholder">{{ user?.nombres?.charAt(0) || 'A' }}</div>
+          }
+          <h3>{{ user?.nombres }} {{ user?.apellidos }}</h3>
+          <span class="badge-role">{{ user?.rol?.nombre || 'Empleado' }}</span>
+        </div>
+        
+        <div class="profile-details">
+          <div class="detail-item">
+            <svg class="icon" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+            <span>{{ user?.email }}</span>
+          </div>
+          <div class="detail-item">
+            <svg class="icon" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2"/></svg>
+            <span>{{ user?.documento }}</span>
+          </div>
+          <div class="detail-item">
+            <svg class="icon" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+            <span>{{ user?.cargo?.nombre || 'Sin Cargo Asignado' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- HTML TARJETA DOCUMENTOS -->
+      <div class="neu-dark-panel docs-card">
+        <h3>Documentos y Certificados</h3>
+        <p>Genera tus documentos al instante.</p>
+        
+        <button class="neu-dark-button full-width action-btn-orange">
+          <svg class="icon" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+          Generar Certificado Laboral
+        </button>
+      </div>
+
+    </div>
+
+    <!-- HTML COLUMNA DERECHA -->
+    <div class="right-column">
+      
+      <!-- HTML AFILIACIONES -->
+      <div class="neu-dark-panel form-card">
+        <div class="card-header">
+          <h3>Mis Afiliaciones (Seguridad Social)</h3>
+          @if (afiliacion?.estado === 'aprobado') {
+            <span class="status-badge approved">Verificado</span>
+          } @else if (afiliacion?.estado === 'pendiente') {
+            <span class="status-badge pending">Pendiente de Aprobación</span>
+          } @else if (afiliacion?.estado === 'rechazado') {
+            <span class="status-badge rejected">Rechazado</span>
+          } @else {
+            <span class="status-badge new">No registradas</span>
+          }
+        </div>
+        
+        @if (afiliacion?.estado === 'rechazado' && afiliacion?.notas_rechazo) {
+          <div class="alert-box error">
+            <strong>Motivo del rechazo:</strong> {{ afiliacion.notas_rechazo }}
+          </div>
+        }
+
+        <form (ngSubmit)="guardarAfiliaciones()" class="grid-form">
+          <div class="form-group">
+            <label>EPS</label>
+            <input type="text" class="neu-dark-input" [(ngModel)]="formAfiliacion.eps" name="eps" placeholder="Ej: Sanitas, Sura..." required>
+          </div>
+          <div class="form-group">
+            <label>Fondo de Pensión / Cesantías</label>
+            <input type="text" class="neu-dark-input" [(ngModel)]="formAfiliacion.afondo_pension" name="afondo_pension" placeholder="Ej: Porvenir, Protección..." required>
+          </div>
+          <div class="form-group">
+            <label>ARL</label>
+            <input type="text" class="neu-dark-input" [(ngModel)]="formAfiliacion.arl" name="arl" placeholder="Ej: Sura, Positiva..." required>
+          </div>
+          @if (isAdmin) {
+            <hr class="my-4 border-gray-600">
+            <h4 class="text-gray-300 font-bold mb-2">Gestión Interna (Solo RRHH / Gerencia)</h4>
+            
+            <div class="form-group">
+              <label>Fecha de Contratación</label>
+              <input type="date" class="neu-dark-input" [(ngModel)]="formAfiliacion.fecha_contratacion" name="fecha_contratacion">
+            </div>
+            <div class="form-group">
+              <label>Finalización de Contrato</label>
+              <input type="date" class="neu-dark-input" [(ngModel)]="formAfiliacion.finalizacion_contrato" name="finalizacion_contrato">
+            </div>
+            <div class="form-group">
+              <label>Renovación de Contrato</label>
+              <input type="date" class="neu-dark-input" [(ngModel)]="formAfiliacion.renovacion_contrato" name="renovacion_contrato">
+            </div>
+            <div class="form-group">
+              <label>Estado de Afiliación</label>
+              <select class="neu-dark-input" [(ngModel)]="formAfiliacion.estado" name="estado">
+                <option value="pendiente">Pendiente</option>
+                <option value="aprobado">Aprobado</option>
+                <option value="rechazado">Rechazado</option>
+              </select>
+            </div>
+          }
+          
+          <div class="form-actions">
+            @if (isAdmin) {
+              <button type="button" class="neu-dark-button primary-btn" (click)="gestionarAfiliacionAdmin()">Guardar Gestión Interna y Aprobar</button>
+            } @else {
+              <button type="submit" class="neu-dark-button primary-btn">Guardar y Enviar para Aprobación</button>
+            }
+          </div>
+        </form>
+      </div>
+
+      <!-- HTML VACACIONES Y TIEMPOS -->
+      <div class="neu-dark-panel times-card">
+        <h3>Tiempos y Vacaciones</h3>
+        <p>Consulta tus días disponibles y realiza solicitudes de permisos o vacaciones.</p>
+        
+        <div class="times-stats">
+          <div class="time-stat">
+            <h4>15</h4>
+            <span>Días Disponibles</span>
+          </div>
+          <div class="time-stat">
+            <h4>0</h4>
+            <span>Solicitudes Pendientes</span>
+          </div>
+        </div>
+
+        <button class="neu-dark-button outline-btn mt-3">Nueva Solicitud (Próximamente)</button>
+      </div>
+
+    </div>
+  </div>
+</div>

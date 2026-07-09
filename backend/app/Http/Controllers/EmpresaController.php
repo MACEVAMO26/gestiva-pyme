@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Empresa;
+use App\Models\Tarifa;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -11,7 +12,8 @@ use Illuminate\Support\Facades\DB;
 
 class EmpresaController extends Controller
 {
-    // Listar todas las empresas
+    // --- GESTIÓN DE EMPRESAS ---
+    // Obtiene la lista de todas las empresas registradas
     public function index()
     {
         return response()->json(Empresa::all());
@@ -25,18 +27,38 @@ class EmpresaController extends Controller
         $clientesActivos = $empresas->where('activo', 1)->count();
         $clientesMora = $empresas->where('activo', 1)->where('estado_pago', 'mora')->count();
         
-        // Crecimiento mockeado o basado en fechas de creación (ej. % de empresas creadas este mes)
-        // Para simplificar, un dato estático por ahora o calculado
+        // Define el porcentaje de crecimiento (dato estático temporalmente)
         $crecimientoMensual = 12.5;
 
         $lista = $empresas->map(function ($emp) {
+            // Lógica de módulos adicionales
+            $tipo = $emp->tipo_empresa; // 'Ventas', 'Servicios', 'Ventas y Servicios'
+            $paquetesBase = [];
+            if ($tipo === 'Ventas' || $tipo === 'Ventas y Servicios') $paquetesBase[] = 'ventas';
+            if ($tipo === 'Servicios' || $tipo === 'Ventas y Servicios') $paquetesBase[] = 'servicios';
+
+            $modulosActivos = $emp->modulos()->wherePivot('activo', 1)->get();
+            
+            $extrasLista = [];
+            foreach ($modulosActivos as $mod) {
+                if (!in_array($mod->paquete, $paquetesBase)) {
+                    $extrasLista[] = $mod->nombre;
+                }
+            }
+            
+            $tieneExtras = count($extrasLista) > 0;
+
             return [
                 'id' => $emp->id,
                 'empresa' => $emp->razon_social,
                 'plan' => $emp->plan_suscripcion ?: 'Básico',
                 'estado' => $emp->estado_pago === 'mora' ? 'En Mora' : ($emp->estado_pago === 'suspendido' ? 'Suspendido' : 'Al Día'),
                 'proximoPago' => $emp->fecha_proximo_pago ?: date('Y-m-d', strtotime('+30 days')),
-                'valor' => $emp->monto_mensual
+                'valor' => $emp->monto_mensual,
+                'fechaInscripcion' => $emp->fecha_inscripcion,
+                'renovaciones' => $emp->renovaciones,
+                'tieneExtras' => $tieneExtras,
+                'extrasLista' => $extrasLista
             ];
         });
 
@@ -53,7 +75,7 @@ class EmpresaController extends Controller
 
     public function systemStats()
     {
-        // Encontrar la última actividad global del sistema usando los usuarios
+        // Calcula el tiempo transcurrido desde la última actividad registrada por cualquier usuario
         $lastActivityUser = \Illuminate\Support\Facades\DB::table('usuarios')
             ->whereNotNull('last_activity_at')
             ->orderBy('last_activity_at', 'desc')
@@ -72,7 +94,7 @@ class EmpresaController extends Controller
         ]);
     }
 
-    // Crear Empresa y su Gerente Automáticamente
+    // Crea una nueva empresa y genera automáticamente su usuario gerente administrador
     public function store(Request $request)
     {
         $validatedData = $request->validate([
@@ -85,18 +107,24 @@ class EmpresaController extends Controller
             'ciudad' => 'nullable|string|max:255',
             'logo_url' => 'nullable|string|max:255',
             'color_primario' => 'nullable|string|max:7',
+            'fecha_inscripcion' => 'nullable|date',
+            'descuento' => 'nullable|string|max:255',
+            'periodo' => 'nullable|in:Mensual,Anual',
         ]);
 
-        // Inicia transacción para asegurar que ambos (empresa y usuario) se creen juntos
+        // Utiliza una transacción para garantizar la creación conjunta de empresa y gerente
         DB::beginTransaction();
         try {
-            // Crea la empresa
+
+            if (empty($validatedData['fecha_inscripcion'])) {
+                $validatedData['fecha_inscripcion'] = date('Y-m-d');
+            }
             $empresa = Empresa::create($validatedData);
 
-            // Genera el email del administrador basado en el ID de la empresa
+            // Construye un correo por defecto para el administrador usando el ID de la empresa
             $adminEmail = 'sadmin-id' . $empresa->id . '@gestivapyme.com';
 
-            // Crea el usuario Gerente para esta empresa
+            // Registra el usuario gerente con rol de administrador y lo asocia a la empresa
             User::create([
                 'empresa_id' => $empresa->id,
                 'rol_id' => 1,
@@ -121,13 +149,13 @@ class EmpresaController extends Controller
         }
     }
 
-    // Mostrar
+    // Retorna los detalles de una empresa específica
     public function show($id)
     {
         return response()->json(Empresa::findOrFail($id));
     }
 
-    // Actualizar
+    // Actualiza la información de una empresa existente validando campos requeridos
     public function update(Request $request, $id)
     {
         $empresa = Empresa::findOrFail($id);
@@ -142,13 +170,30 @@ class EmpresaController extends Controller
             'ciudad' => 'nullable|string|max:255',
             'logo_url' => 'nullable|string|max:255',
             'color_primario' => 'nullable|string|max:7',
+            'fecha_inscripcion' => 'nullable|date',
+            'descuento' => 'nullable|string|max:255',
+            'periodo' => 'nullable|in:Mensual,Anual',
         ]);
 
         $empresa->update($validatedData);
         return response()->json($empresa);
     }
 
-    // Cambiar estado activo/inactivo
+    // Modifica el estado de la empresa alternando su disponibilidad o marcándola en mora
+    public function registrarRenovacion($id)
+    {
+        $empresa = Empresa::findOrFail($id);
+        $empresa->renovaciones += 1;
+        
+        $proximo = $empresa->fecha_proximo_pago ? CarbonCarbon::parse($empresa->fecha_proximo_pago) : CarbonCarbon::now();
+        $empresa->fecha_proximo_pago = $proximo->addDays(30)->format('Y-m-d');
+        
+        $empresa->save();
+        
+        return response()->json(['message' => 'Renovación registrada exitosamente', 'empresa' => $empresa]);
+    }
+
+    // Modifica el estado de la empresa alternando su disponibilidad o marcándola en mora
     public function changeStatus(Request $request, $id)
     {
         $empresa = Empresa::findOrFail($id);

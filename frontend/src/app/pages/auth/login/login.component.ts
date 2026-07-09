@@ -18,47 +18,40 @@ import { CommonModule } from '@angular/common';
 })
 export class LoginComponent {
 
-  // Credenciales
+  // --- VARIABLES DE ESTADO ---
   credentials = {
     email: '',
     password: ''
   };
-
   suspendedMessage = '';
-
-  // UI State
   showPassword = false;
-
-  togglePasswordVisibility() {
-    this.showPassword = !this.showPassword;
-  }
-
-  // Accesibilidad
   isAccessibilityMenuOpen = false;
-  
-  // Servicios
-  private authService = inject(AuthService);
-  private router = inject(Router);
-  public accessibilityService = inject(AccessibilityService);
-
-  // Menú Accesibilidad
-  toggleAccessibilityMenu() {
-    this.isAccessibilityMenuOpen = !this.isAccessibilityMenuOpen;
-  }
-
-  // Filtros Daltonismo
-  setDaltonismMode(mode: DaltonismMode) {
-    this.accessibilityService.setMode(mode);
-    this.isAccessibilityMenuOpen = false;
-  }
-
-  // Cambio de Clave
   requiresPasswordChange = false;
   changePasswordData = {
     newPassword: ''
   };
 
-  // Autenticación
+  private authService = inject(AuthService);
+  private router = inject(Router);
+  public accessibilityService = inject(AccessibilityService);
+
+  // Alterna la visibilidad de la contraseña en el formulario
+  togglePasswordVisibility() {
+    this.showPassword = !this.showPassword;
+  }
+
+  // Abre o cierra el menú de opciones de accesibilidad
+  toggleAccessibilityMenu() {
+    this.isAccessibilityMenuOpen = !this.isAccessibilityMenuOpen;
+  }
+
+  // Aplica el filtro de daltonismo seleccionado
+  setDaltonismMode(mode: DaltonismMode) {
+    this.accessibilityService.setMode(mode);
+    this.isAccessibilityMenuOpen = false;
+  }
+
+  // Procesa el formulario de login y redirige según el rol
   onSubmit(): void {
     if (this.requiresPasswordChange) {
       this.submitNewPassword();
@@ -73,12 +66,11 @@ export class LoginComponent {
           return;
         }
 
-        // Lógica de ruteo universal (SaaS Master vs Cliente)
         const user = response.user;
         if (user && user.empresa_id === null) {
-          this.router.navigate(['/saas-admin']); // Redirigir al panel de la dueña
+          this.router.navigate(['/saas-admin']);
         } else {
-          this.router.navigate(['/dashboard']);  // Redirigir al panel del cliente
+          this.router.navigate(['/dashboard']);
         }
       },
       error: (err) => {
@@ -98,17 +90,17 @@ export class LoginComponent {
     });
   }
 
+  // Envía la nueva contraseña para forzar el cambio inicial
   submitNewPassword(): void {
     const payload = {
       email: this.credentials.email,
-      current_password: this.credentials.password, // El documento que ingresó
+      current_password: this.credentials.password,
       new_password: this.changePasswordData.newPassword
     };
 
     this.authService.changeInitialPassword(payload).subscribe({
       next: (response) => {
         alert(response.message);
-        // Forzar la recarga completa para volver al estado inicial del login
         window.location.reload();
       },
       error: (err) => {

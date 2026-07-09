@@ -1,3 +1,4 @@
+/* --- 1. MODULO PRINCIPAL --- */
 .admin-module {
   padding: 2rem;
   color: #fff;
@@ -8,10 +9,17 @@
   animation: fadeIn 0.4s ease-out;
 }
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
+/* --- 2. HEADER --- */
 .admin-header {
   margin-bottom: 2rem;
   h2 {
@@ -32,7 +40,10 @@
     display: flex;
     align-items: center;
     gap: 1.5rem;
-    h2 { margin: 0; font-size: 1.8rem; }
+    h2 {
+      margin: 0;
+      font-size: 1.8rem;
+    }
   }
 }
 
@@ -54,6 +65,7 @@
   }
 }
 
+/* --- 3. TARJETAS --- */
 .admin-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -69,7 +81,7 @@
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  
+
   .card-icon {
     font-size: 2.5rem;
     width: 60px;
@@ -103,8 +115,12 @@
 .blue-gradient {
   background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
   border: none;
-  .card-icon { background: rgba(0, 0, 0, 0.2); }
-  .card-content p { color: rgba(255, 255, 255, 0.9); }
+  .card-icon {
+    background: rgba(0, 0, 0, 0.2);
+  }
+  .card-content p {
+    color: rgba(255, 255, 255, 0.9);
+  }
   &:hover {
     box-shadow: 0 10px 30px rgba(59, 130, 246, 0.4);
   }
@@ -119,10 +135,15 @@
   }
 }
 
-.cyan { color: #22d3ee; }
-.green { color: #34d399; }
-.teal { color: #2dd4bf; }
-
+.cyan {
+  color: #22d3ee;
+}
+.green {
+  color: #34d399;
+}
+.teal {
+  color: #2dd4bf;
+}
 
 .glass-panel {
   background: rgba(15, 23, 42, 0.6);
@@ -143,7 +164,10 @@
     font-size: 1.4rem;
     color: #e2e8f0;
   }
-  .icon { font-size: 1.8rem; color: #3b82f6; }
+  .icon {
+    font-size: 1.8rem;
+    color: #3b82f6;
+  }
 }
 
 .alert-warning {
@@ -155,10 +179,17 @@
   align-items: center;
   gap: 1rem;
   margin-bottom: 2rem;
-  .icon { font-size: 1.5rem; }
-  p { margin: 0; color: #fcd34d; font-size: 0.95rem; }
+  .icon {
+    font-size: 1.5rem;
+  }
+  p {
+    margin: 0;
+    color: #fcd34d;
+    font-size: 0.95rem;
+  }
 }
 
+/* --- 4. FORMULARIOS --- */
 .company-form {
   .form-row {
     margin-bottom: 1.5rem;
@@ -168,7 +199,7 @@
       gap: 1.5rem;
     }
   }
-  
+
   .form-group {
     display: flex;
     flex-direction: column;
@@ -193,7 +224,9 @@
       border-color: #3b82f6;
       box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
     }
-    &::placeholder { color: #64748b; }
+    &::placeholder {
+      color: #64748b;
+    }
   }
 
   .form-actions {
@@ -222,10 +255,17 @@
   }
 }
 
-
+/* --- 5. ACCIONES --- */
 .extra-actions-card {
-  h3 { margin: 0 0 0.5rem 0; color: #e2e8f0; }
-  p { color: #94a3b8; margin: 0 0 1.5rem 0; font-size: 0.95rem; }
+  h3 {
+    margin: 0 0 0.5rem 0;
+    color: #e2e8f0;
+  }
+  p {
+    color: #94a3b8;
+    margin: 0 0 1.5rem 0;
+    font-size: 0.95rem;
+  }
 }
 
 .actions-grid {
@@ -248,19 +288,44 @@
   gap: 0.8rem;
   cursor: pointer;
   transition: all 0.3s ease;
-  .icon { font-size: 1.5rem; }
-  
+  .icon {
+    font-size: 1.5rem;
+  }
+
   &:hover:not(:disabled) {
     background: rgba(255, 255, 255, 0.08);
     border-color: rgba(255, 255, 255, 0.2);
     transform: translateY(-3px);
   }
-  &:disabled { opacity: 0.5; cursor: not-allowed; }
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
 }
 
-// Icon Classes
-.icon-lg { width: 32px; height: 32px; }
-.icon-md { width: 24px; height: 24px; }
-.icon-btn { width: 16px; height: 16px; display: inline-block; vertical-align: middle; margin-right: 4px; }
-.icon-action { width: 18px; height: 18px; display: inline-block; vertical-align: middle; margin-right: 6px; }
-.text-orange { color: #ea580c; }
+/* --- 6. ICONOS --- */
+.icon-lg {
+  width: 32px;
+  height: 32px;
+}
+.icon-md {
+  width: 24px;
+  height: 24px;
+}
+.icon-btn {
+  width: 16px;
+  height: 16px;
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 4px;
+}
+.icon-action {
+  width: 18px;
+  height: 18px;
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 6px;
+}
+.text-orange {
+  color: #ea580c;
+}

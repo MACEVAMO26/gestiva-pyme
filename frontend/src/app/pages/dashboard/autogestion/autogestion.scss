@@ -1,0 +1,215 @@
+.autogestion-container {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.module-header {
+  margin-bottom: 2rem;
+  .header-content {
+    h2 {
+      font-size: 1.75rem;
+      color: #f3f4f6;
+      margin: 0 0 0.5rem 0;
+    }
+    p {
+      color: #9ca3af;
+      margin: 0;
+    }
+  }
+}
+
+.autogestion-grid {
+  display: grid;
+  grid-template-columns: 350px 1fr;
+  gap: 2rem;
+  align-items: start;
+}
+
+/* --- 1. PANELS BASICOS --- */
+.neu-dark-panel {
+  padding: 2rem;
+  margin-bottom: 2rem;
+}
+
+/* --- 2. PERFIL --- */
+.profile-card {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.profile-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  padding-bottom: 1.5rem;
+
+  .profile-avatar, .profile-avatar-placeholder {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    margin-bottom: 1rem;
+    box-shadow: 4px 4px 8px #0b0f19, -4px -4px 8px #172135;
+    border: 3px solid #06b6d4;
+  }
+  
+  .profile-avatar-placeholder {
+    background: #1e293b;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #9ca3af;
+  }
+
+  h3 {
+    margin: 0 0 0.5rem 0;
+    color: #f3f4f6;
+  }
+  .badge-role {
+    background: rgba(6, 182, 212, 0.1);
+    color: #06b6d4;
+    padding: 0.25rem 0.75rem;
+    border-radius: 50px;
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+}
+
+.profile-details {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+
+  .detail-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    color: #9ca3af;
+
+    .icon {
+      width: 20px;
+      height: 20px;
+      color: #06b6d4;
+    }
+  }
+}
+
+/* --- 3. DOCS RAPIDOS --- */
+.docs-card {
+  h3 { color: #f3f4f6; margin: 0 0 0.5rem 0; }
+  p { color: #9ca3af; margin: 0 0 1.5rem 0; font-size: 0.9rem; }
+  
+  .action-btn-orange {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    background: #06b6d4;
+    color: white;
+    border: none;
+    box-shadow: 4px 4px 8px #0b0f19, -4px -4px 8px #172135;
+    &:hover {
+      background: #0891b2;
+    }
+    .icon { width: 18px; height: 18px; }
+  }
+  .full-width { width: 100%; }
+}
+
+/* --- 4. AFILIACIONES --- */
+.form-card {
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    
+    h3 { margin: 0; color: #f3f4f6; }
+    
+    .status-badge {
+      font-size: 0.8rem;
+      padding: 0.3rem 0.75rem;
+      border-radius: 50px;
+      font-weight: 600;
+      &.approved { background: rgba(16, 185, 129, 0.1); color: #10B981; }
+      &.pending { background: rgba(245, 158, 11, 0.1); color: #F59E0B; }
+      &.rejected { background: rgba(239, 68, 68, 0.1); color: #EF4444; }
+      &.new { background: rgba(156, 163, 175, 0.1); color: #9ca3af; }
+    }
+  }
+
+  .grid-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    label { font-weight: 500; color: #9ca3af; }
+    input { width: 100%; }
+  }
+  
+  .form-actions {
+    margin-top: 1rem;
+    display: flex;
+    justify-content: flex-end;
+    .primary-btn {
+      background: #06b6d4;
+      color: white;
+      border: none;
+      &:hover { background: #0891b2; }
+    }
+  }
+}
+
+.alert-box {
+  padding: 1rem;
+  border-radius: 0.5rem;
+  margin-bottom: 1.5rem;
+  &.error { background: rgba(239, 68, 68, 0.1); color: #EF4444; border-left: 4px solid #EF4444; }
+}
+
+/* --- 5. TIEMPOS --- */
+.times-card {
+  h3 { color: #f3f4f6; margin: 0 0 0.5rem 0; }
+  p { color: #9ca3af; margin: 0 0 1.5rem 0; font-size: 0.9rem; }
+  
+  .times-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    
+    .time-stat {
+      background: #1e293b;
+      box-shadow: inset 4px 4px 8px #0b0f19, inset -4px -4px 8px #172135;
+      padding: 1.5rem;
+      border-radius: 0.5rem;
+      text-align: center;
+      
+      h4 { margin: 0; font-size: 2rem; color: #06b6d4; }
+      span { font-size: 0.85rem; color: #9ca3af; font-weight: 500; }
+    }
+  }
+  
+  .outline-btn {
+    border: 2px solid #06b6d4;
+    color: #06b6d4;
+    background: transparent;
+    &:hover { background: #06b6d4; color: white; }
+  }
+}
+
+@media (max-width: 900px) {
+  .autogestion-grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,6 +1,6 @@
 
 
-
+/* --- 1. LAYOUT PRINCIPAL --- */
 .login-container {
   @apply min-h-screen flex items-center justify-center bg-slate-900;
 }
@@ -26,6 +26,7 @@
   @apply text-sm text-slate-400 mt-2;
 }
 
+/* --- 2. FORMULARIO --- */
 .login-form {
   @apply space-y-4;
 }
@@ -63,12 +64,11 @@
   @apply w-full py-3 px-4 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold rounded-lg shadow-lg shadow-emerald-500 transition-all transform hover:-translate-y-0.5;
 }
 
-// --- PASSWORD WRAPPER & TOGGLE ---
+/* --- 3. PASSWORD WRAPPER --- */
 .password-wrapper {
   position: relative;
   display: flex;
   align-items: center;
-
   .form-input {
     padding-right: 40px;
     width: 100%;
@@ -88,7 +88,6 @@
     justify-content: center;
     color: #10b981;
     opacity: 0.9;
-    
     svg {
       width: 100%;
       height: 100%;
@@ -100,13 +99,12 @@
   background: linear-gradient(135deg, #10B981, #059669);
 }
 
-// --- ACCESSIBILITY WIDGET ---
+/* --- 4. ACCESIBILIDAD --- */
 .accessibility-widget {
   position: fixed;
   bottom: 1.5rem;
   right: 1.5rem;
   z-index: 9999;
-
   .accessibility-btn {
     background-color: #f59e0b;
     padding: 0.5rem;
@@ -115,7 +113,6 @@
     cursor: pointer;
     box-shadow: 0 10px 15px -3px rgba(245, 158, 11, 0.3);
     transition: transform 0.3s;
-    
     &:hover {
       transform: scale(1.1);
       background-color: #fbbf24;
@@ -137,12 +134,10 @@
     width: 14rem;
     overflow: hidden;
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-
     .menu-header {
       padding: 0.75rem 1rem;
       background-color: rgba(15, 23, 42, 0.8);
       border-bottom: 1px solid #334155;
-
       p {
         color: #f59e0b;
         font-size: 0.75rem;
@@ -162,7 +157,6 @@
       cursor: pointer;
       background-color: transparent;
       border-bottom: 1px solid rgba(51, 65, 85, 0.5);
-
       &:hover {
         background-color: #334155;
       }

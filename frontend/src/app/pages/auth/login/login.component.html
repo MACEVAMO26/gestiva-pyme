@@ -1,26 +1,25 @@
 <div class="login-container relative">
   
-  <!-- Navegación -->
+  <!-- HTML NAVEGACION -->
   <a routerLink="/" class="absolute top-6 left-6 text-white font-medium transition-colors flex items-center bg-emerald-500 hover:bg-emerald-600 p-3 rounded-full md:rounded-xl border border-emerald-600 z-10">
     <span class="mr-2 text-xl">&larr;</span> 
     <span class="hidden md:inline">Volver a GestivaPyme</span>
   </a>
 
-  <!-- Autenticación -->
+  <!-- HTML AUTENTICACION -->
   <div class="login-card mt-16 md:mt-0">
     
-    <!-- Encabezado -->
+    <!-- HTML ENCABEZADO -->
     <div class="header-container">
       <h2 class="welcome-text">Bienvenido a</h2>
       <img src="assets/images/Logos/GESTIVAPYME(5).png" alt="GestivaPyme Logo" class="brand-logo">
       <p class="subtitle-text">Ingresa tus credenciales para continuar</p>
     </div>
 
-    <!-- Formulario Normal -->
+    <!-- HTML FORMULARIO ACTIVO -->
     @if (!requiresPasswordChange) {
       <form class="login-form" (ngSubmit)="onSubmit()">
         
-        <!-- Correo -->
         <div class="form-group">
           <label class="form-label">Correo Electrónico</label>
           <input 
@@ -32,7 +31,6 @@
             required>
         </div>
 
-        <!-- Contraseña -->
         <div class="form-group">
           <label class="form-label">Contraseña</label>
           <div class="password-wrapper">
@@ -45,13 +43,11 @@
               required>
             <button type="button" class="toggle-password-btn" (click)="togglePasswordVisibility()">
               @if(!showPassword) {
-                <!-- Ojo Abierto -->
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
                   <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
                 </svg>
               } @else {
-                <!-- Ojo Cerrado (Pestañas) -->
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M4 10c0 0 3.5 5 8 5s8-5 8-5" />
                   <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v3.5M8 14.5l-2 2.5M16 14.5l2 2.5" />
@@ -61,7 +57,6 @@
           </div>
         </div>
 
-        <!-- Opciones -->
         <div class="form-actions">
           <label class="checkbox-container">
             <input type="checkbox" class="form-checkbox">
@@ -70,20 +65,18 @@
           <a href="#" class="forgot-link">¿Olvidaste tu contraseña?</a>
         </div>
 
-        <!-- Submit -->
         <button type="submit" class="submit-btn">
           Iniciar Sesión
         </button>
       </form>
     } @else {
-      <!-- Formulario de Cambio de Clave -->
+      <!-- HTML CAMBIO DE CLAVE -->
       <form class="login-form" (ngSubmit)="onSubmit()">
         <div class="bg-amber-100 border border-amber-400 text-amber-700 px-4 py-3 rounded relative mb-4" role="alert">
           <strong class="font-bold">¡Hola! </strong>
           <span class="block sm:inline">Por seguridad, debes crear tu propia contraseña antes de continuar.</span>
         </div>
 
-        <!-- Nueva Contraseña -->
         <div class="form-group">
           <label class="form-label">Nueva Contraseña</label>
           <p class="text-xs text-slate-500 mb-2">La contraseña debe tener mínimo 8 caracteres, 1 mayúscula, 1 minúscula, no uses tu número de identificación.</p>
@@ -106,7 +99,7 @@
     
   </div>
 
-  <!-- MODAL DE SISTEMA SUSPENDIDO -->
+  <!-- HTML MODAL SISTEMA SUSPENDIDO -->
   @if(suspendedMessage) {
     <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm fade-in">
       <div class="bg-slate-900/80 border border-red-500/30 rounded-2xl p-8 max-w-md w-full mx-4 shadow-2xl backdrop-blur-md text-center">
@@ -124,10 +117,9 @@
     </div>
   }
 
-  <!-- BOTÓN FLOTANTE ACCESIBILIDAD -->
+  <!-- HTML ACCESIBILIDAD -->
   <div class="accessibility-widget">
     
-    <!-- Botón -->
     <button 
       (click)="toggleAccessibilityMenu()"
       class="accessibility-btn"
@@ -139,7 +131,6 @@
       </svg>
     </button>
 
-    <!-- Menú Desplegable -->
     @if(isAccessibilityMenuOpen) {
       <div class="accessibility-menu">
         <div class="menu-header">

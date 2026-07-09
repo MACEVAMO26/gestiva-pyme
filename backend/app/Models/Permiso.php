@@ -9,15 +9,15 @@ class Permiso extends Model
 {
     use HasFactory;
 
-    // Tabla
+    // --- TABLA ---
 
     protected $table = 'permisos';
 
-    // Timestamps
+    // --- TIMESTAMPS ---
     
     public $timestamps = false;
 
-    // Campos
+    // --- CAMPOS ---
     
     protected $fillable = [
         'rol_id',
@@ -29,7 +29,7 @@ class Permiso extends Model
     ];
 
     
-    // Relaciones
+    // --- RELACIONES ---
     
     public function rol()
     {

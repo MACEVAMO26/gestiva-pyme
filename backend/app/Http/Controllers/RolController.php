@@ -2,55 +2,41 @@
 
 namespace App\Http\Controllers;
 
-// Se importan las clases necesarias para el controlador.
-use App\Models\Role;       // Se importa el modelo Role.
+use App\Models\Role;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
-/**
- * ===================================================================================
- *  CONTROLADOR DE ROLES (RoleController)
- * ===================================================================================
- *
- * Este controlador gestiona todas las operaciones CRIU para los roles del sistema,
- * que definen los conjuntos de permisos para los usuarios.
- *
- */
 class RoleController extends Controller
 {
-    // Devuelve una lista de todos los roles.
-    // Se ha simplificado para devolver todos, activos e inactivos.
-    // El frontend puede decidir cuáles mostrar.
-    // Listar
+    // Trae la lista completa de roles
     public function index()
     {
         return Role::all();
     }
 
-    // Crea un nuevo rol en la base de datos.
-    // Crear
+    // Crea un nuevo rol
     public function store(Request $request)
     {
         $validatedData = $request->validate([
-            'nombre' => 'required|string|max:255|unique:roles', // El nombre debe ser único.
+            'nombre' => 'required|string|max:255|unique:roles',
             'descripcion' => 'nullable|string',
         ]);
         $data = array_merge($validatedData, [
-            'empresa_id' => 1, // NOTA TEMPORAL: Asignado a la empresa 1 por ahora.
+            'empresa_id' => 1,
             'activo' => true,
         ]);
         $role = Role::create($data);
         return response()->json($role, 201);
     }
 
-    // Mostrar
+    // Muestra los datos de un rol especifico
     
     public function show($id)
     {
         return Role::findOrFail($id);
     }
 
-    // Actualizar los datos de un rol existente.
+    // Actualiza un rol existente
     
     public function update(Request $request, $id)
     {
@@ -63,7 +49,7 @@ class RoleController extends Controller
         return response()->json($role);
     }
 
-    // Cambia el estado de un rol entre activo e inactivo.
+    // Activa o inactiva un rol
     public function changeStatus($id)
     {
         $role = Role::findOrFail($id);

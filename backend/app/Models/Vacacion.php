@@ -10,24 +10,24 @@ class Vacacion extends Model
 {
     use HasFactory;
 
-    // Tabla
+    // --- TABLA ---
 
     protected $table = 'vacaciones';
 
-    // Campos
+    // --- CAMPOS ---
     
     protected $fillable = [
         'usuario_id',
         'fecha_inicio',
         'fecha_fin',
-        'tipo', // 'Disfrute Legal', 'Colectivas', 'Anticipadas'
+        'tipo',
         'observaciones',
-        'estado', // 'pendiente', 'aprobada', 'rechazada'
+        'estado',
         'justificacion_respuesta'
     ];
 
     
-    // Relaciones
+    // --- RELACIONES ---
     
     public function usuario()
     {

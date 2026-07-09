@@ -7,6 +7,7 @@ use App\Models\Lead;
 
 class LeadController extends Controller
 {
+    // --- GESTIÓN DE LEADS ---
     public function index()
     {
         return response()->json(Lead::orderBy('created_at', 'desc')->get());

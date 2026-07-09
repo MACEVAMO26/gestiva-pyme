@@ -9,7 +9,8 @@ use Illuminate\Support\Facades\DB;
 
 class ModulosController extends Controller
 {
-    // Obtener los módulos de una empresa (inicializa si es la primera vez)
+    // --- GESTIÓN DE MÓDULOS DE EMPRESA ---
+    // Obtiene los módulos asignados a una empresa e inicializa los predeterminados si no tiene
     public function getModulosPorEmpresa($empresaId)
     {
         $empresa = Empresa::find($empresaId);
@@ -17,15 +18,12 @@ class ModulosController extends Controller
             return response()->json(['error' => 'Empresa no encontrada'], 404);
         }
 
-        // Si la empresa no tiene módulos en la tabla pivote, inicializarlos
         if ($empresa->modulos()->count() === 0) {
             $this->inicializarModulosEmpresa($empresa);
         }
 
-        // Obtener todos los módulos maestros
         $modulosMaster = Modulo::all();
         
-        // Obtener los módulos asignados a la empresa con su estado
         $modulosEmpresa = DB::table('empresa_modulo')
                             ->where('empresa_id', $empresa->id)
                             ->get()
@@ -39,7 +37,6 @@ class ModulosController extends Controller
                 $resultado[$paquete] = [];
             }
             
-            // Ver si la empresa tiene este módulo asignado
             $asignado = $modulosEmpresa->has($modulo->id);
             $activoParaEmpresa = $asignado ? (bool) $modulosEmpresa[$modulo->id]->activo : false;
 
@@ -73,8 +70,6 @@ class ModulosController extends Controller
             $modulosAsignar = array_merge($modulosAsignar, $modulosServicios);
         }
 
-        // Add-ons no se asignan automáticamente
-
         $syncData = [];
         foreach ($modulosAsignar as $moduloId) {
             $syncData[$moduloId] = ['activo' => true];
@@ -96,7 +91,6 @@ class ModulosController extends Controller
                          ->first();
 
         if ($moduloPivot) {
-            // Alternar estado
             $nuevoEstado = !$moduloPivot->activo;
             DB::table('empresa_modulo')
               ->where('empresa_id', $empresaId)
@@ -105,7 +99,7 @@ class ModulosController extends Controller
             
             return response()->json(['message' => 'Módulo actualizado', 'activo' => $nuevoEstado]);
         } else {
-            // Si no estaba asignado, lo asignamos y lo activamos (como si comprara el addon)
+            // Asigna y activa el módulo simulando la compra de un addon
             DB::table('empresa_modulo')->insert([
                 'empresa_id' => $empresaId,
                 'modulo_id' => $moduloId,
@@ -154,7 +148,8 @@ class ModulosController extends Controller
         return response()->json(['message' => 'Paquete actualizado correctamente']);
     }
 
-    // CRUD Global de Módulos (para Addons)
+    // --- GESTIÓN GLOBAL DE MÓDULOS ---
+    // Registra un nuevo módulo global en el sistema
     public function store(Request $request)
     {
         $request->validate([
@@ -197,7 +192,7 @@ class ModulosController extends Controller
             return response()->json(['error' => 'Módulo no encontrado'], 404);
         }
 
-        // Eliminar asignaciones en pivot
+        // Elimina las asignaciones del módulo en todas las empresas antes de borrarlo
         DB::table('empresa_modulo')->where('modulo_id', $id)->delete();
         $modulo->delete();
 

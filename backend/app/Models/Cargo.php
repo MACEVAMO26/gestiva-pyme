@@ -10,17 +10,17 @@ class Cargo extends Model
     use HasFactory;
 
     
-    // Tabla
+    // --- TABLA ---
 
     protected $table = 'cargos';
 
    
-    // Timestamps
+    // --- TIMESTAMPS ---
 
     public $timestamps = false;
 
    
-    // Campos
+    // --- CAMPOS ---
     
     protected $fillable = [
         'empresa_id',

@@ -9,7 +9,7 @@
     </button>
   </div>
 
-  <!-- Tabla -->
+  <!-- HTML TABLA EMPLEADOS -->
   <div class="table-card glass-panel">
     <div class="table-responsive">
       <table class="premium-table">
@@ -46,9 +46,9 @@
               </td>
               <td>
                 <div class="actions">
-                  <button class="action-btn edit-btn" (click)="openModal(empleado)" title="Editar">âœï¸</button>
+                  <button class="action-btn edit-btn" (click)="openModal(empleado)" title="Editar">✏️</button>
                   <button class="action-btn toggle-btn" (click)="toggleStatus(empleado.id)" [title]="empleado.activo ? 'Inactivar' : 'Activar'">
-                    {{empleado.activo ? 'âŒ' : 'âœ…'}}
+                    {{empleado.activo ? '❌' : '✅'}}
                   </button>
                 </div>
               </td>
@@ -66,20 +66,20 @@
   </div>
 </div>
 
-<!-- Modal -->
+<!-- HTML MODAL EMPLEADOS -->
 @if(isModalOpen) {
   <div class="modal-overlay">
     <div class="modal-content animate-slide-up">
       <div class="modal-header">
         <h3>{{isEditMode ? 'Editar Empleado' : 'Nuevo Empleado'}}</h3>
-        <button class="close-btn" (click)="closeModal()">í—</button>
+        <button class="close-btn" (click)="closeModal()">&times;</button>
       </div>
       
       <form (ngSubmit)="saveEmpleado()" class="modal-form">
         
         @if(!isEditMode) {
           <div class="alert-info">
-            <span class="alert-icon">â„¹ï¸</span>
+            <span class="alert-icon">ℹ️</span>
             <p>La contraseña inicial será el <strong>Número de Documento</strong>. El sistema obligará al empleado a cambiarla cuando ingrese por primera vez.</p>
           </div>
         }

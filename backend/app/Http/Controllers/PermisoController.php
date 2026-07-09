@@ -7,15 +7,13 @@ use Illuminate\Http\Request;
 
 class PermisoController extends Controller
 {
-    // Listar
-    
+    // Devuelve todos los permisos registrados
     public function index()
     {
         return Permiso::all();
     }
 
-    // Crear
-    
+    // Registra un nuevo permiso en el sistema
     public function store(Request $request)
     {
         $validatedData = $request->validate([
@@ -31,15 +29,13 @@ class PermisoController extends Controller
         return response()->json($permiso, 201);
     }
 
-    // Mostrar
-    
+    // Muestra los detalles de un permiso especifico
     public function show($id)
     {
         return Permiso::findOrFail($id);
     }
 
-    // Actualizar
-    
+    // Actualiza la informacion de un permiso existente
     public function update(Request $request, $id)
     {
         $permiso = Permiso::findOrFail($id);
@@ -56,8 +52,7 @@ class PermisoController extends Controller
         return response()->json($permiso, 200);
     }
 
-    // Eliminar
-    
+    // Elimina un permiso de la base de datos
     public function destroy($id)
     {
         $permiso = Permiso::findOrFail($id);

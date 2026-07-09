@@ -14,8 +14,9 @@ class AdminRequest extends Model
         'tipo',
         'estado',
         'notas_propietaria',
-        'banco_origen',
-        'comprobante_path'
+        'banco',
+        'comprobante_path',
+        'datos_nuevos'
     ];
 
     public function empresa()

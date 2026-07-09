@@ -1,20 +1,16 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-
-// --- VARIABLES GLOBALES PREMIUM ---
-$primary-color: #4F46E5;
-$primary-hover: #4338CA;
-$bg-color: #F8FAFC;
-$sidebar-bg: #FFFFFF;
-$text-dark: #0F172A;
-$text-muted: #64748B;
-$glass-bg: rgba(255, 255, 255, 0.7);
-$glass-border: rgba(255, 255, 255, 0.5);
-$shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
-$shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
-$shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+$primary-color: #FF6B00;
+$primary-hover: #E65A00;
+$bg-color: #111827;
+$sidebar-bg: #111827;
+$text-dark: #F3F4F6;
+$text-muted: #9CA3AF;
+$glass-bg: rgba(17, 24, 39, 0.7);
+$glass-border: rgba(255, 107, 0, 0.2);
+$shadow-sm: 4px 4px 8px #0b0f19, -4px -4px 8px #172135;
+$shadow-md: 6px 6px 12px #0b0f19, -6px -6px 12px #172135;
+$shadow-lg: 8px 8px 16px #0b0f19, -8px -8px 16px #172135;
 $transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
-
-// --- COLORES DE DALTONISMO ---
 [data-daltonism="protanopia"] { filter: contrast(1.2) hue-rotate(-10deg) saturate(1.5); }
 [data-daltonism="deuteranopia"] { filter: contrast(1.2) hue-rotate(10deg) saturate(1.5); }
 [data-daltonism="tritanopia"] { filter: contrast(1.2) hue-rotate(40deg) saturate(1.5); }
@@ -24,7 +20,7 @@ $transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
   font-family: 'Inter', sans-serif;
 }
 
-// --- LAYOUT ---
+/* --- 3. LAYOUT --- */
 .dashboard-layout {
   display: flex;
   flex-direction: column;
@@ -34,11 +30,11 @@ $transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
   overflow: hidden;
 }
 
-// --- GLOBAL HEADER ---
+/* --- 4. HEADER GLOBAL --- */
 .global-header {
   height: 70px;
   background-color: $sidebar-bg;
-  border-bottom: 1px solid rgba(0,0,0,0.05);
+  border-bottom: 1px solid rgba(255,255,255,0.05);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -52,7 +48,7 @@ $transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
     display: flex;
     align-items: center;
     justify-content: center;
-    border-right: 1px solid rgba(0,0,0,0.05);
+    border-right: 1px solid rgba(255,255,255,0.05);
   }
 
   .logo-container {
@@ -94,6 +90,18 @@ $transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
       align-items: center;
       gap: 1.5rem;
 
+      .btn-avatar-random {
+        background: transparent;
+        border: none;
+        font-size: 1.5rem;
+        cursor: pointer;
+        transition: transform 0.2s ease;
+        padding: 0;
+        &:hover {
+          transform: scale(1.2) rotate(15deg);
+        }
+      }
+
       .user-profile {
         display: flex;
         align-items: center;
@@ -117,6 +125,15 @@ $transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
           font-size: 0.9rem;
         }
 
+        .avatar-img {
+          width: 32px;
+          height: 32px;
+          border-radius: 50%;
+          object-fit: cover;
+          background-color: #fff;
+          border: 1px solid rgba(0,0,0,0.1);
+        }
+
         .btn-logout {
           background: transparent;
           border: none;
@@ -135,18 +152,18 @@ $transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
   }
 }
 
-// --- MAIN BODY ---
+/* --- 5. CUERPO PRINCIPAL --- */
 .main-body {
   display: flex;
   flex: 1;
   overflow: hidden;
 }
 
-// --- SIDEBAR ---
+/* --- 6. SIDEBAR --- */
 .sidebar {
   width: 220px;
   background-color: $sidebar-bg;
-  border-right: 1px solid rgba(0,0,0,0.05);
+  border-right: 1px solid rgba(255,255,255,0.05);
   display: flex;
   flex-direction: column;
   padding: 1.5rem;
@@ -226,29 +243,28 @@ $transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
       }
 
       &:hover {
-        background-color: rgba(79, 70, 229, 0.05);
+        background-color: rgba(255, 107, 0, 0.05);
         color: $primary-color;
         transform: translateX(4px);
       }
 
       &.active {
-        background-color: $primary-color;
-        color: white;
-        box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);
+        background-color: #111827;
+        color: $primary-color;
+        box-shadow: inset 4px 4px 8px #0b0f19, inset -4px -4px 8px #172135;
+        border-left: 3px solid $primary-color;
       }
     }
   }
 }
 
-// --- MAIN CONTENT ---
+/* --- 7. CONTENIDO PRINCIPAL --- */
 .main-content {
   flex: 1;
   display: flex;
   flex-direction: column;
   overflow-y: auto;
   position: relative;
-
-  // Decoración de fondo suave
   &::before {
     content: '';
     position: absolute;
@@ -256,14 +272,14 @@ $transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
     right: -200px;
     width: 600px;
     height: 600px;
-    background: radial-gradient(circle, rgba(79,70,229,0.05) 0%, rgba(248,250,252,0) 70%);
+    background: radial-gradient(circle, rgba(255, 107, 0, 0.05) 0%, rgba(17,24,39,0) 70%);
     border-radius: 50%;
     z-index: 0;
     pointer-events: none;
   }
 }
 
-// --- CONTENT AREA ---
+/* --- 8. AREA CONTENIDO --- */
 .content-area {
   padding: 3rem;
   flex: 1;
@@ -276,20 +292,19 @@ $transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
     margin-bottom: 2rem;
 
     .metric-card {
-      background: $glass-bg;
-      backdrop-filter: blur(10px);
-      border: 1px solid $glass-border;
+      background: #111827;
+      border: none;
       border-radius: 20px;
       padding: 1rem 1.25rem;
       display: flex;
       align-items: center;
       gap: 1rem;
-      box-shadow: $shadow-sm;
+      box-shadow: 8px 8px 16px #0b0f19, -8px -8px 16px #172135;
       transition: $transition;
 
       &:hover {
         transform: translateY(-5px);
-        box-shadow: $shadow-md;
+        box-shadow: inset 4px 4px 8px #0b0f19, inset -4px -4px 8px #172135;
       }
 
       .metric-icon {
@@ -329,12 +344,11 @@ $transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .glass-panel {
-    background: $glass-bg;
-    backdrop-filter: blur(10px);
-    border: 1px solid $glass-border;
+    background: #111827;
+    border: none;
     border-radius: 20px;
     padding: 1.5rem;
-    box-shadow: $shadow-sm;
+    box-shadow: 8px 8px 16px #0b0f19, -8px -8px 16px #172135;
 
     h3 {
       margin: 0 0 2rem 0;
@@ -347,13 +361,14 @@ $transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
       padding: 3rem;
       text-align: center;
       color: $text-muted;
-      background: rgba(0,0,0,0.02);
+      background: #111827;
       border-radius: 12px;
-      border: 1px dashed rgba(0,0,0,0.1);
+      border: none;
+      box-shadow: inset 4px 4px 8px #0b0f19, inset -4px -4px 8px #172135;
     }
   }
 
-  // --- FOOTER MARCA REGISTRADA ---
+  /* --- 9. FOOTER --- */
   .app-footer {
     margin-top: 4rem;
     padding: 2rem 0;
@@ -379,7 +394,7 @@ $transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
   }
 }
 
-// --- ESTILOS DE PLANES (VENTAS, SERVICIOS, MIXTO) ---
+/* --- 10. ESTILOS DE PLANES --- */
 .badge-plan {
   font-family: 'Montserrat', 'Outfit', sans-serif;
   font-size: 0.75rem;
@@ -394,7 +409,6 @@ $transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
   vertical-align: middle;
 }
 
-// Colores por tipo
 .ventas {
   &.badge-plan { background: #E0E7FF; color: #3730a3; border: none; }
   &.user-profile { border-bottom: 3px solid #4338CA; .avatar { background: linear-gradient(135deg, #6366F1, #4338CA); } }
@@ -410,7 +424,7 @@ $transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
   &.user-profile { border-bottom: 3px solid #BE185D; .avatar { background: linear-gradient(135deg, #EC4899, #BE185D); } }
 }
 
-// --- ACCESSIBILITY WIDGET ---
+/* --- 11. ACCESIBILIDAD --- */
 .accessibility-widget {
   position: fixed;
   bottom: 1.5rem;

@@ -10,11 +10,11 @@ class LogAuditoria extends Model
 {
     use HasFactory;
 
-    // Tabla
+    // --- TABLA ---
     protected $table = 'logs_auditoria';
 
     
-    // Campos
+    // --- CAMPOS ---
     
         protected $fillable = [
         'usuario_id',
@@ -24,13 +24,13 @@ class LogAuditoria extends Model
         'detalles'
     ];
 
-    // Casts
+    // --- CASTS ---
     
     protected $casts = [
         'detalles' => 'array',
     ];
 
-    // Relaciones
+    // --- RELACIONES ---
     
     public function usuario()
     {

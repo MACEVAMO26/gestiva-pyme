@@ -10,20 +10,20 @@ class Notificacion extends Model
 {
     use HasFactory;
 
-    // Tabla
+    // --- TABLA ---
 
     protected $table = 'notificaciones';
 
-    // Campos
+    // --- CAMPOS ---
 
     protected $fillable = [
         'usuario_id',
         'titulo',
         'mensaje',
-        'leida' // Booleano: true o false
+        'leida'
     ];
 
-    // Relaciones
+    // --- RELACIONES ---
     
     public function usuario()
     {

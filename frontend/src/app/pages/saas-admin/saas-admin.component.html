@@ -1,4 +1,4 @@
-﻿<div class="saas-layout" [attr.data-daltonism]="accessibilityService.currentMode()">
+<div class="saas-layout" [attr.data-daltonism]="accessibilityService.currentMode()">
   
   <!-- GLOBAL HEADER -->
   <header class="global-header">
@@ -208,7 +208,7 @@
 
                       <!-- Inactivar Totalmente -->
                       <button (click)="cambiarEstadoEmpresa(empresa, 'inactivar')" class="btn-inactivar-total" title="Desactivar por completo">
-                        <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="icon-16-inline"><path stroke-linecap="round" stroke-linejoin="round" d="M18.364 18.364A9 9 0 0 0 5.636 5.636m12.728 12.728A9 9 0 0 1 5.636 5.636m12.728 12.728L5.636 5.636" /></svg> Inactivar Total
+                        <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="icon-16-inline"><path stroke-linecap="round" stroke-linejoin="round" d="M18.364 18.364A9 9 0 0 0 5.636 5.636m12.728 12.728A9 9 0 0 1 5.636 5.636m12.728 12.728L5.636 5.636" /></svg> Inactivar<br/>Total
                       </button>
 
                       <!-- Activar -->
@@ -595,11 +595,31 @@
                    class="saas-input">
           </div>
           <div class="saas-form-group">
+            <label class="saas-label">Periodo Contratado</label>
+            <select [(ngModel)]="nuevaEmpresa.periodo" name="periodo" class="saas-select" required>
+              <option value="Mensual">Mensual</option>
+              <option value="Anual">Anual</option>
+            </select>
+          </div>
+          <div class="saas-form-group">
+            <label class="saas-label">Descuento Especial</label>
+            <select [(ngModel)]="nuevaEmpresa.descuento" name="descuento" class="saas-select">
+              <option value="N/A">N/A</option>
+              <option value="Descuento por compra anual (2 meses)">Descuento por compra anual (2 meses)</option>
+              <option value="Mes gratis">Mes gratis</option>
+              <option value="50% descuento si trae referido">50% descuento si trae referido y contrata 1 mes</option>
+            </select>
+          </div>
+          <div class="saas-form-group">
+            <label class="saas-label">Fecha Inscripción (Opcional)</label>
+            <input type="date" [(ngModel)]="nuevaEmpresa.fecha_inscripcion" name="fecha_inscripcion" class="saas-input" />
+          </div>
+          <div class="saas-form-group">
             <label class="saas-label">Plan / Módulos</label>
             <select [(ngModel)]="nuevaEmpresa.tipo_empresa" name="tipo_empresa" required
                     class="saas-select">
-              <option value="Servicios" class="saas-option">Solo Servicios</option>
-              <option value="Ventas" class="saas-option">Solo Ventas</option>
+              <option value="Servicios" class="saas-option">Servicios</option>
+              <option value="Ventas" class="saas-option">Ventas</option>
               <option value="Ventas y Servicios" class="saas-option">Ventas y Servicios</option>
             </select>
           </div>

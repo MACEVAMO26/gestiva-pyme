@@ -40,7 +40,7 @@ export class EmpleadosComponent implements OnInit {
       next: (data: any) => {
         console.log('Empleados recibidos:', data);
         this.empleados = data;
-        this.cdr.detectChanges(); // Forzar actualización de la vista
+        this.cdr.detectChanges(); // Forzar actualizaciï¿½n de la vista
       },
       error: (err) => console.error('Error cargando empleados:', err)
     });
@@ -105,7 +105,7 @@ export class EmpleadosComponent implements OnInit {
   }
 
   toggleStatus(id: number) {
-    if(confirm('¿Estás seguro de cambiar el estado de este empleado?')) {
+    if(confirm('ï¿½Estï¿½s seguro de cambiar el estado de este empleado?')) {
       this.empleadoService.toggleStatus(id).subscribe({
         next: () => this.loadData(),
         error: (err: any) => alert('Error al cambiar el estado')
@@ -113,4 +113,5 @@ export class EmpleadosComponent implements OnInit {
     }
   }
 }
+
 

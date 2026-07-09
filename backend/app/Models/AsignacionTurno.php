@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-// Importamos los modelos que vamos a relacionar
+
 use App\Models\Turno;
 use App\Models\User;
 
@@ -12,10 +12,10 @@ class AsignacionTurno extends Model
 {
     use HasFactory;
 
-    // Tabla
+    // --- TABLA ---
     protected $table = 'asignacion_turnos';
 
-    // Campos
+    // --- CAMPOS ---
     protected $fillable = [
         'usuario_id',
         'turno_id',
@@ -23,7 +23,7 @@ class AsignacionTurno extends Model
         'fecha_hasta'
     ];
 
-    // Relaciones
+    // --- RELACIONES ---
     
     public function turno()
     {

@@ -10,7 +10,7 @@ CREATE TABLE `empresa` (
   `id` int PRIMARY KEY AUTO_INCREMENT,
   `razon_social` varchar(255) NOT NULL,
   `nit` varchar(255) UNIQUE NOT NULL,
-  `tipo_empresa` ENUM('Solo Servicios', 'Solo Ventas', 'Ventas y Servicios') NOT NULL,
+  `tipo_empresa` ENUM('Servicios', 'Ventas', 'Mixto') NOT NULL,
   `direccion` varchar(255),
   `telefono` varchar(255),
   `email` varchar(255),

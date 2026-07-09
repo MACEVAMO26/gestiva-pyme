@@ -9,15 +9,15 @@ class Empresa extends Model
 {
     use HasFactory;
 
-    // Tabla
+    // --- TABLA ---
 
     protected $table = 'empresa';
 
-    // Timestamps
+    // --- TIMESTAMPS ---
     
     public $timestamps = false;
 
-    // Campos
+    // --- CAMPOS ---
     
     protected $fillable = [
         'razon_social',
@@ -26,12 +26,22 @@ class Empresa extends Model
         'direccion',
         'telefono',
         'email',
-        'logo_url',        // <-- NUEVO
-        'color_primario',  // <-- NUEVO
+        'logo_url',
+        'color_primario',
         'ciudad',
         'activo',
+        'estado_pago',
+        'inactive_at',
+        'plan_suscripcion',
+        'monto_mensual',
+        'fecha_proximo_pago',
+        'last_activity_at',
         'estado_servidor',
-        'ultimo_ping'
+        'ultimo_ping',
+        'fecha_inscripcion',
+        'renovaciones',
+        'descuento',
+        'periodo'
     ];
 
     public function modulos()

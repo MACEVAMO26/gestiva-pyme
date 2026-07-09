@@ -9,22 +9,22 @@ class Turno extends Model
 {
     use HasFactory;
 
-    // Tabla
+    // --- TABLA ---
 
     protected $table = 'turnos';
 
-    // Campos
+    // --- CAMPOS ---
 
     protected $fillable = [
         'nombre_turno',
         'hora_entrada',
         'hora_salida',
-        'dias_semana', // Ejemplo: "Lunes,Martes,Miércoles"
+        'dias_semana',
         'activo',
         'inactive_at'
     ];
 
-      // Relaciones
+    // --- RELACIONES ---
       
     public function asignaciones()
     {

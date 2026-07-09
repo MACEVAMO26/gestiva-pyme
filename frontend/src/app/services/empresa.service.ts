@@ -36,6 +36,14 @@ export class EmpresaService {
   }
 
   // Cambiar estado activo/inactivo
+  renovarSuscripcion(id: number): Observable<any> {
+    return this.http.patch(`${this.apiUrl}/${id}/renovar`, {}, { headers: this.getHeaders() });
+  }
+
+  noRenovarSuscripcion(id: number): Observable<any> {
+    return this.http.patch(`${this.apiUrl}/${id}/norenovar`, {}, { headers: this.getHeaders() });
+  }
+
   toggleStatus(id: number, accion: string = ''): Observable<any> {
     return this.http.patch(`${this.apiUrl}/${id}/status`, { accion }, { headers: this.getHeaders() });
   }

@@ -7,15 +7,13 @@ use Illuminate\Http\Request;
 
 class VacacionController extends Controller
 {
-    // Listar
-    
+    // Trae la lista de todas las vacaciones registradas
     public function index()
     {
         return Vacacion::with('usuario')->get();
     }
 
-    // Crear
-    
+    // Registra una nueva solicitud de vacaciones
     public function store(Request $request)
     {
         $validatedData = $request->validate([
@@ -31,15 +29,13 @@ class VacacionController extends Controller
         return response()->json($vacacion, 201);
     }
 
-    // Mostrar
-    
+    // Muestra el detalle de una solicitud de vacaciones
     public function show($id)
     {
         return Vacacion::with('usuario')->findOrFail($id);
     }
 
-    // Actualizar
-    
+    // Modifica una solicitud de vacaciones que sigue pendiente
     public function update(Request $request, $id)
     {
         $vacacion = Vacacion::findOrFail($id);
@@ -59,8 +55,7 @@ class VacacionController extends Controller
         return response()->json($vacacion);
     }
 
-    // Responder solicitud
-    
+    // Aprueba o rechaza una solicitud de vacaciones
     public function responderSolicitud(Request $request, $id)
     {
         $vacacion = Vacacion::findOrFail($id);

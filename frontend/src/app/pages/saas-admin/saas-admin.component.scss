@@ -1,12 +1,10 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-
-/* --- 1. VARIABLES GLOBALES --- */
-$primary-color: #6366f1; // Indigo
+$primary-color: #6366f1;
 $primary-hover: #4f46e5;
-$bg-color: #0f172a; // Slate 900 (Fondo oscuro por defecto para SaaS Master)
-$sidebar-bg: #1e293b; // Slate 800
-$text-dark: #f8fafc; // Texto claro
-$text-muted: #94a3b8; // Texto grisáceo
+$bg-color: #4c808a;
+$sidebar-bg: #1e293b;
+$text-dark: #f8fafc;
+$text-muted: #94a3b8;
 $glass-bg: rgba(30, 41, 59, 0.7);
 $glass-border: rgba(255, 255, 255, 0.1);
 $shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2);
@@ -17,8 +15,6 @@ $shadow-lg:
   0 8px 12px -2px rgba(0, 0, 0, 0.4),
   0 3px 5px -2px rgba(0, 0, 0, 0.2);
 $transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-
-// --- COLORES DE DALTONISMO ---
 [data-daltonism='protanopia'] {
   filter: contrast(1.2) hue-rotate(-10deg) saturate(1.5);
 }
@@ -34,7 +30,7 @@ $transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   font-family: 'Inter', sans-serif;
 }
 
-/* --- 2. LAYOUT PRINCIPAL --- */
+/* --- 3. LAYOUT PRINCIPAL --- */
 .saas-layout {
   display: flex;
   height: 100vh;
@@ -43,11 +39,9 @@ $transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   overflow: hidden;
 }
 
-$sidebar-bg: #b1e5ef; // Azul clarítico solicitado
-$sidebar-text: #0f172a; // Texto oscuro para el sidebar
-$sidebar-text-muted: #0f172a; // Texto oscuro silenciado
-
-/* --- 2. LAYOUT PRINCIPAL --- */
+$sidebar-bg: #8cc8d4;
+$sidebar-text: #0f172a;
+$sidebar-text-muted: #0f172a;
 .saas-layout {
   display: flex;
   flex-direction: column;
@@ -57,10 +51,10 @@ $sidebar-text-muted: #0f172a; // Texto oscuro silenciado
   overflow: hidden;
 }
 
-/* --- 3. CABECERA (HEADER) --- */
+/* --- 4. CABECERA --- */
 .global-header {
   height: 56px;
-  background-color: #1e293b; // Slate 800 para que contraste con el fondo azul de sidebar y app oscura
+  background-color: #1e293b;
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   display: flex;
   justify-content: space-between;
@@ -68,14 +62,13 @@ $sidebar-text-muted: #0f172a; // Texto oscuro silenciado
   padding: 0;
   z-index: 20;
   box-shadow: $shadow-sm;
-
   .header-left {
     width: 205px;
     height: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: $sidebar-bg; /* Fondo claro para que se vea el logo */
+    background-color: $sidebar-bg;
     border-right: 1px solid rgba(0, 0, 0, 0.1);
   }
 
@@ -85,7 +78,6 @@ $sidebar-text-muted: #0f172a; // Texto oscuro silenciado
     align-items: center;
     justify-content: center;
     gap: 5px;
-
     .brand-logo {
       height: 22px;
       width: auto;
@@ -94,9 +86,9 @@ $sidebar-text-muted: #0f172a; // Texto oscuro silenciado
     .badge {
       background: #facc15;
       color: #713f12;
-      font-size: 0.75rem; /* Más grande */
+      font-size: 0.75rem;
       font-weight: 800;
-      padding: 0.35rem 0.65rem; /* Más grande */
+      padding: 0.35rem 0.65rem;
       border-radius: 40px;
       text-transform: uppercase;
       line-height: 1;
@@ -110,7 +102,6 @@ $sidebar-text-muted: #0f172a; // Texto oscuro silenciado
     justify-content: space-between;
     align-items: center;
     padding: 0 3rem;
-
     .welcome-text {
       h1 {
         margin: 0 0 0.15rem 0;
@@ -129,22 +120,27 @@ $sidebar-text-muted: #0f172a; // Texto oscuro silenciado
       display: flex;
       align-items: center;
       gap: 1.5rem;
-
       .user-profile {
         display: flex;
         align-items: center;
-        gap: 0.75rem;
-        background: #1e293b;
-        padding: 0.25rem 0.25rem 0.25rem 0.75rem;
-        border-radius: 40px;
+        gap: 0.5rem;
+        background: #069c6a;
+        padding: 0.5rem 1.75rem 0.5rem 0.5rem;
+        border-radius: 50px;
         box-shadow: $shadow-sm;
-        border: 1px solid $glass-border;
+        border: none;
+        cursor: pointer;
+        transition: background 0.3s ease;
+        &:hover {
+          background: #05875b;
+        }
 
         .avatar {
-          width: 26px;
-          height: 26px;
+          width: 28px;
+          height: 28px;
           border-radius: 50%;
-          background: linear-gradient(135deg, #a855f7, #6366f1);
+          background: rgba(255, 255, 255, 0.2);
+          border: 2px solid #3b82f6;
           color: white;
           display: flex;
           align-items: center;
@@ -156,12 +152,12 @@ $sidebar-text-muted: #0f172a; // Texto oscuro silenciado
         .btn-logout {
           background: transparent;
           border: none;
-          color: #ef4444;
+          color: white;
           font-weight: 600;
+          font-size: 0.85rem;
           cursor: pointer;
           padding: 0 0.5rem;
           transition: $transition;
-
           &:hover {
             color: #dc2626;
           }
@@ -171,33 +167,31 @@ $sidebar-text-muted: #0f172a; // Texto oscuro silenciado
   }
 }
 
-// --- MAIN BODY ---
+/* --- 5. CUERPO PRINCIPAL --- */
 .main-body {
   display: flex;
   flex: 1;
   overflow: hidden;
 }
 
-/* --- 4. BARRA LATERAL (SIDEBAR) --- */
+/* --- 6. BARRA LATERAL --- */
 .sidebar-saas {
-  width: 205px; /* Más ancha para que los botones grandes no se salgan */
-  background-color: $sidebar-bg; /* Fondo claro original */
+  width: 205px;
+  background-color: $sidebar-bg;
   border-right: none;
   display: flex;
   flex-direction: column;
-  padding: 1.5rem 1rem; /* Ajustado el padding lateral */
-  /* Sombra Neumórfica adaptada para fondo claro */
+  padding: 1.5rem 1rem;
+
   box-shadow:
     10px 0 20px rgba(0, 0, 0, 0.08),
     -1px 0 5px rgba(255, 255, 255, 0.5);
   z-index: 10;
   transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
-
   &.collapsed {
-    width: 80px; /* Un poco más ancha para que respiren los botones Neumórficos */
+    width: 80px;
     padding: 1.5rem 0.5rem;
-
     .nav-menu .nav-item {
       justify-content: center;
       padding: 0.88rem 0;
@@ -227,7 +221,6 @@ $sidebar-text-muted: #0f172a; // Texto oscuro silenciado
     box-shadow: $shadow-md;
     z-index: 20;
     transition: $transition;
-
     &:hover {
       background: $primary-hover;
       transform: scale(1.1);
@@ -237,30 +230,24 @@ $sidebar-text-muted: #0f172a; // Texto oscuro silenciado
   .nav-menu {
     display: flex;
     flex-direction: column;
-    gap: 0.85rem; /* Más espacio entre cada uno */
+    gap: 0.85rem;
     margin-top: 1rem;
-
     .nav-item {
       display: flex;
       align-items: center;
       gap: 12px;
-      padding: 1rem 1.25rem; /* Padding corregido para no desbordar */
-      border-radius: 50px; /* Forma de píldora neumórfica */
-      border: 1px solid rgba(255, 255, 255, 0.4); /* Borde claro para resaltar sobre el fondo azul clarítico */
+      padding: 1rem 1.25rem;
+      border-radius: 50px;
+      border: 1px solid rgba(255, 255, 255, 0.4);
       background: transparent;
-      color: #334155; /* Texto oscuro para contrastar en fondo claro */
+      color: #12243e;
       font-size: 1.05rem;
       font-weight: 600;
       text-decoration: none;
       cursor: pointer;
       transition: all 0.3s ease;
       white-space: nowrap;
-
-      /* Estado inactivo: Botón levantado suave (Soft UI claro) */
-      box-shadow:
-        5px 5px 12px rgba(100, 140, 160, 0.25),
-        -5px -5px 12px rgba(255, 255, 255, 0.7);
-
+      box-shadow: none;
       .icon {
         width: 19px;
         height: 19px;
@@ -284,18 +271,13 @@ $sidebar-text-muted: #0f172a; // Texto oscuro silenciado
         background: rgba(255, 255, 255, 0.2);
         color: #0f172a;
         transform: translateY(-1px);
-        box-shadow:
-          6px 6px 14px rgba(100, 140, 160, 0.3),
-          -6px -6px 14px rgba(255, 255, 255, 0.8);
+        box-shadow: none;
       }
 
       &.active {
-        background: rgba(255, 255, 255, 0.1);
-        color: #500075; /* Morado solicitado para el módulo seleccionado */
-        /* Efecto hundido Neumórfico para estado activo */
-        box-shadow:
-          inset 4px 4px 8px rgba(100, 140, 160, 0.35),
-          inset -4px -4px 8px rgba(255, 255, 255, 0.8);
+        background: rgba(255, 255, 255, 0.3);
+        color: #500075;
+        box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.1);
         border: 1px solid rgba(0, 0, 0, 0.05);
         transform: translateY(1px);
       }
@@ -303,15 +285,13 @@ $sidebar-text-muted: #0f172a; // Texto oscuro silenciado
   }
 }
 
-/* --- 5. CONTENIDO PRINCIPAL --- */
+/* --- 7. CONTENIDO PRINCIPAL --- */
 .main-content {
   flex: 1;
   display: flex;
   flex-direction: column;
   overflow-y: auto;
   position: relative;
-
-  // Decoración de fondo suave
   &::before {
     content: '';
     position: absolute;
@@ -326,14 +306,13 @@ $sidebar-text-muted: #0f172a; // Texto oscuro silenciado
   }
 }
 
-// --- TOPBAR ---
+/* --- 8. TOPBAR --- */
 .topbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 2rem 3rem;
   z-index: 1;
-
   .welcome-text {
     h1 {
       margin: 0 0 0.15rem 0;
@@ -352,39 +331,44 @@ $sidebar-text-muted: #0f172a; // Texto oscuro silenciado
     display: flex;
     align-items: center;
     gap: 1.5rem;
-
     .user-profile {
       display: flex;
       align-items: center;
-      gap: 0.75rem;
-      background: $sidebar-bg;
-      padding: 0.25rem 0.25rem 0.25rem 0.75rem;
-      border-radius: 40px;
+      gap: 0.5rem;
+      background: #069c6a;
+      padding: 0.5rem 1.75rem 0.5rem 0.5rem;
+      border-radius: 50px;
       box-shadow: $shadow-sm;
-      border: 1px solid $glass-border;
+      border: none;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      &:hover {
+        background: #05875b;
+      }
 
       .avatar {
-        width: 26px;
-        height: 26px;
+        width: 32px;
+        height: 32px;
         border-radius: 50%;
-        background: linear-gradient(135deg, #a855f7, #6366f1);
+        background: rgba(255, 255, 255, 0.2);
+        border: 2px solid #3b82f6;
         color: white;
         display: flex;
         align-items: center;
         justify-content: center;
         font-weight: 700;
-        font-size: 0.9rem;
+        font-size: 1rem;
       }
 
       .btn-logout {
         background: transparent;
         border: none;
-        color: #ef4444;
+        color: white;
         font-weight: 600;
+        font-size: 0.9rem;
         cursor: pointer;
         padding: 0 0.5rem;
         transition: $transition;
-
         &:hover {
           color: #dc2626;
         }
@@ -393,29 +377,28 @@ $sidebar-text-muted: #0f172a; // Texto oscuro silenciado
   }
 }
 
-// --- CONTENT AREA ---
+/* --- 9. AREA CONTENIDO --- */
 .content-area {
   padding: 0 3rem 3rem 3rem;
   z-index: 1;
-
   .metrics-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(192px, 1fr));
     gap: 1.5rem;
     margin-bottom: 2rem;
-
     .metric-card {
-      background: #b1d0e2;
-      backdrop-filter: blur(8px);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      border-radius: 16px;
-      padding: 1rem 1.25rem;
+      background: #111827;
+      border-radius: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.03);
+      padding: 1.5rem;
       display: flex;
       align-items: center;
       gap: 1rem;
-      box-shadow: $shadow-sm;
-      transition: $transition;
-
+      box-shadow:
+        4px 4px 10px rgba(0, 0, 0, 0.4),
+        -4px -4px 10px rgba(255, 255, 255, 0.02);
+      transition: all 0.3s ease;
+      color: white;
       &:hover {
         transform: translateY(-4px);
         box-shadow: $shadow-md;
@@ -429,7 +412,6 @@ $sidebar-text-muted: #0f172a; // Texto oscuro silenciado
         align-items: center;
         justify-content: center;
         font-size: 1.5rem;
-
         &.blue {
           background: rgba(59, 130, 246, 0.15);
           color: #2563eb;
@@ -451,9 +433,8 @@ $sidebar-text-muted: #0f172a; // Texto oscuro silenciado
       .metric-info {
         display: flex;
         flex-direction: column;
-
         .label {
-          color: #0f172a;
+          color: #94a3b8;
           font-size: 0.75rem;
           font-weight: 600;
           text-transform: uppercase;
@@ -461,7 +442,7 @@ $sidebar-text-muted: #0f172a; // Texto oscuro silenciado
         }
 
         .value {
-          color: #0f172a;
+          color: white;
           font-size: 1.2rem;
           font-weight: 700;
         }
@@ -470,16 +451,17 @@ $sidebar-text-muted: #0f172a; // Texto oscuro silenciado
   }
 
   .glass-panel {
-    background: #b1d0e2;
-    backdrop-filter: blur(8px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 16px;
+    background: #021729;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.03);
     padding: 1.5rem;
-    box-shadow: $shadow-sm;
-
+    box-shadow:
+      4px 4px 10px rgba(0, 0, 0, 0.4),
+      -4px -4px 10px rgba(255, 255, 255, 0.02);
+    color: white;
     h3 {
       margin: 0 0 1.25rem 0;
-      color: #0f172a;
+      color: white;
       font-size: 1.1rem;
       font-weight: 600;
     }
@@ -498,10 +480,9 @@ $sidebar-text-muted: #0f172a; // Texto oscuro silenciado
       justify-content: space-between;
       align-items: center;
       margin-bottom: 2rem;
-
       h3 {
         margin: 0;
-        color: #0f172a;
+        color: white;
         font-size: 1.15rem;
         font-weight: 600;
       }
@@ -524,18 +505,17 @@ $sidebar-text-muted: #0f172a; // Texto oscuro silenciado
       width: 100%;
       text-align: left;
       border-collapse: collapse;
-      color: #0f172a;
+      color: #cbd5e1;
       font-size: 0.85rem;
-
       th {
         padding: 0.75rem 0.5rem;
-        color: #0f172a;
+        color: white;
         font-weight: 700;
-        border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
       }
       td {
         padding: 0.75rem 0.5rem;
-        border-bottom: 1px solid rgba(0, 0, 0, 0.15);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
       }
 
       th:nth-child(3),
@@ -557,65 +537,81 @@ $sidebar-text-muted: #0f172a; // Texto oscuro silenciado
       td:nth-child(5) {
         text-align: center;
       }
-      .badge-modulos {
-        color: #3b0764;
-        padding: 0;
-        font-size: 0.85rem;
+      .module-text {
+        font-size: 0.9rem;
         font-weight: 500;
-        border: none;
-        display: inline-block;
-        white-space: nowrap;
-        background: transparent;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.4rem;
+        &.ventas {
+          color: #3b82f6;
+        }
+        &.servicios {
+          color: #10b981;
+        }
+        &.mixto {
+          color: #a855f7;
+        }
       }
 
       .status-aldia {
-        color: #059669;
-        font-weight: 500;
+        color: #34d399;
+        font-weight: 600;
         font-size: 0.85rem;
       }
       .status-mora {
-        color: #d97706;
-        font-weight: 500;
+        color: #fbbf24;
+        font-weight: 600;
         font-size: 0.85rem;
       }
       .status-inactiva {
-        color: #dc2626;
-        font-weight: 500;
+        color: #f87171;
+        font-weight: 600;
         font-size: 0.85rem;
       }
 
       .actions {
         text-align: right;
         display: flex;
-        gap: 0.5rem;
+        flex-wrap: wrap;
+        gap: 0.4rem;
         justify-content: flex-end;
+        align-items: center;
         button {
+          display: inline-flex;
+          align-items: center;
+          gap: 0.25rem;
           border: 1px solid transparent;
-          padding: 0.4rem 0.8rem;
-          border-radius: 5px;
+          padding: 0.25rem 0.5rem;
+          border-radius: 6px;
           cursor: pointer;
-          font-size: 0.8rem;
+          font-size: 0.7rem;
           font-weight: 500;
+          transition: transform 0.1s ease, box-shadow 0.1s ease;
+          &:active {
+            transform: scale(0.95);
+          }
         }
         .btn-cobrar {
-          background: rgba(255, 255, 255, 0.6);
-          color: #2563eb;
-          border-color: rgba(59, 130, 246, 0.3);
+          background: #2563eb;
+          color: #ffffff;
+          border: none;
         }
         .btn-inactivar {
-          background: rgba(255, 255, 255, 0.6);
-          color: #d97706;
-          border-color: rgba(245, 158, 11, 0.3);
+          background: #d97706;
+          color: #ffffff;
+          border: none;
         }
         .btn-inactivar-total {
-          background: rgba(255, 255, 255, 0.6);
-          color: #dc2626;
-          border-color: rgba(239, 68, 68, 0.3);
+          background: #dc2626;
+          color: #ffffff;
+          border: none;
         }
         .btn-activar {
-          background: rgba(255, 255, 255, 0.6);
-          color: #059669;
-          border-color: rgba(16, 185, 129, 0.3);
+          background: #059669;
+          color: #ffffff;
+          border: none;
         }
       }
     }
@@ -624,16 +620,17 @@ $sidebar-text-muted: #0f172a; // Texto oscuro silenciado
       display: flex;
       flex-direction: column;
       gap: 0.75rem;
-
       .request-item {
-        background: rgba(255, 255, 255, 0.7);
-        border: 1px solid rgba(255, 255, 255, 0.5);
-        border-radius: 8px;
-        padding: 1rem 1.25rem;
+        background: #111827;
+        border-radius: 20px;
+        padding: 1rem 1.5rem;
         display: flex;
         justify-content: space-between;
         align-items: center;
-
+        box-shadow:
+          4px 4px 10px rgba(0, 0, 0, 0.4),
+          -4px -4px 10px rgba(255, 255, 255, 0.02);
+        color: white;
         .req-info {
           display: flex;
           flex-direction: column;
@@ -641,13 +638,13 @@ $sidebar-text-muted: #0f172a; // Texto oscuro silenciado
 
         h4 {
           margin: 0 0 0.25rem 0;
-          color: #0f172a;
+          color: white;
           font-size: 0.9rem;
           font-weight: 600;
         }
         .meta-info {
           margin: 0;
-          color: #0f172a;
+          color: #cbd5e1;
           font-size: 0.75rem;
           margin-bottom: 0.25rem;
         }
@@ -689,11 +686,11 @@ $sidebar-text-muted: #0f172a; // Texto oscuro silenciado
         }
 
         .btn-view {
-          background: #6366f1;
+          background: #069c6a;
           color: white;
           border: none;
-          padding: 0.4rem 0.8rem;
-          border-radius: 5px;
+          padding: 0.5rem 1rem;
+          border-radius: 50px;
           cursor: pointer;
           font-size: 0.8rem;
           font-weight: 600;
@@ -709,7 +706,7 @@ $sidebar-text-muted: #0f172a; // Texto oscuro silenciado
   }
 }
 
-// --- MODALS ---
+/* --- 10. MODALS --- */
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -719,7 +716,6 @@ $sidebar-text-muted: #0f172a; // Texto oscuro silenciado
   align-items: center;
   justify-content: center;
   z-index: 10000;
-
   .modal-content {
     background: #b1d0e2;
     border-radius: 13px;
@@ -727,7 +723,6 @@ $sidebar-text-muted: #0f172a; // Texto oscuro silenciado
     width: 400px;
     box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.5);
     border: 1px solid rgba(255, 255, 255, 0.2);
-
     h2 {
       color: #0f172a;
       margin-top: 0;
@@ -770,23 +765,26 @@ $sidebar-text-muted: #0f172a; // Texto oscuro silenciado
         font-weight: bold;
       }
       .btn-cancel {
-        background: rgba(255, 255, 255, 0.5);
-        color: #0f172a;
-        border: 1px solid rgba(255, 255, 255, 0.6);
+        background: rgba(255, 255, 255, 0.1);
+        color: white;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        padding: 0.5rem 1rem;
+        border-radius: 50px;
       }
       .btn-save {
-        background: #059669;
+        background: #069c6a;
         color: white;
         border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 50px;
       }
     }
   }
 }
 
-/* --- DASHBOARD WELCOME PANEL --- */
+/* --- 11. DASHBOARD WELCOME PANEL --- */
 .dashboard-welcome {
   margin-top: 2rem;
-
   h3 {
     font-size: 1.1rem;
     font-weight: 700;
@@ -795,7 +793,7 @@ $sidebar-text-muted: #0f172a; // Texto oscuro silenciado
   }
 }
 
-/* --- STATUS CARDS GRID --- */
+/* --- 12. STATUS CARDS GRID --- */
 .status-cards-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(144px, 1fr));
@@ -803,7 +801,7 @@ $sidebar-text-muted: #0f172a; // Texto oscuro silenciado
   margin-bottom: 1.75rem;
 }
 
-/* --- STATUS CARD BASE --- */
+/* --- 13. STATUS CARD BASE --- */
 .status-card {
   display: flex;
   flex-direction: column;
@@ -816,7 +814,6 @@ $sidebar-text-muted: #0f172a; // Texto oscuro silenciado
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   text-align: center;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-
   &:hover {
     transform: translateY(-3px);
     box-shadow: 0 6px 16px rgba(0, 0, 0, 0.14);
@@ -832,7 +829,7 @@ $sidebar-text-muted: #0f172a; // Texto oscuro silenciado
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0px;
-    color: #0f172a;
+    color: #cbd5e1;
   }
 
   .card-value {
@@ -842,68 +839,81 @@ $sidebar-text-muted: #0f172a; // Texto oscuro silenciado
   }
 }
 
-/* --- ACTIVE CARD --- */
+/* --- 14. ACTIVE CARD --- */
 .active-card {
   background: linear-gradient(135deg, rgba(5, 150, 105, 0.15), rgba(5, 150, 105, 0.05));
   border-color: rgba(5, 150, 105, 0.3);
-
   .card-value {
-    color: #059669;
+    color: #34d399;
+  }
+  .card-icon {
+    color: #10b981;
+  }
+  .card-label {
+    color: #6ee7b7;
   }
 }
 
-/* --- MORA CARD --- */
+/* --- 15. MORA CARD --- */
 .mora-card {
   background: linear-gradient(135deg, rgba(217, 119, 6, 0.15), rgba(217, 119, 6, 0.05));
   border-color: rgba(217, 119, 6, 0.3);
-
   .card-value {
-    color: #d97706;
+    color: #fbbf24;
+  }
+  .card-icon {
+    color: #f59e0b;
+  }
+  .card-label {
+    color: #fcd34d;
   }
 }
 
-/* --- PENDING CARD --- */
+/* --- 16. PENDING CARD --- */
 .pending-card {
   background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(99, 102, 241, 0.05));
   border-color: rgba(99, 102, 241, 0.3);
-
   .card-value {
+    color: #818cf8;
+  }
+  .card-icon {
     color: #6366f1;
+  }
+  .card-label {
+    color: #a5b4fc;
   }
 }
 
-/* --- QUICK ACTIONS --- */
+/* --- 17. QUICK ACTIONS --- */
 .quick-actions {
   display: flex;
   align-items: center;
   gap: 1rem;
   flex-wrap: wrap;
-
   h4 {
     margin: 0;
     font-size: 0.85rem;
     font-weight: 600;
-    color: #0f172a;
+    color: #cbd5e1;
     text-transform: uppercase;
     letter-spacing: 0px;
     white-space: nowrap;
   }
 }
 
-/* --- BTN ACTION BASE --- */
+/* --- 18. BTN ACTION BASE --- */
 .btn-action {
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  padding: 0.55rem 1.1rem;
-  border-radius: 8px;
+  padding: 0.75rem 1.75rem;
+  border-radius: 50px;
   border: none;
   cursor: pointer;
   font-size: 0.85rem;
   font-weight: 600;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   white-space: nowrap;
-
   &:hover {
     transform: translateY(-2px);
     box-shadow: 0 5px 13px rgba(0, 0, 0, 0.15);
@@ -914,22 +924,20 @@ $sidebar-text-muted: #0f172a; // Texto oscuro silenciado
   }
 }
 
-/* --- PRIMARY ACTION --- */
+/* --- 19. PRIMARY ACTION --- */
 .primary-action {
   background: #6366f1;
   color: #ffffff;
-
   &:hover {
     background: #4f46e5;
   }
 }
 
-/* --- SECONDARY ACTION --- */
+/* --- 20. SECONDARY ACTION --- */
 .secondary-action {
   background: rgba(255, 255, 255, 0.6);
   color: #0f172a;
   border: 1px solid rgba(99, 102, 241, 0.35);
-
   &:hover {
     background: rgba(99, 102, 241, 0.12);
     border-color: #6366f1;
@@ -937,7 +945,7 @@ $sidebar-text-muted: #0f172a; // Texto oscuro silenciado
   }
 }
 
-/* --- EXTRACCIÓN DE ESTILOS INLINE --- */
+/* --- 21. ESTILOS INLINE --- */
 .nav-text {
   font-weight: 600;
 }
@@ -1005,9 +1013,12 @@ $sidebar-text-muted: #0f172a; // Texto oscuro silenciado
   width: 100%;
   justify-content: space-between;
   font-size: 0.65rem;
-  color: #1e293b;
+  color: white;
   font-weight: 800;
   text-transform: uppercase;
+  span {
+    color: white;
+  }
 }
 .mt-2rem {
   margin-top: 2rem;
@@ -1051,7 +1062,7 @@ $sidebar-text-muted: #0f172a; // Texto oscuro silenciado
 }
 .panel-title {
   margin: 0 0 1.5rem 0;
-  color: #0f172a;
+  color: white;
 }
 .font-inter {
   font-family: 'Inter', sans-serif;
@@ -1112,7 +1123,7 @@ $sidebar-text-muted: #0f172a; // Texto oscuro silenciado
   border: 1px solid rgba(239, 68, 68, 0.5);
   flex: 1;
   padding: 0.75rem;
-  border-radius: 6px;
+  border-radius: 50px;
   cursor: pointer;
   font-weight: bold;
 }
@@ -1131,7 +1142,8 @@ $sidebar-text-muted: #0f172a; // Texto oscuro silenciado
 }
 .btn-cerrar {
   border: 1px solid rgba(255, 255, 255, 0.2);
-  padding: 0.5rem 2rem;
+  padding: 0.75rem 1.75rem;
+  border-radius: 50px;
 }
 .success-modal-title {
   color: #059669;
@@ -1292,13 +1304,16 @@ $sidebar-text-muted: #0f172a; // Texto oscuro silenciado
   width: 100%;
   padding: 0.75rem;
   border-radius: 8px;
-  background: rgba(0, 0, 0, 0.2);
+  background: #1e293b;
   border: 1px solid rgba(255, 255, 255, 0.1);
   color: white;
   outline: none;
-}
-.saas-option {
-  color: black;
+  
+  option {
+    background: #1e293b;
+    color: white;
+    padding: 10px;
+  }
 }
 .saas-modal-actions {
   display: flex;
@@ -1311,14 +1326,15 @@ $sidebar-text-muted: #0f172a; // Texto oscuro silenciado
   color: #94a3b8;
   border: none;
   cursor: pointer;
-  padding: 0.75rem 1rem;
+  padding: 0.75rem 1.75rem;
+  border-radius: 50px;
 }
 .saas-btn-submit {
-  background: #10b981;
+  background: #069c6a;
   color: white;
   border: none;
-  padding: 0.75rem 1.5rem;
-  border-radius: 8px;
+  padding: 0.75rem 1.75rem;
+  border-radius: 50px;
   cursor: pointer;
   font-weight: bold;
 }
@@ -1395,10 +1411,8 @@ $sidebar-text-muted: #0f172a; // Texto oscuro silenciado
   width: 100%;
 }
 .saas-floating-widget {
-  position: fixed;
-  bottom: 1.5rem;
-  right: 1.5rem;
-  z-index: 9999;
+  position: relative;
+  z-index: 99;
 }
 .saas-btn-access {
   background-color: #f59e0b;
@@ -1415,13 +1429,14 @@ $sidebar-text-muted: #0f172a; // Texto oscuro silenciado
 }
 .saas-access-menu {
   position: absolute;
-  bottom: 4rem;
+  top: 3.5rem;
   right: 0;
   background-color: #1e293b;
   border-radius: 0.75rem;
   width: 14rem;
   overflow: hidden;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  z-index: 1000;
 }
 .saas-access-header {
   padding: 0.75rem 1rem;
@@ -1445,28 +1460,23 @@ $sidebar-text-muted: #0f172a; // Texto oscuro silenciado
   cursor: pointer;
   border-bottom: 1px solid rgba(51, 65, 85, 0.5);
   transition: background-color 0.2s;
-}
-.saas-access-btn:hover {
-  background-color: #334155;
+  &:hover,
+  &.active {
+    background-color: #334155;
+  }
 }
 
-/* --- 9. DISEÑO SOFT UI (MÓDULOS Y PAQUETES) --- */
+/* --- 22. DISEÑO SOFT UI --- */
 .soft-ui-card {
-  /* Fondo súper limpio y oscuro */
-  background: #111827; /* Gris muy oscuro, casi azul marino */
+  background: #19527f;
 
-  /* Borde súper redondeado imitando la imagen de referencia */
   border-radius: 28px;
   padding: 1.5rem;
-
-  /* Sombra extremadamente suave y difuminada (Soft UI / Neomorfismo) */
   box-shadow:
     15px 15px 35px rgba(0, 0, 0, 0.4),
     -10px -10px 25px rgba(255, 255, 255, 0.02);
-
   transition: all 0.3s ease;
   border: 1px solid rgba(255, 255, 255, 0.03);
-
   &:hover {
     box-shadow:
       15px 15px 40px rgba(0, 0, 0, 0.5),
@@ -1475,7 +1485,12 @@ $sidebar-text-muted: #0f172a; // Texto oscuro silenciado
   }
 }
 
-/* Contenedor del ícono (bloque gordito redondeado) */
+.soft-ui-company-selector {
+  background: #0d3454;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 1.5rem;
+}
+
 .soft-ui-icon-box {
   width: 54px;
   height: 54px;
@@ -1483,32 +1498,27 @@ $sidebar-text-muted: #0f172a; // Texto oscuro silenciado
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02));
+  background: #3f617f;
+  svg {
+    stroke-width: 2.5px;
+  }
   box-shadow:
     inset 2px 2px 4px rgba(255, 255, 255, 0.05),
     4px 4px 10px rgba(0, 0, 0, 0.2);
-  /* El icono en sí será monocromo según tu indicación, 
-     el color se define en el HTML usando las clases text-{color}-400 */
 }
 
-/* Fila de submódulo (Estilo píldora) */
 .soft-ui-row {
-  background: #111827; /* Fondo oscuro del card */
-  border-radius: 20px; /* Bordes muy redondeados tipo píldora */
-  padding: 1.25rem 1.5rem; /* Más espacio interno para que respire */
+  background: #a2bbd4;
+  border-radius: 20px;
+  padding: 0.75rem 1.25rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border: 1px solid rgba(255, 255, 255, 0.03); /* Ligero borde superior para el bisel */
-
-  /* Sombras Neumórficas oscuras (Soft UI) */
+  border: 1px solid rgba(255, 255, 255, 0.03);
   box-shadow:
     8px 8px 16px rgba(0, 0, 0, 0.4),
     -8px -8px 16px rgba(255, 255, 255, 0.02);
-
   transition: all 0.3s ease;
-  /* El margin-bottom ya no es necesario gracias al gap del contenedor */
-
   &:hover {
     box-shadow:
       10px 10px 20px rgba(0, 0, 0, 0.5),
@@ -1517,25 +1527,21 @@ $sidebar-text-muted: #0f172a; // Texto oscuro silenciado
   }
 }
 
-/* --- 10. BOTONES Y COMPONENTES SOFT UI --- */
-/* Botón estilo píldora */
+/* --- 23. BOTONES SOFT UI --- */
 .soft-ui-btn {
-  background: #5eb59e; /* Verde menta/corporativo mate de la imagen */
+  background: #069c6a;
   color: white;
   font-weight: 600;
   padding: 0.75rem 1.75rem;
-  border-radius: 50px; /* Píldora perfecta */
+  border-radius: 50px;
 
-  /* Sombra interna suave (Neumorfismo mate), sin luz rara */
   box-shadow:
     inset 2px 2px 4px rgba(255, 255, 255, 0.2),
     inset -2px -2px 4px rgba(0, 0, 0, 0.1),
     0 4px 6px rgba(0, 0, 0, 0.1);
-
   transition: all 0.3s ease;
   border: none;
   cursor: pointer;
-
   &:hover {
     background: #4ea58f;
     transform: translateY(-1px);
@@ -1547,11 +1553,12 @@ $sidebar-text-muted: #0f172a; // Texto oscuro silenciado
   }
 }
 
-/* Toggle Switch gordito Soft UI (Estilo Cuadrado Redondeado) */
 .soft-ui-toggle {
-  width: 60px;
-  height: 32px;
-  border-radius: 10px;
+  background: #4a3434;
+  width: 44px;
+  height: 24px;
+  flex-shrink: 0;
+  border-radius: 8px;
   box-shadow:
     inset 2px 2px 5px rgba(0, 0, 0, 0.4),
     inset -2px -2px 5px rgba(255, 255, 255, 0.05);
@@ -1561,12 +1568,9 @@ $sidebar-text-muted: #0f172a; // Texto oscuro silenciado
   cursor: pointer;
   display: flex;
   align-items: center;
-
   &.active {
-    background: #50c1d0; /* Cyan pastelado de la imagen */
-    /* Quitada la "luz rara" externa */
+    background: #50c1d0;
     box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.2);
-
     .toggle-icon-on {
       opacity: 1;
       transform: scale(1) translateY(-50%);
@@ -1579,7 +1583,6 @@ $sidebar-text-muted: #0f172a; // Texto oscuro silenciado
 
   &.inactive {
     background: rgba(255, 255, 255, 0.05);
-
     .toggle-icon-on {
       opacity: 0;
       transform: scale(0.5) translateY(-50%);
@@ -1594,8 +1597,8 @@ $sidebar-text-muted: #0f172a; // Texto oscuro silenciado
   .toggle-icon-off {
     position: absolute;
     top: 50%;
-    width: 16px;
-    height: 16px;
+    width: 12px;
+    height: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1604,23 +1607,23 @@ $sidebar-text-muted: #0f172a; // Texto oscuro silenciado
   }
 
   .toggle-icon-on {
-    left: 8px;
-    color: white; /* Check blanco */
+    left: 6px;
+    color: white;
   }
 
   .toggle-icon-off {
-    right: 8px;
-    color: #94a3b8; /* X gris */
+    right: 6px;
+    color: #94a3b8;
   }
 
   .soft-ui-toggle-thumb {
     position: absolute;
     top: 3px;
     left: 3px;
-    width: 26px;
-    height: 26px;
+    width: 18px;
+    height: 18px;
     background: linear-gradient(135deg, #e2e8f0, #cbd5e1);
-    border-radius: 8px; /* Cuadradito redondeado */
+    border-radius: 6px;
     box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
     transition:
       transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
@@ -1628,54 +1631,57 @@ $sidebar-text-muted: #0f172a; // Texto oscuro silenciado
   }
 
   &.active .soft-ui-toggle-thumb {
-    transform: translateX(28px); /* 60 - 26 - 6 = 28 */
-    background: linear-gradient(135deg, #ffffff, #cffafe); /* Tint cyan cuando está activo */
+    transform: translateX(20px);
+    background: linear-gradient(135deg, #ffffff, #cffafe);
   }
 
-  /* Modificador para submódulos más pequeños */
   &.toggle-sm {
-    width: 48px;
-    height: 26px;
-    border-radius: 8px;
-
+    width: 36px;
+    height: 20px;
+    border-radius: 6px;
     .toggle-icon-on,
     .toggle-icon-off {
-      width: 12px;
-      height: 12px;
+      width: 10px;
+      height: 10px;
     }
     .toggle-icon-on {
-      left: 6px;
+      left: 4px;
     }
     .toggle-icon-off {
-      right: 6px;
+      right: 4px;
     }
 
     .soft-ui-toggle-thumb {
-      width: 20px;
-      height: 20px;
-      border-radius: 6px;
+      width: 14px;
+      height: 14px;
+      border-radius: 4px;
       top: 3px;
       left: 3px;
     }
 
     &.active .soft-ui-toggle-thumb {
-      transform: translateX(22px); /* 48 - 20 - 6 = 22 */
+      transform: translateX(16px);
     }
   }
 }
 
-/* Paneles genéricos oscuros Soft UI */
 .soft-ui-panel-dark {
-  background: #111827; /* Fondo oscuro */
+  background: #0d3454; /* MATCHES MODULOS BACKGROUND */
   border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
   box-shadow:
     4px 4px 10px rgba(0, 0, 0, 0.4),
     -4px -4px 10px rgba(255, 255, 255, 0.02);
   transition: all 0.3s ease;
 }
 
-/* Inputs oscuros Soft UI */
+.soft-ui-tr {
+  transition: all 0.2s ease;
+  &:hover {
+    background: #19527f; /* MATCHES MODULOS HOVER BACKGROUND */
+  }
+}
+
 .soft-ui-input {
   background: #111827;
   color: white;
@@ -1687,7 +1693,6 @@ $sidebar-text-muted: #0f172a; // Texto oscuro silenciado
     inset -2px -2px 5px rgba(255, 255, 255, 0.02);
   transition: all 0.3s ease;
   outline: none;
-
   &:focus {
     border-color: rgba(6, 182, 212, 0.5);
     box-shadow:

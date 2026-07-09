@@ -11,17 +11,17 @@ class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
 
-    // Tabla
+    // --- TABLA ---
     
     protected $table = 'usuarios';
 
     
-    // Timestamps
+    // --- TIMESTAMPS ---
     
     public $timestamps = false;
 
     
-    // Campos
+    // --- CAMPOS ---
     
     protected $fillable = [
         'empresa_id',
@@ -37,14 +37,14 @@ class User extends Authenticatable
     ];
 
     
-    // Ocultos
+    // --- OCULTOS ---
     
     protected $hidden = [
         'password_hash',
     ];
 
 
-    // Relaciones
+    // --- RELACIONES ---
     public function getAuthPassword()
     {
         return $this->password_hash;
@@ -53,5 +53,15 @@ class User extends Authenticatable
     public function empresa()
     {
         return $this->belongsTo(Empresa::class, 'empresa_id');
+    }
+
+    public function cargo()
+    {
+        return $this->belongsTo(Cargo::class, 'cargo_id');
+    }
+
+    public function rol()
+    {
+        return $this->belongsTo(Role::class, 'rol_id');
     }
 }

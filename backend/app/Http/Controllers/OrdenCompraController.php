@@ -8,8 +8,7 @@ use Illuminate\Support\Facades\DB;
 
 class OrdenCompraController extends Controller
 {
-    // Crear
-    
+    // Registra una nueva orden de compra con sus detalles
     public function store(Request $request)
     {
         $validatedData = $request->validate([
@@ -49,5 +48,5 @@ class OrdenCompraController extends Controller
         return response()->json($orden->load('detalles'), 201);
     }
 
-    // Faltan otros métodos CRIU
+    // Faltan otros metodos CRIU
 }

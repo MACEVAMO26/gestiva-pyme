@@ -13,14 +13,11 @@ import { ChangeDetectorRef } from '@angular/core';
   styleUrl: './landing.component.scss',
 })
 export class LandingComponent {
-  http = inject(HttpClient);
-  cdr = inject(ChangeDetectorRef);
-
+  // --- VARIABLES DE ESTADO ---
   isChatbotOpen = false;
   botView: 'menu' | 'phone' | 'form' | 'success' = 'menu';
   isSubmitting = false;
   errorMessage = '';
-
   leadForm = {
     nombre: '',
     telefono: '',
@@ -29,10 +26,13 @@ export class LandingComponent {
     mensaje: ''
   };
 
+  http = inject(HttpClient);
+  cdr = inject(ChangeDetectorRef);
+
   toggleChatbot() {
     this.isChatbotOpen = !this.isChatbotOpen;
     if (!this.isChatbotOpen) {
-      this.botView = 'menu'; // Reset when closed
+      this.botView = 'menu';
       this.errorMessage = '';
     }
   }
@@ -65,7 +65,7 @@ export class LandingComponent {
           this.isSubmitting = false;
           this.botView = 'success';
           
-          // Reset form
+          // Restablece el formulario a sus valores iniciales
           this.leadForm = {
             nombre: '',
             telefono: '',
@@ -75,7 +75,7 @@ export class LandingComponent {
           };
           this.cdr.detectChanges();
 
-          // Auto-close success after 3 seconds
+          // Cierra automáticamente el mensaje de éxito después de 3 segundos
           setTimeout(() => {
             if (this.botView === 'success') {
               this.backToMenu();

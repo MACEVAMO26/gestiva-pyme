@@ -10,20 +10,20 @@ class RecepcionDetalle extends Model
 {
     use HasFactory;
 
-    // Tabla
+    // --- TABLA ---
 
     protected $table = 'recepciones_detalle';
 
-    // Campos
+    // --- CAMPOS ---
 
     protected $fillable = [
         'recepcion_id',
         'producto_id',
         'cantidad_recibida',
-        'estado_calidad' // ENUM: 'Bueno', 'Malo', 'Regular'
+        'estado_calidad'
     ];
 
-    // Relaciones
+    // --- RELACIONES ---
     
     public function recepcion()
     {

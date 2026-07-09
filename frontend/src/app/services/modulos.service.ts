@@ -93,6 +93,7 @@ export class ModulosService {
           { id: 'r_tur', nombre: 'Horarios y Turnos', activo: false },
           { id: 'r_aus', nombre: 'Control de Horas Extras y Ausencias', activo: false },
           { id: 'r_vac', nombre: 'Gestión de Vacaciones', activo: false },
+          { id: 'r_aut', nombre: 'Autogestión (Fijo)', activo: true, fijo: true },
         ],
       },
       {

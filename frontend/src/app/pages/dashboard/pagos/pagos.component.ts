@@ -11,8 +11,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
   styleUrl: './pagos.component.scss'
 })
 export class PagosComponent implements OnInit {
-  http = inject(HttpClient);
-
+  // --- VARIABLES DE ESTADO ---
   bancos = [
     'Bancolombia',
     'Nequi',
@@ -24,15 +23,14 @@ export class PagosComponent implements OnInit {
     'Caja Social',
     'Otro'
   ];
-
   selectedBanco: string = '';
   selectedFile: File | null = null;
   isSubmitting = false;
   isRequestingMigration = false;
-  
-  // Historial de solicitudes
   solicitudes: any[] = [];
   ultimoPagoRechazado: any = null;
+
+  http = inject(HttpClient);
 
   ngOnInit(): void {
     this.cargarSolicitudes();

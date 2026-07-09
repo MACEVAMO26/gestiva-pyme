@@ -10,11 +10,11 @@ class Inventario extends Model
 {
     use HasFactory;
 
-    // Tabla
+    // --- TABLA ---
     
     protected $table = 'inventario';
 
-    // Campos
+    // --- CAMPOS ---
     
     protected $fillable = [
         'producto_id',
@@ -26,7 +26,7 @@ class Inventario extends Model
     ];
 
         
-    // Relaciones
+    // --- RELACIONES ---
     public function producto()
     {
         return $this->belongsTo(Producto::class, 'producto_id');

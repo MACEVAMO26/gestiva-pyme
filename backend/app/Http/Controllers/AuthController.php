@@ -9,7 +9,8 @@ use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
-    // Registro
+    // --- AUTENTICACIÓN Y REGISTRO ---
+    // Registra un nuevo usuario en el sistema y retorna su token de acceso
     public function registrar(Request $request)
     {
         $request->validate([
@@ -34,21 +35,21 @@ class AuthController extends Controller
         ], 201);
     }
 
-    // Login
+    // Inicia sesión verificando credenciales y retorna los datos del usuario con su token
     public function login(Request $request)
     {
         $request->validate([
             'email' => 'required|email',
             'password' => 'required',
         ]);
-        $user = User::with('empresa')->where('email', $request->email)->first();
+        $user = User::with(['empresa', 'cargo', 'rol'])->where('email', $request->email)->first();
         if (!$user || !Hash::check($request->password, $user->password_hash)) {
             throw ValidationException::withMessages([
                 'email' => ['Las credenciales proporcionadas son incorrectas.'],
             ]);
         }
 
-        // Verificar si debe cambiar la clave inicial
+        // Exige el cambio de contraseña si es el primer ingreso del usuario
         if ($user->debe_cambiar_clave) {
             return response()->json([
                 'requires_password_change' => true,
@@ -65,7 +66,7 @@ class AuthController extends Controller
         ]);
     }
 
-    // Cambiar contraseña inicial
+    // Actualiza la contraseña temporal del usuario y desactiva el flag de cambio obligatorio
     public function changeInitialPassword(Request $request)
     {
         $request->validate([
@@ -101,7 +102,7 @@ class AuthController extends Controller
         ]);
     }
 
-    // Logout
+    // Revoca el token de acceso actual cerrando la sesión del usuario
     public function cerrarSesion(Request $request)
     {
         $request->user()->currentAccessToken()->delete();

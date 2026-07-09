@@ -7,6 +7,7 @@ import {
   DaltonismMode,
 } from '../../services/accessibility/accessibility.service';
 import { EmpresaService } from '../../services/empresa.service';
+import { TarifaService } from '../../services/tarifa.service';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { ModulosService } from '../../services/modulos.service';
@@ -19,12 +20,9 @@ import { ModulosService } from '../../services/modulos.service';
   styleUrls: ['./saas-admin.component.scss'],
 })
 export class SaasAdminComponent implements OnInit {
+  // --- VARIABLES DE ESTADO ---
   user: any = null;
-  public accessibilityService = inject(AccessibilityService);
-  private empresaService = inject(EmpresaService);
-  private cdr = inject(ChangeDetectorRef);
   isAccessibilityMenuOpen = false;
-
   empresas: any[] = [];
   empresasEnMora: number = 0;
   empresaDestacadaId: number | null = null;
@@ -35,56 +33,86 @@ export class SaasAdminComponent implements OnInit {
   editingAddonId: string | null = null;
   createdAdminEmail = '';
   toastMessage: string | null = null;
-
   isEditMode = false;
   editingId: number | null = null;
   isSubmitting: boolean = false;
-
-  nuevaEmpresa = {
+  nuevaEmpresa: any = {
     razon_social: '',
     nit: '',
-    tipo_empresa: 'Servicios', // Default
+    tipo_empresa: 'Servicios',
   };
-
-  // Vistas y Solicitudes
   currentView = 'dashboard';
   solicitudes: any[] = [];
   solicitudesPendientes: number = 0;
-
-  // Módulos
   paquetesModulos: any[] = [];
-
-  // Suscripciones
   statsSuscripciones = {
     mrr: 0,
     clientesActivos: 0,
     clientesMora: 0,
     crecimientoMensual: 0,
   };
-
   suscripcionesList: any[] = [];
-
-  // Monitor de Estado
   serverStatus: any = {
     status: 'online',
     generalUptime: '99.9%',
     dbConnection: 'Estable',
-
     lastBackup: 'Hace 2 horas',
     lastActivity: 'Desconocida',
   };
-
   empresaSeleccionadaId: string | null = null;
-
-  // Comercial
   comercialTab: 'interesados' | 'correos' = 'interesados';
   leads: any[] = [];
-  
-  // Notas
   showNotasModal = false;
   leadSeleccionadoParaNotas: any = null;
   nuevaNotaTexto = '';
+  asuntoBrevo: string = '';
+  mensajeBrevo: string = '';
+  isEnviandoBrevo: boolean = false;
+  archivoAdjuntoBrevo: File | null = null;
+  debugError: string | null = null;
+  isSidebarCollapsed = false;
+  isModalSolicitudOpen = false;
+  solicitudSeleccionada: any = null;
+  mensajeRespuesta: string = '';
 
+  public accessibilityService = inject(AccessibilityService);
+  private empresaService = inject(EmpresaService);
+  private tarifaService = inject(TarifaService);
+  tarifaConfig: any = null;
+  private cdr = inject(ChangeDetectorRef);
+
+  constructor(
+    private authService: AuthService,
+    private router: Router,
+    private http: HttpClient,
+    private modulosService: ModulosService,
+  ) {}
+
+  ngOnInit(): void {
+    const savedView = localStorage.getItem('saas_current_view');
+    if (savedView) {
+      this.currentView = savedView;
+    }
+
+    this.user = this.authService.getUser();
+    // Redirige al panel correspondiente según el tipo de usuario
+    if (this.user && this.user.empresa_id !== null) {
+      this.router.navigate(['/dashboard']);
+    }
+
+    this.modulosService.getCatalogoModulos().subscribe(catalog => {
+      this.paquetesModulos = catalog;
+    });
+
+    this.cargarEmpresas();
+    this.cargarSolicitudes();
+    this.cargarLeads();
+    this.cargarSuscripciones();
+    this.cargarTarifas();
+    this.cargarSystemStats();
+  }
+
+  // Muestra el modal para gestionar las notas del cliente interesado
   abrirModalNotas(lead: any) {
     this.leadSeleccionadoParaNotas = lead;
     if (!this.leadSeleccionadoParaNotas.notas) {
@@ -132,50 +160,6 @@ export class SaasAdminComponent implements OnInit {
         next: () => {},
         error: () => alert('Error al guardar la nota.')
       });
-  }
-
-  // Brevo
-  asuntoBrevo: string = '';
-  mensajeBrevo: string = '';
-  isEnviandoBrevo: boolean = false;
-  archivoAdjuntoBrevo: File | null = null;
-
-  debugError: string | null = null;
-
-  // Modales y Menú
-  isSidebarCollapsed = false;
-  isModalSolicitudOpen = false;
-  solicitudSeleccionada: any = null;
-  mensajeRespuesta: string = '';
-
-  constructor(
-    private authService: AuthService,
-    private router: Router,
-    private http: HttpClient,
-    private modulosService: ModulosService,
-  ) {}
-
-  ngOnInit(): void {
-    const savedView = localStorage.getItem('saas_current_view');
-    if (savedView) {
-      this.currentView = savedView;
-    }
-
-    this.user = this.authService.getUser();
-    // Protege la ruta exclusiva
-    if (this.user && this.user.empresa_id !== null) {
-      this.router.navigate(['/dashboard']);
-    }
-
-    this.modulosService.getCatalogoModulos().subscribe(catalog => {
-      this.paquetesModulos = catalog;
-    });
-
-    this.cargarEmpresas();
-    this.cargarSolicitudes();
-    this.cargarLeads();
-    this.cargarSuscripciones();
-    this.cargarSystemStats();
   }
 
   toggleSidebar() {
@@ -255,13 +239,21 @@ export class SaasAdminComponent implements OnInit {
         this.mensajeBrevo = '';
         this.archivoAdjuntoBrevo = null;
         this.comercialTab = 'interesados';
-        setTimeout(() => this.toastMessage = null, 4000);
+        this.cdr.detectChanges();
+        setTimeout(() => {
+          this.toastMessage = null;
+          this.cdr.detectChanges();
+        }, 5000);
       },
       error: (err) => {
         this.isEnviandoBrevo = false;
         console.error('Error enviando campaña:', err);
-        alert('Hubo un error al enviar la campaña. Revisa la consola o asegúrate de haber autorizado la IP en Brevo.');
-        this.toastMessage = null;
+        this.toastMessage = 'Hubo un error al enviar. Revisa la consola o asegúrate de que Brevo permita el remitente.';
+        this.cdr.detectChanges();
+        setTimeout(() => {
+          this.toastMessage = null;
+          this.cdr.detectChanges();
+        }, 5000);
       }
     });
   }
@@ -366,12 +358,58 @@ export class SaasAdminComponent implements OnInit {
   cargarEmpresas() {
     this.empresaService.getEmpresas().subscribe({
       next: (data) => {
-        this.empresas = data;
+        this.empresas = data.map((emp: any) => {
+          if (emp.tipo_empresa?.includes('Ventas y Servicios')) emp.tipo_empresa = 'Mixto';
+          else if (emp.tipo_empresa?.includes('Ventas')) emp.tipo_empresa = 'Ventas';
+          else if (emp.tipo_empresa?.includes('Servicios')) emp.tipo_empresa = 'Servicios';
+          return emp;
+        });
         this.empresasEnMora = data.filter((e: any) => e.activo && e.estado_pago === 'mora').length;
-        this.cdr.detectChanges(); // Forzar actualización de UI
+        this.cdr.detectChanges();
       },
       error: (err) => console.error('Error al cargar:', err),
     });
+  }
+
+  renovarSuscripcion(id: number) {
+    if (confirm('¿Estás seguro de registrar una nueva renovación? Se sumará 1 al contador y se adelantará el próximo pago 30 días.')) {
+      this.empresaService.renovarSuscripcion(id).subscribe({
+        next: (res) => {
+          this.cargarSuscripciones(); // Recargar la tabla
+        },
+        error: (err) => console.error('Error al renovar suscripción', err)
+      });
+    }
+  }
+
+  cargarTarifas() {
+    this.tarifaService.getTarifas().subscribe({
+      next: (data) => {
+        this.tarifaConfig = data;
+        this.cdr.detectChanges();
+      },
+      error: (err) => console.error('Error al cargar tarifas', err)
+    });
+  }
+
+  guardarTarifas() {
+    if (!this.tarifaConfig) return;
+    this.tarifaService.updateTarifas(this.tarifaConfig.id, this.tarifaConfig).subscribe({
+      next: () => {
+        alert('Tarifas actualizadas correctamente.');
+        this.cargarSuscripciones(); // Recalcular
+      },
+      error: (err) => console.error('Error guardando tarifas', err)
+    });
+  }
+
+  noRenovarSuscripcion(id: number) {
+    if (confirm('¿Estás seguro de NO renovar esta suscripción? El cliente pasará a Inactivo.')) {
+      this.empresaService.noRenovarSuscripcion(id).subscribe({
+        next: () => this.cargarSuscripciones(),
+        error: (err) => console.error('Error al cancelar', err)
+      });
+    }
   }
 
   cargarSuscripciones() {
@@ -398,7 +436,7 @@ export class SaasAdminComponent implements OnInit {
   abrirModal() {
     this.isEditMode = false;
     this.editingId = null;
-    this.nuevaEmpresa = { razon_social: '', nit: '', tipo_empresa: 'Servicios' };
+    this.nuevaEmpresa = { razon_social: '', nit: '', tipo_empresa: 'Servicios', fecha_inscripcion: '', periodo: 'Mensual', descuento: 'N/A' };
     this.showModal = true;
   }
 
@@ -409,6 +447,8 @@ export class SaasAdminComponent implements OnInit {
       razon_social: empresa.razon_social,
       nit: empresa.nit,
       tipo_empresa: empresa.tipo_empresa,
+      descuento: empresa.descuento || 'N/A',
+      periodo: empresa.periodo || 'Mensual'
     };
     this.showModal = true;
   }
@@ -459,7 +499,6 @@ export class SaasAdminComponent implements OnInit {
     if (!addonsPaquete) return;
 
     if (this.editingAddonId) {
-      // Editar existente
       this.modulosService.editarModuloGlobal(this.editingAddonId, this.nombreNuevoAddon.trim()).subscribe({
         next: () => {
           const sub = addonsPaquete.submodulos.find((s: any) => s.id === this.editingAddonId);
@@ -476,7 +515,6 @@ export class SaasAdminComponent implements OnInit {
         }
       });
     } else {
-      // Generamos un ID seguro para el frontend/backend
       const newId = 'a_' + this.nombreNuevoAddon.toLowerCase().replace(/[^a-z0-9]/g, '_');
       
       this.modulosService.crearModuloGlobal(newId, this.nombreNuevoAddon.trim(), 'addons').subscribe({
@@ -509,7 +547,7 @@ export class SaasAdminComponent implements OnInit {
       const sub = paquete.submodulos.find((s: any) => s.id === submoduloId);
       if (sub) {
         sub.activo = !sub.activo;
-        paquete.activo = paquete.submodulos.some((s: any) => s.activo); // Sincronizar
+        paquete.activo = paquete.submodulos.some((s: any) => s.activo);
       }
     }
   }
@@ -521,7 +559,7 @@ export class SaasAdminComponent implements OnInit {
     }
     const paquete = this.paquetesModulos.find((p) => p.id === paqueteId);
     if (paquete) {
-      paquete.activo = activar; // FIX: Actualizar el master toggle
+      paquete.activo = activar;
       paquete.submodulos.forEach((sub: any) => {
         if (sub.activo !== activar) {
           sub.activo = activar;
@@ -546,16 +584,20 @@ export class SaasAdminComponent implements OnInit {
         next: (res) => {
           console.log(`Paquete ${paquete.nombre} actualizado masivamente`, res);
           this.toastMessage = `¡Los cambios al paquete ${paquete.nombre} se han guardado correctamente!`;
+          this.cdr.detectChanges();
           setTimeout(() => {
             this.toastMessage = null;
-          }, 3000);
+            this.cdr.detectChanges();
+          }, 4000);
         },
         error: (err) => {
           console.error('Error al actualizar paquete masivamente', err);
           this.toastMessage = 'Error al guardar el paquete en el servidor.';
+          this.cdr.detectChanges();
           setTimeout(() => {
             this.toastMessage = null;
-          }, 3000);
+            this.cdr.detectChanges();
+          }, 4000);
         }
       });
     }
@@ -589,40 +631,32 @@ export class SaasAdminComponent implements OnInit {
   }
 
   actualizarUIModulos(modulosBD: any) {
-    // Recorremos los paquetes (ventas, servicios, etc.)
     Object.keys(modulosBD).forEach((paqueteClave) => {
-      // paqueteClave ej: 'ventas'
-      // Buscamos el paquete correspondiente en la UI (puede estar en mayúsculas o ser diferente)
       const paqueteUI = this.paquetesModulos.find(
         (p) => p.nombre.toLowerCase().includes(paqueteClave) || p.id === paqueteClave,
       );
       if (paqueteUI) {
-        const subsDB = modulosBD[paqueteClave]; // array de submódulos
+        const subsDB = modulosBD[paqueteClave];
         
-        // En lugar de sobrescribir, actualizamos el estado 'activo' de los que coincidan
-        // o añadimos los nuevos si no existían (vital para los Addons dinámicos)
         subsDB.forEach((sDB: any) => {
           const subUI = paqueteUI.submodulos.find((sUI: any) => sUI.id === sDB.id);
           
           if (subUI) {
-                subUI.activo = sDB.activo;
-                // Actualizar el nombre si es un Addon global editado
-                if (paqueteClave === 'addons') {
-                  subUI.nombre = sDB.nombre;
-                }
-              } else {
-                // Si el submódulo viene de la BD pero no está en la UI, lo agregamos!
-                paqueteUI.submodulos.push({
-                  id: sDB.id,
-                  nombre: sDB.nombre,
-                  activo: sDB.activo
-                });
-              }
+            subUI.activo = sDB.activo;
+            if (paqueteClave === 'addons') {
+              subUI.nombre = sDB.nombre;
+            }
+          } else {
+            paqueteUI.submodulos.push({
+              id: sDB.id,
+              nombre: sDB.nombre,
+              activo: sDB.activo
             });
+          }
+        });
 
-          // Sincronizar el master toggle basado en si los submódulos están activos
-          paqueteUI.activo = paqueteUI.submodulos.some((s: any) => s.activo);
-        }
+        paqueteUI.activo = paqueteUI.submodulos.some((s: any) => s.activo);
+      }
     });
     this.cdr.detectChanges();
   }
@@ -631,14 +665,14 @@ export class SaasAdminComponent implements OnInit {
     this.showModal = false;
     this.isEditMode = false;
     this.editingId = null;
-    this.nuevaEmpresa = { razon_social: '', nit: '', tipo_empresa: 'Servicios' };
+    this.nuevaEmpresa = { razon_social: '', nit: '', tipo_empresa: 'Servicios', fecha_inscripcion: '', periodo: 'Mensual', descuento: 'N/A' };
   }
 
   cerrarModal() {
     this.showModal = false;
     this.isEditMode = false;
     this.editingId = null;
-    this.nuevaEmpresa = { razon_social: '', nit: '', tipo_empresa: 'Servicios' };
+    this.nuevaEmpresa = { razon_social: '', nit: '', tipo_empresa: 'Servicios', fecha_inscripcion: '', periodo: 'Mensual', descuento: 'N/A' };
   }
 
   cerrarSuccessModal() {
@@ -647,7 +681,6 @@ export class SaasAdminComponent implements OnInit {
 
   guardarEmpresa() {
     if (this.isEditMode && this.editingId) {
-      // Editar
       this.empresaService.updateEmpresa(this.editingId, this.nuevaEmpresa).subscribe({
         next: () => {
           this.cargarEmpresas();
@@ -656,7 +689,6 @@ export class SaasAdminComponent implements OnInit {
         error: (err) => alert('Error al actualizar la empresa.'),
       });
     } else {
-      // Crear
       this.empresaService.createEmpresa(this.nuevaEmpresa).subscribe({
         next: (response) => {
           this.createdAdminEmail = response.admin_email;
@@ -699,5 +731,3 @@ export class SaasAdminComponent implements OnInit {
     this.authService.logout();
   }
 }
-
-

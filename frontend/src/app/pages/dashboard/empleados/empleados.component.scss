@@ -8,7 +8,6 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
-
   .header-info {
     h2 {
       margin: 0 0 0.5rem 0;
@@ -37,7 +36,6 @@
     cursor: pointer;
     box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
     transition: all 0.3s ease;
-
     &:hover {
       transform: translateY(-2px);
       box-shadow: 0 6px 16px rgba(79, 70, 229, 0.4);
@@ -60,7 +58,6 @@
 .premium-table {
   width: 100%;
   border-collapse: collapse;
-
   th {
     background: #f8fafc;
     padding: 1.25rem 1.5rem;
@@ -89,7 +86,6 @@
     display: flex;
     align-items: center;
     gap: 1rem;
-
     .avatar {
       width: 40px;
       height: 40px;
@@ -124,7 +120,6 @@
     border-radius: 50px;
     font-size: 0.85rem;
     font-weight: 700;
-
     &.status-active {
       background: #dcfce7;
       color: #15803d;
@@ -138,7 +133,6 @@
   .actions {
     display: flex;
     gap: 0.5rem;
-
     .action-btn {
       width: 32px;
       height: 32px;
@@ -150,7 +144,6 @@
       align-items: center;
       justify-content: center;
       transition: all 0.2s ease;
-
       &:hover {
         background: #e2e8f0;
         transform: scale(1.05);
@@ -159,7 +152,7 @@
   }
 }
 
-// Modal Styles
+/* --- 1. MODAL STYLES --- */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -181,14 +174,12 @@
   max-width: 600px;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
   overflow: hidden;
-
   .modal-header {
     padding: 1.5rem 2rem;
     border-bottom: 1px solid #e2e8f0;
     display: flex;
     justify-content: space-between;
     align-items: center;
-
     h3 {
       margin: 0;
       font-size: 1.5rem;
@@ -204,7 +195,6 @@
       cursor: pointer;
       line-height: 1;
       transition: color 0.2s;
-
       &:hover {
         color: #ef4444;
       }
@@ -221,7 +211,6 @@
       display: flex;
       gap: 1rem;
       align-items: flex-start;
-
       p {
         margin: 0;
         color: #1e40af;
@@ -235,12 +224,10 @@
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 1.25rem;
-
       .form-group {
         display: flex;
         flex-direction: column;
         gap: 0.5rem;
-
         label {
           font-weight: 600;
           color: #334155;
@@ -256,7 +243,6 @@
           background: #f8fafc;
           transition: all 0.2s;
           font-family: 'Outfit', sans-serif;
-
           &:focus {
             outline: none;
             border-color: #4f46e5;
@@ -274,7 +260,6 @@
       display: flex;
       justify-content: flex-end;
       gap: 1rem;
-
       button {
         padding: 0.75rem 1.5rem;
         border-radius: 10px;
@@ -282,12 +267,10 @@
         cursor: pointer;
         transition: all 0.2s;
         font-family: 'Outfit', sans-serif;
-
         &.btn-secondary {
           background: white;
           border: 1px solid #cbd5e1;
           color: #475569;
-
           &:hover {
             background: #f1f5f9;
           }
@@ -298,7 +281,6 @@
           border: none;
           color: white;
           box-shadow: 0 4px 6px rgba(79, 70, 229, 0.2);
-
           &:hover {
             background: #4338ca;
             transform: translateY(-1px);

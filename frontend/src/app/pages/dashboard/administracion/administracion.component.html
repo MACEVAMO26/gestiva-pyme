@@ -1,5 +1,4 @@
 <div class="admin-module fade-in">
-
   @if (currentView === 'dashboard') {
     <div class="admin-header">
       <h2>ADMINISTRACIÓN</h2>
@@ -7,10 +6,22 @@
     </div>
 
     <div class="admin-grid">
-      <!-- Tarjeta de la Empresa -->
+      <!-- HTML TARJETA EMPRESA -->
       <div class="admin-card blue-gradient" (click)="goToView('info-empresa')">
         <div class="card-icon">
-          <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="icon-lg"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21m-3.75 3.75h.008v.008h-.008v-.008Zm0 3h.008v.008h-.008v-.008Zm0 3h.008v.008h-.008v-.008Z" /></svg>
+          <svg
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+            class="icon-lg"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21m-3.75 3.75h.008v.008h-.008v-.008Zm0 3h.008v.008h-.008v-.008Zm0 3h.008v.008h-.008v-.008Z"
+            />
+          </svg>
         </div>
         <div class="card-content">
           <h3>{{ empresa?.razon_social || 'MI EMPRESA' | uppercase }}</h3>
@@ -18,10 +29,22 @@
         </div>
       </div>
 
-      <!-- Tarjeta Gestión de Sedes -->
+      <!-- HTML TARJETA GESTION SEDES -->
       <div class="admin-card glass-card">
         <div class="card-icon cyan">
-          <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="icon-lg"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21m-3.75 3.75h.008v.008h-.008v-.008Zm0 3h.008v.008h-.008v-.008Zm0 3h.008v.008h-.008v-.008Z" /></svg>
+          <svg
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+            class="icon-lg"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21m-3.75 3.75h.008v.008h-.008v-.008Zm0 3h.008v.008h-.008v-.008Zm0 3h.008v.008h-.008v-.008Z"
+            />
+          </svg>
         </div>
         <div class="card-content">
           <h3>Gestión de Sedes</h3>
@@ -29,10 +52,22 @@
         </div>
       </div>
 
-      <!-- Tarjeta Gestión de Usuarios -->
+      <!-- HTML TARJETA GESTION USUARIOS -->
       <div class="admin-card glass-card">
         <div class="card-icon green">
-          <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="icon-lg"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" /></svg>
+          <svg
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+            class="icon-lg"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z"
+            />
+          </svg>
         </div>
         <div class="card-content">
           <h3>Gestión de Usuarios</h3>
@@ -40,10 +75,22 @@
         </div>
       </div>
 
-      <!-- Tarjeta Configuraciones de Seguridad -->
+      <!-- HTML TARJETA CONFIGURACIONES SEGURIDAD -->
       <div class="admin-card glass-card">
         <div class="card-icon teal">
-          <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="icon-lg"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" /></svg>
+          <svg
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+            class="icon-lg"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z"
+            />
+          </svg>
         </div>
         <div class="card-content">
           <h3>Configuraciones de Seguridad</h3>
@@ -56,88 +103,268 @@
   @if (currentView === 'info-empresa') {
     <div class="admin-header with-back">
       <button class="btn-back" (click)="goToView('dashboard')">
-        <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="icon-btn"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" /></svg> Volver
+        <svg
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="1.5"
+          stroke="currentColor"
+          class="icon-btn"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"
+          />
+        </svg>
+        Volver
       </button>
       <h2>Configuraciones Generales</h2>
     </div>
 
     <div class="info-card glass-panel">
       <div class="info-header">
-        <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="icon-md"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21m-3.75 3.75h.008v.008h-.008v-.008Zm0 3h.008v.008h-.008v-.008Zm0 3h.008v.008h-.008v-.008Z" /></svg>
+        <svg
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="1.5"
+          stroke="currentColor"
+          class="icon-md"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21m-3.75 3.75h.008v.008h-.008v-.008Zm0 3h.008v.008h-.008v-.008Zm0 3h.008v.008h-.008v-.008Z"
+          />
+        </svg>
         <h3>Información de la Empresa</h3>
       </div>
 
       <div class="alert-warning">
-        <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="icon-md text-orange"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3Z" /></svg>
-        <p>Los cambios en datos sensibles (NIT, Teléfono, Dirección) serán enviados a revisión y aprobación por GestivaPyme.</p>
+        <svg
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="1.5"
+          stroke="currentColor"
+          class="icon-md text-orange"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3Z"
+          />
+        </svg>
+        <p>
+          Los cambios en datos sensibles (NIT, Teléfono, Dirección) serán enviados a revisión y
+          aprobación por GestivaPyme.
+        </p>
       </div>
 
       <form class="company-form" (ngSubmit)="solicitarCambioDatos()">
-        
         <div class="form-row">
           <div class="form-group">
             <label>Nombre de la Empresa:</label>
-            <input type="text" name="nombre" [(ngModel)]="formData.nombre" class="form-control" placeholder="Nombre oficial">
+            <input
+              type="text"
+              name="nombre"
+              [(ngModel)]="formData.nombre"
+              class="form-control"
+              placeholder="Nombre oficial"
+            />
           </div>
         </div>
 
         <div class="form-row split">
           <div class="form-group">
             <label>NIT / ID Fiscal Principal:</label>
-            <input type="text" name="nit" [(ngModel)]="formData.nit" class="form-control" placeholder="NIT o identificador">
+            <input
+              type="text"
+              name="nit"
+              [(ngModel)]="formData.nit"
+              class="form-control"
+              placeholder="NIT o identificador"
+            />
           </div>
           <div class="form-group">
             <label>Teléfono Principal:</label>
-            <input type="text" name="telefono" [(ngModel)]="formData.telefono" class="form-control" placeholder="Número de teléfono">
+            <input
+              type="text"
+              name="telefono"
+              [(ngModel)]="formData.telefono"
+              class="form-control"
+              placeholder="Número de teléfono"
+            />
           </div>
         </div>
 
         <div class="form-row">
           <div class="form-group">
             <label>Dirección Fiscal Principal:</label>
-            <input type="text" name="direccion" [(ngModel)]="formData.direccion" class="form-control" placeholder="Dirección legal completa">
+            <input
+              type="text"
+              name="direccion"
+              [(ngModel)]="formData.direccion"
+              class="form-control"
+              placeholder="Dirección legal completa"
+            />
           </div>
         </div>
 
         <div class="form-row split">
           <div class="form-group">
             <label>Correo Principal:</label>
-            <input type="email" name="email" [(ngModel)]="formData.email" class="form-control" placeholder="correo@empresa.com">
+            <input
+              type="email"
+              name="email"
+              [(ngModel)]="formData.email"
+              class="form-control"
+              placeholder="correo@empresa.com"
+            />
           </div>
           <div class="form-group">
             <label>Logotipo de la Empresa:</label>
-            <input type="file" name="logo" class="form-control file-input">
+            <input
+              type="file"
+              name="logo"
+              class="form-control file-input"
+              (change)="onLogoSelected($event)"
+              accept="image/png, image/jpeg"
+            />
+          </div>
+          <div class="form-group">
+            <label>Documento de Soporte (Ej. RUT si cambia NIT):</label>
+            <input
+              type="file"
+              name="documento"
+              class="form-control file-input"
+              (change)="onDocumentoSelected($event)"
+              accept="application/pdf, image/png, image/jpeg"
+            />
           </div>
         </div>
 
         <div class="form-row">
           <div class="form-group">
             <label>Eslogan o Pie de Página (opcional):</label>
-            <textarea name="eslogan" [(ngModel)]="formData.eslogan" class="form-control" rows="2" placeholder="Texto para pie de documentos"></textarea>
+            <textarea
+              name="eslogan"
+              [(ngModel)]="formData.eslogan"
+              class="form-control"
+              rows="2"
+              placeholder="Texto para pie de documentos"
+            ></textarea>
           </div>
         </div>
 
         <div class="form-actions">
-          <button type="submit" class="btn-primary" [disabled]="isSubmitting">
+          <button
+            type="submit"
+            class="btn-primary"
+            [disabled]="isSubmitting"
+            (click)="solicitarCambioDatos()"
+          >
             {{ isSubmitting ? 'Enviando...' : 'Guardar Información Empresa' }}
           </button>
         </div>
       </form>
     </div>
 
-    <!-- Peticiones Adicionales -->
+    <!-- HTML PETICIONES ADICIONALES -->
     <div class="extra-actions-card glass-panel">
       <h3>Acciones Adicionales</h3>
       <p>Servicios especiales gestionados directamente por GestivaPyme.</p>
-      <div class="actions-grid">
+      <!-- HTML HISTORIAL SOLICITUDES -->
+      <div class="history-section mt-4 pt-4 border-t border-gray-700">
+        <h3 class="text-xl text-white font-semibold mb-4">
+          Historial de Solicitudes a GestivaPyme
+        </h3>
+        <div class="table-responsive">
+          <table class="premium-table">
+            <thead>
+              <tr>
+                <th>Fecha</th>
+                <th>Tipo</th>
+                <th>Estado</th>
+                <th>Mensaje / Notas SAAS</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (req of misSolicitudes; track req.id) {
+                <tr>
+                  <td>{{ req.created_at | date: 'shortDate' }}</td>
+                  <td>{{ req.tipo }}</td>
+                  <td>
+                    <span
+                      class="status-badge"
+                      [ngClass]="{
+                        'status-active': req.estado === 'aprobado',
+                        'status-inactive': req.estado === 'rechazado',
+                        'status-pending': req.estado === 'pendiente',
+                      }"
+                    >
+                      {{ req.estado | uppercase }}
+                    </span>
+                  </td>
+                  <td class="text-gray-400">
+                    {{ req.notas_propietaria || 'Sin comentarios' }}
+                  </td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="4" class="empty-state">No tienes solicitudes recientes.</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="actions-grid mt-4">
         <button class="btn-outline-action" (click)="solicitarMigracion()" [disabled]="isSubmitting">
-          <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="icon-action"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" /></svg> Solicitar Migración de Datos
+          <svg
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+            class="icon-action"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"
+            />
+          </svg>
+          Solicitar Migración de Datos
         </button>
         <button class="btn-outline-action" (click)="solicitarSoporte()" [disabled]="isSubmitting">
-          <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="icon-action"><path stroke-linecap="round" stroke-linejoin="round" d="M11.42 15.17L17.25 21A2.652 2.652 0 0021 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655 5.653a2.548 2.548 0 11-3.586-3.586l6.837-5.63m5.108-.233c.55-.164 1.163-.188 1.743-.015a5.223 5.223 0 00-3.236-9.683c-1.641 0-3.119.713-4.114 1.838m7.532 4.786l-4.69 4.69m-5.64-1.533a1.5 1.5 0 11-2.121-2.121 1.5 1.5 0 012.121 2.121z" /></svg> Solicitar Soporte Técnico
+          <svg
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+            class="icon-action"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M11.42 15.17L17.25 21A2.652 2.652 0 0021 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655 5.653a2.548 2.548 0 11-3.586-3.586l6.837-5.63m5.108-.233c.55-.164 1.163-.188 1.743-.015a5.223 5.223 0 00-3.236-9.683c-1.641 0-3.119.713-4.114 1.838m7.532 4.786l-4.69 4.69m-5.64-1.533a1.5 1.5 0 11-2.121-2.121 1.5 1.5 0 012.121 2.121z"
+            />
+          </svg>
+          Solicitar Soporte Técnico
         </button>
         <button class="btn-outline-action" (click)="goToPagos()" [disabled]="isSubmitting">
-          <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="icon-action"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Z" /></svg> Enviar Comprobante de Pago
+          <svg
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+            class="icon-action"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Z"
+            />
+          </svg>
+          Enviar Comprobante de Pago
         </button>
       </div>
     </div>
@@ -146,13 +373,23 @@
   @if (currentView === 'pagos') {
     <div class="admin-header with-back">
       <button class="btn-back" (click)="goToView('dashboard')">
-        <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="icon-btn"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" /></svg> Volver
+        <svg
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="1.5"
+          stroke="currentColor"
+          class="icon-btn"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"
+          />
+        </svg>
+        Volver
       </button>
       <h2>Enviar Comprobante de Pago Mensual</h2>
     </div>
     <app-pagos></app-pagos>
   }
-
 </div>
-
-

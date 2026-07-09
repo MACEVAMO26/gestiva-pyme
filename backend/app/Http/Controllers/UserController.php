@@ -9,14 +9,13 @@ use Illuminate\Validation\Rule;
 
 class UserController extends Controller
 {
-    // Listar
+    // Trae los usuarios de la misma empresa
     public function index()
     {
-        // Aislar por la empresa del usuario autenticado
         return User::where('empresa_id', auth()->user()->empresa_id)->get();
     }
 
-    // Crear
+    // Registra un nuevo empleado o usuario
     public function store(Request $request)
     {
         $validatedData = $request->validate([
@@ -33,10 +32,10 @@ class UserController extends Controller
             'apellidos' => $validatedData['apellidos'],
             'documento' => $validatedData['documento'],
             'email' => $validatedData['email'],
-            // La contraseña inicial es el documento, y debe cambiarla.
+            // Usa el documento como clave temporal
             'password_hash' => Hash::make($validatedData['documento']),
             'debe_cambiar_clave' => true,
-            // Forzamos el empresa_id del administrador autenticado
+            // Asigna la misma empresa del admin al nuevo usuario
             'empresa_id' => auth()->user()->empresa_id,
             'cargo_id' => $validatedData['cargo_id'],
             'rol_id' => $validatedData['rol_id'],
@@ -45,15 +44,13 @@ class UserController extends Controller
         return response()->json($user, 201);
     }
 
-    // Mostrar
-    
+    // Trae la informacion de un usuario especifico
     public function show($id)
     {
         return User::findOrFail($id);
     }
 
-    // Actualizar
-    
+    // Actualiza la informacion de un usuario
     public function update(Request $request, $id)
     {
         $user = User::findOrFail($id);
@@ -72,8 +69,7 @@ class UserController extends Controller
         return response()->json($user);
     }
 
-    // Cambiar estado
-    
+    // Activa o inactiva un usuario en el sistema
     public function changeStatus($id)
     {
         $user = User::findOrFail($id);
@@ -85,5 +81,24 @@ class UserController extends Controller
 
         $message = $user->activo ? 'Usuario activado correctamente.' : 'Usuario inactivado correctamente.';
         return response()->json(['message' => $message]);
+    }
+
+    // Sube o actualiza la foto de perfil del usuario
+    public function uploadAvatar(Request $request)
+    {
+        $user = auth()->user();
+        if (!$user) {
+            return response()->json(['error' => 'No autenticado'], 401);
+        }
+
+        if ($request->hasFile('avatar')) {
+            $path = $request->file('avatar')->store('avatars', 'public');
+            $user->avatar_url = '/storage/' . $path;
+        } elseif ($request->has('avatar_url')) {
+            $user->avatar_url = $request->input('avatar_url');
+        }
+
+        $user->save();
+        return response()->json(['avatar_url' => $user->avatar_url], 200);
     }
 }

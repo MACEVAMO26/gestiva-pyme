@@ -9,11 +9,11 @@ class Role extends Model
 {
     use HasFactory;
 
-    // Sin timestamps
+    // --- TIMESTAMPS ---
       
     public $timestamps = false;
  
-    // Campos
+    // --- CAMPOS ---
 
     protected $fillable = [
         'empresa_id',
@@ -22,7 +22,7 @@ class Role extends Model
         'activo'
     ];
        
-    // Relaciones
+    // --- RELACIONES ---
 
     public function permisos()
     {

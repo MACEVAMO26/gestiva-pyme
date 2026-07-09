@@ -9,15 +9,15 @@ class Producto extends Model
 {
     use HasFactory;
 
-    // Tabla
+    // --- TABLA ---
     
     protected $table = 'productos';
 
-    // Timestamps
+    // --- TIMESTAMPS ---
     
     public $timestamps = false;
 
-    // Campos
+    // --- CAMPOS ---
     
     protected $fillable = [
         'categoria_id', 
@@ -32,7 +32,7 @@ class Producto extends Model
         'fecha_inactivacion'
     ];
 
-    // Relaciones
+    // --- RELACIONES ---
     
     public function empresa()
     {

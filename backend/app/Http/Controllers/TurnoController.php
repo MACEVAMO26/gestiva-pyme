@@ -4,20 +4,18 @@ namespace App\Http\Controllers;
 
 use App\Models\Turno;
 use App\Models\AsignacionTurno;
-use App\Models\Vacacion; // Para validar
+use App\Models\Vacacion;
 use Illuminate\Http\Request;
 
 class TurnoController extends Controller
 {
-    // Listar
-    // Listar
+    // Trae la lista de turnos y sus asignaciones
     public function index()
     {
         return Turno::with('asignaciones.usuario')->get();
     }
 
-    // Crear
-    // Crear
+    // Crea un nuevo turno
     public function store(Request $request)
     {
         $validatedData = $request->validate([
@@ -31,15 +29,13 @@ class TurnoController extends Controller
         return response()->json($turno, 201);
     }
 
-    // Mostrar
-    // Mostrar
+    // Muestra la informacion detallada de un turno
     public function show($id)
     {
         return Turno::with('asignaciones.usuario')->findOrFail($id);
     }
 
-    // Actualizar
-    // Actualizar
+    // Actualiza los datos de un turno existente
     public function update(Request $request, $id)
     {
         $turno = Turno::findOrFail($id);
@@ -55,7 +51,7 @@ class TurnoController extends Controller
         return response()->json($turno);
     }
 
-    // Inactivar
+    // Cambia el estado activo o inactivo del turno
     public function changeStatus($id)
     {
         $turno = Turno::findOrFail($id);
@@ -67,7 +63,7 @@ class TurnoController extends Controller
         return response()->json(['message' => $message]);
     }
 
-    // Asignar turno
+    // Asigna un turno a un usuario validando sus vacaciones
     public function asignarTurno(Request $request, $id)
     {
         $turno = Turno::findOrFail($id);

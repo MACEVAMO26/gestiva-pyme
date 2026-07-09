@@ -10,14 +10,14 @@ class OrdenCompra extends Model
 {
     use HasFactory;
 
-    // Tabla
+    // --- TABLA ---
 
     protected $table = 'ordenes_compra';
 
-    // Timestamps
+    // --- TIMESTAMPS ---
     public $timestamps = false;
 
-    // Campos
+    // --- CAMPOS ---
 
     protected $fillable = [
         'proveedor_id',
@@ -29,7 +29,7 @@ class OrdenCompra extends Model
         'total',
     ];
 
-    // Relaciones
+    // --- RELACIONES ---
     
     public function detalles()
     {

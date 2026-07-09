@@ -7,15 +7,14 @@ use Illuminate\Http\Request;
 
 class InventarioController extends Controller
 {
-    // Listar
-   
+    // --- GESTIÓN DE INVENTARIO ---
+    // Obtiene la lista de inventario incluyendo los detalles del producto asociado
     public function index()
     {
         return Inventario::with('producto')->get();
     }
 
-    // Crear
-   
+    // Registra una nueva entrada en el inventario inicializando cantidades
     public function store(Request $request)
     {
         $validatedData = $request->validate([
@@ -32,15 +31,13 @@ class InventarioController extends Controller
         return response()->json($inventario, 201);
     }
 
-    // Mostrar
-    
+    // Retorna los detalles de un registro específico de inventario
     public function show($id)
     {
         return Inventario::with('producto')->findOrFail($id);
     }
 
-    // Actualizar
-   
+    // Actualiza las cantidades y datos de ubicación de un registro de inventario
     public function update(Request $request, $id)
     {
         $inventario = Inventario::findOrFail($id);
@@ -58,8 +55,7 @@ class InventarioController extends Controller
         return response()->json($inventario);
     }
 
-    // Eliminar
-    
+    // Elimina permanentemente un registro de inventario del sistema
     public function destroy($id)
     {
         $inventario = Inventario::findOrFail($id);
