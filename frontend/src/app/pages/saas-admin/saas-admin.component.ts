@@ -13,6 +13,21 @@ import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { ModulosService } from '../../services/modulos.service';
 
+export interface SuscripcionEmpresa {
+  id: number;
+  empresaId: number;
+  nombreEmpresa: string;
+  fechaInscripcion: string;
+  plan: 'Mensual' | 'Anual';
+  modulosExtra: number; // Cantidad de transversales (20k c/u)
+  addonsList: { nombre: string, valor: number }[]; // Conectores externos
+  descuentosAplicados: { descripcion: 'N/A' | 'Referido 10%' | 'Mes Gratis', porcentaje: number }[];
+  cargosExtra: { descripcion: string, valor: number }[]; // Cargos por soporte técnico u otros
+  fechaProximoPago: Date;
+  estado: 'Activa' | 'Inactiva' | 'En Mora';
+  renovaciones: number;
+}
+
 @Component({
   selector: 'app-saas-admin',
   standalone: true,
@@ -42,7 +57,185 @@ export class SaasAdminComponent implements OnInit {
     nit: '',
     tipo_empresa: 'Servicios',
   };
+  listaDescuentosEmpresa: string[] = [];
   currentView = 'dashboard';
+
+  // --- MOCK DATOS SUSCRIPCIONES ---
+  mockSuscripciones: SuscripcionEmpresa[] = [
+    {
+      id: 1,
+      empresaId: 101, // Mock
+      nombreEmpresa: 'Empresa Ventas Demo',
+      fechaInscripcion: '12/Ene/2026',
+      plan: 'Mensual',
+      modulosExtra: 1,
+      addonsList: [{ nombre: 'Conector Factura Electrónica', valor: 10000 }],
+      descuentosAplicados: [],
+      cargosExtra: [],
+      fechaProximoPago: new Date('2026-08-12'),
+      estado: 'Activa',
+      renovaciones: 6
+    },
+    {
+      id: 2,
+      empresaId: 102,
+      nombreEmpresa: 'Empresa Servicios Demo',
+      fechaInscripcion: '05/Mar/2026',
+      plan: 'Anual',
+      modulosExtra: 0,
+      addonsList: [],
+      descuentosAplicados: [{ descripcion: 'Referido 10%', porcentaje: 10 }],
+      cargosExtra: [],
+      fechaProximoPago: new Date('2027-03-05'),
+      estado: 'Activa',
+      renovaciones: 0
+    },
+    {
+      id: 3,
+      empresaId: 103,
+      nombreEmpresa: 'Empresa Mixta Demo',
+      fechaInscripcion: '20/Abr/2026',
+      plan: 'Mensual',
+      modulosExtra: 0,
+      addonsList: [],
+      descuentosAplicados: [],
+      cargosExtra: [{ descripcion: 'Soporte técnico 3 hrs', valor: 15000 }],
+      fechaProximoPago: new Date('2026-07-20'),
+      estado: 'En Mora',
+      renovaciones: 2
+    }
+  ];
+
+  // --- VARIABLES PARA GESTIÓN DE SUSCRIPCIÓN ---
+  showGestionSuscripcionModal = false;
+  suscripcionEnEdicion: SuscripcionEmpresa | null = null;
+
+  calcularTotalSuscripcion(suscripcion: SuscripcionEmpresa): number {
+    let subtotal = 0;
+    
+    if (suscripcion.plan === 'Mensual') {
+      subtotal += 70000;
+      subtotal += (suscripcion.modulosExtra * 20000);
+    } else if (suscripcion.plan === 'Anual') {
+      subtotal += 770000; // 11 meses base
+      subtotal += (suscripcion.modulosExtra * 220000); // 11 meses de transversales
+    }
+    
+    // Sumar todos los porcentajes de descuento
+    let porcentajeTotalDesc = 0;
+    suscripcion.descuentosAplicados.forEach(desc => {
+      porcentajeTotalDesc += desc.porcentaje;
+    });
+
+    // El descuento aplica sobre el subtotal (plan base + transversales)
+    let total = subtotal;
+    if (porcentajeTotalDesc > 0) {
+      total = total - (total * (porcentajeTotalDesc / 100));
+    }
+    
+    // Los addons y el soporte no tienen descuento
+    suscripcion.addonsList.forEach(addon => {
+      total += addon.valor;
+    });
+
+    suscripcion.cargosExtra.forEach(cargo => {
+      // El soporte es gratuito si la empresa tiene plan Anual
+      if (suscripcion.plan !== 'Anual') {
+        total += cargo.valor;
+      }
+    });
+    
+    return total;
+  }
+
+  renovarMockSuscripcion(suscripcionId: number) {
+    const sub = this.mockSuscripciones.find(s => s.id === suscripcionId);
+    if (!sub) return;
+    
+    // Lógica para adelantar la fecha
+    const nuevaFecha = new Date(sub.fechaProximoPago);
+    if (sub.plan === 'Mensual') {
+      nuevaFecha.setMonth(nuevaFecha.getMonth() + 1);
+    } else {
+      nuevaFecha.setFullYear(nuevaFecha.getFullYear() + 1);
+    }
+    
+    sub.fechaProximoPago = nuevaFecha;
+    sub.cargosExtra = []; // Se resetean los cargos tras pagar
+    sub.descuentosAplicados = []; // Se resetean los descuentos a un solo uso
+    sub.estado = 'Activa';
+    sub.renovaciones += 1;
+    
+    alert(`Suscripción de ${sub.nombreEmpresa} renovada exitosamente hasta el ${nuevaFecha.toLocaleDateString()}.`);
+  }
+
+  // --- MÉTODOS DEL MODAL DE GESTIÓN ---
+  abrirModalGestionSuscripcion(suscripcion: SuscripcionEmpresa) {
+    // Clonamos profundamente para no mutar los originales hasta guardar
+    this.suscripcionEnEdicion = JSON.parse(JSON.stringify(suscripcion));
+    this.showGestionSuscripcionModal = true;
+  }
+
+  cerrarModalGestionSuscripcion() {
+    this.suscripcionEnEdicion = null;
+    this.showGestionSuscripcionModal = false;
+  }
+
+  agregarCargoExtra() {
+    if (this.suscripcionEnEdicion) {
+      this.suscripcionEnEdicion.cargosExtra.push({ descripcion: '', valor: 0 });
+    }
+  }
+
+  eliminarCargoExtra(index: number) {
+    if (this.suscripcionEnEdicion) {
+      this.suscripcionEnEdicion.cargosExtra.splice(index, 1);
+    }
+  }
+
+  agregarDescuento() {
+    if (this.suscripcionEnEdicion) {
+      this.suscripcionEnEdicion.descuentosAplicados.push({ descripcion: 'N/A', porcentaje: 0 });
+    }
+  }
+
+  eliminarDescuento(index: number) {
+    if (this.suscripcionEnEdicion) {
+      this.suscripcionEnEdicion.descuentosAplicados.splice(index, 1);
+    }
+  }
+  
+  agregarSuscripcionAddon() {
+    if (this.suscripcionEnEdicion) {
+      this.suscripcionEnEdicion.addonsList.push({ nombre: '', valor: 0 });
+    }
+  }
+
+  eliminarSuscripcionAddon(index: number) {
+    if (this.suscripcionEnEdicion) {
+      this.suscripcionEnEdicion.addonsList.splice(index, 1);
+    }
+  }
+
+  guardarGestionSuscripcion() {
+    if (!this.suscripcionEnEdicion) return;
+    
+    const index = this.mockSuscripciones.findIndex(s => s.id === this.suscripcionEnEdicion!.id);
+    if (index > -1) {
+      // Reemplazamos los datos originales con los editados
+      this.mockSuscripciones[index] = this.suscripcionEnEdicion;
+    }
+    
+    this.cerrarModalGestionSuscripcion();
+  }
+
+  suspenderMockSuscripcion(suscripcionId: number) {
+    const sub = this.mockSuscripciones.find(s => s.id === suscripcionId);
+    if (sub) {
+      sub.estado = 'Inactiva';
+      alert(`Suscripción de ${sub.nombreEmpresa} ha sido suspendida.`);
+    }
+  }
   solicitudes: any[] = [];
   solicitudesPendientes: number = 0;
   paquetesModulos: any[] = [];
@@ -436,6 +629,7 @@ export class SaasAdminComponent implements OnInit {
   abrirModal() {
     this.isEditMode = false;
     this.editingId = null;
+    this.listaDescuentosEmpresa = [];
     this.nuevaEmpresa = { razon_social: '', nit: '', tipo_empresa: 'Servicios', fecha_inscripcion: '', periodo: 'Mensual', descuento: 'N/A' };
     this.showModal = true;
   }
@@ -443,14 +637,24 @@ export class SaasAdminComponent implements OnInit {
   editarEmpresa(empresa: any) {
     this.isEditMode = true;
     this.editingId = empresa.id;
+    this.listaDescuentosEmpresa = (empresa.descuento && empresa.descuento !== 'N/A') ? empresa.descuento.split(',').map((d: string) => d.trim()) : [];
     this.nuevaEmpresa = {
       razon_social: empresa.razon_social,
       nit: empresa.nit,
       tipo_empresa: empresa.tipo_empresa,
       descuento: empresa.descuento || 'N/A',
-      periodo: empresa.periodo || 'Mensual'
+      periodo: empresa.periodo || 'Mensual',
+      fecha_inscripcion: empresa.fecha_inscripcion
     };
     this.showModal = true;
+  }
+
+  agregarDescuentoEmpresaForm() {
+    this.listaDescuentosEmpresa.push('N/A');
+  }
+
+  eliminarDescuentoEmpresaForm(index: number) {
+    this.listaDescuentosEmpresa.splice(index, 1);
   }
 
   agregarConector() {
@@ -665,17 +869,11 @@ export class SaasAdminComponent implements OnInit {
     this.cdr.detectChanges();
   }
 
-  cerrarSesionLocal(): void {
-    this.showModal = false;
-    this.isEditMode = false;
-    this.editingId = null;
-    this.nuevaEmpresa = { razon_social: '', nit: '', tipo_empresa: 'Servicios', fecha_inscripcion: '', periodo: 'Mensual', descuento: 'N/A' };
-  }
-
   cerrarModal() {
     this.showModal = false;
     this.isEditMode = false;
     this.editingId = null;
+    this.listaDescuentosEmpresa = [];
     this.nuevaEmpresa = { razon_social: '', nit: '', tipo_empresa: 'Servicios', fecha_inscripcion: '', periodo: 'Mensual', descuento: 'N/A' };
   }
 
@@ -684,9 +882,15 @@ export class SaasAdminComponent implements OnInit {
   }
 
   guardarEmpresa() {
+    // Preparar el campo descuento uniendo el array
+    this.nuevaEmpresa.descuento = this.listaDescuentosEmpresa.filter(d => d !== 'N/A').length > 0 
+      ? this.listaDescuentosEmpresa.filter(d => d !== 'N/A').join(', ') 
+      : 'N/A';
+
     if (this.isEditMode && this.editingId) {
       this.empresaService.updateEmpresa(this.editingId, this.nuevaEmpresa).subscribe({
         next: () => {
+          this.sincronizarMockSuscripciones();
           this.cargarEmpresas();
           this.cerrarModal();
         },
@@ -697,11 +901,25 @@ export class SaasAdminComponent implements OnInit {
         next: (response) => {
           this.createdAdminEmail = response.admin_email;
           this.showSuccessModal = true;
+          this.sincronizarMockSuscripciones();
           this.cargarEmpresas();
           this.cerrarModal();
         },
         error: (err) => alert('Error al crear la empresa. Revisa los datos (ej. NIT duplicado).'),
       });
+    }
+  }
+
+  private sincronizarMockSuscripciones() {
+    // Reflejar la realidad de los descuentos de la empresa en la tabla de suscripciones
+    const sub = this.mockSuscripciones.find(s => s.nombreEmpresa === this.nuevaEmpresa.razon_social);
+    if (sub) {
+      sub.descuentosAplicados = this.listaDescuentosEmpresa
+        .filter(d => d !== 'N/A')
+        .map(d => ({
+          descripcion: d,
+          porcentaje: d === 'Mes Gratis' ? 8.33 : (d === 'Referido 10%' ? 10 : 0)
+        } as any));
     }
   }
 

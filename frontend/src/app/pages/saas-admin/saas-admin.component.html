@@ -275,6 +275,7 @@
                   <th>ID</th>
                   <th>Razón Social</th>
                   <th>NIT</th>
+                  <th>Fecha Inscripción</th>
                   <th class="text-center">Módulos Asignados</th>
                   <th>Estado</th>
                   <th class="text-right">Acciones</th>
@@ -286,6 +287,7 @@
                     <td>{{ empresa.id }}</td>
                     <td class="font-500">{{ empresa.razon_social }}</td>
                     <td>{{ empresa.nit }}</td>
+                    <td>{{ empresa.fecha_inscripcion ? (empresa.fecha_inscripcion | date:'mediumDate') : 'No registrada' }}</td>
                     <td class="text-center">
                       <span class="badge-modulos">{{ empresa.tipo_empresa }}</span>
                     </td>
@@ -458,6 +460,11 @@
       @if (currentView === 'suscripciones') {
         <!-- BANDEJA DE SUSCRIPCIONES -->
         <div class="glass-panel mt-2rem">
+          <div class="mb-8">
+            <h2 class="text-3xl font-bold text-white tracking-wide text-center uppercase mb-6">
+              Bandeja de Suscripciones
+            </h2>
+          </div>
           <h3 class="panel-title mb-6">Métricas Financieras (MRR)</h3>
 
           <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
@@ -495,34 +502,116 @@
             </div>
           </div>
 
-          <h3 class="panel-title mb-4">Listado de Suscripciones</h3>
-          @if (suscripcionesList.length > 0) {
+          <h3 class="panel-title mb-4">Gestión de Tarifas y Suscripciones</h3>
+          @if (mockSuscripciones.length > 0) {
             <div class="table-responsive">
-              <table class="data-table font-inter">
+              <table class="data-table font-inter text-sm w-full text-left">
                 <thead>
-                  <tr>
-                    <th>Empresa</th>
-                    <th>Plan Base</th>
-                    <th>Valor Mensual</th>
-                    <th>Próximo Pago</th>
-                    <th>Estado</th>
+                  <tr class="bg-gray-800 text-gray-400">
+                    <th class="p-4 font-semibold uppercase tracking-wider">Empresa / Detalles</th>
+                    <th class="p-4 font-semibold uppercase tracking-wider">Plan Adquirido</th>
+                    <th class="p-4 font-semibold uppercase tracking-wider">Extras</th>
+                    <th class="p-4 font-semibold uppercase tracking-wider">Descuentos</th>
+                    <th class="p-4 font-semibold uppercase tracking-wider">Soporte Técnico</th>
+                    <th class="p-4 font-semibold uppercase tracking-wider">Próximo Pago Total</th>
+                    <th class="p-4 font-semibold uppercase tracking-wider">Fecha</th>
+                    <th class="p-4 font-semibold uppercase tracking-wider text-center">Estado</th>
+                    <th class="p-4 font-semibold uppercase tracking-wider text-center">Acciones</th>
                   </tr>
                 </thead>
-                <tbody>
-                  @for (sus of suscripcionesList; track sus.id) {
-                    <tr>
-                      <td class="font-500">{{ sus.empresa }}</td>
-                      <td>{{ sus.plan }}</td>
-                      <td>${{ sus.valor | number: '1.0-0' }}</td>
-                      <td>{{ sus.proximoPago | date: 'mediumDate' }}</td>
-                      <td>
-                        @if (sus.estado === 'Al Día') {
-                          <span class="status-aldia">Al Día</span>
-                        } @else if (sus.estado === 'En Mora') {
-                          <span class="status-mora">En Mora</span>
+                <tbody class="divide-y divide-gray-700">
+                  @for (sus of mockSuscripciones; track sus.id) {
+                    <tr class="hover:bg-gray-800/50 transition-colors">
+                      <td class="p-4">
+                        <div class="font-bold text-white">{{ sus.nombreEmpresa }}</div>
+                        <div class="text-xs text-gray-400 mt-1">
+                          Inscripción: {{ sus.fechaInscripcion }}<br/>
+                          Renovaciones: <span class="text-blue-300 font-semibold">{{ sus.renovaciones }}</span>
+                        </div>
+                      </td>
+                      <td class="p-4">
+                        <span class="px-2 py-1 bg-blue-900/30 text-blue-300 rounded-md text-xs font-semibold border border-blue-800">
+                          {{ sus.plan }}
+                        </span>
+                      </td>
+                      <td class="p-4">
+                        @if (sus.modulosExtra > 0 || sus.addonsList.length > 0) {
+                          <div class="flex flex-col gap-1">
+                            @if (sus.modulosExtra > 0) {
+                              <span class="text-xs text-emerald-400">+{{ sus.modulosExtra }} Transversales</span>
+                            }
+                            @if (sus.addonsList.length > 0) {
+                              <span class="text-xs text-indigo-400">+{{ sus.addonsList.length }} Add-ons</span>
+                            }
+                          </div>
                         } @else {
-                          <span class="status-inactiva">{{ sus.estado }}</span>
+                          <span class="text-xs text-gray-500">Ninguno</span>
                         }
+                      </td>
+                      <td class="p-4">
+                        @if (sus.descuentosAplicados.length > 0) {
+                          <div class="flex flex-col gap-1">
+                            @for (desc of sus.descuentosAplicados; track desc.descripcion) {
+                              <span class="text-xs text-yellow-400 font-medium">{{ desc.descripcion }} (-{{ desc.porcentaje }}%)</span>
+                            }
+                          </div>
+                        } @else {
+                          <span class="text-xs text-gray-500">N/A</span>
+                        }
+                      </td>
+                      <td class="p-4">
+                        @if (sus.cargosExtra.length > 0) {
+                          <div class="flex flex-col gap-1">
+                            @for (cargo of sus.cargosExtra; track cargo.descripcion) {
+                              <span class="text-xs font-bold text-orange-400">+${{ cargo.valor | number: '1.0-0' }} <span class="text-[10px] font-normal">({{cargo.descripcion}})</span></span>
+                            }
+                          </div>
+                        } @else {
+                          <span class="text-xs text-gray-500">$0</span>
+                        }
+                      </td>
+                      <td class="p-4">
+                        <span class="text-lg font-black text-emerald-400">
+                          ${{ calcularTotalSuscripcion(sus) | number: '1.0-0' }}
+                        </span>
+                      </td>
+                      <td class="p-4 text-gray-300 font-medium whitespace-nowrap">
+                        {{ sus.fechaProximoPago | date: 'mediumDate' }}
+                      </td>
+                      <td class="p-4 text-center">
+                        @if (sus.estado === 'Activa') {
+                          <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-900/50 text-emerald-300 border border-emerald-800">
+                            Activa
+                          </span>
+                        } @else if (sus.estado === 'En Mora') {
+                          <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-900/50 text-red-300 border border-red-800">
+                            En Mora
+                          </span>
+                        } @else {
+                          <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-700 text-gray-300 border border-gray-600">
+                            Inactiva
+                          </span>
+                        }
+                      </td>
+                      <td class="p-4">
+                        <div class="flex justify-center gap-2">
+                          <button (click)="abrirModalGestionSuscripcion(sus)" class="p-2 bg-gray-600 hover:bg-gray-500 text-white rounded-md transition-colors" title="Gestionar Tarifas">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                            </svg>
+                          </button>
+                          <button (click)="renovarMockSuscripcion(sus.id)" class="p-2 bg-blue-600 hover:bg-blue-500 text-white rounded-md transition-colors" title="Renovar">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                            </svg>
+                          </button>
+                          <button (click)="suspenderMockSuscripcion(sus.id)" class="p-2 bg-gray-700 hover:bg-gray-600 text-red-400 hover:text-red-300 rounded-md transition-colors" title="Suspender">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"></path>
+                            </svg>
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   }
@@ -1158,17 +1247,26 @@
           </select>
         </div>
         <div class="saas-form-group">
-          <label class="saas-label">Descuento Especial</label>
-          <select [(ngModel)]="nuevaEmpresa.descuento" name="descuento" class="saas-select">
-            <option value="N/A">N/A</option>
-            <option value="Descuento por compra anual (2 meses)">
-              Descuento por compra anual (2 meses)
-            </option>
-            <option value="Mes gratis">Mes gratis</option>
-            <option value="50% descuento si trae referido">
-              50% descuento si trae referido y contrata 1 mes
-            </option>
-          </select>
+          <div class="flex justify-between items-center mb-2">
+            <label class="saas-label mb-0">Descuentos Especiales</label>
+            <button type="button" (click)="agregarDescuentoEmpresaForm()" class="text-xs bg-yellow-900/50 hover:bg-yellow-800/50 text-yellow-300 border border-yellow-800 px-2 py-1 rounded transition-colors">+ Añadir</button>
+          </div>
+          
+          <div class="space-y-2">
+            @for (desc of listaDescuentosEmpresa; track $index) {
+              <div class="flex items-center gap-2">
+                <select [(ngModel)]="listaDescuentosEmpresa[$index]" name="desc_{{$index}}" class="saas-select flex-1">
+                  <option value="N/A">N/A</option>
+                  <option value="Referido 10%">Referido 10%</option>
+                  <option value="Mes Gratis">Mes gratis (Solo Anual)</option>
+                </select>
+                <button type="button" (click)="eliminarDescuentoEmpresaForm($index)" class="text-red-400 hover:text-red-300"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+              </div>
+            }
+            @if (listaDescuentosEmpresa.length === 0) {
+              <p class="text-xs text-gray-500 italic">No hay descuentos aplicados.</p>
+            }
+          </div>
         </div>
         <div class="saas-form-group">
           <label class="saas-label">Fecha Inscripción (Opcional)</label>
@@ -1473,4 +1571,103 @@
       <span class="font-inter font-medium">{{ toastMessage }}</span>
     </div>
   }
+
+  <!-- Modal Gestión Manual de Suscripción -->
+  @if (showGestionSuscripcionModal && suscripcionEnEdicion) {
+    <div class="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 backdrop-blur-sm" (click)="cerrarModalGestionSuscripcion()">
+      <div class="bg-gray-900 border border-gray-700 rounded-xl shadow-2xl p-6 w-full max-w-2xl text-white font-inter" (click)="$event.stopPropagation()">
+        
+        <div class="flex justify-between items-center mb-6 border-b border-gray-800 pb-4">
+          <h2 class="text-xl font-bold text-emerald-400">
+            Gestionar Tarifas: {{ suscripcionEnEdicion.nombreEmpresa }}
+          </h2>
+          <button (click)="cerrarModalGestionSuscripcion()" class="text-gray-400 hover:text-white transition-colors">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+          </button>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-h-[60vh] overflow-y-auto custom-scrollbar pr-2">
+          
+          <!-- SECCIÓN DESCUENTOS -->
+          <div class="bg-gray-800/50 p-4 rounded-lg border border-gray-700">
+            <div class="flex justify-between items-center mb-3">
+              <h3 class="font-semibold text-yellow-400 text-sm uppercase tracking-wider">Descuentos</h3>
+              <button (click)="agregarDescuento()" class="text-xs bg-yellow-900/50 hover:bg-yellow-800/50 text-yellow-300 border border-yellow-800 px-2 py-1 rounded transition-colors">+ Añadir</button>
+            </div>
+            
+            <div class="space-y-3">
+              @for (desc of suscripcionEnEdicion.descuentosAplicados; track $index) {
+                <div class="flex items-center gap-2 bg-gray-900 p-2 rounded border border-gray-700">
+                  <select [(ngModel)]="desc.descripcion" class="neu-dark-input text-xs flex-1 !p-1.5" (change)="desc.porcentaje = (desc.descripcion === 'Referido 10%') ? 10 : (desc.descripcion === 'Mes Gratis' ? 8.33 : 0)">
+                    <option value="N/A">Seleccionar...</option>
+                    <option value="Referido 10%">Referido 10%</option>
+                    <option value="Mes Gratis">Mes Gratis</option>
+                  </select>
+                  <input type="number" [(ngModel)]="desc.porcentaje" class="neu-dark-input text-xs w-16 !p-1.5 text-center" placeholder="%" disabled />
+                  <button (click)="eliminarDescuento($index)" class="text-red-400 hover:text-red-300"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+                </div>
+              }
+              @if (suscripcionEnEdicion.descuentosAplicados.length === 0) {
+                <p class="text-xs text-gray-500 italic">No hay descuentos aplicados.</p>
+              }
+            </div>
+          </div>
+
+          <!-- SECCIÓN CARGOS EXTRA (SOPORTE) -->
+          <div class="bg-gray-800/50 p-4 rounded-lg border border-gray-700">
+            <div class="flex justify-between items-center mb-3">
+              <h3 class="font-semibold text-orange-400 text-sm uppercase tracking-wider">Cargos Extra</h3>
+              <button (click)="agregarCargoExtra()" class="text-xs bg-orange-900/50 hover:bg-orange-800/50 text-orange-300 border border-orange-800 px-2 py-1 rounded transition-colors">+ Añadir</button>
+            </div>
+            
+            <div class="space-y-3">
+              @for (cargo of suscripcionEnEdicion.cargosExtra; track $index) {
+                <div class="flex items-center gap-2 bg-gray-900 p-2 rounded border border-gray-700">
+                  <input type="text" [(ngModel)]="cargo.descripcion" class="neu-dark-input text-xs flex-1 !p-1.5" placeholder="Motivo (Ej. Soporte)" />
+                  <input type="number" [(ngModel)]="cargo.valor" class="neu-dark-input text-xs w-24 !p-1.5 text-right" placeholder="$" />
+                  <button (click)="eliminarCargoExtra($index)" class="text-red-400 hover:text-red-300"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+                </div>
+              }
+              @if (suscripcionEnEdicion.cargosExtra.length === 0) {
+                <p class="text-xs text-gray-500 italic">No hay cargos extra.</p>
+              }
+            </div>
+          </div>
+
+          <!-- SECCIÓN ADD-ONS -->
+          <div class="bg-gray-800/50 p-4 rounded-lg border border-gray-700 md:col-span-2">
+            <div class="flex justify-between items-center mb-3">
+              <h3 class="font-semibold text-indigo-400 text-sm uppercase tracking-wider">Add-ons (Conectores Externos)</h3>
+              <button (click)="agregarSuscripcionAddon()" class="text-xs bg-indigo-900/50 hover:bg-indigo-800/50 text-indigo-300 border border-indigo-800 px-2 py-1 rounded transition-colors">+ Añadir</button>
+            </div>
+            
+            <div class="space-y-3">
+              @for (addon of suscripcionEnEdicion.addonsList; track $index) {
+                <div class="flex items-center gap-2 bg-gray-900 p-2 rounded border border-gray-700">
+                  <input type="text" [(ngModel)]="addon.nombre" class="neu-dark-input text-xs flex-1 !p-1.5" placeholder="Nombre Conector" />
+                  <input type="number" [(ngModel)]="addon.valor" class="neu-dark-input text-xs w-28 !p-1.5 text-right" placeholder="$" />
+                  <button (click)="eliminarSuscripcionAddon($index)" class="text-red-400 hover:text-red-300"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+                </div>
+              }
+              @if (suscripcionEnEdicion.addonsList.length === 0) {
+                <p class="text-xs text-gray-500 italic">No hay add-ons aplicados.</p>
+              }
+            </div>
+          </div>
+
+        </div>
+
+        <div class="mt-8 flex justify-end gap-3 pt-4 border-t border-gray-800">
+          <button (click)="cerrarModalGestionSuscripcion()" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-md transition-colors text-sm font-semibold">
+            Cancelar
+          </button>
+          <button (click)="guardarGestionSuscripcion()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-md transition-colors text-sm font-semibold shadow-[0_0_15px_rgba(5,150,105,0.4)]">
+            Guardar Cambios
+          </button>
+        </div>
+
+      </div>
+    </div>
+  }
+
 </div>
