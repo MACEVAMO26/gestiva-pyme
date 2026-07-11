@@ -30,6 +30,16 @@ $transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   font-family: 'Inter', sans-serif;
 }
 
+/* 
+  --- TÍTULOS DE LOS MÓDULOS ---
+  Si en el futuro deseas cacharrear y unificar los estilos de todos los títulos de los módulos 
+  (Directorio de Empresas, Bandeja de Suscripciones, Bandeja de Solicitudes, etc.),
+  puedes crear una clase aquí (ej. .saas-modulo-titulo) y luego reemplazar las clases de 
+  Tailwind por esta nueva clase en el HTML de cada módulo.
+  Por ahora, mantuvimos los estilos de Tailwind directamente en el HTML para respetar las 
+  reglas de seguridad de los módulos Intocables.
+*/
+
 /* --- 3. LAYOUT PRINCIPAL --- */
 .saas-layout {
   display: flex;
@@ -510,16 +520,20 @@ $sidebar-text-muted: #0f172a;
         font-weight: 600;
       }
       .btn-new {
-        background: #6366f1;
+        background: #10b981;
         color: white;
         border: none;
-        padding: 0.5rem 1rem;
-        border-radius: 6px;
+        padding: 0.6rem 1.5rem;
+        border-radius: 50px;
         cursor: pointer;
-        font-size: 0.85rem;
+        font-size: 0.9rem;
         font-weight: 600;
+        box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.4);
+        transition: all 0.3s ease;
         &:hover {
-          background: #4f46e5;
+          background: #059669;
+          transform: translateY(-2px);
+          box-shadow: 0 6px 8px -1px rgba(16, 185, 129, 0.5);
         }
       }
     }
@@ -529,7 +543,7 @@ $sidebar-text-muted: #0f172a;
       text-align: left;
       border-collapse: collapse;
       color: #cbd5e1;
-      font-size: 0.85rem;
+      font-size: 1rem;
       th {
         padding: 0.75rem 0.5rem;
         color: white;
@@ -606,8 +620,6 @@ $sidebar-text-muted: #0f172a;
           align-items: center;
           gap: 0.25rem;
           border: 1px solid transparent;
-          padding: 0.25rem 0.5rem;
-          border-radius: 6px;
           cursor: pointer;
           font-size: 0.7rem;
           font-weight: 500;
@@ -675,7 +687,7 @@ $sidebar-text-muted: #0f172a;
         .meta-info {
           margin: 0;
           color: #cbd5e1;
-          font-size: 0.75rem;
+          font-size: 1rem;
           margin-bottom: 0.25rem;
         }
         .response-note {
@@ -684,7 +696,7 @@ $sidebar-text-muted: #0f172a;
           border-radius: 5px;
           font-style: italic;
           color: #475569;
-          font-size: 0.75rem;
+          font-size: 1rem;
           border-left: 2px solid #6366f1;
           margin-top: 0.25rem;
         }
@@ -692,22 +704,22 @@ $sidebar-text-muted: #0f172a;
         .type-pago, .type-PAGO {
           color: #2563eb;
           font-weight: bold;
-          font-size: 0.85rem;
+          font-size: 1rem;
         }
         .type-migracion, .type-MIGRACION {
           color: #dc2626;
           font-weight: bold;
-          font-size: 0.85rem;
+          font-size: 1rem;
         }
         .type-soporte, .type-SOPORTE {
           color: #d97706;
           font-weight: bold;
-          font-size: 0.85rem;
+          font-size: 1rem;
         }
         .type-cambio_datos, .type-CAMBIO_DATOS {
           color: #9333ea; /* Purple color for novelty */
           font-weight: bold;
-          font-size: 0.85rem;
+          font-size: 1rem;
           text-shadow: none; /* In case any global glitch text-shadow is affecting it */
         }
 

@@ -263,22 +263,25 @@
       @if (currentView === 'empresas' || currentView === 'dashboard') {
         <!-- COMPANIES TABLE -->
         <div class="glass-panel mt-2rem">
-          <div class="table-header">
-            <h3>Directorio de Empresas Cliente</h3>
+          <div class="mb-8 flex flex-col items-center justify-center gap-4">
+            <h2 class="text-3xl font-bold text-white tracking-wide text-center uppercase m-0">
+              Directorio de Empresas Cliente
+            </h2>
             <button (click)="abrirModal()" class="btn-new">+ Nueva Empresa</button>
           </div>
 
-          @if (empresas.length > 0) {
+          <div class="bg-[#0f172a] rounded-2xl p-6 shadow-inner border border-gray-800 w-full overflow-x-auto">
+            @if (empresas.length > 0) {
             <table class="data-table">
               <thead>
                 <tr>
-                  <th>ID</th>
-                  <th>Razón Social</th>
-                  <th>NIT</th>
-                  <th>Fecha Inscripción</th>
-                  <th class="text-center">Módulos Asignados</th>
-                  <th>Estado</th>
-                  <th class="text-right">Acciones</th>
+                  <th class="p-4 font-semibold uppercase tracking-wider">ID</th>
+                  <th class="p-4 font-semibold uppercase tracking-wider text-center">Razón Social</th>
+                  <th class="p-4 font-semibold uppercase tracking-wider text-center">NIT</th>
+                  <th class="p-4 font-semibold uppercase tracking-wider text-center">Fecha Inscripción</th>
+                  <th class="p-4 font-semibold uppercase tracking-wider text-center">Módulos Asignados</th>
+                  <th class="p-4 font-semibold uppercase tracking-wider text-center">Estado</th>
+                  <th class="p-4 font-semibold uppercase tracking-wider text-center">Acciones</th>
                 </tr>
               </thead>
               <tbody>
@@ -287,125 +290,65 @@
                     <td>{{ empresa.id }}</td>
                     <td class="font-500">{{ empresa.razon_social }}</td>
                     <td>{{ empresa.nit }}</td>
-                    <td>{{ empresa.fecha_inscripcion ? (empresa.fecha_inscripcion | date:'mediumDate') : 'No registrada' }}</td>
+                    <td class="text-center">{{ empresa.fecha_inscripcion ? (empresa.fecha_inscripcion | date:'mediumDate') : 'No registrada' }}</td>
                     <td class="text-center">
                       <span class="badge-modulos">{{ empresa.tipo_empresa }}</span>
                     </td>
-                    <td>
+                    <td class="text-center">
                       @if (empresa.activo && empresa.estado_pago === 'al_dia') {
-                        <span class="status-aldia">Al Día</span>
+                        <span class="px-3 py-1 rounded-full font-semibold uppercase bg-green-500/20 text-green-400">Al Día</span>
                       } @else if (empresa.activo && empresa.estado_pago === 'mora') {
-                        <span class="status-mora">En Mora (Suspendida)</span>
+                        <span class="px-3 py-1 rounded-full font-semibold uppercase bg-yellow-500/20 text-yellow-400">En Mora (Suspendida)</span>
                       } @else {
-                        <span class="status-inactiva">Inactiva Total</span>
+                        <span class="px-3 py-1 rounded-full font-semibold uppercase bg-red-500/20 text-red-400">Inactiva Total</span>
                       }
                     </td>
-                    <td class="actions">
-                      <!-- Editar -->
-                      <button
-                        (click)="editarEmpresa(empresa)"
-                        class="btn-editar"
-                        title="Editar detalles"
-                      >
-                        <svg
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke-width="1.5"
-                          stroke="currentColor"
-                          class="icon-16-inline"
+                    <td class="actions text-center">
+                      <div class="flex items-center gap-3 justify-center">
+                        <!-- Activar (Check) -->
+                        <button
+                          (click)="cambiarEstadoEmpresa(empresa, 'activar')"
+                          class="w-10 h-10 rounded-full bg-[#0b0f19] flex items-center justify-center hover:bg-[#172135] transition-colors border border-transparent hover:border-emerald-500/30"
+                          title="Activar"
                         >
-                          <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125"
-                          />
-                        </svg>
-                        Editar
-                      </button>
+                          <svg fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-emerald-500">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+                          </svg>
+                        </button>
 
-                      <!-- Botón de Cobrar -->
-                      <button class="btn-cobrar" title="Enviar recordatorio de pago (5 días antes)">
-                        <svg
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke-width="1.5"
-                          stroke="currentColor"
-                          class="icon-16-inline"
+                        <!-- Inactivar (Block) -->
+                        <button
+                          (click)="cambiarEstadoEmpresa(empresa, 'mora')"
+                          class="w-10 h-10 rounded-full bg-[#0b0f19] flex items-center justify-center hover:bg-[#172135] transition-colors border border-transparent hover:border-amber-500/30"
+                          title="Suspender"
                         >
-                          <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75"
-                          />
-                        </svg>
-                        Cobrar
-                      </button>
+                          <svg fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-amber-500">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M18.364 18.364A9 9 0 0 0 5.636 5.636m12.728 12.728A9 9 0 0 1 5.636 5.636m12.728 12.728L5.636 5.636" />
+                          </svg>
+                        </button>
 
-                      <!-- Bloquear (Mora) -->
-                      <button
-                        (click)="cambiarEstadoEmpresa(empresa, 'mora')"
-                        class="btn-inactivar"
-                        title="Suspender acceso a todos menos Gerente"
-                      >
-                        <svg
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke-width="1.5"
-                          stroke="currentColor"
-                          class="icon-16-inline"
+                        <!-- Inactivar Total (Trash) -->
+                        <button
+                          (click)="cambiarEstadoEmpresa(empresa, 'inactivar')"
+                          class="w-10 h-10 rounded-full bg-[#0b0f19] flex items-center justify-center hover:bg-[#172135] transition-colors border border-transparent hover:border-red-500/30"
+                          title="Inactivar Total"
                         >
-                          <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3Z"
-                          />
-                        </svg>
-                        Inactivar
-                      </button>
+                          <svg fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-red-500">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                          </svg>
+                        </button>
 
-                      <!-- Inactivar Totalmente -->
-                      <button
-                        (click)="cambiarEstadoEmpresa(empresa, 'inactivar')"
-                        class="btn-inactivar-total"
-                        title="Desactivar por completo"
-                      >
-                        <svg
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke-width="1.5"
-                          stroke="currentColor"
-                          class="icon-16-inline"
+                        <!-- Editar (Edit) -->
+                        <button
+                          (click)="editarEmpresa(empresa)"
+                          class="w-10 h-10 rounded-full bg-[#0b0f19] flex items-center justify-center hover:bg-[#172135] transition-colors border border-transparent hover:border-fuchsia-500/30"
+                          title="Editar"
                         >
-                          <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            d="M18.364 18.364A9 9 0 0 0 5.636 5.636m12.728 12.728A9 9 0 0 1 5.636 5.636m12.728 12.728L5.636 5.636"
-                          />
-                        </svg>
-                        Inactivar<br />Total
-                      </button>
-
-                      <!-- Activar -->
-                      <button
-                        (click)="cambiarEstadoEmpresa(empresa, 'activar')"
-                        class="btn-activar"
-                        title="Activar y dejar Al Día"
-                      >
-                        <svg
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke-width="1.5"
-                          stroke="currentColor"
-                          class="icon-16-inline"
-                        >
-                          <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
-                          />
-                        </svg>
-                        Activar
-                      </button>
+                          <svg fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-fuchsia-500">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125" />
+                          </svg>
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 }
@@ -414,6 +357,7 @@
           } @else {
             <div class="empty-state">No hay empresas registradas aún.</div>
           }
+          </div>
         </div>
       }
 
@@ -423,9 +367,32 @@
           <h2 class="text-3xl font-bold text-white mb-8 tracking-wide text-center uppercase">
             Bandeja de Solicitudes
           </h2>
-          @if (solicitudes.length > 0) {
+          
+          <!-- Filtros -->
+          <div class="flex flex-col sm:flex-row gap-4 mb-6">
+            <div class="flex-1">
+              <input
+                type="text"
+                [(ngModel)]="filtroEmpresaSolicitud"
+                placeholder="Buscar por nombre de empresa..."
+                class="w-full bg-[#0f172a] border border-gray-700 text-white rounded-lg px-4 py-2 focus:outline-none focus:border-blue-500 transition-colors"
+              />
+            </div>
+            <div class="w-full sm:w-48">
+              <input
+                type="date"
+                [(ngModel)]="filtroFechaSolicitud"
+                class="w-full bg-[#0f172a] border border-orange-500/40 text-white rounded-lg px-4 py-2 focus:outline-none focus:border-orange-500 transition-colors"
+                style="color-scheme: dark;"
+                title="Filtrar por fecha"
+              />
+            </div>
+          </div>
+
+          <div class="bg-[#0f172a] rounded-2xl p-6 shadow-inner border border-gray-800 w-full overflow-x-auto">
+            @if (solicitudesFiltradas.length > 0) {
             <div class="request-list">
-              @for (solicitud of solicitudes; track solicitud.id) {
+              @for (solicitud of solicitudesFiltradas; track solicitud.id) {
                 <div class="request-item">
                   <div class="req-info">
                     <h4 class="font-inter">Empresa: {{ solicitud.empresa?.razon_social }}</h4>
@@ -445,15 +412,23 @@
                       </div>
                     }
                   </div>
-                  <button (click)="abrirSolicitud(solicitud)" class="btn-view font-inter">
-                    Ver Detalles
-                  </button>
+                  <div class="flex flex-col gap-2">
+                    <button (click)="abrirSolicitud(solicitud)" class="btn-view font-inter">
+                      Ver Detalles
+                    </button>
+                    @if (solicitud.estado === 'pendiente') {
+                      <button (click)="marcarComoResueltaRapido(solicitud)" class="w-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/50 rounded-[4px] px-4 py-2 font-bold hover:bg-emerald-500/30 transition-colors text-sm uppercase tracking-wide">
+                        Resuelta
+                      </button>
+                    }
+                  </div>
                 </div>
               }
             </div>
           } @else {
             <div class="empty-state">No tienes solicitudes en el historial.</div>
           }
+          </div>
         </div>
       }
 
@@ -465,9 +440,11 @@
               Bandeja de Suscripciones
             </h2>
           </div>
-          <h3 class="panel-title mb-6">Métricas Financieras (MRR)</h3>
 
-          <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+          <div class="bg-[#0f172a] rounded-2xl p-6 shadow-inner border border-gray-800 w-full overflow-x-auto">
+            <h3 class="panel-title mb-6">Métricas Financieras (MRR)</h3>
+
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
             <div class="bg-gray-800 border border-gray-700 p-4 rounded-lg text-center">
               <span class="text-xs text-gray-400 uppercase tracking-wider block mb-1"
                 >MRR (Ingreso Mensual)</span
@@ -505,16 +482,17 @@
           <h3 class="panel-title mb-4">Gestión de Tarifas y Suscripciones</h3>
           @if (mockSuscripciones.length > 0) {
             <div class="table-responsive">
-              <table class="data-table font-inter text-sm w-full text-left">
+              <table class="data-table font-inter text-base w-full text-center">
                 <thead>
                   <tr class="bg-gray-800 text-gray-400">
-                    <th class="p-4 font-semibold uppercase tracking-wider">Empresa / Detalles</th>
-                    <th class="p-4 font-semibold uppercase tracking-wider">Plan Adquirido</th>
-                    <th class="p-4 font-semibold uppercase tracking-wider">Extras</th>
-                    <th class="p-4 font-semibold uppercase tracking-wider">Descuentos</th>
-                    <th class="p-4 font-semibold uppercase tracking-wider">Soporte Técnico</th>
-                    <th class="p-4 font-semibold uppercase tracking-wider">Próximo Pago Total</th>
-                    <th class="p-4 font-semibold uppercase tracking-wider">Fecha</th>
+                    <th class="p-4 font-semibold uppercase tracking-wider text-center">ID</th>
+                    <th class="p-4 font-semibold uppercase tracking-wider text-center">Empresa / Detalles</th>
+                    <th class="p-4 font-semibold uppercase tracking-wider text-center">Plan Adquirido</th>
+                    <th class="p-4 font-semibold uppercase tracking-wider text-center">Extras</th>
+                    <th class="p-4 font-semibold uppercase tracking-wider text-center">Descuentos</th>
+                    <th class="p-4 font-semibold uppercase tracking-wider text-center">Soporte Técnico</th>
+                    <th class="p-4 font-semibold uppercase tracking-wider text-center">Próximo Pago Total</th>
+                    <th class="p-4 font-semibold uppercase tracking-wider text-center">Fecha</th>
                     <th class="p-4 font-semibold uppercase tracking-wider text-center">Estado</th>
                     <th class="p-4 font-semibold uppercase tracking-wider text-center">Acciones</th>
                   </tr>
@@ -522,92 +500,95 @@
                 <tbody class="divide-y divide-gray-700">
                   @for (sus of mockSuscripciones; track sus.id) {
                     <tr class="hover:bg-gray-800/50 transition-colors">
-                      <td class="p-4">
+                      <td class="p-4 text-center text-gray-300 font-medium">
+                        {{ sus.id }}
+                      </td>
+                      <td class="p-4 text-center">
                         <div class="font-bold text-white">{{ sus.nombreEmpresa }}</div>
-                        <div class="text-xs text-gray-400 mt-1">
+                        <div class="text-gray-400 mt-1">
                           Inscripción: {{ sus.fechaInscripcion }}<br/>
                           Renovaciones: <span class="text-blue-300 font-semibold">{{ sus.renovaciones }}</span>
                         </div>
                       </td>
-                      <td class="p-4">
-                        <span class="px-2 py-1 bg-blue-900/30 text-blue-300 rounded-md text-xs font-semibold border border-blue-800">
+                      <td class="p-4 text-center">
+                        <span class="px-3 py-1 rounded-full font-semibold uppercase bg-blue-500/20 text-blue-400">
                           {{ sus.plan }}
                         </span>
                       </td>
-                      <td class="p-4">
+                      <td class="p-4 text-center">
                         @if (sus.modulosExtra > 0 || sus.addonsList.length > 0) {
-                          <div class="flex flex-col gap-1">
+                          <div class="flex flex-col gap-1 items-center">
                             @if (sus.modulosExtra > 0) {
-                              <span class="text-xs text-emerald-400">+{{ sus.modulosExtra }} Transversales</span>
+                              <span class="text-emerald-400">+{{ sus.modulosExtra }} Transversales</span>
                             }
                             @if (sus.addonsList.length > 0) {
-                              <span class="text-xs text-indigo-400">+{{ sus.addonsList.length }} Add-ons</span>
+                              <span class="text-indigo-400">+{{ sus.addonsList.length }} Add-ons</span>
                             }
                           </div>
                         } @else {
-                          <span class="text-xs text-gray-500">Ninguno</span>
+                          <span class="text-gray-500">Ninguno</span>
                         }
                       </td>
-                      <td class="p-4">
+                      <td class="p-4 text-center">
                         @if (sus.descuentosAplicados.length > 0) {
-                          <div class="flex flex-col gap-1">
+                          <div class="flex flex-col gap-1 items-center">
                             @for (desc of sus.descuentosAplicados; track desc.descripcion) {
-                              <span class="text-xs text-yellow-400 font-medium">{{ desc.descripcion }} (-{{ desc.porcentaje }}%)</span>
+                              <span class="text-yellow-400 font-medium">{{ desc.descripcion }} (-{{ desc.porcentaje }}%)</span>
                             }
                           </div>
                         } @else {
-                          <span class="text-xs text-gray-500">N/A</span>
+                          <span class="text-gray-500">N/A</span>
                         }
                       </td>
-                      <td class="p-4">
+                      <td class="p-4 text-center">
                         @if (sus.cargosExtra.length > 0) {
-                          <div class="flex flex-col gap-1">
+                          <div class="flex flex-col gap-1 items-center">
                             @for (cargo of sus.cargosExtra; track cargo.descripcion) {
-                              <span class="text-xs font-bold text-orange-400">+${{ cargo.valor | number: '1.0-0' }} <span class="text-[10px] font-normal">({{cargo.descripcion}})</span></span>
+                              <span class="font-bold text-orange-400">+${{ cargo.valor | number: '1.0-0' }} <span class="font-normal">({{cargo.descripcion}})</span></span>
                             }
                           </div>
                         } @else {
-                          <span class="text-xs text-gray-500">$0</span>
+                          <span class="text-gray-500">$0</span>
                         }
                       </td>
-                      <td class="p-4">
-                        <span class="text-lg font-black text-emerald-400">
+                      <td class="p-4 text-center">
+                        <span class="font-bold text-emerald-400">
                           ${{ calcularTotalSuscripcion(sus) | number: '1.0-0' }}
                         </span>
                       </td>
-                      <td class="p-4 text-gray-300 font-medium whitespace-nowrap">
+                      <td class="p-4 text-gray-300 font-medium whitespace-nowrap text-center">
                         {{ sus.fechaProximoPago | date: 'mediumDate' }}
                       </td>
                       <td class="p-4 text-center">
                         @if (sus.estado === 'Activa') {
-                          <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-900/50 text-emerald-300 border border-emerald-800">
+                          <span class="px-3 py-1 rounded-full font-semibold uppercase bg-green-500/20 text-green-400">
                             Activa
                           </span>
                         } @else if (sus.estado === 'En Mora') {
-                          <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-900/50 text-red-300 border border-red-800">
+                          <span class="px-3 py-1 rounded-full font-semibold uppercase bg-red-500/20 text-red-400">
                             En Mora
                           </span>
                         } @else {
-                          <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-700 text-gray-300 border border-gray-600">
+                          <span class="px-3 py-1 rounded-full font-semibold uppercase bg-gray-500/20 text-gray-400">
                             Inactiva
                           </span>
                         }
                       </td>
-                      <td class="p-4">
-                        <div class="flex justify-center gap-2">
-                          <button (click)="abrirModalGestionSuscripcion(sus)" class="p-2 bg-gray-600 hover:bg-gray-500 text-white rounded-md transition-colors" title="Gestionar Tarifas">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <td class="p-4 text-center">
+                        <div class="flex justify-center gap-3">
+                          <button (click)="abrirModalGestionSuscripcion(sus)" class="w-10 h-10 rounded-full bg-[#0b0f19] flex items-center justify-center hover:bg-[#172135] transition-colors border border-transparent hover:border-gray-500/30" title="Gestionar Tarifas">
+                            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
                               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
                             </svg>
                           </button>
-                          <button (click)="renovarMockSuscripcion(sus.id)" class="p-2 bg-blue-600 hover:bg-blue-500 text-white rounded-md transition-colors" title="Renovar">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <button (click)="renovarMockSuscripcion(sus.id)" class="w-10 h-10 rounded-full bg-[#0b0f19] flex items-center justify-center hover:bg-[#172135] transition-colors border border-transparent hover:border-blue-500/30" title="Renovar">
+                            <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
                             </svg>
                           </button>
-                          <button (click)="suspenderMockSuscripcion(sus.id)" class="p-2 bg-gray-700 hover:bg-gray-600 text-red-400 hover:text-red-300 rounded-md transition-colors" title="Suspender">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <button (click)="suspenderMockSuscripcion(sus.id)" class="w-10 h-10 rounded-full bg-[#0b0f19] flex items-center justify-center hover:bg-[#172135] transition-colors border border-transparent hover:border-red-500/30" title="Suspender">
+                            <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"></path>
                             </svg>
                           </button>
@@ -621,6 +602,7 @@
           } @else {
             <div class="empty-state">No hay datos de suscripciones para mostrar.</div>
           }
+          </div>
         </div>
       }
 
@@ -938,12 +920,13 @@
       }
 
       @if (currentView === 'comercial') {
-        <div class="neu-dark-panel p-8 mt-6">
+        <div class="glass-panel mt-2rem">
           <h2 class="text-3xl font-bold text-white mb-8 tracking-wide text-center uppercase">
             Módulo Comercial
           </h2>
 
-          <div
+          <div class="bg-[#0f172a] rounded-2xl p-6 shadow-inner border border-gray-800 w-full overflow-x-auto">
+            <div
             class="mb-8 flex flex-col sm:flex-row justify-center items-center gap-4 border-b border-gray-700 pb-4 relative"
           >
             <div class="flex gap-4">
@@ -966,7 +949,7 @@
             @if (comercialTab === 'interesados') {
               <button
                 (click)="cargarLeads()"
-                class="sm:absolute right-0 text-xs text-blue-400 hover:text-blue-300 flex items-center gap-2 transition-colors font-semibold bg-blue-500/10 px-4 py-2 rounded-lg mt-4 sm:mt-0"
+                class="sm:absolute right-0 text-xs text-cyan-400 hover:text-cyan-300 flex items-center gap-2 transition-colors font-semibold bg-cyan-500/10 px-4 py-2 rounded-lg mt-4 sm:mt-0"
               >
                 <i class="fas fa-sync-alt"></i> Actualizar lista
               </button>
@@ -978,32 +961,32 @@
               <table class="w-full text-left border-collapse">
                 <thead>
                   <tr
-                    class="border-b border-gray-700 text-gray-400 text-sm uppercase tracking-wider"
+                    class="border-b border-gray-700 text-white text-base uppercase tracking-wider"
                   >
-                    <th class="p-4">Nombre</th>
-                    <th class="p-4">Teléfono</th>
-                    <th class="p-4">Correo</th>
-                    <th class="p-4">Horario Ideal</th>
-                    <th class="p-4">Mensaje</th>
-                    <th class="p-4 text-center">Estado</th>
-                    <th class="p-4 text-center">Acciones</th>
+                    <th class="py-3 px-2 font-bold uppercase tracking-wider text-center">Nombre</th>
+                    <th class="py-3 px-2 font-bold uppercase tracking-wider text-center">Teléfono</th>
+                    <th class="py-3 px-2 font-bold uppercase tracking-wider text-center">Correo</th>
+                    <th class="py-3 px-2 font-bold uppercase tracking-wider text-center">Horario Ideal</th>
+                    <th class="py-3 px-2 font-bold uppercase tracking-wider text-center">Mensaje</th>
+                    <th class="py-3 px-2 font-bold uppercase tracking-wider text-center">Estado</th>
+                    <th class="py-3 px-2 font-bold uppercase tracking-wider text-center">Acciones</th>
                   </tr>
                 </thead>
-                <tbody class="text-sm">
+                <tbody class="text-base text-[#cbd5e1]">
                   @for (lead of leads; track lead.id) {
                     <tr class="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
-                      <td class="p-4 text-white font-medium">{{ lead.nombre }}</td>
-                      <td class="p-4 text-gray-300">{{ lead.telefono }}</td>
-                      <td class="p-4 text-gray-300">{{ lead.correo }}</td>
-                      <td class="p-4 text-gray-400">
+                      <td class="py-3 px-2 font-medium">{{ lead.nombre }}</td>
+                      <td class="py-3 px-2 text-center">{{ lead.telefono }}</td>
+                      <td class="py-3 px-2 text-center">{{ lead.correo }}</td>
+                      <td class="py-3 px-2 text-center">
                         {{ lead.horario_llamada || 'Cualquier hora' }}
                       </td>
-                      <td class="p-4 text-gray-400 max-w-xs truncate" title="{{ lead.mensaje }}">
+                      <td class="py-3 px-2 max-w-xs truncate" title="{{ lead.mensaje }}">
                         {{ lead.mensaje || '-' }}
                       </td>
-                      <td class="p-4 text-center">
+                      <td class="py-3 px-2 text-center">
                         <span
-                          class="px-3 py-1 rounded-full text-xs font-semibold uppercase"
+                          class="px-3 py-1 rounded-full font-semibold uppercase"
                           [ngClass]="{
                             'bg-blue-500/20 text-blue-400': lead.estado === 'pendiente',
                             'bg-green-500/20 text-green-400': lead.estado === 'contactado',
@@ -1012,10 +995,10 @@
                           >{{ lead.estado }}</span
                         >
                       </td>
-                      <td class="p-4">
+                      <td class="py-3 px-2">
                         <div class="flex items-center justify-center gap-3">
                           <button
-                            class="flex items-center justify-center w-10 h-10 rounded-full bg-[#06133d] hover:bg-[#040a1f] transition-colors"
+                            class="w-10 h-10 rounded-full bg-[#0b0f19] flex items-center justify-center hover:bg-[#172135] transition-colors border border-transparent hover:border-[#10b981]/30"
                             title="Marcar Contactado"
                             (click)="cambiarEstadoLead(lead.id, 'contactado')"
                           >
@@ -1034,7 +1017,7 @@
                             </svg>
                           </button>
                           <button
-                            class="flex items-center justify-center w-10 h-10 rounded-full bg-[#06133d] hover:bg-[#040a1f] transition-colors"
+                            class="w-10 h-10 rounded-full bg-[#0b0f19] flex items-center justify-center hover:bg-[#172135] transition-colors border border-transparent hover:border-[#f59e0b]/30"
                             title="No Responde"
                             (click)="cambiarEstadoLead(lead.id, 'archivado')"
                           >
@@ -1053,7 +1036,7 @@
                             </svg>
                           </button>
                           <button
-                            class="flex items-center justify-center w-10 h-10 rounded-full bg-[#06133d] hover:bg-[#040a1f] transition-colors"
+                            class="w-10 h-10 rounded-full bg-[#0b0f19] flex items-center justify-center hover:bg-[#172135] transition-colors border border-transparent hover:border-[#ef4444]/30"
                             title="Eliminar"
                             (click)="eliminarLead(lead.id)"
                           >
@@ -1072,7 +1055,7 @@
                             </svg>
                           </button>
                           <button
-                            class="flex items-center justify-center w-10 h-10 rounded-full bg-[#06133d] hover:bg-[#040a1f] transition-colors"
+                            class="w-10 h-10 rounded-full bg-[#0b0f19] flex items-center justify-center hover:bg-[#172135] transition-colors border border-transparent hover:border-[#d946ef]/30"
                             title="Notas"
                             (click)="abrirModalNotas(lead)"
                           >
@@ -1209,6 +1192,7 @@
               </div>
             </div>
           }
+          </div>
         </div>
       }
     </main>

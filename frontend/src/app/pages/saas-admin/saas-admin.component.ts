@@ -110,6 +110,18 @@ export class SaasAdminComponent implements OnInit {
   showGestionSuscripcionModal = false;
   suscripcionEnEdicion: SuscripcionEmpresa | null = null;
 
+  filtroEmpresaSolicitud: string = '';
+  filtroFechaSolicitud: string = '';
+
+  get solicitudesFiltradas() {
+    return this.solicitudes.filter(s => {
+      const empresaStr = s.empresa?.razon_social || '';
+      const matchEmpresa = empresaStr.toLowerCase().includes(this.filtroEmpresaSolicitud.toLowerCase());
+      const matchFecha = this.filtroFechaSolicitud ? (s.created_at || '').includes(this.filtroFechaSolicitud) : true;
+      return matchEmpresa && matchFecha;
+    });
+  }
+
   calcularTotalSuscripcion(suscripcion: SuscripcionEmpresa): number {
     let subtotal = 0;
     
@@ -543,6 +555,28 @@ export class SaasAdminComponent implements OnInit {
               this.empresaDestacadaId = null;
             }, 10000);
           }
+        },
+        error: () => alert('Error al procesar solicitud.'),
+      });
+  }
+
+  marcarComoResueltaRapido(solicitud: any) {
+    const token = sessionStorage.getItem('auth_token');
+    const headers = { Authorization: `Bearer ${token}` };
+    const body = {
+      accion: 'aprobado',
+      mensaje: 'Resuelta.',
+    };
+
+    this.http
+      .patch(
+        `http://127.0.0.1:8000/api/admin-requests/${solicitud.id}/process`,
+        body,
+        { headers },
+      )
+      .subscribe({
+        next: () => {
+          this.cargarSolicitudes();
         },
         error: () => alert('Error al procesar solicitud.'),
       });
