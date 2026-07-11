@@ -39,26 +39,45 @@ class EmpresaController extends Controller
 
             $modulosActivos = $emp->modulos()->wherePivot('activo', 1)->get();
             
-            $extrasLista = [];
+            $transversales = [];
+            $addons = [];
             foreach ($modulosActivos as $mod) {
                 if (!in_array($mod->paquete, $paquetesBase)) {
-                    $extrasLista[] = $mod->nombre;
+                    if ($mod->paquete === 'addons') {
+                        $addons[] = ['nombre' => $mod->nombre, 'valor' => 10000];
+                    } else {
+                        $transversales[] = $mod->nombre;
+                    }
                 }
             }
             
-            $tieneExtras = count($extrasLista) > 0;
+            // Add custom addons from JSON column
+            $addonsPersonalizados = is_array($emp->addons_personalizados) ? $emp->addons_personalizados : [];
+            $addons = array_merge($addons, $addonsPersonalizados);
+
+            // Handle descuentos
+            $descuentos = is_array($emp->descuentos_aplicados) ? $emp->descuentos_aplicados : [];
+            if (empty($descuentos) && $emp->descuento && $emp->descuento !== 'N/A') {
+                $descuentos[] = ['descripcion' => $emp->descuento, 'porcentaje' => 10];
+            }
+
+            // Handle cargos extra
+            $cargosExtra = is_array($emp->cargos_extra) ? $emp->cargos_extra : [];
 
             return [
                 'id' => $emp->id,
-                'empresa' => $emp->razon_social,
-                'plan' => $emp->plan_suscripcion ?: 'Básico',
-                'estado' => $emp->estado_pago === 'mora' ? 'En Mora' : ($emp->estado_pago === 'suspendido' ? 'Suspendido' : 'Al Día'),
-                'proximoPago' => $emp->fecha_proximo_pago ?: date('Y-m-d', strtotime('+30 days')),
-                'valor' => $emp->monto_mensual,
-                'fechaInscripcion' => $emp->fecha_inscripcion,
-                'renovaciones' => $emp->renovaciones,
-                'tieneExtras' => $tieneExtras,
-                'extrasLista' => $extrasLista
+                'empresaId' => $emp->id,
+                'nombreEmpresa' => $emp->razon_social,
+                'fechaInscripcion' => $emp->fecha_inscripcion ? date('d/M/Y', strtotime($emp->fecha_inscripcion)) : date('d/M/Y'),
+                'plan' => $emp->plan_suscripcion ?: 'Mensual',
+                'modulosExtra' => count($transversales),
+                'addonsList' => $addons,
+                'descuentosAplicados' => $descuentos,
+                'cargosExtra' => $cargosExtra,
+                'proximoPagoTotal' => $emp->monto_mensual ?: 0,
+                'fechaProximoPago' => $emp->fecha_proximo_pago ?: date('Y-m-d', strtotime('+30 days')),
+                'estado' => $emp->estado_pago === 'mora' ? 'En Mora' : ($emp->estado_pago === 'suspendido' ? 'Inactiva' : 'Activa'),
+                'renovaciones' => $emp->renovaciones ?: 0
             ];
         });
 
@@ -71,6 +90,19 @@ class EmpresaController extends Controller
             ],
             'lista' => $lista
         ]);
+    }
+
+    public function updateTarifas(Request $request, $id)
+    {
+        $empresa = Empresa::findOrFail($id);
+        
+        $empresa->update([
+            'descuentos_aplicados' => $request->descuentosAplicados,
+            'cargos_extra' => $request->cargosExtra,
+            'addons_personalizados' => $request->addonsList,
+        ]);
+        
+        return response()->json(['message' => 'Tarifas actualizadas correctamente']);
     }
 
     public function systemStats()

@@ -96,6 +96,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('empresas/stats/suscripciones', [EmpresaController::class, 'suscripcionesStats']);
     Route::get('empresas/stats/system', [EmpresaController::class, 'systemStats']);
+    Route::patch('empresas/{id}/tarifas', [EmpresaController::class, 'updateTarifas']);
     Route::apiResource('empresas', EmpresaController::class);
     Route::patch('empresas/{id}/status', [EmpresaController::class, 'changeStatus']);
     Route::patch('empresas/{id}/renovar', [EmpresaController::class, 'registrarRenovacion']);
@@ -176,5 +177,10 @@ Route::middleware('auth:sanctum')->group(function () {
         $rol = \App\Models\Role::with('permisos')->findOrFail($id);
         return $rol->permisos;    
     });
+
+    // --- RECORDATORIOS ---
+    Route::get('/recordatorios', [\App\Http\Controllers\RecordatorioController::class, 'index']);
+    Route::post('/recordatorios', [\App\Http\Controllers\RecordatorioController::class, 'store']);
+    Route::delete('/recordatorios/{id}', [\App\Http\Controllers\RecordatorioController::class, 'destroy']);
 
 });

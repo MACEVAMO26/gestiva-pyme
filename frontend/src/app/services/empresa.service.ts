@@ -35,6 +35,11 @@ export class EmpresaService {
     return this.http.put<any>(`${this.apiUrl}/${id}`, data, { headers: this.getHeaders() });
   }
 
+  // Actualizar tarifas (descuentos, extras, addons)
+  updateTarifas(id: number, data: any): Observable<any> {
+    return this.http.patch<any>(`${this.apiUrl}/${id}/tarifas`, data, { headers: this.getHeaders() });
+  }
+
   // Cambiar estado activo/inactivo
   renovarSuscripcion(id: number): Observable<any> {
     return this.http.patch(`${this.apiUrl}/${id}/renovar`, {}, { headers: this.getHeaders() });

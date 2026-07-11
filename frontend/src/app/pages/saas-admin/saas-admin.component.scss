@@ -414,7 +414,7 @@ $sidebar-text-muted: #0f172a;
     padding: 0 3rem 3rem 3rem;
   }
   z-index: 1;
-  .metrics-grid {
+  ::ng-deep .metrics-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(192px, 1fr));
     gap: 1.5rem;
@@ -483,7 +483,7 @@ $sidebar-text-muted: #0f172a;
     }
   }
 
-  .glass-panel {
+  ::ng-deep .glass-panel {
     background: linear-gradient(135deg, #0d3454 0%, #19527f 100%);
     border-radius: 20px;
     border: 1px solid rgba(255, 255, 255, 0.08);
@@ -834,7 +834,7 @@ $sidebar-text-muted: #0f172a;
 }
 
 /* --- 11. DASHBOARD WELCOME PANEL --- */
-.dashboard-welcome {
+::ng-deep .dashboard-welcome {
   margin-top: 2rem;
   h3 {
     font-size: 1.1rem;
@@ -845,7 +845,7 @@ $sidebar-text-muted: #0f172a;
 }
 
 /* --- 12. STATUS CARDS GRID --- */
-.status-cards-grid {
+::ng-deep .status-cards-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(144px, 1fr));
   gap: 1rem;

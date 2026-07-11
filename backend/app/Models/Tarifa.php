@@ -9,5 +9,5 @@ class Tarifa extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['plan_mensual', 'modulo_extra'];
+    protected $fillable = ['plan_mensual', 'modulo_extra', 'addon_extra'];
 }

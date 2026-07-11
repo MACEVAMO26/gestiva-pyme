@@ -23,6 +23,8 @@ class ModuloSeeder extends Seeder
             ['id' => 's_age', 'nombre' => 'Agenda y Calendario', 'paquete' => 'servicios'],
             ['id' => 's_crm', 'nombre' => 'CRM (Gestión de Clientes)', 'paquete' => 'servicios'],
             ['id' => 's_cat', 'nombre' => 'Catálogo de Servicios', 'paquete' => 'servicios'],
+            ['id' => 's_ope', 'nombre' => 'Gestión de Operarios', 'paquete' => 'servicios'],
+            ['id' => 's_rep', 'nombre' => 'Reportes de Servicios', 'paquete' => 'servicios'],
             
             // Finanzas / Caja (Transversal)
             ['id' => 'f_caja', 'nombre' => 'Caja y Pre-facturación', 'paquete' => 'finanzas'],

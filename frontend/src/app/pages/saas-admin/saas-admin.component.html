@@ -279,9 +279,11 @@
                   <th class="p-4 font-semibold uppercase tracking-wider text-center">Razón Social</th>
                   <th class="p-4 font-semibold uppercase tracking-wider text-center">NIT</th>
                   <th class="p-4 font-semibold uppercase tracking-wider text-center">Fecha Inscripción</th>
-                  <th class="p-4 font-semibold uppercase tracking-wider text-center">Módulos Asignados</th>
-                  <th class="p-4 font-semibold uppercase tracking-wider text-center">Estado</th>
-                  <th class="p-4 font-semibold uppercase tracking-wider text-center">Acciones</th>
+                  <th class="p-4 font-semibold uppercase tracking-wider text-center max-w-[120px]">Módulos Asignados</th>
+                  <th class="p-4 font-semibold uppercase tracking-wider text-center">Meses Pagados</th>
+                  <th class="p-4 font-semibold uppercase tracking-wider text-center">Ganancia Histórica</th>
+                  <th class="p-4 font-semibold uppercase tracking-wider text-center min-w-[130px]">Estado</th>
+                  <th class="p-4 font-semibold uppercase tracking-wider text-center min-w-[160px] pl-6">Acciones</th>
                 </tr>
               </thead>
               <tbody>
@@ -294,17 +296,23 @@
                     <td class="text-center">
                       <span class="badge-modulos">{{ empresa.tipo_empresa }}</span>
                     </td>
+                    <td class="text-center font-bold text-emerald-400">
+                      {{ empresa.meses_activos }} meses
+                    </td>
+                    <td class="text-center font-bold text-emerald-400">
+                      {{ empresa.ganancia_total | currency:'USD':'symbol':'1.0-0' }}
+                    </td>
                     <td class="text-center">
                       @if (empresa.activo && empresa.estado_pago === 'al_dia') {
-                        <span class="px-3 py-1 rounded-full font-semibold uppercase bg-green-500/20 text-green-400">Al Día</span>
+                        <span class="px-3 py-1 rounded-full font-semibold uppercase bg-green-500/20 text-green-400 whitespace-nowrap">Al Día</span>
                       } @else if (empresa.activo && empresa.estado_pago === 'mora') {
-                        <span class="px-3 py-1 rounded-full font-semibold uppercase bg-yellow-500/20 text-yellow-400">En Mora (Suspendida)</span>
+                        <span class="px-3 py-1 rounded-full font-semibold uppercase bg-yellow-500/20 text-yellow-400 whitespace-nowrap">En Mora (Suspendida)</span>
                       } @else {
-                        <span class="px-3 py-1 rounded-full font-semibold uppercase bg-red-500/20 text-red-400">Inactiva Total</span>
+                        <span class="px-3 py-1 rounded-full font-semibold uppercase bg-red-500/20 text-red-400 whitespace-nowrap">Inactiva Total</span>
                       }
                     </td>
                     <td class="actions text-center">
-                      <div class="flex items-center gap-3 justify-center">
+                      <div class="flex items-center gap-1.5 justify-center">
                         <!-- Activar (Check) -->
                         <button
                           (click)="cambiarEstadoEmpresa(empresa, 'activar')"
@@ -479,8 +487,14 @@
             </div>
           </div>
 
-          <h3 class="panel-title mb-4">Gestión de Tarifas y Suscripciones</h3>
-          @if (mockSuscripciones.length > 0) {
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="panel-title m-0">Gestión de Tarifas y Suscripciones</h3>
+            <button (click)="abrirModalTarifasGlobales()" class="flex items-center gap-2 px-4 py-2 bg-[#1e293b] hover:bg-[#334155] border border-gray-700 rounded-lg text-gray-300 font-semibold transition-colors text-sm shadow-md">
+              <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+              Tarifas Globales
+            </button>
+          </div>
+          @if (suscripcionesList.length > 0) {
             <div class="table-responsive">
               <table class="data-table font-inter text-base w-full text-center">
                 <thead>
@@ -498,7 +512,7 @@
                   </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-700">
-                  @for (sus of mockSuscripciones; track sus.id) {
+                  @for (sus of suscripcionesList; track sus.id) {
                     <tr class="hover:bg-gray-800/50 transition-colors">
                       <td class="p-4 text-center text-gray-300 font-medium">
                         {{ sus.id }}
@@ -553,7 +567,7 @@
                       </td>
                       <td class="p-4 text-center">
                         <span class="font-bold text-emerald-400">
-                          ${{ calcularTotalSuscripcion(sus) | number: '1.0-0' }}
+                          ${{ sus.proximoPagoTotal | number: '1.0-0' }}
                         </span>
                       </td>
                       <td class="p-4 text-gray-300 font-medium whitespace-nowrap text-center">
@@ -582,12 +596,12 @@
                               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
                             </svg>
                           </button>
-                          <button (click)="renovarMockSuscripcion(sus.id)" class="w-10 h-10 rounded-full bg-[#0b0f19] flex items-center justify-center hover:bg-[#172135] transition-colors border border-transparent hover:border-blue-500/30" title="Renovar">
+                          <button (click)="renovarSuscripcion(sus.id)" class="w-10 h-10 rounded-full bg-[#0b0f19] flex items-center justify-center hover:bg-[#172135] transition-colors border border-transparent hover:border-blue-500/30" title="Renovar">
                             <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
                             </svg>
                           </button>
-                          <button (click)="suspenderMockSuscripcion(sus.id)" class="w-10 h-10 rounded-full bg-[#0b0f19] flex items-center justify-center hover:bg-[#172135] transition-colors border border-transparent hover:border-red-500/30" title="Suspender">
+                          <button (click)="noRenovarSuscripcion(sus.id)" class="w-10 h-10 rounded-full bg-[#0b0f19] flex items-center justify-center hover:bg-[#172135] transition-colors border border-transparent hover:border-red-500/30" title="Suspender">
                             <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"></path>
                             </svg>
@@ -874,39 +888,39 @@
                       </div>
                     }
                   </div>
-
-                  <div class="mt-8 flex justify-between items-center">
-                    <div>
-                      @if (paquete.id === 'addons') {
-                        <button (click)="anexarAddon()" class="text-sm text-blue-400 hover:text-blue-300 font-inter font-bold flex items-center gap-1 transition-colors">
-                          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                          </svg>
-                          Anexar Módulo
-                        </button>
-                      }
-                    </div>
-                    <button
-                      (click)="guardarPaquete(paquete.id)"
-                      class="soft-ui-btn flex items-center gap-2"
-                    >
-                      <svg
-                        class="w-5 h-5"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke-width="2"
-                        stroke="currentColor"
-                      >
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          d="M16.5 3.75V16.5L12 14.25 7.5 16.5V3.75m9 0H18A2.25 2.25 0 0120.25 6v12A2.25 2.25 0 0118 20.25H6A2.25 2.25 0 013.75 18V6A2.25 2.25 0 016 3.75h1.5m9 0h-9"
-                        />
-                      </svg>
-                      Guardar Cambios
-                    </button>
-                  </div>
                 }
+
+                <div class="mt-8 flex justify-between items-center">
+                  <div>
+                    @if (paquete.id === 'addons') {
+                      <button (click)="anexarAddon()" class="text-sm text-blue-400 hover:text-blue-300 font-inter font-bold flex items-center gap-1 transition-colors">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                        </svg>
+                        Anexar Módulo
+                      </button>
+                    }
+                  </div>
+                  <button
+                    (click)="guardarPaquete(paquete.id)"
+                    class="soft-ui-btn flex items-center gap-2"
+                  >
+                    <svg
+                      class="w-5 h-5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke-width="2"
+                      stroke="currentColor"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M16.5 3.75V16.5L12 14.25 7.5 16.5V3.75m9 0H18A2.25 2.25 0 0120.25 6v12A2.25 2.25 0 0118 20.25H6A2.25 2.25 0 013.75 18V6A2.25 2.25 0 016 3.75h1.5m9 0h-9"
+                      />
+                    </svg>
+                    Guardar Cambios
+                  </button>
+                </div>
               </div>
             }
             </div>
@@ -1547,14 +1561,7 @@
     </div>
   </div>
 
-  @if (toastMessage) {
-    <div
-      class="fixed bottom-10 right-10 z-[100] flex items-center p-4 bg-[#059669]/90 text-white rounded-lg shadow-2xl backdrop-blur-md border border-white/20 animate-bounce"
-    >
-      <i class="fas fa-check-circle mr-3 text-2xl text-[#00F0FF]"></i>
-      <span class="font-inter font-medium">{{ toastMessage }}</span>
-    </div>
-  }
+
 
   <!-- Modal Gestión Manual de Suscripción -->
   @if (showGestionSuscripcionModal && suscripcionEnEdicion) {
@@ -1650,6 +1657,81 @@
           </button>
         </div>
 
+      </div>
+    </div>
+  }
+  <!-- MODAL DE TARIFAS GLOBALES -->
+  @if (modalTarifasGlobalesVisible) {
+    <div class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+      <div class="bg-[#0f172a] rounded-2xl w-full max-w-md border border-gray-800 shadow-2xl overflow-hidden font-inter relative">
+        <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-500 to-indigo-500"></div>
+        <div class="p-6">
+          <h2 class="text-2xl font-bold text-white mb-2 flex items-center gap-2">
+            <svg class="w-6 h-6 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            Configuración de Precios Base
+          </h2>
+          <p class="text-gray-400 text-sm mb-6">Establece los valores base (COP) con los que el sistema calculará las mensualidades automáticamente para cada tipo de servicio.</p>
+
+          <div class="space-y-4">
+            <div>
+              <label class="block text-gray-300 text-sm font-semibold mb-1">Plan Básico (Cualquier Módulo Base)</label>
+              <div class="relative">
+                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-bold">$</span>
+                <input type="number" [(ngModel)]="tarifaConfig.plan_mensual" class="neu-dark-input w-full pl-8 font-bold text-lg text-emerald-300" />
+              </div>
+            </div>
+            <div>
+              <label class="block text-gray-300 text-sm font-semibold mb-1">Costo por Módulo Transversal Adicional</label>
+              <div class="relative">
+                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-bold">$</span>
+                <input type="number" [(ngModel)]="tarifaConfig.modulo_extra" class="neu-dark-input w-full pl-8 font-bold text-lg text-indigo-300" />
+              </div>
+            </div>
+            <div>
+              <label class="block text-gray-300 text-sm font-semibold mb-1">Costo por Conector / Add-on Externo</label>
+              <div class="relative">
+                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-bold">$</span>
+                <input type="number" [(ngModel)]="tarifaConfig.addon_extra" class="neu-dark-input w-full pl-8 font-bold text-lg text-rose-300" />
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-8 flex justify-end gap-3 pt-4 border-t border-gray-800">
+            <button (click)="cerrarModalTarifasGlobales()" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-md transition-colors text-sm font-semibold">Cancelar</button>
+            <button (click)="guardarTarifas()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-md transition-colors text-sm font-semibold shadow-[0_0_15px_rgba(5,150,105,0.4)]">
+              Actualizar Tarifas
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+
+
+  <!-- MODAL DE CONFIRMACIÓN GLOBAL -->
+  @if (confirmModalVisible) {
+    <div class="fixed inset-0 bg-black/70 backdrop-blur-sm z-[110] flex items-center justify-center p-4">
+      <div class="bg-[#0f172a] rounded-2xl w-full max-w-sm border border-gray-800 shadow-2xl overflow-hidden font-inter relative animate-fade-in-up">
+        <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-red-500 to-orange-500"></div>
+        <div class="p-6">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-10 h-10 rounded-full bg-red-500/20 flex items-center justify-center flex-shrink-0">
+              <svg class="w-6 h-6 text-red-400" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+            </div>
+            <h3 class="text-xl font-bold text-white">{{ confirmModalTitle }}</h3>
+          </div>
+          <p class="text-gray-300 text-sm mb-6">{{ confirmModalMessage }}</p>
+          <div class="flex justify-end gap-3">
+            <button (click)="cerrarConfirmacion()" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-md transition-colors text-sm font-semibold">
+              Cancelar
+            </button>
+            <button (click)="ejecutarConfirmacion()" class="px-4 py-2 bg-red-600 hover:bg-red-500 text-white rounded-md transition-colors text-sm font-semibold shadow-[0_0_15px_rgba(220,38,38,0.4)]">
+              Aceptar
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   }

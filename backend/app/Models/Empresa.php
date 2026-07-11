@@ -41,7 +41,16 @@ class Empresa extends Model
         'fecha_inscripcion',
         'renovaciones',
         'descuento',
-        'periodo'
+        'periodo',
+        'descuentos_aplicados',
+        'cargos_extra',
+        'addons_personalizados'
+    ];
+
+    protected $casts = [
+        'descuentos_aplicados' => 'array',
+        'cargos_extra' => 'array',
+        'addons_personalizados' => 'array',
     ];
 
     public function modulos()
@@ -49,5 +58,17 @@ class Empresa extends Model
         return $this->belongsToMany(Modulo::class, 'empresa_modulo')
                     ->withPivot('activo')
                     ->withTimestamps();
+    }
+
+    protected $appends = ['meses_activos', 'ganancia_total'];
+
+    public function getMesesActivosAttribute()
+    {
+        return $this->renovaciones + 1; // El mes inicial + renovaciones
+    }
+
+    public function getGananciaTotalAttribute()
+    {
+        return $this->meses_activos * $this->monto_mensual;
     }
 }

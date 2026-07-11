@@ -9,6 +9,7 @@ import {
 } from '../../services/accessibility/accessibility.service';
 import { EmpresaService } from '../../services/empresa.service';
 import { TarifaService } from '../../services/tarifa.service';
+import { ToastService } from '../../services/toast.service';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { ModulosService } from '../../services/modulos.service';
@@ -48,7 +49,7 @@ export class SaasAdminComponent implements OnInit {
   nombreNuevoAddon = '';
   editingAddonId: string | null = null;
   createdAdminEmail = '';
-  toastMessage: string | null = null;
+  
   isEditMode = false;
   editingId: number | null = null;
   isSubmitting: boolean = false;
@@ -178,7 +179,7 @@ export class SaasAdminComponent implements OnInit {
     sub.estado = 'Activa';
     sub.renovaciones += 1;
     
-    alert(`Suscripción de ${sub.nombreEmpresa} renovada exitosamente hasta el ${nuevaFecha.toLocaleDateString()}.`);
+    this.toastService.success(`Suscripción de ${sub.nombreEmpresa} renovada exitosamente hasta el ${nuevaFecha.toLocaleDateString()}.`);
   }
 
   // --- MÉTODOS DEL MODAL DE GESTIÓN ---
@@ -232,20 +233,31 @@ export class SaasAdminComponent implements OnInit {
   guardarGestionSuscripcion() {
     if (!this.suscripcionEnEdicion) return;
     
-    const index = this.mockSuscripciones.findIndex(s => s.id === this.suscripcionEnEdicion!.id);
-    if (index > -1) {
-      // Reemplazamos los datos originales con los editados
-      this.mockSuscripciones[index] = this.suscripcionEnEdicion;
-    }
-    
-    this.cerrarModalGestionSuscripcion();
+    // Call backend API
+    const payload = {
+      descuentosAplicados: this.suscripcionEnEdicion.descuentosAplicados,
+      cargosExtra: this.suscripcionEnEdicion.cargosExtra,
+      addonsList: this.suscripcionEnEdicion.addonsList
+    };
+
+    this.empresaService.updateTarifas(this.suscripcionEnEdicion.empresaId || this.suscripcionEnEdicion.id, payload).subscribe({
+      next: () => {
+        this.toastService.success('Tarifas de la empresa actualizadas exitosamente.');
+        this.cargarSuscripciones(); // Recargar la tabla desde el backend
+        this.cerrarModalGestionSuscripcion();
+      },
+      error: (err) => {
+        this.toastService.error('Error al guardar las tarifas de la empresa.');
+        console.error(err);
+      }
+    });
   }
 
   suspenderMockSuscripcion(suscripcionId: number) {
     const sub = this.mockSuscripciones.find(s => s.id === suscripcionId);
     if (sub) {
       sub.estado = 'Inactiva';
-      alert(`Suscripción de ${sub.nombreEmpresa} ha sido suspendida.`);
+      this.toastService.success(`Suscripción de ${sub.nombreEmpresa} ha sido suspendida.`);
     }
   }
   solicitudes: any[] = [];
@@ -282,6 +294,7 @@ export class SaasAdminComponent implements OnInit {
   mensajeRespuesta: string = '';
 
   public accessibilityService = inject(AccessibilityService);
+  public toastService = inject(ToastService);
   private empresaService = inject(EmpresaService);
   private tarifaService = inject(TarifaService);
   tarifaConfig: any = null;
@@ -364,7 +377,7 @@ export class SaasAdminComponent implements OnInit {
       .patch(`http://127.0.0.1:8000/api/leads/${this.leadSeleccionadoParaNotas.id}`, { notas: this.leadSeleccionadoParaNotas.notas }, { headers })
       .subscribe({
         next: () => {},
-        error: () => alert('Error al guardar la nota.')
+        error: () => this.toastService.error('Error al guardar la nota.')
       });
   }
 
@@ -419,12 +432,12 @@ export class SaasAdminComponent implements OnInit {
 
   enviarCampanaBrevo() {
     if (!this.asuntoBrevo.trim() || !this.mensajeBrevo.trim()) {
-      alert('El asunto y el mensaje son obligatorios.');
+      this.toastService.warning('El asunto y el mensaje son obligatorios.');
       return;
     }
 
     this.isEnviandoBrevo = true;
-    this.toastMessage = 'Enviando campaña a través de Brevo...';
+    this.toastService.info('Enviando campaña a través de Brevo...');
 
     const token = sessionStorage.getItem('auth_token');
     
@@ -440,25 +453,19 @@ export class SaasAdminComponent implements OnInit {
     }).subscribe({
       next: (res: any) => {
         this.isEnviandoBrevo = false;
-        this.toastMessage = `¡Campaña enviada exitosamente a ${res.cantidad_enviados || 'todos los'} interesados!`;
+        this.toastService.success(`¡Campaña enviada exitosamente a ${res.cantidad_enviados || 'todos los'} interesados!`);
         this.asuntoBrevo = '';
         this.mensajeBrevo = '';
         this.archivoAdjuntoBrevo = null;
         this.cdr.detectChanges();
-        setTimeout(() => {
-          this.toastMessage = null;
-          this.cdr.detectChanges();
-        }, 5000);
+        
       },
       error: (err) => {
         this.isEnviandoBrevo = false;
         console.error('Error enviando campaña:', err);
-        this.toastMessage = 'Hubo un error al enviar. Revisa la consola o asegúrate de que Brevo permita el remitente.';
+        this.toastService.error('Hubo un error al enviar. Revisa la consola o asegúrate de que Brevo permita el remitente.');
         this.cdr.detectChanges();
-        setTimeout(() => {
-          this.toastMessage = null;
-          this.cdr.detectChanges();
-        }, 5000);
+        
       }
     });
   }
@@ -472,23 +479,20 @@ export class SaasAdminComponent implements OnInit {
         next: () => {
           this.cargarLeads();
         },
-        error: () => alert('Error al actualizar estado del interesado.'),
+        error: () => this.toastService.error('Error al actualizar estado del interesado.'),
       });
   }
 
   eliminarLead(id: number) {
-    if (
-      !confirm('¿Estás seguro de que deseas eliminar este lead? Esta acción no se puede deshacer.')
-    )
-      return;
-
-    const token = sessionStorage.getItem('auth_token');
-    const headers = { Authorization: `Bearer ${token}` };
-    this.http.delete(`http://127.0.0.1:8000/api/leads/${id}`, { headers }).subscribe({
-      next: () => {
-        this.cargarLeads();
-      },
-      error: () => alert('Error al eliminar el lead.'),
+    this.abrirConfirmacion('Confirmar Acción', '¿Estás seguro de que deseas eliminar este lead? Esta acción no se puede deshacer.', () => {
+      const token = sessionStorage.getItem('auth_token');
+      const headers = { Authorization: `Bearer ${token}` };
+      this.http.delete(`http://127.0.0.1:8000/api/leads/${id}`, { headers }).subscribe({
+        next: () => {
+          this.cargarLeads();
+        },
+        error: () => this.toastService.error('Error al eliminar el lead.'),
+      });
     });
   }
 
@@ -518,7 +522,7 @@ export class SaasAdminComponent implements OnInit {
 
   procesarSolicitud(accion: string) {
     if (accion === 'rechazado' && !this.mensajeRespuesta) {
-      alert('Debes ingresar un motivo en caso de rechazo.');
+      this.toastService.warning('Debes ingresar un motivo en caso de rechazo.');
       return;
     }
 
@@ -556,7 +560,7 @@ export class SaasAdminComponent implements OnInit {
             }, 10000);
           }
         },
-        error: () => alert('Error al procesar solicitud.'),
+        error: () => this.toastService.error('Error al procesar solicitud.'),
       });
   }
 
@@ -578,7 +582,7 @@ export class SaasAdminComponent implements OnInit {
         next: () => {
           this.cargarSolicitudes();
         },
-        error: () => alert('Error al procesar solicitud.'),
+        error: () => this.toastService.error('Error al procesar solicitud.'),
       });
   }
 
@@ -619,12 +623,50 @@ export class SaasAdminComponent implements OnInit {
     });
   }
 
+
+
+  // --- VARIABLES Y MÉTODOS PARA MODAL DE CONFIRMACIÓN ---
+  confirmModalVisible = false;
+  confirmModalTitle = '';
+  confirmModalMessage = '';
+  confirmActionCallback: (() => void) | null = null;
+
+  abrirConfirmacion(titulo: string, mensaje: string, accion: () => void) {
+    this.confirmModalTitle = titulo;
+    this.confirmModalMessage = mensaje;
+    this.confirmActionCallback = accion;
+    this.confirmModalVisible = true;
+  }
+
+  ejecutarConfirmacion() {
+    if (this.confirmActionCallback) {
+      this.confirmActionCallback();
+    }
+    this.cerrarConfirmacion();
+  }
+
+  cerrarConfirmacion() {
+    this.confirmModalVisible = false;
+    this.confirmActionCallback = null;
+  }
+
+  modalTarifasGlobalesVisible = false;
+
+  abrirModalTarifasGlobales() {
+    this.modalTarifasGlobalesVisible = true;
+  }
+
+  cerrarModalTarifasGlobales() {
+    this.modalTarifasGlobalesVisible = false;
+  }
+
   guardarTarifas() {
     if (!this.tarifaConfig) return;
     this.tarifaService.updateTarifas(this.tarifaConfig.id, this.tarifaConfig).subscribe({
       next: () => {
-        alert('Tarifas actualizadas correctamente.');
+        this.toastService.success('Tarifas actualizadas correctamente.');
         this.cargarSuscripciones(); // Recalcular
+          this.cerrarModalTarifasGlobales();
       },
       error: (err) => console.error('Error guardando tarifas', err)
     });
@@ -716,12 +758,12 @@ export class SaasAdminComponent implements OnInit {
           if (addonsPaquete) {
             addonsPaquete.submodulos = addonsPaquete.submodulos.filter((s: any) => s.id !== id);
           }
-          this.toastMessage = `Conector eliminado exitosamente.`;
-          setTimeout(() => this.toastMessage = null, 3000);
+          this.toastService.success(`Conector eliminado exitosamente.`);
+          
         },
         error: (err) => {
           console.error(err);
-          alert('Error al eliminar el conector en el servidor.');
+          this.toastService.error('Error al eliminar el conector en el servidor.');
         }
       });
     }
@@ -729,7 +771,7 @@ export class SaasAdminComponent implements OnInit {
 
   guardarNuevoAddon() {
     if (!this.nombreNuevoAddon.trim()) {
-      alert('Por favor, ingresa un nombre para el conector.');
+      this.toastService.warning('Por favor, ingresa un nombre para el conector.');
       return;
     }
 
@@ -743,13 +785,13 @@ export class SaasAdminComponent implements OnInit {
           if (sub) {
             sub.nombre = this.nombreNuevoAddon.trim();
           }
-          this.toastMessage = `¡Conector "${this.nombreNuevoAddon}" actualizado exitosamente!`;
-          setTimeout(() => this.toastMessage = null, 3000);
+          this.toastService.success(`¡Conector "${this.nombreNuevoAddon}" actualizado exitosamente!`);
+          
           this.cerrarAddonModal();
         },
         error: (err) => {
           console.error(err);
-          alert('Error al actualizar el conector en el servidor.');
+          this.toastService.error('Error al actualizar el conector en el servidor.');
         }
       });
     } else {
@@ -763,13 +805,13 @@ export class SaasAdminComponent implements OnInit {
             activo: false
           });
           
-          this.toastMessage = `¡Conector "${this.nombreNuevoAddon}" agregado exitosamente al catálogo global!`;
-          setTimeout(() => this.toastMessage = null, 3000);
+          this.toastService.success(`¡Conector "${this.nombreNuevoAddon}" agregado exitosamente al catálogo global!`);
+          
           this.cerrarAddonModal();
         },
         error: (err) => {
           console.error(err);
-          alert('Error al guardar el conector en el servidor. Puede que el ID ya exista.');
+          this.toastService.error('Error al guardar el conector en el servidor. Puede que el ID ya exista.');
         }
       });
     }
@@ -777,7 +819,7 @@ export class SaasAdminComponent implements OnInit {
 
   toggleSubmodulo(paqueteId: string, submoduloId: string) {
     if (!this.empresaSeleccionadaId) {
-      alert('Por favor selecciona una empresa primero.');
+      this.toastService.warning('Por favor selecciona una empresa primero.');
       return;
     }
     const paquete = this.paquetesModulos.find((p) => p.id === paqueteId);
@@ -792,7 +834,7 @@ export class SaasAdminComponent implements OnInit {
 
   togglePaqueteCompleto(paqueteId: string, activar: boolean) {
     if (!this.empresaSeleccionadaId) {
-      alert('Por favor selecciona una empresa primero.');
+      this.toastService.warning('Por favor selecciona una empresa primero.');
       return;
     }
     const paquete = this.paquetesModulos.find((p) => p.id === paqueteId);
@@ -807,12 +849,12 @@ export class SaasAdminComponent implements OnInit {
   }
 
   anexarAddon() {
-    alert('Funcionalidad en desarrollo: Aquí se desplegará el catálogo de conectores externos (Ej. APIs, Software Contable, etc.) de los cuales GestivaPyme ofrece integración.');
+    this.toastService.info('Funcionalidad en desarrollo: Aquí se desplegará el catálogo de conectores externos (Ej. APIs, Software Contable, etc.) de los cuales GestivaPyme ofrece integración.');
   }
 
   guardarPaquete(paqueteId: string) {
     if (!this.empresaSeleccionadaId) {
-      alert('Por favor selecciona una empresa primero.');
+      this.toastService.warning('Por favor selecciona una empresa primero.');
       return;
     }
     const paquete = this.paquetesModulos.find((p) => p.id === paqueteId);
@@ -821,25 +863,19 @@ export class SaasAdminComponent implements OnInit {
         id: sub.id,
         activo: sub.activo
       }));
-      this.toastMessage = 'Guardando cambios...';
+      this.toastService.info('Guardando cambios...');
       this.modulosService.updatePaqueteEmpresa(this.empresaSeleccionadaId, modulosState).subscribe({
         next: (res) => {
           console.log(`Paquete ${paquete.nombre} actualizado masivamente`, res);
-          this.toastMessage = `¡Los cambios al paquete ${paquete.nombre} se han guardado correctamente!`;
+          this.toastService.success(`¡Los cambios al paquete ${paquete.nombre} se han guardado correctamente!`);
           this.cdr.detectChanges();
-          setTimeout(() => {
-            this.toastMessage = null;
-            this.cdr.detectChanges();
-          }, 4000);
+          
         },
         error: (err) => {
           console.error('Error al actualizar paquete masivamente', err);
-          this.toastMessage = 'Error al guardar el paquete en el servidor.';
+          this.toastService.error('Error al guardar el paquete en el servidor.');
           this.cdr.detectChanges();
-          setTimeout(() => {
-            this.toastMessage = null;
-            this.cdr.detectChanges();
-          }, 4000);
+          
         }
       });
     }
@@ -928,7 +964,7 @@ export class SaasAdminComponent implements OnInit {
           this.cargarEmpresas();
           this.cerrarModal();
         },
-        error: (err) => alert('Error al actualizar la empresa.'),
+        error: (err) => this.toastService.error('Error al actualizar la empresa.'),
       });
     } else {
       this.empresaService.createEmpresa(this.nuevaEmpresa).subscribe({
@@ -939,7 +975,7 @@ export class SaasAdminComponent implements OnInit {
           this.cargarEmpresas();
           this.cerrarModal();
         },
-        error: (err) => alert('Error al crear la empresa. Revisa los datos (ej. NIT duplicado).'),
+        error: (err) => this.toastService.error('Error al crear la empresa. Revisa los datos (ej. NIT duplicado).'),
       });
     }
   }
@@ -969,7 +1005,7 @@ export class SaasAdminComponent implements OnInit {
           this.cargarEmpresas();
           this.empresaDestacadaId = null;
         },
-        error: () => alert('Error al cambiar el estado de la empresa.'),
+        error: () => this.toastService.error('Error al cambiar el estado de la empresa.'),
       });
     }
   }
