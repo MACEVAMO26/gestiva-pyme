@@ -19,6 +19,7 @@ class EmpresaController extends Controller
         return response()->json(Empresa::all());
     }
 
+    // Obtiene las estadísticas de suscripciones y la lista detallada de empresas (MRR, clientes, morosos)
     public function suscripcionesStats()
     {
         $empresas = Empresa::all();
@@ -92,6 +93,7 @@ class EmpresaController extends Controller
         ]);
     }
 
+    // Actualiza las tarifas personalizadas de una empresa (descuentos, cargos extra y addons)
     public function updateTarifas(Request $request, $id)
     {
         $empresa = Empresa::findOrFail($id);
@@ -105,6 +107,7 @@ class EmpresaController extends Controller
         return response()->json(['message' => 'Tarifas actualizadas correctamente']);
     }
 
+    // Calcula y retorna las estadísticas generales del sistema (uptime, última actividad)
     public function systemStats()
     {
         // Calcula el tiempo transcurrido desde la última actividad registrada por cualquier usuario
@@ -232,7 +235,7 @@ class EmpresaController extends Controller
         return response()->json($empresa);
     }
 
-    // Modifica el estado de la empresa alternando su disponibilidad o marcándola en mora
+    // Registra la renovación de la suscripción mensual sumando 30 días a la fecha de pago
     public function registrarRenovacion($id)
     {
         $empresa = Empresa::findOrFail($id);
