@@ -156,8 +156,9 @@ class EmpresaController extends Controller
             }
             $empresa = Empresa::create($validatedData);
 
-            // Construye un correo por defecto para el administrador usando el ID de la empresa
-            $adminEmail = 'sadmin-id' . $empresa->id . '@gestivapyme.com';
+            // Construye un correo por defecto para el administrador usando el ID de la empresa y su nombre
+            $nombreSinEspacios = preg_replace('/\s+/', '', $empresa->razon_social);
+            $adminEmail = 'sadmin-id' . $empresa->id . '-' . $nombreSinEspacios . '@gestivapyme.com';
 
             // Crea el rol "Gerente" para la empresa
             $rolGerente = \App\Models\Role::create([
