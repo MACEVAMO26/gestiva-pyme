@@ -17,7 +17,7 @@
         <!-- Perfil y Logout -->
         <div class="user-profile">
           @if (userAvatar) {
-            <img [src]="'https://gestiva-pyme.onrender.com/storage/' + userAvatar" alt="Avatar" class="w-8 h-8 rounded-full object-cover border border-fuchsia-600 mr-2">
+            <img [src]="userAvatar" alt="Avatar" class="w-8 h-8 rounded-full object-cover border border-fuchsia-600 mr-2">
           } @else {
             <div class="avatar">{{ userInitials }}</div>
           }
@@ -300,7 +300,7 @@
             <div class="col-span-1 flex flex-col items-center justify-start bg-[#0f172a] rounded-2xl p-6 shadow-inner border border-gray-800">
               
               @if (userAvatar) {
-                <img [src]="'https://gestiva-pyme.onrender.com/storage/' + userAvatar" alt="Avatar" class="w-32 h-32 rounded-full object-cover shadow-lg mb-4 border-2 border-fuchsia-600">
+                <img [src]="userAvatar" alt="Avatar" class="w-32 h-32 rounded-full object-cover shadow-lg mb-4 border-2 border-fuchsia-600">
               } @else {
                 <div class="w-32 h-32 rounded-full bg-gradient-to-tr from-fuchsia-600 to-blue-600 flex items-center justify-center text-white text-5xl font-bold shadow-lg mb-4">
                   {{ userInitials }}
