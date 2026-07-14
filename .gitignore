@@ -8,3 +8,16 @@ vendor/
 .agents/
 RESPALDO_GESTIVAPYME.md
 DemoDataSeeder.php
+
+# Scripts de prueba y depuración temporal
+test_*.php
+test_*.js
+test_*.ts
+test_*.py
+script_*.php
+script_*.js
+script_*.ts
+script_*.py
+*.tmp
+*.bak
+
