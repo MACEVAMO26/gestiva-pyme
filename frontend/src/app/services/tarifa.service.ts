@@ -7,7 +7,7 @@ import { Observable } from 'rxjs';
 })
 export class TarifaService {
   private http = inject(HttpClient);
-  private apiUrl = 'http://localhost:8000/api/tarifas';
+  private apiUrl = 'https://gestiva-pyme.onrender.com/api/tarifas';
 
   private getHeaders() {
     const token = localStorage.getItem('access_token');

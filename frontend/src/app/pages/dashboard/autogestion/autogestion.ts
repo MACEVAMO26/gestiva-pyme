@@ -39,7 +39,7 @@ export class AutogestionComponent implements OnInit {
   }
 
   cargarAfiliaciones() {
-    this.http.get('http://localhost:8000/api/autogestion/afiliaciones').subscribe({
+    this.http.get('https://gestiva-pyme.onrender.com/api/autogestion/afiliaciones').subscribe({
       next: (res: any) => {
         if (res.afiliacion) {
           this.afiliacion = res.afiliacion;
@@ -59,7 +59,7 @@ export class AutogestionComponent implements OnInit {
   }
 
   guardarAfiliaciones() {
-    this.http.post('http://localhost:8000/api/autogestion/afiliaciones', this.formAfiliacion).subscribe({
+    this.http.post('https://gestiva-pyme.onrender.com/api/autogestion/afiliaciones', this.formAfiliacion).subscribe({
       next: (res: any) => {
         alert(res.message);
         this.cargarAfiliaciones();
@@ -71,7 +71,7 @@ export class AutogestionComponent implements OnInit {
   // Gestiona las fechas de afiliación por parte del administrador
   gestionarAfiliacionAdmin() {
     if(!this.user) return;
-    this.http.post(`http://localhost:8000/api/autogestion/empleado/${this.user.id}/afiliaciones`, this.formAfiliacion).subscribe({
+    this.http.post(`https://gestiva-pyme.onrender.com/api/autogestion/empleado/${this.user.id}/afiliaciones`, this.formAfiliacion).subscribe({
       next: (res: any) => {
         alert(res.message);
         this.cargarAfiliaciones();
