@@ -4,7 +4,7 @@
   <header class="global-header">
     <div class="header-left">
       <div class="logo-container">
-        <img src="assets/images/Logos/GESTIVAPYME(7).png" alt="GestivaPyme" class="main-logo-img">
+        <img [src]="getLogoUrl()" alt="Logo Empresa" class="main-logo-img">
         <span class="badge-plan" [ngClass]="tipoEmpresaClass">{{tipoEmpresa}}</span>
       </div>
     </div>

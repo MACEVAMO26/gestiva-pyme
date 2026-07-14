@@ -1,5 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-$primary-color: #4F46E5;
+$primary-color: var(--theme-primary, #4F46E5);
 $primary-hover: #4338CA;
 $bg-color: #F8FAFC;
 $sidebar-bg: #FFFFFF;

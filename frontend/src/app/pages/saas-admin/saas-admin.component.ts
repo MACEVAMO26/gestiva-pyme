@@ -670,8 +670,26 @@ export class SaasAdminComponent implements OnInit {
 
   abrirSolicitud(solicitud: any) {
     this.solicitudSeleccionada = solicitud;
+    
+    // Parsear datos nuevos si vienen en formato JSON string
+    if (this.solicitudSeleccionada.datos_nuevos && typeof this.solicitudSeleccionada.datos_nuevos === 'string') {
+      try {
+        this.solicitudSeleccionada.datosPropuestos = JSON.parse(this.solicitudSeleccionada.datos_nuevos);
+      } catch (e) {
+        this.solicitudSeleccionada.datosPropuestos = null;
+      }
+    } else if (this.solicitudSeleccionada.datos_nuevos && typeof this.solicitudSeleccionada.datos_nuevos === 'object') {
+      this.solicitudSeleccionada.datosPropuestos = this.solicitudSeleccionada.datos_nuevos;
+    }
+
     this.mensajeRespuesta = '';
     this.isModalSolicitudOpen = true;
+  }
+
+  getArchivoUrl(path: string): string {
+    if (!path) return '';
+    if (path.startsWith('http')) return path;
+    return `https://gestiva-pyme.onrender.com/storage/${path}`;
   }
 
   cerrarModalSolicitud() {

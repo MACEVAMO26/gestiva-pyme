@@ -48,6 +48,13 @@ export class DashboardComponent implements OnInit {
       this.hasVentas = tipo.toLowerCase().includes('ventas');
       this.hasServicios = tipo.toLowerCase().includes('servicios');
       
+      // Inyectar el color corporativo de la empresa
+      if (this.user.empresa.color_primario) {
+        document.documentElement.style.setProperty('--theme-primary', this.user.empresa.color_primario);
+      } else {
+        document.documentElement.style.removeProperty('--theme-primary');
+      }
+
       if (this.user.empresa.estado_pago === 'mora') {
         this.isCompanyInactive = true;
         this.currentModule = 'pagos';
@@ -55,6 +62,14 @@ export class DashboardComponent implements OnInit {
 
       this.cargarModulos(this.user.empresa_id);
     }
+  }
+
+  getLogoUrl(): string {
+    if (this.user?.empresa?.logo_url) {
+      const url = this.user.empresa.logo_url;
+      return url.startsWith('http') ? url : `https://gestiva-pyme.onrender.com${url}`;
+    }
+    return 'assets/images/Logos/GESTIVAPYME(7).png';
   }
 
   cargarModulos(empresaId: number) {

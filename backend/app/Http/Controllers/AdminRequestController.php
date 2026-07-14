@@ -29,8 +29,11 @@ class AdminRequestController extends Controller
         $empresa_id = $user ? $user->empresa_id : null;
 
         $comprobantePath = null;
-        if ($request->hasFile('comprobante')) {
-            $comprobantePath = $request->file('comprobante')->store('comprobantes', 'public');
+        if ($request->hasFile('comprobante') && $request->file('comprobante')->isValid()) {
+            $uploaded = cloudinary()->uploadApi()->upload($request->file('comprobante')->getRealPath(), [
+                'folder' => 'comprobantes'
+            ]);
+            $comprobantePath = $uploaded['secure_url'];
         }
 
         $datosNuevosArray = [];
@@ -38,12 +41,18 @@ class AdminRequestController extends Controller
             $datosNuevosArray = json_decode($request->input('datos_nuevos'), true);
         }
 
-        if ($request->hasFile('logo')) {
-            $datosNuevosArray['temp_logo'] = $request->file('logo')->store('temp_logos', 'public');
+        if ($request->hasFile('logo') && $request->file('logo')->isValid()) {
+            $uploadedLogo = cloudinary()->uploadApi()->upload($request->file('logo')->getRealPath(), [
+                'folder' => 'temp_logos'
+            ]);
+            $datosNuevosArray['temp_logo'] = $uploadedLogo['secure_url'];
         }
 
-        if ($request->hasFile('documento')) {
-            $datosNuevosArray['temp_doc'] = $request->file('documento')->store('temp_docs', 'public');
+        if ($request->hasFile('documento') && $request->file('documento')->isValid()) {
+            $uploadedDoc = cloudinary()->uploadApi()->upload($request->file('documento')->getRealPath(), [
+                'folder' => 'temp_docs'
+            ]);
+            $datosNuevosArray['temp_doc'] = $uploadedDoc['secure_url'];
         }
 
         $req = AdminRequest::create([
@@ -82,9 +91,12 @@ class AdminRequestController extends Controller
                 if (isset($datos['direccion'])) $empresa->direccion = $datos['direccion'];
                 if (isset($datos['telefono'])) $empresa->telefono = $datos['telefono'];
                 if (isset($datos['email'])) $empresa->email = $datos['email'];
+                if (isset($datos['color_primario'])) $empresa->color_primario = $datos['color_primario'];
 
-                // Mueve el logo temporal a la carpeta definitiva y actualiza la URL en la empresa
-                if (isset($datos['temp_logo']) && \Illuminate\Support\Facades\Storage::disk('public')->exists($datos['temp_logo'])) {
+                // Si ya viene de Cloudinary, es una URL directa (empieza con http)
+                if (isset($datos['temp_logo']) && str_starts_with($datos['temp_logo'], 'http')) {
+                    $empresa->logo_url = $datos['temp_logo'];
+                } else if (isset($datos['temp_logo']) && \Illuminate\Support\Facades\Storage::disk('public')->exists($datos['temp_logo'])) {
                     $newPath = str_replace('temp_logos', 'logos', $datos['temp_logo']);
                     \Illuminate\Support\Facades\Storage::disk('public')->move($datos['temp_logo'], $newPath);
                     $empresa->logo_url = '/storage/' . $newPath;
