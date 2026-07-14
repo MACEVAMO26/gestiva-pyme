@@ -1,0 +1,14 @@
+{
+  "files.exclude": {
+    "**/.git": true,
+    "**/.DS_Store": true,
+    "**/.dockerignore": true,
+    "**/.editorconfig": true,
+    "**/.gitattributes": true,
+    "**/Dockerfile": true,
+    "**/composer.lock": true,
+    "**/package-lock.json": true,
+    "**/.phpunit.result.cache": true,
+    "**/phpunit.xml": true
+  }
+}
