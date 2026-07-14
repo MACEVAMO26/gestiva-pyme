@@ -8,7 +8,7 @@ import { Observable } from 'rxjs';
 export class EmpresaService {
   private http = inject(HttpClient);
   // Usa la ruta que definiste en Laravel API
-  private apiUrl = 'http://127.0.0.1:8000/api/empresas';
+  private apiUrl = 'https://gestiva-pyme.onrender.com/api/empresas';
 
   // Obtener todas las empresas
   private getHeaders() { const token = sessionStorage.getItem('auth_token'); return new HttpHeaders().set('Authorization', `Bearer ${token}`); }

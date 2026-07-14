@@ -98,7 +98,7 @@ export class DashboardComponent implements OnInit {
     const token = sessionStorage.getItem('auth_token');
     if (!token) return;
 
-    this.http.post('http://127.0.0.1:8000/api/user/avatar', { avatar_url: newAvatarUrl }, {
+    this.http.post('https://gestiva-pyme.onrender.com/api/user/avatar', { avatar_url: newAvatarUrl }, {
       headers: { 'Authorization': `Bearer ${token}` }
     }).subscribe({
       next: (res: any) => {

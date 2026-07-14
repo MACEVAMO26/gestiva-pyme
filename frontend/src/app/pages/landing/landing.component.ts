@@ -59,7 +59,7 @@ export class LandingComponent {
 
     this.isSubmitting = true;
 
-    this.http.post('http://127.0.0.1:8000/api/leads', this.leadForm)
+    this.http.post('https://gestiva-pyme.onrender.com/api/leads', this.leadForm)
       .subscribe({
         next: () => {
           this.isSubmitting = false;

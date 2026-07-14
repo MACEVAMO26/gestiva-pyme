@@ -21,7 +21,7 @@ export interface PaquetesRespuesta {
   providedIn: 'root'
 })
 export class ModulosService {
-  private apiUrl = 'http://127.0.0.1:8000/api';
+  private apiUrl = 'https://gestiva-pyme.onrender.com/api';
 
   constructor(private http: HttpClient) {}
 
