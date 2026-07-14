@@ -156,10 +156,31 @@ class EmpresaController extends Controller
             // Construye un correo por defecto para el administrador usando el ID de la empresa
             $adminEmail = 'sadmin-id' . $empresa->id . '@gestivapyme.com';
 
+            // Crea el rol "Gerente" para la empresa
+            $rolGerente = \App\Models\Role::create([
+                'empresa_id' => $empresa->id,
+                'nombre' => 'Gerente',
+                'descripcion' => 'Administrador principal de la empresa',
+                'activo' => 1
+            ]);
+
+            // Asigna todos los permisos al rol Gerente
+            $modulos = \Illuminate\Support\Facades\DB::table('modulos')->pluck('id');
+            foreach ($modulos as $modId) {
+                \App\Models\Permiso::create([
+                    'rol_id' => $rolGerente->id,
+                    'modulo' => $modId,
+                    'puede_ver' => 1,
+                    'puede_crear' => 1,
+                    'puede_editar' => 1,
+                    'puede_inactivar' => 1
+                ]);
+            }
+
             // Registra el usuario gerente con rol de administrador y lo asocia a la empresa
             User::create([
                 'empresa_id' => $empresa->id,
-                'rol_id' => 1,
+                'rol_id' => $rolGerente->id,
                 'nombres' => 'Gerente',
                 'apellidos' => $empresa->razon_social,
                 'documento' => $empresa->nit,

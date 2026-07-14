@@ -12,6 +12,7 @@ use App\Http\Controllers\CargoController;
 use App\Http\Controllers\PermisoController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AutogestionController;
+use App\Http\Controllers\ProfileController;
 
 // Gestion Central del Negocio
 use App\Http\Controllers\EmpresaController;
@@ -55,7 +56,9 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     // --- SEGURIDAD Y ACCESO ---
-
+    Route::put('/profile', [ProfileController::class, 'update']);
+    Route::post('/profile/force-password-reset', [ProfileController::class, 'forcePasswordReset']);
+    Route::post('/profile/avatar', [ProfileController::class, 'uploadAvatar']);
 
     Route::get('/roles', [RoleController::class, 'index']);
     Route::post('/roles', [RoleController::class, 'store']);

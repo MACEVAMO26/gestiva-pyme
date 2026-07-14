@@ -11,7 +11,7 @@ import { EmpresaService } from '../../services/empresa.service';
 import { TarifaService } from '../../services/tarifa.service';
 import { ToastService } from '../../services/toast.service';
 import { Router } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { ModulosService } from '../../services/modulos.service';
 
 export interface SuscripcionEmpresa {
@@ -60,6 +60,18 @@ export class SaasAdminComponent implements OnInit {
   };
   listaDescuentosEmpresa: string[] = [];
   currentView = 'dashboard';
+
+  // --- VARIABLES DE PERFIL (SEGURIDAD) ---
+  userInitials = 'U';
+  userName = '';
+  userEmail = '';
+  userAvatar: string | null = null;
+  profileForm = {
+    nombres: '',
+    email: ''
+  };
+  isUpdatingProfile = false;
+
 
   // --- MOCK DATOS SUSCRIPCIONES ---
   mockSuscripciones: SuscripcionEmpresa[] = [
@@ -122,6 +134,15 @@ export class SaasAdminComponent implements OnInit {
       return matchEmpresa && matchFecha;
     });
   }
+
+  getHeaders() {
+    return { 
+      'Authorization': `Bearer ${sessionStorage.getItem('auth_token')}`,
+      'Accept': 'application/json'
+    };
+  }
+
+
 
   calcularTotalSuscripcion(suscripcion: SuscripcionEmpresa): number {
     let subtotal = 0;
@@ -314,6 +335,17 @@ export class SaasAdminComponent implements OnInit {
     }
 
     this.user = this.authService.getUser();
+    
+    // Inicializar datos del perfil
+    if (this.user) {
+      this.userName = this.user.nombres || 'Usuario';
+      this.userEmail = this.user.email || '';
+      this.userInitials = this.userName.substring(0, 2).toUpperCase();
+      this.userAvatar = this.user.avatar_url || null;
+      this.profileForm.nombres = this.userName;
+      this.profileForm.email = this.userEmail;
+    }
+
     // Redirige al panel correspondiente según el tipo de usuario
     if (this.user && this.user.empresa_id !== null) {
       this.router.navigate(['/dashboard']);
@@ -429,6 +461,133 @@ export class SaasAdminComponent implements OnInit {
       this.archivoAdjuntoBrevo = file;
     }
   }
+
+  // --- MÉTODOS DE PERFIL Y SEGURIDAD ---
+  actualizarPerfil() {
+    this.isUpdatingProfile = true;
+    this.http.put('http://127.0.0.1:8000/api/profile', this.profileForm, { headers: this.getHeaders() }).subscribe({
+        next: (res: any) => {
+          this.userName = res.user.nombres;
+          this.userEmail = res.user.email;
+          this.userInitials = this.userName.substring(0, 2).toUpperCase();
+          
+          // Actualizar sessionStorage
+          const currentUser = this.authService.getUser();
+          if (currentUser) {
+            currentUser.nombres = this.userName;
+            currentUser.email = this.userEmail;
+            sessionStorage.setItem('current_user', JSON.stringify(currentUser));
+          }
+
+          this.toastService.success('Perfil actualizado correctamente');
+          this.isUpdatingProfile = false;
+        },
+        error: (err) => {
+          console.error(err);
+          this.toastService.error('Error al actualizar el perfil.');
+          this.isUpdatingProfile = false;
+        }
+      });
+  }
+
+  forzarCambioClave() {
+    this.confirmModalTitle = 'Forzar Cambio de Clave';
+    this.confirmModalMessage = 'Al aceptar, tu sesión se cerrará de inmediato y el sistema te obligará a registrar una nueva contraseña. ¿Estás segura?';
+    this.confirmActionCallback = () => {
+      this.http.post('http://127.0.0.1:8000/api/profile/force-password-reset', {}, { headers: this.getHeaders() }).subscribe({
+        next: (res: any) => {
+          this.toastService.warning(res.message || 'Se requerirá cambio de contraseña en el próximo ingreso.');
+          setTimeout(() => {
+            this.logout();
+          }, 2000);
+        },
+        error: (err) => {
+          console.error(err);
+          this.toastService.error('Error al intentar forzar el cambio de clave.');
+        }
+      });
+    };
+    this.confirmModalVisible = true;
+  }
+
+  // Sube y actualiza el avatar del usuario
+  subirAvatar(event: any) {
+    const file = event.target.files[0];
+    if (file) {
+      // Comprimir la imagen antes de subirla
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        const img = new Image();
+        img.src = e.target.result;
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          let width = img.width;
+          let height = img.height;
+          
+          // Calcular nuevas dimensiones manteniendo el ratio (máximo 500px)
+          const MAX_SIZE = 500;
+          if (width > height) {
+            if (width > MAX_SIZE) {
+              height *= MAX_SIZE / width;
+              width = MAX_SIZE;
+            }
+          } else {
+            if (height > MAX_SIZE) {
+              width *= MAX_SIZE / height;
+              height = MAX_SIZE;
+            }
+          }
+          
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          if (ctx) {
+            ctx.drawImage(img, 0, 0, width, height);
+            // Convertir de vuelta a archivo (calidad 0.8)
+            canvas.toBlob((blob) => {
+              if (blob) {
+                const compressedFile = new File([blob], file.name, {
+                  type: 'image/jpeg',
+                  lastModified: Date.now(),
+                });
+                
+                const formData = new FormData();
+                formData.append('avatar', compressedFile);
+
+                this.http.post('http://127.0.0.1:8000/api/profile/avatar', formData, { 
+                  headers: this.getHeaders()
+                }).subscribe({
+                  next: (res: any) => {
+                    this.userAvatar = res.avatar_url;
+                    
+                    // Actualizar sessionStorage
+                    const currentUser = this.authService.getUser();
+                    if (currentUser) {
+                      currentUser.avatar_url = this.userAvatar;
+                      sessionStorage.setItem('current_user', JSON.stringify(currentUser));
+                    }
+
+                    this.toastService.success('Avatar actualizado correctamente');
+                  },
+                  error: (err) => {
+                    console.error(err);
+                    let errorMsg = 'Error al subir el avatar. Inténtalo de nuevo.';
+                    if (err.error && err.error.message) {
+                      errorMsg = err.error.message;
+                    }
+                    this.toastService.error(errorMsg);
+                  }
+                });
+              }
+            }, 'image/jpeg', 0.8);
+          }
+        };
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  // --- MÉTODOS DE MODALES (Suscripciones / Tarifas) ---
 
   enviarCampanaBrevo() {
     if (!this.asuntoBrevo.trim() || !this.mensajeBrevo.trim()) {
