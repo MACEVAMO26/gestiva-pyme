@@ -73,14 +73,23 @@ class ProfileController extends Controller
             if (!in_array($ext, ['jpg', 'jpeg', 'png', 'gif', 'webp'])) {
                 return response()->json(['message' => 'El archivo debe ser una imagen (JPG, PNG, GIF, WEBP).'], 422);
             }
-            $path = $request->file('avatar')->store('avatars', 'public');
-            $user->avatar_url = $path;
-            $user->save();
+            
+            try {
+                $uploadedFileUrl = \CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary::upload($request->file('avatar')->getRealPath(), [
+                    'folder' => 'avatars'
+                ])->getSecurePath();
+                
+                $user->avatar_url = $uploadedFileUrl;
+                $user->save();
 
-            return response()->json([
-                'message' => 'Avatar actualizado exitosamente',
-                'avatar_url' => $path
-            ]);
+                return response()->json([
+                    'message' => 'Avatar actualizado exitosamente',
+                    'avatar_url' => $uploadedFileUrl
+                ]);
+            } catch (\Exception $e) {
+                \Log::error('Error subiendo a Cloudinary: ' . $e->getMessage());
+                return response()->json(['message' => 'Error al guardar la imagen en la nube.'], 500);
+            }
         }
 
         return response()->json(['message' => 'No se subió ninguna imagen'], 400);
