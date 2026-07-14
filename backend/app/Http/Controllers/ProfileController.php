@@ -75,9 +75,10 @@ class ProfileController extends Controller
             }
             
             try {
-                $uploadedFileUrl = \CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary::upload($request->file('avatar')->getRealPath(), [
+                $uploaded = cloudinary()->uploadApi()->upload($request->file('avatar')->getRealPath(), [
                     'folder' => 'avatars'
-                ])->getSecurePath();
+                ]);
+                $uploadedFileUrl = $uploaded['secure_url'];
                 
                 $user->avatar_url = $uploadedFileUrl;
                 $user->save();

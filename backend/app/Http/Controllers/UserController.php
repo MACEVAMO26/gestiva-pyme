@@ -93,10 +93,10 @@ class UserController extends Controller
 
         if ($request->hasFile('avatar')) {
             try {
-                $uploadedFileUrl = \CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary::upload($request->file('avatar')->getRealPath(), [
+                $uploaded = cloudinary()->uploadApi()->upload($request->file('avatar')->getRealPath(), [
                     'folder' => 'avatars'
-                ])->getSecurePath();
-                $user->avatar_url = $uploadedFileUrl;
+                ]);
+                $user->avatar_url = $uploaded['secure_url'];
             } catch (\Exception $e) {
                 \Log::error('Error subiendo a Cloudinary: ' . $e->getMessage());
                 return response()->json(['error' => 'Error al guardar la imagen en la nube.'], 500);
