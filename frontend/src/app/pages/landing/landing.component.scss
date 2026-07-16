@@ -226,19 +226,51 @@
 }
 
 .pricing-grid {
-  @apply grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto;
+  @apply grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-7xl mx-auto;
 }
 
 .pricing-card {
-  @apply p-8 rounded-[2rem] border-2 transition-all transform relative flex flex-col;
+  @apply p-8 rounded-[2rem] border-2 transition-all transform relative flex flex-col justify-between;
 }
 
-.card-monthly {
-  @apply bg-slate-900 border-transparent hover:border-amber-500 hover:shadow-[0_0_40px_rgba(245,158,11,0.3)] hover:-translate-y-3 overflow-hidden;
+/* User limit span */
+.user-limit {
+  @apply block text-center font-bold mt-2 tracking-wide;
+}
+.card-emprendedor .user-limit { @apply text-blue-400; }
+.card-pyme .user-limit { @apply text-amber-400; }
+.card-empresarial .user-limit { @apply text-emerald-400; }
+
+/* Banners de Referidos */
+.referral-banner {
+  @apply mt-2 mb-4 p-2 rounded-lg text-center border;
+}
+.banner-blue { @apply bg-blue-900/30 border-blue-500/30 text-blue-300; }
+.banner-amber { @apply bg-amber-900/30 border-amber-500/30 text-amber-300; }
+.banner-emerald { @apply bg-emerald-900/30 border-emerald-500/30 text-emerald-300; }
+
+/* Plan Emprendedor */
+.card-emprendedor {
+  @apply bg-slate-900/80 border-blue-900/50 hover:border-blue-500 hover:shadow-[0_0_40px_rgba(59,130,246,0.2)] hover:-translate-y-3;
+}
+.btn-emprendedor {
+  @apply bg-slate-800 hover:bg-blue-600 text-white border border-blue-900 shadow-lg hover:shadow-blue-500/30 transition-all;
 }
 
-.card-annual {
-  @apply bg-gradient-to-b from-amber-900/30 to-slate-900 border-amber-600 hover:shadow-[0_0_50px_rgba(245,158,11,0.4)] md:-translate-y-4 hover:-translate-y-6 overflow-hidden shadow-2xl shadow-amber-500/10;
+/* Plan Pyme */
+.card-pyme {
+  @apply bg-gradient-to-b from-amber-900/20 to-slate-900 border-amber-500 shadow-[0_0_30px_rgba(245,158,11,0.15)] hover:shadow-[0_0_50px_rgba(245,158,11,0.3)] lg:-translate-y-4 hover:-translate-y-6;
+}
+.btn-pyme {
+  @apply bg-amber-600 hover:bg-amber-500 text-slate-900 shadow-lg shadow-amber-500/30 transition-transform;
+}
+
+/* Plan Empresarial */
+.card-empresarial {
+  @apply bg-slate-900/80 border-emerald-900/50 hover:border-emerald-500 hover:shadow-[0_0_40px_rgba(16,185,129,0.2)] hover:-translate-y-3;
+}
+.btn-empresarial {
+  @apply bg-slate-800 hover:bg-emerald-600 text-white border border-emerald-900 shadow-lg hover:shadow-emerald-500/30 transition-all;
 }
 
 .pricing-title {
@@ -246,11 +278,11 @@
 }
 
 .pricing-desc {
-  @apply text-slate-400 mb-6 text-justify;
+  @apply text-slate-400 mb-6 text-center leading-relaxed;
 }
 
 .pricing-price {
-  @apply mb-8;
+  @apply mb-4 text-center;
 }
 
 .price-amount {
@@ -285,15 +317,7 @@
 }
 
 .pricing-btn {
-  @apply mt-auto block w-full py-4 px-4 font-bold text-center rounded-xl transition-colors;
-}
-
-.btn-monthly {
-  @apply bg-slate-800 hover:bg-slate-700 hover:text-amber-400 text-white border border-slate-600;
-}
-
-.btn-annual {
-  @apply bg-amber-600 hover:bg-amber-500 text-slate-900 shadow-lg shadow-amber-500/30 transition-transform;
+  @apply block w-full py-4 px-4 font-bold text-center rounded-xl;
 }
 
 /* --- 9. FOOTER --- */
