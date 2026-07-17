@@ -58,6 +58,7 @@ export class SaasAdminComponent implements OnInit {
     razon_social: '',
     nit: '',
     tipo_empresa: 'Servicios',
+    color_primario: '#1e293b'
   };
   listaDescuentosEmpresa: string[] = [];
   currentView = 'dashboard';
@@ -907,7 +908,15 @@ export class SaasAdminComponent implements OnInit {
     this.isEditMode = false;
     this.editingId = null;
     this.listaDescuentosEmpresa = [];
-    this.nuevaEmpresa = { razon_social: '', nit: '', tipo_empresa: 'Servicios', fecha_inscripcion: '', periodo: 'Mensual', descuento: 'N/A' };
+    this.nuevaEmpresa = { 
+      razon_social: '', 
+      nit: '', 
+      tipo_empresa: 'Servicios', 
+      fecha_inscripcion: '', 
+      periodo: 'Mensual', 
+      descuento: 'N/A',
+      color_primario: '#1e293b' 
+    };
     this.showModal = true;
   }
 
@@ -919,9 +928,10 @@ export class SaasAdminComponent implements OnInit {
       razon_social: empresa.razon_social,
       nit: empresa.nit,
       tipo_empresa: empresa.tipo_empresa,
-      descuento: empresa.descuento || 'N/A',
+      fecha_inscripcion: empresa.fecha_inscripcion ? empresa.fecha_inscripcion.substring(0, 10) : '',
       periodo: empresa.periodo || 'Mensual',
-      fecha_inscripcion: empresa.fecha_inscripcion
+      descuento: empresa.descuento || 'N/A',
+      color_primario: empresa.color_primario || '#1e293b'
     };
     this.showModal = true;
   }

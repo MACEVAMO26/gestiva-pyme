@@ -1413,6 +1413,18 @@
             <option value="Ventas y Servicios" class="saas-option">Ventas y Servicios</option>
           </select>
         </div>
+        <div class="saas-form-group">
+          <label class="saas-label">Color Corporativo</label>
+          <div class="flex items-center gap-3">
+            <input
+              type="color"
+              [(ngModel)]="nuevaEmpresa.color_primario"
+              name="color_primario"
+              class="w-10 h-10 rounded cursor-pointer border-0 p-0 bg-transparent"
+            />
+            <span class="text-gray-400 font-mono text-sm">{{ nuevaEmpresa.color_primario }}</span>
+          </div>
+        </div>
 
         <div class="saas-modal-actions">
           <button type="button" (click)="cerrarModal()" class="saas-btn-cancel">Cancelar</button>
