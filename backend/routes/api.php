@@ -29,6 +29,7 @@ use App\Http\Controllers\MovimientoInventarioController;
 
 
 // --- RUTAS PUBLICAS ---
+Route::get('/ping', function () { return response()->json('pong'); });
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/leads', [\App\Http\Controllers\LeadController::class, 'store']);
 Route::post('/change-initial-password', [AuthController::class, 'changeInitialPassword']);

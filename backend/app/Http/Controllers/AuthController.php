@@ -59,9 +59,22 @@ class AuthController extends Controller
         }
 
         $token = $user->createToken('auth_token')->plainTextToken;
+
+        // Cargar módulos activos para evitar llamadas extras en el frontend
+        $modulosActivos = [];
+        if ($user->empresa_id) {
+            $modulos = \Illuminate\Support\Facades\DB::table('empresa_modulo')
+                        ->where('empresa_id', $user->empresa_id)
+                        ->get();
+            foreach ($modulos as $mod) {
+                $modulosActivos[$mod->modulo_id] = (bool) $mod->activo;
+            }
+        }
+
         return response()->json([
             'message' => 'Inicio de sesión exitoso!',
             'user' => $user,
+            'modulos_activos' => $modulosActivos,
             'token' => $token
         ]);
     }

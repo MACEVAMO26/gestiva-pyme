@@ -29,6 +29,9 @@ export class AuthService {
         if (response.token && response.user) {
           this.saveToken(response.token);
           this.saveUser(response.user);
+          if (response.modulos_activos) {
+            this.saveModulosActivos(response.modulos_activos);
+          }
         }
       })
     );
@@ -41,12 +44,10 @@ export class AuthService {
 
   // 3. Método para cerrar sesión
   logout(): void {
-    // Aquí podríamos llamar a la API para invalidar el token en el backend
-    // this.http.post(`${this.apiUrl}/logout`, {}).subscribe();
-
     // Limpiamos el almacenamiento local
     sessionStorage.removeItem('auth_token');
     sessionStorage.removeItem('current_user');
+    sessionStorage.removeItem('modulos_activos');
 
     // Redirigimos al usuario a la página de login
     this.router.navigate(['/login']);
@@ -74,5 +75,16 @@ export class AuthService {
   getUser(): any | null {
     const user = sessionStorage.getItem('current_user');
     return user ? JSON.parse(user) : null;
+  }
+
+  // 8. Guardar modulos activos
+  private saveModulosActivos(modulos: any): void {
+    sessionStorage.setItem('modulos_activos', JSON.stringify(modulos));
+  }
+
+  // 9. Obtener modulos activos
+  getModulosActivos(): Record<string, boolean> | null {
+    const modulosJson = sessionStorage.getItem('modulos_activos');
+    return modulosJson ? JSON.parse(modulosJson) : null;
   }
 }

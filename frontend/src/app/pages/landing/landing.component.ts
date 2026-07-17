@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -12,7 +12,7 @@ import { ChangeDetectorRef } from '@angular/core';
   templateUrl: './landing.component.html',
   styleUrl: './landing.component.scss',
 })
-export class LandingComponent {
+export class LandingComponent implements OnInit {
   // --- VARIABLES DE ESTADO ---
   isChatbotOpen = false;
   botView: 'menu' | 'phone' | 'form' | 'success' = 'menu';
@@ -28,6 +28,14 @@ export class LandingComponent {
 
   http = inject(HttpClient);
   cdr = inject(ChangeDetectorRef);
+
+  ngOnInit(): void {
+    // Ping "Ninja" para despertar a Render de su inactividad gratuita
+    this.http.get('https://gestiva-pyme.onrender.com/api/ping').subscribe({
+      next: () => console.log('Servidor despertado'),
+      error: () => console.log('Error despertando servidor')
+    });
+  }
 
   toggleChatbot() {
     this.isChatbotOpen = !this.isChatbotOpen;

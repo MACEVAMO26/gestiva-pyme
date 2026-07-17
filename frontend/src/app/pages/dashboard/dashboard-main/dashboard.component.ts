@@ -73,6 +73,13 @@ export class DashboardComponent implements OnInit {
   }
 
   cargarModulos(empresaId: number) {
+    const modulosGuardados = this.authService.getModulosActivos();
+    if (modulosGuardados) {
+      this.modulosActivos = modulosGuardados;
+      return;
+    }
+
+    // Fallback si por alguna razón no se guardaron
     this.modulosService.getModulosPorEmpresa(empresaId).subscribe({
       next: (res: any) => {
         if (res && res.modulos) {
