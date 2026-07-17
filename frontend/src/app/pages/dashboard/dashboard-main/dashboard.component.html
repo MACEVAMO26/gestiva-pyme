@@ -15,10 +15,41 @@
         <p>Bienvenido de vuelta a tu centro de control.</p>
       </div>
       <div class="topbar-actions">
-        <!-- MOCK LINKS TO DEMOS (For presentation) -->
-        <a routerLink="/demo-ventas" class="demo-link">Ventas</a>
-        <a routerLink="/demo-servicios" class="demo-link">Servicios</a>
-        <a routerLink="/demo-mixto" class="demo-link mixed">Mixto</a>
+        <!-- ACCESIBILIDAD -->
+        <div class="accessibility-widget">
+          <!-- Botón -->
+          <button 
+            (click)="toggleAccessibilityMenu()"
+            class="accessibility-btn"
+            title="Opciones de Accesibilidad Visual">
+            
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+            </svg>
+          </button>
+      
+          <!-- Menú Desplegable -->
+          @if(isAccessibilityMenuOpen) {
+            <div class="accessibility-menu">
+              <div class="menu-header">
+                <p>Daltonismo</p>
+              </div>
+              <button (click)="setDaltonismMode('normal')" [class.active]="accessibilityService.currentMode() === 'normal'">
+                Estándar
+              </button>
+              <button (click)="setDaltonismMode('protanopia')" [class.active]="accessibilityService.currentMode() === 'protanopia'">
+                Protanopia
+              </button>
+              <button (click)="setDaltonismMode('deuteranopia')" [class.active]="accessibilityService.currentMode() === 'deuteranopia'">
+                Deuteranopia
+              </button>
+              <button (click)="setDaltonismMode('tritanopia')" [class.active]="accessibilityService.currentMode() === 'tritanopia'">
+                Tritanopia
+              </button>
+            </div>
+          }
+        </div>
         
         <div class="user-profile" [ngClass]="tipoEmpresaClass">
           <div class="avatar">{{ user?.nombres?.charAt(0) || 'A' }}</div>
@@ -175,41 +206,5 @@
       </main>
     </div>
 
-    <!-- ACCESIBILIDAD FLOTANTE (Igual que en Login) -->
-    <div class="accessibility-widget">
-      
-      <!-- Botón -->
-      <button 
-        (click)="toggleAccessibilityMenu()"
-        class="accessibility-btn"
-        title="Opciones de Accesibilidad Visual">
-        
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
-          <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-        </svg>
-      </button>
-  
-      <!-- Menú Desplegable -->
-      @if(isAccessibilityMenuOpen) {
-        <div class="accessibility-menu">
-          <div class="menu-header">
-            <p>Daltonismo</p>
-          </div>
-          <button (click)="setDaltonismMode('normal')" [class.active]="accessibilityService.currentMode() === 'normal'">
-            Estándar
-          </button>
-          <button (click)="setDaltonismMode('protanopia')" [class.active]="accessibilityService.currentMode() === 'protanopia'">
-            Protanopia
-          </button>
-          <button (click)="setDaltonismMode('deuteranopia')" [class.active]="accessibilityService.currentMode() === 'deuteranopia'">
-            Deuteranopia
-          </button>
-          <button (click)="setDaltonismMode('tritanopia')" [class.active]="accessibilityService.currentMode() === 'tritanopia'">
-            Tritanopia
-          </button>
-        </div>
-      }
-    </div>
-  </div>
+
 
