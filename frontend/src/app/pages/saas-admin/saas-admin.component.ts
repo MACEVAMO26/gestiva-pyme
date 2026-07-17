@@ -58,7 +58,10 @@ export class SaasAdminComponent implements OnInit {
     razon_social: '',
     nit: '',
     tipo_empresa: 'Servicios',
-    color_primario: '#1e293b'
+    color_primario: '#6366f1',
+    color_secundario: '#1e293b',
+    color_fondo: '#4c808a',
+    color_texto: '#f8fafc'
   };
   listaDescuentosEmpresa: string[] = [];
   currentView = 'dashboard';
@@ -915,7 +918,10 @@ export class SaasAdminComponent implements OnInit {
       fecha_inscripcion: '', 
       periodo: 'Mensual', 
       descuento: 'N/A',
-      color_primario: '#1e293b' 
+      color_primario: '#6366f1',
+      color_secundario: '#1e293b',
+      color_fondo: '#4c808a',
+      color_texto: '#f8fafc'
     };
     this.showModal = true;
   }
@@ -931,7 +937,10 @@ export class SaasAdminComponent implements OnInit {
       fecha_inscripcion: empresa.fecha_inscripcion ? empresa.fecha_inscripcion.substring(0, 10) : '',
       periodo: empresa.periodo || 'Mensual',
       descuento: empresa.descuento || 'N/A',
-      color_primario: empresa.color_primario || '#1e293b'
+      color_primario: empresa.color_primario || '#6366f1',
+      color_secundario: empresa.color_secundario || '#1e293b',
+      color_fondo: empresa.color_fondo || '#4c808a',
+      color_texto: empresa.color_texto || '#f8fafc'
     };
     this.showModal = true;
   }

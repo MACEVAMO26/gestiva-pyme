@@ -1413,16 +1413,41 @@
             <option value="Ventas y Servicios" class="saas-option">Ventas y Servicios</option>
           </select>
         </div>
-        <div class="saas-form-group">
-          <label class="saas-label">Color Corporativo</label>
-          <div class="flex items-center gap-3">
-            <input
-              type="color"
-              [(ngModel)]="nuevaEmpresa.color_primario"
-              name="color_primario"
-              class="w-10 h-10 rounded cursor-pointer border-0 p-0 bg-transparent"
-            />
-            <span class="text-gray-400 font-mono text-sm">{{ nuevaEmpresa.color_primario }}</span>
+        <div class="saas-form-group col-span-2">
+          <label class="saas-label font-bold text-blue-300 mb-2 block border-b border-gray-700 pb-2">🎨 Paleta de Tema de la Empresa</label>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3">
+            <!-- Primario -->
+            <div class="flex items-center gap-3 bg-gray-900/50 p-2 rounded border border-gray-700">
+              <input type="color" [(ngModel)]="nuevaEmpresa.color_primario" name="color_primario" class="w-10 h-10 rounded cursor-pointer border-0 p-0 bg-transparent" />
+              <div class="flex flex-col">
+                <span class="text-xs text-gray-400">Color Primario (Botones)</span>
+                <input type="text" [(ngModel)]="nuevaEmpresa.color_primario" name="hex_primario" class="bg-transparent text-white font-mono text-sm border-b border-gray-600 focus:outline-none focus:border-blue-400 w-24" />
+              </div>
+            </div>
+            <!-- Secundario -->
+            <div class="flex items-center gap-3 bg-gray-900/50 p-2 rounded border border-gray-700">
+              <input type="color" [(ngModel)]="nuevaEmpresa.color_secundario" name="color_secundario" class="w-10 h-10 rounded cursor-pointer border-0 p-0 bg-transparent" />
+              <div class="flex flex-col">
+                <span class="text-xs text-gray-400">Paneles y Sidebar</span>
+                <input type="text" [(ngModel)]="nuevaEmpresa.color_secundario" name="hex_secundario" class="bg-transparent text-white font-mono text-sm border-b border-gray-600 focus:outline-none focus:border-blue-400 w-24" />
+              </div>
+            </div>
+            <!-- Fondo -->
+            <div class="flex items-center gap-3 bg-gray-900/50 p-2 rounded border border-gray-700">
+              <input type="color" [(ngModel)]="nuevaEmpresa.color_fondo" name="color_fondo" class="w-10 h-10 rounded cursor-pointer border-0 p-0 bg-transparent" />
+              <div class="flex flex-col">
+                <span class="text-xs text-gray-400">Fondo General</span>
+                <input type="text" [(ngModel)]="nuevaEmpresa.color_fondo" name="hex_fondo" class="bg-transparent text-white font-mono text-sm border-b border-gray-600 focus:outline-none focus:border-blue-400 w-24" />
+              </div>
+            </div>
+            <!-- Texto -->
+            <div class="flex items-center gap-3 bg-gray-900/50 p-2 rounded border border-gray-700">
+              <input type="color" [(ngModel)]="nuevaEmpresa.color_texto" name="color_texto" class="w-10 h-10 rounded cursor-pointer border-0 p-0 bg-transparent" />
+              <div class="flex flex-col">
+                <span class="text-xs text-gray-400">Textos</span>
+                <input type="text" [(ngModel)]="nuevaEmpresa.color_texto" name="hex_texto" class="bg-transparent text-white font-mono text-sm border-b border-gray-600 focus:outline-none focus:border-blue-400 w-24" />
+              </div>
+            </div>
           </div>
         </div>
 
