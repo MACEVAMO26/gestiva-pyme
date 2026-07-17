@@ -670,7 +670,7 @@ export class SaasAdminComponent implements OnInit {
     });
   }
 
-  verSolicitud(req: any) {
+  abrirSolicitud(req: any) {
     this.solicitudSeleccionada = req;
     
     // Parsear datos nuevos si vienen en formato JSON string
