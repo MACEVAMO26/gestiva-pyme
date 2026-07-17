@@ -1,9 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-$primary-color: #FF6B00;
-$primary-hover: #E65A00;
-$bg-color: #111827;
-$sidebar-bg: #111827;
-$text-dark: #F3F4F6;
+$primary-color: var(--color-primario, #FF6B00);
+$primary-hover: var(--color-primario, #E65A00); /* Hover will just use primary for now, or we could add an opacity trick later */
+$bg-color: var(--color-fondo, #111827);
+$sidebar-bg: var(--color-secundario, #111827);
+$text-dark: var(--color-texto, #F3F4F6);
 $text-muted: #9CA3AF;
 $glass-bg: rgba(17, 24, 39, 0.7);
 $glass-border: rgba(255, 107, 0, 0.2);
