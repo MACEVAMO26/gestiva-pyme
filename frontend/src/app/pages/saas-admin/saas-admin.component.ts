@@ -43,6 +43,7 @@ export class SaasAdminComponent implements OnInit {
   empresas: any[] = [];
   empresasEnMora: number = 0;
   empresaDestacadaId: number | null = null;
+  camposAprobados: { [key: string]: boolean } = {};
   showModal = false;
   showSuccessModal = false;
   showAddonModal = false;
@@ -668,8 +669,8 @@ export class SaasAdminComponent implements OnInit {
     });
   }
 
-  abrirSolicitud(solicitud: any) {
-    this.solicitudSeleccionada = solicitud;
+  verSolicitud(req: any) {
+    this.solicitudSeleccionada = req;
     
     // Parsear datos nuevos si vienen en formato JSON string
     if (this.solicitudSeleccionada.datos_nuevos && typeof this.solicitudSeleccionada.datos_nuevos === 'string') {
@@ -683,12 +684,28 @@ export class SaasAdminComponent implements OnInit {
     }
 
     this.mensajeRespuesta = '';
+    
+    // Inicializar todos los campos propuestos como "aprobados" por defecto (excepto temp_doc)
+    this.camposAprobados = {};
+    if (this.solicitudSeleccionada.datosPropuestos) {
+      Object.keys(this.solicitudSeleccionada.datosPropuestos).forEach(key => {
+        if (key !== 'temp_doc') {
+          this.camposAprobados[key] = true;
+        }
+      });
+    }
+
     this.isModalSolicitudOpen = true;
   }
 
-  getArchivoUrl(path: string): string {
+  getArchivoUrl(path: string, forceDownload: boolean = false): string {
     if (!path) return '';
-    if (path.startsWith('http')) return path;
+    if (path.startsWith('http')) {
+      if (forceDownload && path.includes('/upload/')) {
+        return path.replace('/upload/', '/upload/fl_attachment/');
+      }
+      return path;
+    }
     return `https://gestiva-pyme.onrender.com/storage/${path}`;
   }
 
@@ -709,9 +726,16 @@ export class SaasAdminComponent implements OnInit {
 
     const token = sessionStorage.getItem('auth_token');
     const headers = { Authorization: `Bearer ${token}` };
+    
+    // Solo enviar los campos que fueron checkeados si se está aprobando
+    const approvedFields = accion === 'aprobado' 
+      ? Object.keys(this.camposAprobados).filter(k => this.camposAprobados[k]) 
+      : [];
+
     const body = {
       accion: accion,
       mensaje: this.mensajeRespuesta,
+      approved_fields: approvedFields
     };
 
     this.http

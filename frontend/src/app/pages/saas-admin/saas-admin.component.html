@@ -1485,38 +1485,56 @@
                 @if (solicitudSeleccionada.datosPropuestos) {
                   <ul class="space-y-2 text-sm">
                     @if (solicitudSeleccionada.datosPropuestos.razon_social) {
-                      <li><span class="text-gray-400">Razón Social:</span> <span class="text-white font-medium">{{ solicitudSeleccionada.datosPropuestos.razon_social }}</span></li>
+                      <li class="flex items-center gap-3">
+                        <input type="checkbox" [(ngModel)]="camposAprobados['razon_social']" class="rounded bg-gray-800 border-gray-600 text-cyan-500 focus:ring-cyan-500 cursor-pointer w-4 h-4">
+                        <div><span class="text-gray-400">Razón Social:</span> <span class="text-white font-medium">{{ solicitudSeleccionada.datosPropuestos.razon_social }}</span></div>
+                      </li>
                     }
                     @if (solicitudSeleccionada.datosPropuestos.nit) {
-                      <li><span class="text-gray-400">NIT:</span> <span class="text-white font-medium">{{ solicitudSeleccionada.datosPropuestos.nit }}</span></li>
+                      <li class="flex items-center gap-3">
+                        <input type="checkbox" [(ngModel)]="camposAprobados['nit']" class="rounded bg-gray-800 border-gray-600 text-cyan-500 focus:ring-cyan-500 cursor-pointer w-4 h-4">
+                        <div><span class="text-gray-400">NIT:</span> <span class="text-white font-medium">{{ solicitudSeleccionada.datosPropuestos.nit }}</span></div>
+                      </li>
                     }
                     @if (solicitudSeleccionada.datosPropuestos.telefono) {
-                      <li><span class="text-gray-400">Teléfono:</span> <span class="text-white font-medium">{{ solicitudSeleccionada.datosPropuestos.telefono }}</span></li>
+                      <li class="flex items-center gap-3">
+                        <input type="checkbox" [(ngModel)]="camposAprobados['telefono']" class="rounded bg-gray-800 border-gray-600 text-cyan-500 focus:ring-cyan-500 cursor-pointer w-4 h-4">
+                        <div><span class="text-gray-400">Teléfono:</span> <span class="text-white font-medium">{{ solicitudSeleccionada.datosPropuestos.telefono }}</span></div>
+                      </li>
                     }
                     @if (solicitudSeleccionada.datosPropuestos.direccion) {
-                      <li><span class="text-gray-400">Dirección:</span> <span class="text-white font-medium">{{ solicitudSeleccionada.datosPropuestos.direccion }}</span></li>
+                      <li class="flex items-center gap-3">
+                        <input type="checkbox" [(ngModel)]="camposAprobados['direccion']" class="rounded bg-gray-800 border-gray-600 text-cyan-500 focus:ring-cyan-500 cursor-pointer w-4 h-4">
+                        <div><span class="text-gray-400">Dirección:</span> <span class="text-white font-medium">{{ solicitudSeleccionada.datosPropuestos.direccion }}</span></div>
+                      </li>
                     }
                     @if (solicitudSeleccionada.datosPropuestos.color_primario) {
-                      <li class="flex items-center gap-2">
-                        <span class="text-gray-400">Color Primario:</span> 
-                        <span class="text-white font-medium">{{ solicitudSeleccionada.datosPropuestos.color_primario }}</span>
-                        <div class="w-4 h-4 rounded-full border border-gray-500 shadow-sm" [style.backgroundColor]="solicitudSeleccionada.datosPropuestos.color_primario"></div>
+                      <li class="flex items-center gap-3">
+                        <input type="checkbox" [(ngModel)]="camposAprobados['color_primario']" class="rounded bg-gray-800 border-gray-600 text-cyan-500 focus:ring-cyan-500 cursor-pointer w-4 h-4">
+                        <div class="flex items-center gap-2">
+                          <span class="text-gray-400">Color Primario:</span> 
+                          <span class="text-white font-medium">{{ solicitudSeleccionada.datosPropuestos.color_primario }}</span>
+                          <div class="w-4 h-4 rounded-full border border-gray-500 shadow-sm" [style.backgroundColor]="solicitudSeleccionada.datosPropuestos.color_primario"></div>
+                        </div>
                       </li>
                     }
                   </ul>
 
                   @if (solicitudSeleccionada.datosPropuestos.temp_logo) {
-                    <div class="mt-4 pt-4 border-t border-gray-700">
-                      <strong class="text-white text-sm">Nuevo Logo Propuesto:</strong>
-                      <div class="mt-2 p-2 bg-gray-800 rounded inline-block">
-                        <img [src]="getArchivoUrl(solicitudSeleccionada.datosPropuestos.temp_logo)" class="max-h-24 object-contain" alt="Logo">
+                    <div class="mt-4 pt-4 border-t border-gray-700 flex items-start gap-3">
+                      <input type="checkbox" [(ngModel)]="camposAprobados['temp_logo']" class="rounded bg-gray-800 border-gray-600 text-cyan-500 focus:ring-cyan-500 cursor-pointer w-4 h-4 mt-1">
+                      <div>
+                        <strong class="text-white text-sm">Nuevo Logo Propuesto:</strong>
+                        <div class="mt-2 p-2 bg-gray-800 rounded inline-block">
+                          <img [src]="getArchivoUrl(solicitudSeleccionada.datosPropuestos.temp_logo)" class="max-h-24 object-contain" alt="Logo">
+                        </div>
                       </div>
                     </div>
                   }
 
                   @if (solicitudSeleccionada.datosPropuestos.temp_doc) {
                     <div class="mt-4 pt-4 border-t border-gray-700">
-                      <a [href]="getArchivoUrl(solicitudSeleccionada.datosPropuestos.temp_doc)" target="_blank" class="text-cyan-400 hover:text-cyan-300 text-sm font-medium inline-flex items-center gap-2">
+                      <a [href]="getArchivoUrl(solicitudSeleccionada.datosPropuestos.temp_doc, true)" target="_blank" download class="text-cyan-400 hover:text-cyan-300 text-sm font-medium inline-flex items-center gap-2">
                         <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m3.75 9v6m3-3H9m1.5-12H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" /></svg>
                         Ver Documento / RUT Adjunto
                       </a>

@@ -74,32 +74,40 @@ class AdminRequestController extends Controller
         
         $validated = $request->validate([
             'accion' => 'required|in:aprobado,rechazado',
-            'mensaje' => 'nullable|string'
+            'mensaje' => 'nullable|string',
+            'approved_fields' => 'nullable|array'
         ]);
 
         $req->estado = $validated['accion'];
         $req->notas_propietaria = $validated['mensaje'] ?? null;
         
+        $approvedFields = $validated['approved_fields'] ?? null;
+
         // Aplica automáticamente los cambios solicitados a la empresa si la solicitud es aprobada
         if ($req->estado === 'aprobado' && $req->tipo === 'cambio_datos' && $req->datos_nuevos) {
             $datos = json_decode($req->datos_nuevos, true);
             $empresa = \App\Models\Empresa::find($req->empresa_id);
             
             if ($empresa) {
-                if (isset($datos['razon_social'])) $empresa->razon_social = $datos['razon_social'];
-                if (isset($datos['nit'])) $empresa->nit = $datos['nit'];
-                if (isset($datos['direccion'])) $empresa->direccion = $datos['direccion'];
-                if (isset($datos['telefono'])) $empresa->telefono = $datos['telefono'];
-                if (isset($datos['email'])) $empresa->email = $datos['email'];
-                if (isset($datos['color_primario'])) $empresa->color_primario = $datos['color_primario'];
+                // Si no se envían approved_fields (comportamiento antiguo), asumimos todos los campos
+                $fieldsToProcess = $approvedFields !== null ? $approvedFields : array_keys($datos);
 
-                // Si ya viene de Cloudinary, es una URL directa (empieza con http)
-                if (isset($datos['temp_logo']) && str_starts_with($datos['temp_logo'], 'http')) {
-                    $empresa->logo_url = $datos['temp_logo'];
-                } else if (isset($datos['temp_logo']) && \Illuminate\Support\Facades\Storage::disk('public')->exists($datos['temp_logo'])) {
-                    $newPath = str_replace('temp_logos', 'logos', $datos['temp_logo']);
-                    \Illuminate\Support\Facades\Storage::disk('public')->move($datos['temp_logo'], $newPath);
-                    $empresa->logo_url = '/storage/' . $newPath;
+                if (in_array('razon_social', $fieldsToProcess) && isset($datos['razon_social'])) $empresa->razon_social = $datos['razon_social'];
+                if (in_array('nit', $fieldsToProcess) && isset($datos['nit'])) $empresa->nit = $datos['nit'];
+                if (in_array('direccion', $fieldsToProcess) && isset($datos['direccion'])) $empresa->direccion = $datos['direccion'];
+                if (in_array('telefono', $fieldsToProcess) && isset($datos['telefono'])) $empresa->telefono = $datos['telefono'];
+                if (in_array('email', $fieldsToProcess) && isset($datos['email'])) $empresa->email = $datos['email'];
+                if (in_array('color_primario', $fieldsToProcess) && isset($datos['color_primario'])) $empresa->color_primario = $datos['color_primario'];
+
+                // Procesar Logo solo si fue aprobado
+                if (in_array('temp_logo', $fieldsToProcess)) {
+                    if (isset($datos['temp_logo']) && str_starts_with($datos['temp_logo'], 'http')) {
+                        $empresa->logo_url = $datos['temp_logo'];
+                    } else if (isset($datos['temp_logo']) && \Illuminate\Support\Facades\Storage::disk('public')->exists($datos['temp_logo'])) {
+                        $newPath = str_replace('temp_logos', 'logos', $datos['temp_logo']);
+                        \Illuminate\Support\Facades\Storage::disk('public')->move($datos['temp_logo'], $newPath);
+                        $empresa->logo_url = '/storage/' . $newPath;
+                    }
                 }
                 
                 $empresa->save();
