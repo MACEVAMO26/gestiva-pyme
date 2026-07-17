@@ -1,12 +1,6 @@
 @if (tipoEmpresa === 'VENTAS') {
 <div class="dashboard-layout" 
-  [attr.data-daltonism]="accessibilityService.currentMode()"
-  [ngStyle]="{
-    '--color-primario': user?.empresa?.color_primario || '#f97316',
-    '--color-secundario': user?.empresa?.color_secundario || '#ffffff',
-    '--color-fondo': user?.empresa?.color_fondo || '#f8fafc',
-    '--color-texto': user?.empresa?.color_texto || '#1e293b'
-  }">
+  [attr.data-daltonism]="accessibilityService.currentMode()">
     
     <!-- HTML HEADER GLOBAL -->
     <header class="global-header">

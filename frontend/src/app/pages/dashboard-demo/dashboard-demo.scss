@@ -1,10 +1,14 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-$primary-color: var(--color-primario, #FF6B00);
-$primary-hover: var(--color-primario, #E65A00); /* Hover will just use primary for now, or we could add an opacity trick later */
-$bg-color: var(--color-fondo, #111827);
-$sidebar-bg: var(--color-secundario, #111827);
-$text-dark: var(--color-texto, #F3F4F6);
+$primary-color: #0c6d0c; /* Verde oscuro (Botones/Highlights) */
+$primary-hover: #ff9800; /* Naranja (Hover) */
+$bg-color: #f8fafc; /* Fondo general (Neutro claro) */
+$sidebar-bg: #ffffff; /* Paneles y Sidebar (Blanco) */
+$text-dark: #1e293b; /* Texto oscuro */
 $text-muted: #9CA3AF;
+/* Colores de acento extraídos de la paleta solicitada */
+$accent-salmon: #f96f64;
+$accent-rust: #be602e;
+$accent-light-orange: #ffac26;
 $glass-bg: rgba(17, 24, 39, 0.7);
 $glass-border: rgba(255, 107, 0, 0.2);
 $shadow-sm: 4px 4px 8px #0b0f19, -4px -4px 8px #172135;
