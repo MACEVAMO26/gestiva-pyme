@@ -1168,17 +1168,25 @@ export class SaasAdminComponent implements OnInit {
       ? this.listaDescuentosEmpresa.filter(d => d !== 'N/A').join(', ') 
       : 'N/A';
 
+    let payload = { ...this.nuevaEmpresa };
+    if (payload.fecha_inscripcion === '') payload.fecha_inscripcion = null;
+    
     if (this.isEditMode && this.editingId) {
-      this.empresaService.updateEmpresa(this.editingId, this.nuevaEmpresa).subscribe({
+      this.empresaService.updateEmpresa(this.editingId, payload).subscribe({
         next: () => {
           this.sincronizarMockSuscripciones();
           this.cargarEmpresas();
           this.cerrarModal();
         },
-        error: (err) => this.toastService.error('Error al actualizar la empresa.'),
+        error: (err) => {
+          let msg = 'Error al actualizar la empresa.';
+          if (err.error && err.error.message) msg += ' ' + err.error.message;
+          this.toastService.error(msg);
+          console.error(err);
+        },
       });
     } else {
-      this.empresaService.createEmpresa(this.nuevaEmpresa).subscribe({
+      this.empresaService.createEmpresa(payload).subscribe({
         next: (response) => {
           this.createdAdminEmail = response.admin_email;
           this.showSuccessModal = true;
@@ -1186,7 +1194,12 @@ export class SaasAdminComponent implements OnInit {
           this.cargarEmpresas();
           this.cerrarModal();
         },
-        error: (err) => this.toastService.error('Error al crear la empresa. Revisa los datos (ej. NIT duplicado).'),
+        error: (err) => {
+          let msg = 'Error al crear la empresa. Revisa los datos.';
+          if (err.error && err.error.message) msg += ' ' + err.error.message;
+          this.toastService.error(msg);
+          console.error(err);
+        },
       });
     }
   }
