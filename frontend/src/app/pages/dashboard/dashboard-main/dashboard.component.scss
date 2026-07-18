@@ -1,10 +1,14 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-$primary-color: var(--theme-primary, #4F46E5);
-$primary-hover: #4338CA;
-$bg-color: #F8FAFC;
-$sidebar-bg: #FFFFFF;
-$text-dark: #0F172A;
-$text-muted: #64748B;
+$primary-color: #0c6d0c; /* Verde oscuro (Botones/Highlights) */
+$primary-hover: #ff9800; /* Naranja (Hover) */
+$bg-color: #f8fafc; /* Fondo general (Neutro claro) */
+$sidebar-bg: #ffffff; /* Paneles y Sidebar (Blanco) */
+$text-dark: #1e293b; /* Texto oscuro */
+$text-muted: #9CA3AF;
+/* Colores de acento extraídos de la paleta solicitada */
+$accent-salmon: #f96f64;
+$accent-rust: #be602e;
+$accent-light-orange: #ffac26;
 $glass-bg: rgba(255, 255, 255, 0.7);
 $glass-border: rgba(255, 255, 255, 0.5);
 $shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
@@ -178,9 +182,9 @@ $transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
 
 /* --- 6. SIDEBAR --- */
 .sidebar {
-  width: 220px;
-  background-color: $sidebar-bg;
-  border-right: 1px solid rgba(0,0,0,0.05);
+    width: 220px;
+    background-color: $sidebar-bg;
+    border-right: 1px solid rgba(0, 0, 0, 0.08);
   display: flex;
   flex-direction: column;
   padding: 1.5rem;
@@ -240,11 +244,14 @@ $transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
       display: flex;
       align-items: center;
       gap: 16px;
-      padding: 0.75rem 1rem;
-      border-radius: 12px;
-      color: $text-muted;
+      padding: 0.75rem 1.25rem;
+      margin: 0.25rem 0;
+      border-radius: 50px;
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      background: transparent;
+      color: $text-dark;
       font-size: 0.95rem;
-      font-weight: 500;
+      font-weight: 600;
       text-decoration: none;
       cursor: pointer;
       transition: $transition;
@@ -252,23 +259,34 @@ $transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
       overflow: hidden;
 
       .icon {
-        width: 24px;
-        height: 24px;
-        min-width: 24px;
+        width: 22px;
+        height: 22px;
+        min-width: 22px;
         text-align: center;
         display: inline-block;
+        color: $text-dark;
       }
 
       &:hover {
-        background-color: rgba(79, 70, 229, 0.05);
-        color: $primary-color;
-        transform: translateX(4px);
+        background-color: rgba(255, 152, 0, 0.1); /* Hover Naranja ($primary-hover) */
+        color: $primary-hover;
+        border-color: rgba(255, 152, 0, 0.3);
+        transform: translateY(-2px);
+        
+        .icon {
+          color: $primary-hover;
+        }
       }
 
       &.active {
-        background-color: $primary-color;
-        color: white;
-        box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);
+        background: rgba(12, 109, 12, 0.1); /* Fondo verde transparente ($primary-color) */
+        border: 1px solid rgba(12, 109, 12, 0.2);
+        box-shadow: 0 4px 15px rgba(12, 109, 12, 0.15);
+        color: $primary-color;
+        
+        .icon {
+          color: $primary-color;
+        }
       }
     }
   }
