@@ -61,6 +61,7 @@ $transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
     align-items: center;
     justify-content: center;
     gap: 6px;
+    padding-top: 1.5rem; /* Padding pequeño superior solicitado */
 
     .main-logo-img {
       height: 48px;
@@ -396,10 +397,10 @@ $transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
     .empty-state {
       padding: 3rem;
       text-align: center;
-      color: $text-muted;
-      background: rgba(0,0,0,0.02);
+      color: #0c6d0c; /* Verde oscuro para el texto */
+      background: #dcfce7; /* Verde opaco sólido (pastel) */
       border-radius: 12px;
-      border: 1px dashed rgba(0,0,0,0.1);
+      border: 1px dashed rgba(12, 109, 12, 0.3);
     }
   }
 
@@ -417,7 +418,14 @@ $transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
     .footer-logo-img {
       width: auto;
       height: 50px;
-      opacity: 0.9;
+      opacity: 0.8;
+      filter: grayscale(100%);
+      transition: filter 0.3s ease, opacity 0.3s ease;
+
+      &:hover {
+        filter: grayscale(0%);
+        opacity: 1;
+      }
     }
 
     p {
