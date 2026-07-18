@@ -7,13 +7,13 @@ import { CommonModule } from '@angular/common';
 import { EmpleadosComponent } from '../empleados/empleados.component';
 import { AdministracionComponent } from '../administracion/administracion.component';
 import { PagosComponent } from '../pagos/pagos.component';
-
 import { AutogestionComponent } from '../autogestion/autogestion';
+import { ClientesComponent } from '../clientes/clientes';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, EmpleadosComponent, AdministracionComponent, PagosComponent, AutogestionComponent],
+  imports: [CommonModule, EmpleadosComponent, AdministracionComponent, PagosComponent, AutogestionComponent, ClientesComponent],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss'
 })
@@ -26,6 +26,7 @@ export class DashboardComponent implements OnInit {
   hasServicios = false;
   modulosActivos: Record<string, boolean> = {};
   isSidebarCollapsed = false;
+  isMobileMenuOpen = false;
   currentModule = 'inicio';
   isCompanyInactive = false;
   tipoEmpresa = '';
@@ -102,6 +103,10 @@ export class DashboardComponent implements OnInit {
 
   toggleSidebar() {
     this.isSidebarCollapsed = !this.isSidebarCollapsed;
+  }
+
+  toggleMobileMenu() {
+    this.isMobileMenuOpen = !this.isMobileMenuOpen;
   }
 
   setDaltonismMode(mode: DaltonismMode) {

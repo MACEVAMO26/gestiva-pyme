@@ -1,18 +1,18 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-$primary-color: #0c6d0c; /* Verde oscuro (Botones/Highlights) */
-$primary-hover: #ff9800; /* Naranja (Hover) */
-$bg-color: #f8fafc; /* Fondo general (Neutro claro) */
-$sidebar-bg: #ffffff; /* Paneles y Sidebar (Blanco) */
-$text-dark: #1e293b; /* Texto oscuro */
-$text-muted: #9CA3AF;
+$primary-color: #f97316; /* Naranja (Acento principal) */
+$primary-hover: #ea580c; /* Naranja oscuro (Hover) */
+$bg-color: #09090b; /* Fondo general (Zinc 950 - Negro profundo) */
+$sidebar-bg: #09090b; /* Paneles y Sidebar (Zinc 900) */
+$text-dark: #fafafa; /* Texto principal (Blanco/Zinc 50) */
+$text-muted: #a1a1aa; /* Texto secundario (Zinc 400) */
 /* Colores de acento extraídos de la paleta solicitada */
 $accent-salmon: #f96f64;
 $accent-rust: #be602e;
 $accent-light-orange: #ffac26;
-$glass-bg: rgba(255, 255, 255, 0.7);
-$glass-border: rgba(255, 255, 255, 0.5);
-$shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
-$shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+$glass-bg: #09090b; /* Zinc 900 */
+$glass-border: transparent;
+$shadow-sm: 4px 4px 8px #030303, -4px -4px 8px rgba(255,255,255,0.02);
+$shadow-md: inset 4px 4px 8px rgba(0,0,0,0.5);
 $shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
 $transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
 [data-daltonism="protanopia"] { filter: contrast(1.2) hue-rotate(-10deg) saturate(1.5); }
@@ -37,7 +37,7 @@ $transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
 /* --- 4. HEADER GLOBAL --- */
 .global-header {
   height: 70px;
-  background-color: #18181B; /* Gris carbón oscuro (0% azul) */
+  background-color: #09090b; /* Zinc 900 (0% azul) */
   border-bottom: 1px solid rgba(255,255,255,0.05);
   display: flex;
   justify-content: space-between;
@@ -128,51 +128,60 @@ $transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
         display: flex;
         align-items: center;
         gap: 0.6rem;
-        background: #10B981; /* Verde Teal / Esmeralda */
-        padding: 0.35rem 1.25rem 0.35rem 0.35rem; /* Píldora perfecta */
+        background: #09090b; /* Zinc 900 */
+        padding: 0.35rem 1.25rem 0.35rem 0.35rem; /* Forma de píldora alargada */
         border-radius: 50px;
-        box-shadow: $shadow-sm;
-        transition: all 0.3s ease;
+        box-shadow: 4px 4px 8px #030303, -4px -4px 8px rgba(255,255,255,0.02);
+        border: $glass-border;
 
-        .avatar {
+        .avatar, .avatar-img {
           width: 36px;
           height: 36px;
           border-radius: 50%;
-          background: #ffffff;
-          border: 2px solid #ffffff; /* Borde blanco sólido */
-          color: #0f172a; 
+          background: #f97316; /* Naranja en lugar de verde/azul */
+          color: white;
           display: flex;
           align-items: center;
           justify-content: center;
           font-weight: 700;
-          font-size: 1rem;
-        }
-
-        .avatar-img {
-          width: 36px;
-          height: 36px;
-          border-radius: 50%;
-          object-fit: cover;
-          background-color: #fff;
-          border: 2px solid #ffffff;
+          font-size: 1.1rem;
+          border: 2px solid #ffffff; /* Borde para sofisticación */
         }
 
         .btn-logout {
           background: transparent;
           border: none;
-          color: #0f172a; 
-          font-weight: 700;
-          font-size: 0.8rem;
+          color: #fafafa;
+          font-weight: 600;
+          font-size: 0.85rem;
+          cursor: pointer;
+          transition: $transition;
           text-transform: uppercase;
           letter-spacing: 0.5px;
-          cursor: pointer;
-          padding: 0;
-          transition: $transition;
 
           &:hover {
-            color: #000000;
-            transform: scale(1.05);
+            color: #f97316;
           }
+        }
+      }
+
+      .accessibility-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        background: #09090b; /* Zinc 900 */
+        color: #fafafa;
+        border: $glass-border;
+        cursor: pointer;
+        transition: $transition;
+        box-shadow: 4px 4px 8px #030303, -4px -4px 8px rgba(255,255,255,0.02);
+
+        &:hover {
+          color: #f97316;
+          box-shadow: inset 4px 4px 8px #030303, inset -4px -4px 8px rgba(255,255,255,0.02);
         }
       }
     }
@@ -188,12 +197,12 @@ $transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
 
 /* --- 6. SIDEBAR --- */
 .sidebar {
-    width: 220px;
-    background-color: $sidebar-bg;
-    border-right: 1px solid rgba(0, 0, 0, 0.08);
+  width: 220px;
+  background-color: $sidebar-bg;
+  border-right: 1px solid rgba(0, 0, 0, 0.08);
   display: flex;
   flex-direction: column;
-  padding: 1.5rem;
+  padding: 2.5rem 1.5rem 1.5rem 1.5rem; /* Más espacio arriba para separar del logo */
   box-shadow: $shadow-sm;
   z-index: 10;
   transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -201,7 +210,7 @@ $transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
 
   &.collapsed {
     width: 88px;
-    padding: 1.5rem 0.75rem;
+    padding: 2.5rem 0.75rem 1.5rem 0.75rem;
 
     .nav-menu .nav-item {
       justify-content: center;
@@ -334,7 +343,7 @@ $transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
     .metric-card {
       background: $glass-bg;
       backdrop-filter: blur(10px);
-      border: 1px solid $glass-border;
+      border: $glass-border;
       border-radius: 20px;
       padding: 1rem 1.25rem;
       display: flex;
@@ -348,20 +357,21 @@ $transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
         box-shadow: $shadow-md;
       }
 
-      .metric-icon {
-        width: 50px;
-        height: 50px;
-        border-radius: 14px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.5rem;
-        
-        &.blue { background: rgba(59, 130, 246, 0.1); color: #3B82F6; }
-        &.green { background: rgba(16, 185, 129, 0.1); color: #10B981; }
-        &.purple { background: rgba(139, 92, 246, 0.1); color: #8B5CF6; }
-        &.orange { background: rgba(245, 158, 11, 0.1); color: #F59E0B; }
-      }
+        .metric-icon {
+          width: 50px;
+          height: 50px;
+          border-radius: 14px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 1.5rem;
+          background: #09090b;
+          
+          &.blue { border: 1px solid #3B82F6; color: #3B82F6; }
+          &.green { border: 1px solid #10B981; color: #10B981; }
+          &.purple { border: 1px solid #8B5CF6; color: #8B5CF6; }
+          &.orange { border: 1px solid #F59E0B; color: #F59E0B; }
+        }
 
       .metric-info {
         display: flex;
@@ -393,19 +403,22 @@ $transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
     box-shadow: $shadow-sm;
 
     h3 {
-      margin: 0 0 2rem 0;
-      color: $text-dark;
-      font-size: 1.15rem;
-      font-weight: 600;
+      margin: 0 0 1.5rem 0;
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: #ffffff;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      text-align: center;
     }
 
     .empty-state {
       padding: 3rem;
       text-align: center;
-      color: #0c6d0c; /* Verde oscuro para el texto */
-      background: #dcfce7; /* Verde opaco sólido (pastel) */
+      color: #a1a1aa;
+      background: #09090b;
       border-radius: 12px;
-      border: 1px dashed rgba(12, 109, 12, 0.3);
+      border: 1px dashed rgba(255, 255, 255, 0.2);
     }
   }
 
@@ -484,9 +497,9 @@ $transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
     justify-content: center;
     padding: 0;
     border-radius: 50%;
-    border: 2px solid #18181B; /* Borde del mismo color que el header */
+    border: 2px solid #09090b; /* Borde del mismo color que el header */
     cursor: pointer;
-    box-shadow: 0 10px 15px -3px rgba(255, 152, 0, 0.3);
+    box-shadow: none;
     transition: transform 0.3s;
     
     &:hover {
@@ -505,12 +518,12 @@ $transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
     position: absolute;
     top: 4rem; /* Despliega hacia abajo */
     right: 0;
-    background-color: #18181B; /* Mismo fondo oscuro */
+    background-color: #09090b; /* Mismo fondo oscuro */
     border-radius: 0.75rem;
     width: 15rem;
     overflow: hidden;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
-    border: 1px solid rgba(255,255,255,0.1);
+    border: 1px solid transparent;
 
     .menu-header {
       padding: 0.75rem 1rem;
@@ -553,6 +566,82 @@ $transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
         color: #ff9800;
         font-weight: 600;
       }
+    }
+  }
+}
+
+/* --- RESPONSIVE DASHBOARD LAYOUT --- */
+.mobile-menu-toggle {
+  display: none;
+  background: transparent;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  padding: 0.5rem;
+  margin-right: 1rem;
+  
+  svg {
+    width: 28px;
+    height: 28px;
+  }
+}
+
+.mobile-overlay {
+  display: none;
+}
+
+.dashboard-body {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+}
+
+@media (max-width: 1024px) {
+  .global-header {
+    .header-left {
+      width: auto;
+      border-right: none;
+      padding-left: 1rem;
+    }
+    .header-right {
+      padding: 0 1rem;
+      .welcome-text {
+        display: none; /* Ocultar saludo en movil para ahorrar espacio */
+      }
+    }
+  }
+
+  .mobile-menu-toggle {
+    display: block;
+  }
+
+  .mobile-overlay {
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    z-index: 40;
+  }
+
+  .sidebar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    z-index: 50;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    
+    &.mobile-open {
+      transform: translateX(0);
+    }
+    
+    .btn-collapse-sidebar, .toggle-btn {
+      display: none; /* No permitir colapsar a mini en mvil, solo cerrar completo */
     }
   }
 }

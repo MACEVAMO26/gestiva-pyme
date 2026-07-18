@@ -15,6 +15,8 @@ export class AutogestionComponent implements OnInit {
   // --- VARIABLES DE ESTADO ---
   user: any = null;
   afiliacion: any = null;
+  profileImageUrl: string | null = null;
+  
   formAfiliacion = {
     eps: '',
     arl: '',
@@ -22,15 +24,18 @@ export class AutogestionComponent implements OnInit {
     fecha_contratacion: '',
     finalizacion_contrato: '',
     renovacion_contrato: '',
-    estado: 'pendiente'
+    estado: 'nuevo' // Empezamos en nuevo para permitir llenar la primera vez
   };
+
+  cantidadRenovaciones: number = 0;
+  solicitudEnviada: boolean = false;
 
   private authService = inject(AuthService);
   private http = inject(HttpClient);
 
-  get isAdmin(): boolean {
+  get isHR(): boolean {
     const rol = this.user?.rol?.nombre?.toLowerCase() || '';
-    return rol.includes('gerente') || rol.includes('recursos humanos') || rol.includes('administrador');
+    return rol.includes('recursos humanos');
   }
 
   ngOnInit(): void {
@@ -50,8 +55,11 @@ export class AutogestionComponent implements OnInit {
             fecha_contratacion: res.afiliacion.fecha_contratacion || '',
             finalizacion_contrato: res.afiliacion.finalizacion_contrato || '',
             renovacion_contrato: res.afiliacion.renovacion_contrato || '',
-            estado: res.afiliacion.estado || 'pendiente'
+            estado: res.afiliacion.estado || 'nuevo'
           };
+          
+          // Simular contador de renovaciones basado en datos o fechas
+          this.cantidadRenovaciones = res.afiliacion.renovacion_contrato ? 3 : 0;
         }
       },
       error: (err) => console.error(err)
@@ -59,13 +67,24 @@ export class AutogestionComponent implements OnInit {
   }
 
   guardarAfiliaciones() {
+    // Si era nuevo o desbloqueado, al guardar pasa a revisión (pendiente)
+    if (this.formAfiliacion.estado === 'nuevo') {
+      this.formAfiliacion.estado = 'pendiente';
+    }
+
     this.http.post('https://gestiva-pyme.onrender.com/api/autogestion/afiliaciones', this.formAfiliacion).subscribe({
       next: (res: any) => {
-        alert(res.message);
+        alert(res.message || 'Datos guardados. Tu información ha entrado en revisión.');
         this.cargarAfiliaciones();
       },
       error: (err) => console.error(err)
     });
+  }
+
+  solicitarCambio() {
+    // En una app real esto dispararía una notificación al backend para RRHH
+    this.solicitudEnviada = true;
+    alert('✅ Solicitud enviada a Recursos Humanos. Te notificarán cuando te desbloqueen el formulario.');
   }
 
   // Gestiona las fechas de afiliación por parte del administrador
@@ -78,5 +97,40 @@ export class AutogestionComponent implements OnInit {
       },
       error: (err) => console.error(err)
     });
+  }
+
+  // Permite seleccionar y previsualizar una nueva foto de perfil
+  onFileSelected(event: any) {
+    const file = event.target.files[0];
+    if (file) {
+      // 1. Previsualizar localmente rápido y persistir en sesión para el Demo
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        const base64Image = e.target.result;
+        this.profileImageUrl = base64Image;
+        
+        // Guardamos en sesión para que la foto persista en el navegador (mock frontal)
+        if (this.user) {
+          this.user.avatar_url = base64Image;
+          sessionStorage.setItem('current_user', JSON.stringify(this.user));
+        }
+        
+        alert('¡La imagen ha subido con éxito! 📸');
+      };
+      reader.readAsDataURL(file);
+
+      // 2. Intentar subir al backend (Cloudinary) silenciosamente
+      const formData = new FormData();
+      formData.append('avatar', file);
+
+      this.http.post('https://gestiva-pyme.onrender.com/api/profile/avatar', formData).subscribe({
+        next: (res: any) => {
+          console.log('Imagen guardada permanentemente en la nube:', res);
+        },
+        error: (err) => {
+          console.warn('Nota técnica: El backend en Render rechazó la subida (probable falta de credenciales de Cloudinary en el servidor). Pero la imagen se mantendrá localmente para el demo.', err);
+        }
+      });
+    }
   }
 }

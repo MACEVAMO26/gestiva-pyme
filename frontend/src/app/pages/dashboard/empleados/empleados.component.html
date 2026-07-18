@@ -28,16 +28,13 @@
             <tr>
               <td>
                 <div class="user-cell">
-                  <div class="avatar">{{empleado.nombres.charAt(0)}}{{empleado.apellidos.charAt(0)}}</div>
-                  <div class="user-info">
-                    <span class="name">{{empleado.nombres}} {{empleado.apellidos}}</span>
-                  </div>
+                  <span class="name">{{empleado.nombres}} {{empleado.apellidos}}</span>
                 </div>
               </td>
               <td>{{empleado.documento}}</td>
               <td>{{empleado.email}}</td>
               <td>
-                <span class="badge-role">{{ empleado.cargo?.nombre || 'Empleado' }}</span>
+                <span class="badge-role">{{ empleado.cargo?.nombre || (empleado.rol_id === 1 ? 'Administrativo' : 'Empleado') }}</span>
               </td>
               <td>
                 <span class="status-badge" [ngClass]="empleado.activo ? 'status-active' : 'status-inactive'">

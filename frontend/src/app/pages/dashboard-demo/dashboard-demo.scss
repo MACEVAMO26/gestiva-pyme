@@ -10,10 +10,10 @@ $accent-salmon: #f96f64;
 $accent-rust: #be602e;
 $accent-light-orange: #ffac26;
 $glass-bg: rgba(17, 24, 39, 0.7);
-$glass-border: rgba(255, 107, 0, 0.2);
-$shadow-sm: 4px 4px 8px #0b0f19, -4px -4px 8px #172135;
+$glass-border: transparent;
+$shadow-sm: 4px 4px 8px #030303, -4px -4px 8px rgba(255,255,255,0.02);
 $shadow-md: 6px 6px 12px #0b0f19, -6px -6px 12px #172135;
-$shadow-lg: 8px 8px 16px #0b0f19, -8px -8px 16px #172135;
+$shadow-lg: 8px 8px 16px #030303, -8px -8px 16px rgba(255,255,255,0.02);
 $transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
 [data-daltonism="protanopia"] { filter: contrast(1.2) hue-rotate(-10deg) saturate(1.5); }
 [data-daltonism="deuteranopia"] { filter: contrast(1.2) hue-rotate(10deg) saturate(1.5); }
@@ -316,12 +316,12 @@ $transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
       display: flex;
       align-items: center;
       gap: 1rem;
-      box-shadow: 8px 8px 16px #0b0f19, -8px -8px 16px #172135;
+      box-shadow: 8px 8px 16px #030303, -8px -8px 16px rgba(255,255,255,0.02);
       transition: $transition;
 
       &:hover {
         transform: translateY(-5px);
-        box-shadow: inset 4px 4px 8px #0b0f19, inset -4px -4px 8px #172135;
+        box-shadow: inset 4px 4px 8px #030303, -4px -4px 8px rgba(255,255,255,0.02);
       }
 
       .metric-icon {
@@ -365,7 +365,7 @@ $transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
     border: none;
     border-radius: 20px;
     padding: 1.5rem;
-    box-shadow: 8px 8px 16px #0b0f19, -8px -8px 16px #172135;
+    box-shadow: 8px 8px 16px #030303, -8px -8px 16px rgba(255,255,255,0.02);
 
     h3 {
       margin: 0 0 2rem 0;
@@ -381,7 +381,7 @@ $transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
       background: #111827;
       border-radius: 12px;
       border: none;
-      box-shadow: inset 4px 4px 8px #0b0f19, inset -4px -4px 8px #172135;
+      box-shadow: inset 4px 4px 8px #030303, -4px -4px 8px rgba(255,255,255,0.02);
     }
   }
 
@@ -454,7 +454,7 @@ $transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
     border-radius: 9999px;
     border: 2px solid #0F172A;
     cursor: pointer;
-    box-shadow: 0 10px 15px -3px rgba(245, 158, 11, 0.3);
+    box-shadow: none;
     transition: transform 0.3s;
     
     &:hover {

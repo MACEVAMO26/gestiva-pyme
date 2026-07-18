@@ -6,49 +6,33 @@
    Filtros aplicados globalmente mediante SVG en index.html
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- */
 
-/* OVERRIDE GLOBAL PARA EL BOTON CERRAR SESION EN TODOS LOS PERFILES */
-.user-profile {
-  background: #10B981 !important; border: 2px solid #2563EB !important; padding: 0.15rem 0.15rem 0.15rem 0.5rem !important;
-  border: 1px solid rgba(255,255,255,0.1) !important;
-}
-.user-profile .avatar { border: 2px solid #2563EB !important;
-  background: rgba(255, 255, 255, 0.25) !important;
-  color: white !important;
-}
-.user-profile .btn-logout { font-size: 0.75rem !important;
-  color: white !important;
-}
-.user-profile .btn-logout:hover {
-  color: #f1f5f9 !important;
-}
+/* ESCALA GLOBAL ELIMINADA PARA RECUPERAR TAMAÑO ESTÁNDAR (Como en SaaS Admin) */
+/* html { font-size: 12.8px !important; } */
 
-/* ESCALA GLOBAL A 80% */
-html { font-size: 12.8px !important; }
-
-/* Neumorfismo Oscuro (Dark Neumorphism) conservando colores de marca */
+/* Neumorfismo Oscuro (Dark Neumorphism) conservando colores de marca - CERO AZULES (Zinc/Black) */
 .neu-dark-panel {
-  /* background removed for solid colors */ /* gray-900 */
-  box-shadow: 8px 8px 16px #0b0f19, -8px -8px 16px #172135;
+  background-color: #09090b; /* Zinc 900 - Negro suave sin azul */
+  box-shadow: 8px 8px 16px #030303, -8px -8px 16px rgba(255,255,255,0.02);
   border-radius: 1rem;
 }
 
 .neu-dark-button {
-  /* background removed for solid colors */
-  box-shadow: 4px 4px 8px #0b0f19, -4px -4px 8px #172135;
+  background-color: #09090b;
+  box-shadow: 4px 4px 8px #030303, -4px -4px 8px rgba(255,255,255,0.02);
   border-radius: 0.5rem;
   transition: all 0.2s ease-in-out;
-  color: #ffffff;
+  color: #ffffff; /* Texto blanco puro */
   font-weight: 600;
   padding: 0.5rem 1.5rem;
 }
 
 .neu-dark-button:hover {
-  box-shadow: inset 4px 4px 8px #0b0f19, inset -4px -4px 8px #172135;
+  box-shadow: inset 4px 4px 8px #030303, inset -4px -4px 8px rgba(255,255,255,0.02);
 }
 
 .neu-dark-button.active {
-  box-shadow: inset 4px 4px 8px #0b0f19, inset -4px -4px 8px #172135;
-  color: #06b6d4;
+  box-shadow: inset 4px 4px 8px #030303, inset -4px -4px 8px rgba(255,255,255,0.02);
+  color: #f97316; /* Naranja en lugar de azul */
 }
 
 /* Botones de acción compactos */
@@ -80,7 +64,7 @@ html { font-size: 12.8px !important; }
 /* Form inputs estilo Neumorfismo */
 .neu-dark-input {
   /* background removed for solid colors */
-  box-shadow: inset 4px 4px 8px #0b0f19, inset -4px -4px 8px #172135;
+  box-shadow: inset 4px 4px 8px #030303, -4px -4px 8px rgba(255,255,255,0.02);
   border: none;
   border-radius: 0.5rem;
   color: #f3f4f6;
@@ -88,7 +72,7 @@ html { font-size: 12.8px !important; }
 }
 .neu-dark-input:focus {
   outline: none;
-  box-shadow: inset 4px 4px 8px #0b0f19, inset -4px -4px 8px #172135, 0 0 0 2px rgba(6,182,212,0.3);
+  box-shadow: inset 4px 4px 8px #030303, -4px -4px 8px rgba(255,255,255,0.02), 0 0 0 2px rgba(6,182,212,0.3);
 }
 
 /* Estilo de Scrollbar Global (Tema Oscuro) */

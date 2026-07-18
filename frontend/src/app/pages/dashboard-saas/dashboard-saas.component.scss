@@ -4,7 +4,7 @@
 .glass-panel {
   background: linear-gradient(135deg, #0d3454 0%, #19527f 100%);
   border-radius: 20px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid transparent;
   padding: 1.5rem;
   box-shadow:
     4px 4px 10px rgba(0, 0, 0, 0.4),
@@ -22,7 +22,7 @@
   .metric-card {
     background: #111827;
     border-radius: 20px;
-    border: 1px solid rgba(255, 255, 255, 0.03);
+    border: 1px solid transparent;
     padding: 1.5rem;
     display: flex;
     align-items: center;
@@ -127,7 +127,7 @@
     text-align: center;
     gap: 0.5rem;
     box-shadow: inset 2px 2px 5px rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    border: 1px solid transparent;
 
     .card-icon {
       width: 24px;

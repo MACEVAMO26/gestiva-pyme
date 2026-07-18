@@ -111,7 +111,7 @@
     border-radius: 9999px;
     border: 2px solid #0F172A;
     cursor: pointer;
-    box-shadow: 0 10px 15px -3px rgba(245, 158, 11, 0.3);
+    box-shadow: none;
     transition: transform 0.3s;
     &:hover {
       transform: scale(1.1);

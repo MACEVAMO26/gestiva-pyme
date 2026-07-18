@@ -3,6 +3,13 @@
   <!-- GLOBAL HEADER -->
   <header class="global-header">
     <div class="header-left">
+      <!-- BOTON HAMBURGER PARA MOVILES -->
+      <button class="mobile-menu-toggle" (click)="toggleMobileMenu()">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+        </svg>
+      </button>
+
       <div class="logo-container">
         <img [src]="getLogoUrl()" alt="Logo Empresa" class="main-logo-img">
         <span class="badge-plan" [ngClass]="tipoEmpresaClass">{{tipoEmpresa}}</span>
@@ -17,7 +24,11 @@
       <div class="topbar-actions">
         <!-- USER PROFILE (CERRAR SESION) -->
         <div class="user-profile" [ngClass]="tipoEmpresaClass">
-          <div class="avatar">{{ user?.nombres?.charAt(0) || 'A' }}</div>
+          @if (user?.avatar_url) {
+            <img [src]="user.avatar_url" alt="Avatar" class="avatar-img" style="width: 36px; height: 36px; border-radius: 50%; object-fit: cover; border: 2px solid #ffffff;">
+          } @else {
+            <div class="avatar">{{ user?.nombres?.charAt(0) || 'A' }}</div>
+          }
           <button class="btn-logout" (click)="logout()">Cerrar Sesión</button>
         </div>
         
@@ -60,13 +71,17 @@
     </div>
   </header>
 
-  <!-- MAIN BODY -->
-  <div class="main-body">
-    
+  <!-- MAIN AREA (Sidebar + Content) -->
+  <div class="dashboard-body">
+    <!-- Overlay for mobile -->
+    @if (isMobileMenuOpen) {
+      <div class="mobile-overlay" (click)="toggleMobileMenu()"></div>
+    }
+
     <!-- SIDEBAR -->
-    <aside class="sidebar" [class.collapsed]="isSidebarCollapsed">
-      <!-- Botón Toggle (Flecha) -->
-      <button class="toggle-btn" (click)="toggleSidebar()" title="Colapsar menú">
+    <aside class="sidebar" [class.collapsed]="isSidebarCollapsed" [class.mobile-open]="isMobileMenuOpen">
+      <!-- BOTON COLAPSAR (Desktop) -->
+      <button class="btn-collapse-sidebar" (click)="toggleSidebar()" title="Colapsar menú">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
           <path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/>
         </svg>
@@ -190,6 +205,8 @@
       } @else if (currentModule === 'autogestion') {
         <!-- Módulo de Autogestión -->
         <app-autogestion></app-autogestion>
+      } @else if (currentModule === 'clientes') {
+        <app-clientes></app-clientes>
       } @else {
         <div class="recent-activity-card glass-panel">
           <h3>Módulo en Construcción</h3>

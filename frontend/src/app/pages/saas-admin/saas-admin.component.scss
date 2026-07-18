@@ -6,7 +6,7 @@ $sidebar-bg: #1e293b;
 $text-dark: #f8fafc;
 $text-muted: #94a3b8;
 $glass-bg: rgba(30, 41, 59, 0.7);
-$glass-border: rgba(255, 255, 255, 0.1);
+$glass-border: transparent;
 $shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2);
 $shadow-md:
   0 3px 5px -1px rgba(0, 0, 0, 0.3),
@@ -422,7 +422,7 @@ $sidebar-text-muted: #0f172a;
     .metric-card {
       background: #111827;
       border-radius: 20px;
-      border: 1px solid rgba(255, 255, 255, 0.03);
+      border: 1px solid transparent;
       padding: 1.5rem;
       display: flex;
       align-items: center;
@@ -486,7 +486,7 @@ $sidebar-text-muted: #0f172a;
   ::ng-deep .glass-panel {
     background: linear-gradient(135deg, #0d3454 0%, #19527f 100%);
     border-radius: 20px;
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    border: 1px solid transparent;
     padding: 1.5rem;
     box-shadow:
       4px 4px 10px rgba(0, 0, 0, 0.4),
@@ -773,7 +773,7 @@ $sidebar-text-muted: #0f172a;
     padding: 2rem;
     width: 400px;
     box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.5);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: 1px solid transparent;
     h2 {
       color: #0f172a;
       margin-top: 0;
@@ -818,7 +818,7 @@ $sidebar-text-muted: #0f172a;
       .btn-cancel {
         background: rgba(255, 255, 255, 0.1);
         color: white;
-        border: 1px solid rgba(255, 255, 255, 0.2);
+        border: 1px solid transparent;
         padding: 0.5rem 1rem;
         border-radius: 50px;
       }
@@ -1168,7 +1168,7 @@ $sidebar-text-muted: #0f172a;
   justify-content: space-between;
 }
 .btn-cancel-flex {
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid transparent;
   flex: 1;
 }
 .btn-rechazar {
@@ -1195,7 +1195,7 @@ $sidebar-text-muted: #0f172a;
   color: #94a3b8;
 }
 .btn-cerrar {
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid transparent;
   padding: 0.75rem 1.75rem;
   border-radius: 50px;
 }
@@ -1247,7 +1247,7 @@ $sidebar-text-muted: #0f172a;
   border-radius: 7999px;
   border: 2px solid #0f172a;
   cursor: pointer;
-  box-shadow: 0 8px 12px -2px rgba(245, 158, 11, 0.3);
+  box-shadow: none;
   transition: transform 0.3s;
 }
 .icon-accessibility {
@@ -1332,7 +1332,7 @@ $sidebar-text-muted: #0f172a;
   max-height: 90vh;
   overflow-y: auto;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid transparent;
 }
 .saas-modal-header {
   color: #f8fafc;
@@ -1353,7 +1353,7 @@ $sidebar-text-muted: #0f172a;
   padding: 0.75rem;
   border-radius: 8px;
   background: rgba(0, 0, 0, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid transparent;
   color: white;
   outline: none;
 }
@@ -1362,7 +1362,7 @@ $sidebar-text-muted: #0f172a;
   padding: 0.75rem;
   border-radius: 8px;
   background: #1e293b;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid transparent;
   color: white;
   outline: none;
 
@@ -1477,7 +1477,7 @@ $sidebar-text-muted: #0f172a;
   border-radius: 9999px;
   border: none;
   cursor: pointer;
-  box-shadow: 0 10px 15px -3px rgba(245, 158, 11, 0.3);
+  box-shadow: none;
 }
 .saas-access-icon {
   width: 24px;
@@ -1532,7 +1532,7 @@ $sidebar-text-muted: #0f172a;
     4px 4px 10px rgba(0, 0, 0, 0.4),
     -4px -4px 10px rgba(255, 255, 255, 0.02);
   transition: all 0.3s ease;
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: 1px solid transparent;
   &:hover {
     box-shadow:
       6px 6px 15px rgba(0, 0, 0, 0.5),
@@ -1543,7 +1543,7 @@ $sidebar-text-muted: #0f172a;
 
 .soft-ui-company-selector {
   background: #0d3454;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid transparent;
   padding: 1.5rem;
 }
 
@@ -1575,7 +1575,7 @@ $sidebar-text-muted: #0f172a;
   gap: 0.5rem;
   align-items: center;
   justify-content: space-between;
-  border: 1px solid rgba(255, 255, 255, 0.02);
+  border: 1px solid transparent;
   box-shadow:
     4px 4px 10px rgba(0, 0, 0, 0.4),
     -4px -4px 10px rgba(255, 255, 255, 0.02);
@@ -1621,7 +1621,7 @@ $sidebar-text-muted: #0f172a;
   box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
   transition: all 0.3s ease;
   position: relative;
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: 1px solid transparent;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -1685,7 +1685,7 @@ $sidebar-text-muted: #0f172a;
 .soft-ui-panel-dark {
   background: #0d3454; /* MATCHES MODULOS BACKGROUND */
   border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: 1px solid transparent;
   box-shadow:
     4px 4px 10px rgba(0, 0, 0, 0.4),
     -4px -4px 10px rgba(255, 255, 255, 0.02);
@@ -1702,7 +1702,7 @@ $sidebar-text-muted: #0f172a;
 .soft-ui-input {
   background: #111827;
   color: white;
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: 1px solid transparent;
   border-radius: 8px;
   padding: 0.5rem 1rem;
   box-shadow:
@@ -1728,7 +1728,7 @@ $sidebar-text-muted: #0f172a;
     4px 4px 10px rgba(0, 0, 0, 0.4),
     -4px -4px 10px rgba(255, 255, 255, 0.02);
   transition: all 0.3s ease;
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: 1px solid transparent;
 }
 
 .neu-dark-button {

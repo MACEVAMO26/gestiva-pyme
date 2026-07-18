@@ -1,0 +1,159 @@
+<div class="module-container">
+    <header class="module-header">
+        <div class="header-title">
+            <h1>Gestión de Clientes</h1>
+            <p>Administra la información, membresías y estados de tus clientes.</p>
+        </div>
+        <button class="btn-primary" (click)="abrirModalNuevo()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" style="margin-right: 8px;">
+              <path d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2Z"/>
+            </svg>
+            Nuevo Cliente
+        </button>
+    </header>
+
+    <div class="glass-panel filter-panel">
+        <div class="filter-controls">
+            <input type="text" placeholder="Buscar por Nombre, ID, Contacto..." class="input-neumorphic search-input" [(ngModel)]="searchTerm" (input)="filtrarClientes()">
+            <select class="input-neumorphic filter-select" [(ngModel)]="tipoFiltro" (change)="filtrarClientes()">
+                <option value="">Todos los Tipos</option>
+                <option value="Particular">Particular</option>
+                <option value="Empresa">Empresa</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="glass-panel table-panel">
+        <div class="table-responsive">
+            <table class="premium-table">
+                <thead>
+                    <tr>
+                        <th>Cliente</th>
+                        <th>Contacto</th>
+                        <th>Tipo / Membresía</th>
+                        <th>Pedidos / Estado</th>
+                        <th>Estado Financiero</th>
+                        <th>Comentarios</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (cliente of clientesFiltrados; track cliente.id) {
+                    <tr>
+                        <td>
+                            <strong>{{cliente.nombres}} {{cliente.apellidos}}</strong><br>
+                            <span class="text-muted text-sm">Doc: {{cliente.documento}}</span>
+                        </td>
+                        <td>
+                            <span class="text-sm">📞 {{cliente.telefono || 'N/A'}}</span><br>
+                            <span class="text-sm text-muted">✉️ {{cliente.email || 'N/A'}}</span>
+                        </td>
+                        <td>
+                            <span class="badge" [ngClass]="{'badge-primary': cliente.tipo_cliente === 'Empresa', 'badge-secondary': cliente.tipo_cliente !== 'Empresa'}">
+                                {{cliente.tipo_cliente || 'N/A'}}
+                            </span><br>
+                            <span class="text-sm text-muted">⭐ {{cliente.membresia || 'Sin membresía'}}</span>
+                        </td>
+                        <td>
+                            <span class="text-sm"><strong>Activos:</strong> {{cliente.pedidos_activos || 0}}</span><br>
+                            <span class="badge badge-outline">{{cliente.estado_pedido || 'N/A'}}</span>
+                        </td>
+                        <td>
+                            <span class="badge" [ngClass]="{'badge-success': cliente.estado_financiero === 'Al dia', 'badge-danger': cliente.estado_financiero !== 'Al dia'}">
+                                {{cliente.estado_financiero || 'N/A'}}
+                            </span>
+                        </td>
+                        <td style="max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" [title]="cliente.comentarios">
+                            {{cliente.comentarios || '...'}}
+                        </td>
+                        <td class="actions">
+                            <button class="btn-icon" title="Editar" (click)="editarCliente(cliente)">✏️</button>
+                            <button class="btn-icon text-danger" title="Eliminar" (click)="eliminarCliente(cliente.id)">🗑️</button>
+                        </td>
+                    </tr>
+                    } @empty {
+                    <tr>
+                        <td colspan="7" class="text-center text-muted" style="padding: 2rem;">No hay clientes registrados.</td>
+                    </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Modal (Oculto por defecto) -->
+    @if(mostrarModal) {
+    <div class="modal-overlay">
+        <div class="glass-panel modal-content">
+            <div class="modal-header">
+                <h2>{{ isEditMode ? 'Editar Cliente' : 'Nuevo Cliente' }}</h2>
+                <button class="btn-icon" (click)="cerrarModal()">✕</button>
+            </div>
+            <div class="modal-body">
+                <form (ngSubmit)="guardarCliente()" #clienteForm="ngForm">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Nombres / Razón Social *</label>
+                            <input type="text" class="input-neumorphic" [(ngModel)]="clienteActual.nombres" name="nombres" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Documento *</label>
+                            <input type="text" class="input-neumorphic" [(ngModel)]="clienteActual.documento" name="documento" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Email</label>
+                            <input type="email" class="input-neumorphic" [(ngModel)]="clienteActual.email" name="email">
+                        </div>
+                        <div class="form-group">
+                            <label>Teléfono</label>
+                            <input type="text" class="input-neumorphic" [(ngModel)]="clienteActual.telefono" name="telefono">
+                        </div>
+                        <div class="form-group">
+                            <label>Tipo de Cliente</label>
+                            <select class="input-neumorphic" [(ngModel)]="clienteActual.tipo_cliente" name="tipo_cliente">
+                                <option value="Particular">Particular</option>
+                                <option value="Empresa">Empresa</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Membresía / Afiliación</label>
+                            <input type="text" class="input-neumorphic" [(ngModel)]="clienteActual.membresia" name="membresia" placeholder="Ej: VIP, Gold...">
+                        </div>
+                        <div class="form-group">
+                            <label>Pedidos Activos</label>
+                            <input type="number" class="input-neumorphic" [(ngModel)]="clienteActual.pedidos_activos" name="pedidos_activos">
+                        </div>
+                        <div class="form-group">
+                            <label>Estado del Pedido</label>
+                            <select class="input-neumorphic" [(ngModel)]="clienteActual.estado_pedido" name="estado_pedido">
+                                <option value="">Ninguno</option>
+                                <option value="Alistando">Alistando</option>
+                                <option value="Empacando">Empacando</option>
+                                <option value="En camino">En camino</option>
+                                <option value="Entregado">Entregado</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Estado Financiero</label>
+                            <select class="input-neumorphic" [(ngModel)]="clienteActual.estado_financiero" name="estado_financiero">
+                                <option value="Al dia">Al día</option>
+                                <option value="Facturas pendientes">Facturas pendientes</option>
+                                <option value="Mora">En mora</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-top: 15px;">
+                        <label>Comentarios</label>
+                        <textarea class="input-neumorphic" [(ngModel)]="clienteActual.comentarios" name="comentarios" rows="3"></textarea>
+                    </div>
+                    
+                    <div class="modal-footer">
+                        <button type="button" class="btn-secondary" (click)="cerrarModal()">Cancelar</button>
+                        <button type="submit" class="btn-primary" [disabled]="!clienteForm.form.valid">Guardar Cliente</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    }
+</div>
