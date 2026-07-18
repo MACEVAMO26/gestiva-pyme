@@ -167,7 +167,7 @@ $transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
 .sidebar {
   width: 220px;
   background-color: $sidebar-bg;
-  border-right: 1px solid rgba(255,255,255,0.05);
+  border-right: 1px solid rgba(0, 0, 0, 0.08);
   display: flex;
   flex-direction: column;
   padding: 1.5rem;
@@ -227,11 +227,14 @@ $transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
       display: flex;
       align-items: center;
       gap: 16px;
-      padding: 0.75rem 1rem;
-      border-radius: 12px;
-      color: $text-muted;
+      padding: 0.75rem 1.25rem;
+      margin: 0.25rem 0;
+      border-radius: 50px;
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      background: transparent;
+      color: $text-dark;
       font-size: 0.95rem;
-      font-weight: 500;
+      font-weight: 600;
       text-decoration: none;
       cursor: pointer;
       transition: $transition;
@@ -239,24 +242,34 @@ $transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
       overflow: hidden;
 
       .icon {
-        width: 24px;
-        height: 24px;
-        min-width: 24px;
+        width: 22px;
+        height: 22px;
+        min-width: 22px;
         text-align: center;
         display: inline-block;
+        color: $text-dark;
       }
 
       &:hover {
-        background-color: rgba(255, 107, 0, 0.05);
-        color: $primary-color;
-        transform: translateX(4px);
+        background-color: rgba(255, 152, 0, 0.1);
+        color: $primary-hover;
+        border-color: rgba(255, 152, 0, 0.3);
+        transform: translateY(-2px);
+        
+        .icon {
+          color: $primary-hover;
+        }
       }
 
       &.active {
-        background-color: #111827;
+        background: rgba(12, 109, 12, 0.1);
+        border: 1px solid rgba(12, 109, 12, 0.2);
+        box-shadow: 0 4px 15px rgba(12, 109, 12, 0.15);
         color: $primary-color;
-        box-shadow: inset 4px 4px 8px #0b0f19, inset -4px -4px 8px #172135;
-        border-left: 3px solid $primary-color;
+        
+        .icon {
+          color: $primary-color;
+        }
       }
     }
   }
