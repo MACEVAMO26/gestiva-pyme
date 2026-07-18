@@ -15,7 +15,13 @@
         <p>Bienvenido de vuelta a tu centro de control.</p>
       </div>
       <div class="topbar-actions">
-        <!-- ACCESIBILIDAD -->
+        <!-- USER PROFILE (CERRAR SESION) -->
+        <div class="user-profile" [ngClass]="tipoEmpresaClass">
+          <div class="avatar">{{ user?.nombres?.charAt(0) || 'A' }}</div>
+          <button class="btn-logout" (click)="logout()">Cerrar Sesión</button>
+        </div>
+        
+        <!-- ACCESIBILIDAD (OJITO) -->
         <div class="accessibility-widget">
           <!-- Botón -->
           <button 
@@ -36,24 +42,19 @@
                 <p>Daltonismo</p>
               </div>
               <button (click)="setDaltonismMode('normal')" [class.active]="accessibilityService.currentMode() === 'normal'">
-                Estándar
+                Vista Normal (Desactivado)
               </button>
               <button (click)="setDaltonismMode('protanopia')" [class.active]="accessibilityService.currentMode() === 'protanopia'">
-                Protanopia
+                Protanopía (Rojo débil)
               </button>
               <button (click)="setDaltonismMode('deuteranopia')" [class.active]="accessibilityService.currentMode() === 'deuteranopia'">
-                Deuteranopia
+                Deuteranopía (Verde débil)
               </button>
               <button (click)="setDaltonismMode('tritanopia')" [class.active]="accessibilityService.currentMode() === 'tritanopia'">
-                Tritanopia
+                Tritanopía (Azul débil)
               </button>
             </div>
           }
-        </div>
-        
-        <div class="user-profile" [ngClass]="tipoEmpresaClass">
-          <div class="avatar">{{ user?.nombres?.charAt(0) || 'A' }}</div>
-          <button class="btn-logout" (click)="logout()">Cerrar Sesión</button>
         </div>
       </div>
     </div>
