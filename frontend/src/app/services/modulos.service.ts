@@ -54,10 +54,11 @@ export class ModulosService {
         color: 'blue',
         activo: false,
         submodulos: [
-          { id: 'v_pos', nombre: 'Interfaz de Venta Rápida (POS)', activo: false },
-          { id: 'v_inv', nombre: 'Inventario y Alertas', activo: false },
-          { id: 'v_cxc', nombre: 'Cuentas por Cobrar (Cartera)', activo: false },
-          { id: 'v_rep', nombre: 'Reportes de Ventas', activo: false },
+          { id: 'v_pos', nombre: 'Ventas', activo: false },
+          { id: 'v_inv', nombre: 'Inventario', activo: false },
+          { id: 'v_cxc', nombre: 'Clientes', activo: false },
+          { id: 'v_rep', nombre: 'Compras', activo: false },
+          { id: 'v_prov', nombre: 'Proveedores', activo: false },
         ],
       },
       {

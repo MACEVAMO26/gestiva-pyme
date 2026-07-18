@@ -9,11 +9,12 @@ import { AdministracionComponent } from '../administracion/administracion.compon
 import { PagosComponent } from '../pagos/pagos.component';
 import { AutogestionComponent } from '../autogestion/autogestion';
 import { ClientesComponent } from '../clientes/clientes';
+import { ProveedoresComponent } from '../proveedores/proveedores';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, EmpleadosComponent, AdministracionComponent, PagosComponent, AutogestionComponent, ClientesComponent],
+  imports: [CommonModule, EmpleadosComponent, AdministracionComponent, PagosComponent, AutogestionComponent, ClientesComponent, ProveedoresComponent],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss'
 })

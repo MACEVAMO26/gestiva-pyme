@@ -32,7 +32,7 @@
                         <th>Contacto</th>
                         <th>Tipo / Membresía</th>
                         <th>Pedidos / Estado</th>
-                        <th>Estado Financiero</th>
+                        <th>Estado Pre-Facturación</th>
                         <th>Comentarios</th>
                         <th>Acciones</th>
                     </tr>
@@ -42,7 +42,7 @@
                     <tr>
                         <td>
                             <strong>{{cliente.nombres}} {{cliente.apellidos}}</strong><br>
-                            <span class="text-muted text-sm">Doc: {{cliente.documento}}</span>
+                            <span class="text-muted text-sm">ID: {{ formatearId(cliente.id) }} | Doc: {{cliente.documento}}</span>
                         </td>
                         <td>
                             <span class="text-sm">📞 {{cliente.telefono || 'N/A'}}</span><br>
@@ -60,7 +60,7 @@
                         </td>
                         <td>
                             <span class="badge" [ngClass]="{'badge-success': cliente.estado_financiero === 'Al dia', 'badge-danger': cliente.estado_financiero !== 'Al dia'}">
-                                {{cliente.estado_financiero || 'N/A'}}
+                                {{cliente.estado_financiero || 'Sin Pre-facturas'}}
                             </span>
                         </td>
                         <td style="max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" [title]="cliente.comentarios">
@@ -93,11 +93,11 @@
                 <form (ngSubmit)="guardarCliente()" #clienteForm="ngForm">
                     <div class="form-grid">
                         <div class="form-group">
-                            <label>Nombres / Razón Social *</label>
+                            <label>Nombres / Razón Social</label>
                             <input type="text" class="input-neumorphic" [(ngModel)]="clienteActual.nombres" name="nombres" required>
                         </div>
                         <div class="form-group">
-                            <label>Documento *</label>
+                            <label>Documento/NIT</label>
                             <input type="text" class="input-neumorphic" [(ngModel)]="clienteActual.documento" name="documento" required>
                         </div>
                         <div class="form-group">
@@ -116,30 +116,16 @@
                             </select>
                         </div>
                         <div class="form-group">
+                            <label>Ciudad</label>
+                            <input type="text" class="input-neumorphic" [(ngModel)]="clienteActual.ciudad" name="ciudad">
+                        </div>
+                        <div class="form-group">
+                            <label>Dirección de Entrega</label>
+                            <input type="text" class="input-neumorphic" [(ngModel)]="clienteActual.direccion" name="direccion">
+                        </div>
+                        <div class="form-group">
                             <label>Membresía / Afiliación</label>
                             <input type="text" class="input-neumorphic" [(ngModel)]="clienteActual.membresia" name="membresia" placeholder="Ej: VIP, Gold...">
-                        </div>
-                        <div class="form-group">
-                            <label>Pedidos Activos</label>
-                            <input type="number" class="input-neumorphic" [(ngModel)]="clienteActual.pedidos_activos" name="pedidos_activos">
-                        </div>
-                        <div class="form-group">
-                            <label>Estado del Pedido</label>
-                            <select class="input-neumorphic" [(ngModel)]="clienteActual.estado_pedido" name="estado_pedido">
-                                <option value="">Ninguno</option>
-                                <option value="Alistando">Alistando</option>
-                                <option value="Empacando">Empacando</option>
-                                <option value="En camino">En camino</option>
-                                <option value="Entregado">Entregado</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>Estado Financiero</label>
-                            <select class="input-neumorphic" [(ngModel)]="clienteActual.estado_financiero" name="estado_financiero">
-                                <option value="Al dia">Al día</option>
-                                <option value="Facturas pendientes">Facturas pendientes</option>
-                                <option value="Mora">En mora</option>
-                            </select>
                         </div>
                     </div>
                     <div class="form-group" style="margin-top: 15px;">

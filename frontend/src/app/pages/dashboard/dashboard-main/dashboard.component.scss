@@ -184,6 +184,37 @@ $transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
           box-shadow: inset 4px 4px 8px #030303, inset -4px -4px 8px rgba(255,255,255,0.02);
         }
       }
+
+      &.ventas {
+        .user-profile {
+          .btn-logout {
+            background: #f97316;
+            color: #000000;
+            padding: 6px 14px;
+            border-radius: 20px;
+            margin-left: 6px;
+
+            &:hover {
+              background: #ea580c;
+              color: #000000;
+            }
+          }
+        }
+        
+        .accessibility-btn {
+          background-color: #ffb700 !important; /* Amarillo fuerte como en la imagen */
+          border: none !important;
+          color: #ffffff !important;
+          
+          svg {
+            color: #000000 !important;
+          }
+
+          &:hover {
+            background-color: #eab308 !important;
+          }
+        }
+      }
     }
   }
 }

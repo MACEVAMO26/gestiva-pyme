@@ -12,8 +12,8 @@ import { ToastService } from '../../services/toast.service';
         <div 
           class="pointer-events-auto transform transition-all duration-300 ease-out translate-y-0 opacity-100 flex items-center gap-3 min-w-[300px] max-w-sm p-4 rounded-xl shadow-2xl border backdrop-blur-md"
           [ngClass]="{
-            'bg-emerald-900/90 border-emerald-500/50 text-emerald-100': toast.type === 'success',
-            'bg-rose-900/90 border-rose-500/50 text-rose-100': toast.type === 'error',
+            'bg-lime-900/90 border-lime-500/50 text-lime-100': toast.type === 'success',
+            'bg-orange-900/90 border-orange-500/50 text-orange-100': toast.type === 'error',
             'bg-amber-900/90 border-amber-500/50 text-amber-100': toast.type === 'warning',
             'bg-indigo-900/90 border-indigo-500/50 text-indigo-100': toast.type === 'info'
           }"

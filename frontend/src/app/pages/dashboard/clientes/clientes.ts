@@ -2,6 +2,8 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
+import { AuthService } from '../../../services/auth.service';
+import { ToastService } from '../../../services/toast.service';
 
 export interface Cliente {
   id?: number;
@@ -10,6 +12,8 @@ export interface Cliente {
   documento: string;
   email?: string;
   telefono?: string;
+  direccion?: string;
+  ciudad?: string;
   tipo_cliente?: string;
   membresia?: string;
   pedidos_activos?: number;
@@ -27,6 +31,8 @@ export interface Cliente {
 })
 export class ClientesComponent implements OnInit {
   private http = inject(HttpClient);
+  private authService = inject(AuthService);
+  private toastService = inject(ToastService);
 
   // --- VARIABLES DE ESTADO ---
   clientes: Cliente[] = [];
@@ -52,6 +58,8 @@ export class ClientesComponent implements OnInit {
       documento: '',
       email: '',
       telefono: '',
+      direccion: '',
+      ciudad: '',
       tipo_cliente: 'Particular',
       membresia: '',
       pedidos_activos: 0,
@@ -61,15 +69,26 @@ export class ClientesComponent implements OnInit {
     };
   }
 
+  formatearId(id: number | undefined): string {
+    if (!id) return 'CLI-000';
+    return 'CLI' + id.toString().padStart(9, '0');
+  }
+
   cargarClientes() {
+    const user = this.authService.getUser();
+    const empresaId = user?.empresa_id || user?.empresa?.id || '';
+
     this.http.get<Cliente[]>('http://localhost:8000/api/clientes', {
-      headers: { 'X-Empresa-Id': localStorage.getItem('empresa_activa_id') || '' }
+      headers: { 'X-Empresa-Id': empresaId.toString() }
     }).subscribe({
       next: (data) => {
         this.clientes = data;
         this.filtrarClientes();
       },
-      error: (err) => console.error('Error cargando clientes:', err)
+      error: (err) => {
+        console.error('Error cargando clientes:', err);
+        this.toastService.show('Error cargando la lista de clientes', 'error');
+      }
     });
   }
 
@@ -110,27 +129,39 @@ export class ClientesComponent implements OnInit {
   }
 
   guardarCliente() {
-    const headers = { 'X-Empresa-Id': localStorage.getItem('empresa_activa_id') || '' };
+    const user = this.authService.getUser();
+    const empresaId = user?.empresa_id || user?.empresa?.id || '';
+    const headers = { 'X-Empresa-Id': empresaId.toString() };
 
     if (this.isEditMode && this.clienteActual.id) {
       // PUT
       this.http.put('http://localhost:8000/api/clientes/' + this.clienteActual.id, this.clienteActual, { headers })
         .subscribe({
           next: () => {
+            this.toastService.show('Cliente actualizado con éxito', 'success');
             this.cargarClientes();
             this.cerrarModal();
           },
-          error: (err) => console.error('Error actualizando cliente', err)
+          error: (err) => {
+            console.error('Error actualizando cliente', err);
+            const msg = err.error?.message || err.message || 'Error al actualizar el cliente';
+            this.toastService.show(msg, 'error');
+          }
         });
     } else {
       // POST
       this.http.post('http://localhost:8000/api/clientes', this.clienteActual, { headers })
         .subscribe({
           next: () => {
+            this.toastService.show('Cliente guardado con éxito', 'success');
             this.cargarClientes();
             this.cerrarModal();
           },
-          error: (err) => console.error('Error creando cliente', err)
+          error: (err) => {
+            console.error('Error creando cliente', err);
+            const msg = err.error?.message || err.error?.error || err.message || 'Error al guardar el cliente';
+            this.toastService.show(msg, 'error');
+          }
         });
     }
   }
@@ -138,11 +169,20 @@ export class ClientesComponent implements OnInit {
   eliminarCliente(id?: number) {
     if (!id) return;
     if (confirm('¿Estás seguro de eliminar este cliente?')) {
-      const headers = { 'X-Empresa-Id': localStorage.getItem('empresa_activa_id') || '' };
+      const user = this.authService.getUser();
+      const empresaId = user?.empresa_id || user?.empresa?.id || '';
+      const headers = { 'X-Empresa-Id': empresaId.toString() };
+      
       this.http.delete('http://localhost:8000/api/clientes/' + id, { headers })
         .subscribe({
-          next: () => this.cargarClientes(),
-          error: (err) => console.error('Error eliminando cliente', err)
+          next: () => {
+            this.toastService.show('Cliente eliminado con éxito', 'success');
+            this.cargarClientes();
+          },
+          error: (err) => {
+            console.error('Error eliminando cliente', err);
+            this.toastService.show('Error al eliminar el cliente', 'error');
+          }
         });
     }
   }

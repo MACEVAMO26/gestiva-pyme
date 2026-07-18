@@ -1,0 +1,125 @@
+<div class="module-container">
+    <header class="module-header">
+        <div class="header-text">
+            <h1 class="module-title">Gestión de Proveedores</h1>
+            <p class="module-subtitle">Administra la información, contactos y documentos de tus proveedores.</p>
+        </div>
+        <button class="btn-primary" (click)="abrirModal()">
+            <i class="fas fa-plus"></i> Nuevo Proveedor
+        </button>
+    </header>
+
+    <div class="search-bar-container">
+        <input type="text" 
+               class="search-input input-neumorphic" 
+               placeholder="Buscar por Razón Social, NIT, Contacto..."
+               [(ngModel)]="searchTerm"
+               (input)="filtrarProveedores()">
+    </div>
+
+    <div class="table-responsive glass-panel">
+        <table class="premium-table">
+            <thead>
+                <tr>
+                    <th>PROVEEDOR</th>
+                    <th>CONTACTO PRINCIPAL</th>
+                    <th>EMAIL / DIRECCIÓN</th>
+                    <th>DOCUMENTOS</th>
+                    <th>ACCIONES</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (proveedoresFiltrados.length === 0) {
+                    <tr>
+                        <td colspan="5" class="text-center text-muted py-4">
+                            No hay proveedores registrados.
+                        </td>
+                    </tr>
+                } @else {
+                    @for (proveedor of proveedoresFiltrados; track proveedor.id) {
+                    <tr>
+                        <td>
+                            <strong>{{proveedor.razon_social}}</strong><br>
+                            <span class="text-muted text-sm">ID: {{ formatearId(proveedor.id) }} | NIT: {{proveedor.nit}}</span>
+                        </td>
+                        <td>
+                            <strong>{{proveedor.contacto || 'N/A'}}</strong><br>
+                            <span class="text-sm">📞 {{proveedor.telefono || 'N/A'}}</span>
+                        </td>
+                        <td>
+                            <span class="text-sm">✉️ {{proveedor.email || 'N/A'}}</span><br>
+                            <span class="text-sm">📍 {{proveedor.direccion || 'N/A'}}</span>
+                        </td>
+                        <td>
+                            @if (proveedor.documentos_url) {
+                                <a [href]="proveedor.documentos_url" target="_blank" class="text-primary text-sm hover-underline">
+                                    <i class="fas fa-link"></i> Ver Documento
+                                </a>
+                            } @else {
+                                <span class="text-muted text-sm">Sin anexos</span>
+                            }
+                        </td>
+                        <td class="actions-cell">
+                            <button class="btn-icon edit" (click)="abrirModal(proveedor)" title="Editar">✏️</button>
+                            <button class="btn-icon delete" (click)="eliminarProveedor(proveedor.id)" title="Eliminar">🗑️</button>
+                        </td>
+                    </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Modal para Crear/Editar Proveedor -->
+@if (showModal) {
+<div class="modal-backdrop">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>{{ isEditMode ? 'Editar Proveedor' : 'Nuevo Proveedor' }}</h2>
+            <button class="close-btn" (click)="cerrarModal()">×</button>
+        </div>
+        <div class="modal-body">
+            <form (ngSubmit)="guardarProveedor()" #proveedorForm="ngForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Razón Social *</label>
+                        <input type="text" class="input-neumorphic" [(ngModel)]="proveedorActual.razon_social" name="razon_social" required>
+                    </div>
+                    <div class="form-group">
+                        <label>NIT / Documento *</label>
+                        <input type="text" class="input-neumorphic" [(ngModel)]="proveedorActual.nit" name="nit" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Persona de Contacto</label>
+                        <input type="text" class="input-neumorphic" [(ngModel)]="proveedorActual.contacto" name="contacto">
+                    </div>
+                    <div class="form-group">
+                        <label>Teléfono</label>
+                        <input type="text" class="input-neumorphic" [(ngModel)]="proveedorActual.telefono" name="telefono">
+                    </div>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" class="input-neumorphic" [(ngModel)]="proveedorActual.email" name="email">
+                    </div>
+                    <div class="form-group">
+                        <label>Dirección</label>
+                        <input type="text" class="input-neumorphic" [(ngModel)]="proveedorActual.direccion" name="direccion">
+                    </div>
+                </div>
+                <div class="form-group" style="margin-top: 15px;">
+                    <label>URL Documentos (RUT, Cámara de Comercio)</label>
+                    <input type="text" class="input-neumorphic" [(ngModel)]="proveedorActual.documentos_url" name="documentos_url" placeholder="https://...">
+                </div>
+                
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary" (click)="cerrarModal()">Cancelar</button>
+                    <button type="submit" class="btn-primary" [disabled]="!proveedorForm.valid">
+                        {{ isEditMode ? 'Guardar Cambios' : 'Guardar Proveedor' }}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+}

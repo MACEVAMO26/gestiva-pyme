@@ -14,10 +14,11 @@ class ModuloSeeder extends Seeder
     {
         $modulos = [
             // Ventas
-            ['id' => 'v_pos', 'nombre' => 'Interfaz de Venta Rápida (POS)', 'paquete' => 'ventas'],
-            ['id' => 'v_inv', 'nombre' => 'Inventario y Alertas', 'paquete' => 'ventas'],
-            ['id' => 'v_cxc', 'nombre' => 'Cuentas por Cobrar (Cartera)', 'paquete' => 'ventas'],
-            ['id' => 'v_rep', 'nombre' => 'Reportes de Ventas', 'paquete' => 'ventas'],
+            ['id' => 'v_pos', 'nombre' => 'Ventas', 'paquete' => 'ventas'],
+            ['id' => 'v_inv', 'nombre' => 'Inventario', 'paquete' => 'ventas'],
+            ['id' => 'v_cxc', 'nombre' => 'Clientes', 'paquete' => 'ventas'],
+            ['id' => 'v_rep', 'nombre' => 'Compras', 'paquete' => 'ventas'],
+            ['id' => 'v_prov', 'nombre' => 'Proveedores', 'paquete' => 'ventas'],
             
             // Servicios
             ['id' => 's_age', 'nombre' => 'Agenda y Calendario', 'paquete' => 'servicios'],
