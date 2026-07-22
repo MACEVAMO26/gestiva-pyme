@@ -4,17 +4,12 @@ import { HttpClient } from '@angular/common/http';
 import { AccessibilityService, DaltonismMode } from '../../../services/accessibility/accessibility.service';
 import { ModulosService } from '../../../services/modulos.service';
 import { CommonModule } from '@angular/common';
-import { EmpleadosComponent } from '../empleados/empleados.component';
-import { AdministracionComponent } from '../administracion/administracion.component';
-import { PagosComponent } from '../pagos/pagos.component';
-import { AutogestionComponent } from '../autogestion/autogestion';
-import { ClientesComponent } from '../clientes/clientes';
-import { ProveedoresComponent } from '../proveedores/proveedores';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, EmpleadosComponent, AdministracionComponent, PagosComponent, AutogestionComponent, ClientesComponent, ProveedoresComponent],
+  imports: [CommonModule, RouterModule],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss'
 })
