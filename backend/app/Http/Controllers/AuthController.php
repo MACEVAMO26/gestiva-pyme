@@ -54,7 +54,7 @@ class AuthController extends Controller
             return response()->json([
                 'requires_password_change' => true,
                 'email' => $user->email,
-                'message' => 'Por seguridad, debes cambiar tu contraseña inicial antes de continuar.'
+                'message' => 'Por seguridad, debes cambiar tu clave inicial antes de continuar.'
             ]);
         }
 
