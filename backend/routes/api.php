@@ -13,7 +13,6 @@ use App\Http\Controllers\PermisoController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AutogestionController;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\EmpleadoController;
 
 // Gestion Central del Negocio
 use App\Http\Controllers\EmpresaController;
@@ -49,10 +48,6 @@ Route::delete('/modulos/{id}', [\App\Http\Controllers\ModulosController::class, 
 // --- RUTAS PROTEGIDAS (Requieren Token) ---
 
 Route::middleware('auth:sanctum')->group(function () {
-
-    // RRHH - Empleados
-    Route::get('/empresas/{id}/empleados', [EmpleadoController::class, 'index']);
-    Route::post('/empleados', [EmpleadoController::class, 'store']);
     
     // --- SESION ---
     Route::post('/logout', [AuthController::class, 'cerrarSesion']);

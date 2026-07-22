@@ -13,9 +13,6 @@ return new class extends Migration
     {
         Schema::create('jerarquias', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('empresa_id')->constrained('empresa')->onDelete('cascade');
-            $table->string('nombre'); // ej: Gerente General, Jefe de Área, Operario
-            $table->integer('nivel')->default(1); // 1 = mayor jerarquía, 2, 3...
             $table->timestamps();
         });
     }
