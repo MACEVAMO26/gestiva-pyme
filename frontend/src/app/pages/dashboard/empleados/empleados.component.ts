@@ -23,7 +23,11 @@ export class EmpleadosComponent implements OnInit {
   // UI State
   currentTab = 'pendientes'; // 'pendientes' | 'activos'
   isFormalizarModalOpen = false;
+  isBajaModalOpen = false;
   isSubmitting = false;
+
+  empleadoABaja: any = null;
+  motivoBaja = '';
 
   // Selected for formalization
   usuarioAFormalizar: any = null;
@@ -115,5 +119,45 @@ export class EmpleadosComponent implements OnInit {
   verDetalles(empleado: any) {
     // Para ver o editar datos de un empleado activo (Fase 4 o utilidades extra)
     alert('Función de ver/editar empleado en construcción.');
+  }
+
+  // --- SOLICITUD DE BAJA ---
+  abrirModalBaja(empleado: any) {
+    if (empleado.baja_solicitada) {
+      alert('Ya existe una solicitud de baja en proceso para este empleado.');
+      return;
+    }
+    this.empleadoABaja = empleado;
+    this.motivoBaja = '';
+    this.isBajaModalOpen = true;
+  }
+
+  cerrarModalBaja() {
+    this.isBajaModalOpen = false;
+    this.empleadoABaja = null;
+    this.motivoBaja = '';
+  }
+
+  submitBaja() {
+    if (!this.motivoBaja.trim()) {
+      alert('Debe ingresar un motivo para la baja.');
+      return;
+    }
+
+    this.isSubmitting = true;
+    this.empleadoService.solicitarBaja(this.empleadoABaja.id, this.motivoBaja)
+      .subscribe({
+        next: (res) => {
+          this.isSubmitting = false;
+          alert(res.message);
+          this.cerrarModalBaja();
+          this.cargarDatosTab();
+        },
+        error: (err) => {
+          this.isSubmitting = false;
+          console.error(err);
+          alert('Error al solicitar la baja: ' + (err.error?.error || err.message));
+        }
+      });
   }
 }

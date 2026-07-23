@@ -22,7 +22,12 @@ class CheckFormalizado
             return $next($request);
         }
 
-        // Si el usuario es Super Admin (Saas) o Gerente, no bloquear
+        // Si el usuario es Super Admin (Saas), empresa_id es null, no bloquear
+        if (is_null($user->empresa_id)) {
+            return $next($request);
+        }
+
+        // Si el usuario es Gerente o Administrador, no bloquear
         $roleName = $user->rol ? $user->rol->nombre : null;
         if (in_array($roleName, ['Admin Saas', 'Gerente', 'Administrador'])) {
             return $next($request);

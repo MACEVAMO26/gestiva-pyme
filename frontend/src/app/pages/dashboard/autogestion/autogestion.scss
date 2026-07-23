@@ -20,7 +20,7 @@
     p {
       color: #ffffff;
       margin: 0;
-      font-size: 0.95rem;
+      font-size: 0.75rem;
     }
   }
 }
@@ -144,7 +144,7 @@
     align-items: center;
     gap: 0.8rem;
     color: #ffffff;
-    font-size: 0.85rem;
+    font-size: 0.75rem;
 
     .icon {
       width: 18px;
@@ -157,7 +157,7 @@
 /* --- 3. DOCS RAPIDOS --- */
 .docs-card {
   h3 { color: #ffffff; margin: 0 0 0.5rem 0; font-weight: 700; font-size: 1rem; text-transform: uppercase; }
-  p { color: #ffffff; margin: 0 0 1.5rem 0; font-size: 0.85rem; }
+  p { color: #ffffff; margin: 0 0 1.5rem 0; font-size: 0.75rem; }
   
   .action-btn-orange {
     display: flex;
@@ -170,7 +170,7 @@
     padding: 0.8rem;
     border-radius: 8px;
     font-weight: 700;
-    font-size: 0.85rem;
+    font-size: 0.75rem;
     cursor: pointer;
     box-shadow: 4px 4px 8px #030303, -4px -4px 8px rgba(255,255,255,0.02);
     transition: all 0.2s ease;
@@ -220,7 +220,7 @@
     display: flex;
     flex-direction: column;
     gap: 0.4rem;
-    label { font-weight: 700; color: #ffffff; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; }
+    label { font-weight: 700; color: #ffffff; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; }
     
     input, select { 
       width: 100%; 
@@ -302,14 +302,14 @@
   border-radius: 8px;
   margin-bottom: 1.5rem;
   font-weight: 700;
-  font-size: 0.85rem;
+  font-size: 0.75rem;
   &.error { background: #7f1d1d; color: #ffffff; border-left: 4px solid #ef4444; }
 }
 
 /* --- 5. TIEMPOS --- */
 .times-card {
   h3 { color: #ffffff; margin: 0 0 0.5rem 0; font-weight: 700; font-size: 1rem; text-transform: uppercase; }
-  p { color: #ffffff; margin: 0 0 1.5rem 0; font-size: 0.85rem; }
+  p { color: #ffffff; margin: 0 0 1.5rem 0; font-size: 0.75rem; }
   
   .times-stats {
     display: grid;
@@ -326,7 +326,7 @@
       box-shadow: inset 4px 4px 8px rgba(0,0,0,0.5);
       
       h4 { margin: 0; font-size: 1.8rem; color: #f97316; font-weight: 800; }
-      span { font-size: 0.85rem; color: #ffffff; font-weight: 700; text-transform: uppercase; }
+      span { font-size: 0.75rem; color: #ffffff; font-weight: 700; text-transform: uppercase; }
     }
   }
   

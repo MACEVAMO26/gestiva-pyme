@@ -91,6 +91,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/empleados/pendientes', [\App\Http\Controllers\EmpleadoController::class, 'pendientes']);
     Route::get('/empleados', [\App\Http\Controllers\EmpleadoController::class, 'index']);
     Route::post('/empleados/{usuarioId}/formalizar', [\App\Http\Controllers\EmpleadoController::class, 'formalizar']);
+    Route::post('/empleados/{id}/solicitar-baja', [\App\Http\Controllers\EmpleadoController::class, 'solicitarBaja']);
+    Route::post('/empleados/{id}/aprobar-baja', [\App\Http\Controllers\EmpleadoController::class, 'aprobarBaja']);
 
     // ==========================================
     // RUTAS RESTRINGIDAS (Solo usuarios formalizados)

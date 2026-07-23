@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Empleado;
+use App\Models\Notificacion;
+use App\Models\Role;
 
 class EmpleadoController extends Controller
 {
@@ -80,5 +82,63 @@ class EmpleadoController extends Controller
             'message' => 'Empleado formalizado exitosamente. Acceso concedido al sistema.',
             'empleado' => $empleado
         ]);
+    }
+
+    // Solicita la baja de un empleado (GH -> Gerente)
+    public function solicitarBaja(Request $request, $id)
+    {
+        $request->validate([
+            'motivo' => 'required|string|max:500'
+        ]);
+
+        $empresaId = auth()->user()->empresa_id;
+        
+        $empleado = Empleado::where('id', $id)->where('empresa_id', $empresaId)->firstOrFail();
+
+        if ($empleado->baja_solicitada) {
+            return response()->json(['error' => 'Ya existe una solicitud de baja para este empleado.'], 400);
+        }
+
+        // Marcar como solicitada
+        $empleado->baja_solicitada = true;
+        $empleado->save();
+
+        // Buscar al gerente de la empresa para notificarle
+        $gerenteRole = Role::where('nombre', 'Gerente')->first();
+        if ($gerenteRole) {
+            $gerentes = User::where('empresa_id', $empresaId)->where('rol_id', $gerenteRole->id)->get();
+            foreach ($gerentes as $gerente) {
+                Notificacion::create([
+                    'usuario_id' => $gerente->id,
+                    'titulo' => 'Solicitud de Baja de Empleado',
+                    'mensaje' => 'Gestión Humana ha solicitado la inactivación del empleado ' . $empleado->usuario->nombres . ' ' . $empleado->usuario->apellidos . '. Motivo: ' . $request->motivo,
+                    'leida' => false
+                ]);
+            }
+        }
+
+        return response()->json(['message' => 'Solicitud de baja enviada al Gerente exitosamente.']);
+    }
+
+    // Aprueba la baja (Gerente -> Empleado)
+    public function aprobarBaja(Request $request, $id)
+    {
+        $empresaId = auth()->user()->empresa_id;
+        
+        $empleado = Empleado::where('id', $id)->where('empresa_id', $empresaId)->firstOrFail();
+        $usuario = $empleado->usuario;
+
+        // Inactivar empleado
+        $empleado->estado = 'inactivo';
+        $empleado->baja_solicitada = false;
+        $empleado->save();
+
+        // Inactivar usuario
+        if ($usuario) {
+            $usuario->activo = false;
+            $usuario->save();
+        }
+
+        return response()->json(['message' => 'El empleado ha sido inactivado correctamente.']);
     }
 }

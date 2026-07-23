@@ -94,4 +94,26 @@ export class UsuariosComponent implements OnInit {
         }
       });
   }
+
+  aprobarBaja(usuario: any) {
+    if (!usuario.empleado) return;
+    if (!confirm(`¿Está seguro de aprobar la inactivación del empleado ${usuario.nombres} ${usuario.apellidos}? Esta acción bloqueará su acceso al sistema.`)) {
+      return;
+    }
+
+    const token = sessionStorage.getItem('auth_token');
+    const headers = { 'Authorization': `Bearer ${token}` };
+
+    this.http.post<any>(`http://127.0.0.1:8000/api/empleados/${usuario.empleado.id}/aprobar-baja`, {}, { headers })
+      .subscribe({
+        next: (res) => {
+          alert(res.message);
+          this.cargarUsuarios(); // Recarga la tabla para reflejar el estado inactivo
+        },
+        error: (err) => {
+          console.error(err);
+          alert('Error al aprobar la inactivación.');
+        }
+      });
+  }
 }

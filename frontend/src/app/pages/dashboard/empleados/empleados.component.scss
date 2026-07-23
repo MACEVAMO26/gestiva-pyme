@@ -37,7 +37,7 @@ $error-color: #ef4444;
   }
   p {
     color: $text-muted;
-    font-size: 0.95rem;
+    font-size: 0.75rem;
     margin: 0;
   }
 }
@@ -53,7 +53,7 @@ $error-color: #ef4444;
   background: transparent;
   border: none;
   color: $text-muted;
-  font-size: 0.95rem;
+  font-size: 0.75rem;
   font-weight: 500;
   padding: 0.5rem 1rem;
   cursor: pointer;
@@ -100,7 +100,7 @@ $error-color: #ef4444;
   padding: 0.7rem 1.2rem;
   border-radius: 8px;
   font-weight: 500;
-  font-size: 0.95rem;
+  font-size: 0.75rem;
   cursor: pointer;
   transition: all 0.2s ease;
   border: none;
@@ -108,7 +108,7 @@ $error-color: #ef4444;
 
 .btn-sm {
   padding: 0.4rem 0.8rem;
-  font-size: 0.85rem;
+  font-size: 0.75rem;
 }
 
 .btn-primary {
@@ -157,7 +157,7 @@ $error-color: #ef4444;
   th {
     padding: 1rem;
     text-align: left;
-    font-size: 0.85rem;
+    font-size: 0.75rem;
     font-weight: 600;
     color: $text-muted;
     text-transform: uppercase;
@@ -168,7 +168,7 @@ $error-color: #ef4444;
   td {
     padding: 1rem;
     color: $text-main;
-    font-size: 0.95rem;
+    font-size: 0.75rem;
     border-bottom: 1px solid rgba(255,255,255,0.03);
   }
   
@@ -266,7 +266,7 @@ $error-color: #ef4444;
   border-radius: 8px;
   border-left: 3px solid $primary-blue;
   
-  p { margin: 0 0 0.5rem 0; font-size: 0.95rem; color: $text-main; }
+  p { margin: 0 0 0.5rem 0; font-size: 0.75rem; color: $text-main; }
   p:last-child { margin-bottom: 0; }
   strong { color: $text-muted; margin-right: 0.5rem; }
 }
@@ -315,7 +315,7 @@ $error-color: #ef4444;
   gap: 0.4rem;
   
   label {
-    font-size: 0.85rem;
+    font-size: 0.75rem;
     color: $text-muted;
     font-weight: 500;
   }
@@ -327,7 +327,7 @@ $error-color: #ef4444;
   padding: 0.75rem 1rem;
   border-radius: 8px;
   color: $text-main;
-  font-size: 0.95rem;
+  font-size: 0.75rem;
   transition: all 0.2s ease;
   
   &:focus {

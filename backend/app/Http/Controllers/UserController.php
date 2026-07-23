@@ -12,7 +12,7 @@ class UserController extends Controller
     // Trae los usuarios de la misma empresa
     public function index()
     {
-        return User::with(['cargo', 'rol'])->where('empresa_id', auth()->user()->empresa_id)->get();
+        return User::with(['cargo', 'rol', 'empleado'])->where('empresa_id', auth()->user()->empresa_id)->get();
     }
 
     // Registra la "cáscara" de un nuevo usuario (Hecho por el Gerente)

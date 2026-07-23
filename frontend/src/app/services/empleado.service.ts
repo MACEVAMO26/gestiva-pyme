@@ -38,8 +38,14 @@ export class EmpleadoService {
     return this.http.post<any>(`${this.apiUrl}/empleados/${usuarioId}/formalizar`, data, this.getHeaders());
   }
 
-  // Despide / Da de baja a un empleado (Fase 4 - pendiente)
-  // solicitarBaja(id: number): Observable<any> { ... }
+  // Despide / Da de baja a un empleado
+  solicitarBaja(empleadoId: number, motivo: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/empleados/${empleadoId}/solicitar-baja`, { motivo }, this.getHeaders());
+  }
+
+  aprobarBaja(empleadoId: number): Observable<any> {
+    return this.http.post(`${this.apiUrl}/empleados/${empleadoId}/aprobar-baja`, {}, this.getHeaders());
+  }
 
   // --- Cargos, Áreas y Roles (Listados para el formulario) ---
   getCargos(): Observable<any[]> {

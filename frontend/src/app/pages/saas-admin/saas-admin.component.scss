@@ -543,7 +543,7 @@ $sidebar-text-muted: #0f172a;
       text-align: left;
       border-collapse: collapse;
       color: #cbd5e1;
-      font-size: 1rem;
+      font-size: 0.75rem;
       th {
         padding: 0.75rem 0.5rem;
         color: white;
@@ -1456,6 +1456,7 @@ $sidebar-text-muted: #0f172a;
   padding: 0.5rem;
   background: rgba(0, 0, 0, 0.2);
   border-radius: 4px;
+  word-break: break-all;
 }
 .saas-success-btn {
   background: #6366f1;

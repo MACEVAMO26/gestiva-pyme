@@ -5,12 +5,12 @@ import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../../services/auth.service';
 import { PagosComponent } from '../pagos/pagos.component';
 
-import { Usuarios } from './usuarios/usuarios';
+import { UsuariosComponent } from './usuarios/usuarios.component';
 
 @Component({
   selector: 'app-administracion',
   standalone: true,
-  imports: [CommonModule, FormsModule, PagosComponent, Usuarios],
+  imports: [CommonModule, FormsModule, PagosComponent, UsuariosComponent],
   templateUrl: './administracion.component.html',
   styleUrl: './administracion.component.scss'
 })

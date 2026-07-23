@@ -23,6 +23,7 @@ export class LoginComponent {
     email: '',
     password: ''
   };
+  isLoading = false;
   suspendedMessage = '';
   showPassword = false;
   isAccessibilityMenuOpen = false;
@@ -58,8 +59,11 @@ export class LoginComponent {
       return;
     }
 
+    this.isLoading = true;
     this.authService.login(this.credentials).subscribe({
       next: (response) => {
+        this.isLoading = false;
+        console.log("LOGIN RESPONSE", response);
         if (response.requires_password_change) {
           this.requiresPasswordChange = true;
           alert(response.message);
@@ -68,7 +72,12 @@ export class LoginComponent {
 
         const user = response.user;
         if (user && user.empresa_id === null) {
-          this.router.navigate(['/saas-admin']);
+          console.log("NAVIGATING TO /saas-admin");
+          this.router.navigate(['/saas-admin']).then(success => {
+            console.log("Navigation success:", success);
+          }).catch(err => {
+            console.error("Navigation error:", err);
+          });
         } else {
           let ruta = '/dashboard';
           if (user && user.empresa) {
@@ -80,10 +89,17 @@ export class LoginComponent {
               ruta = '/' + slug + '/dashboard';
             }
           }
-          this.router.navigate([ruta]);
+          console.log("NAVIGATING TO", ruta);
+          this.router.navigate([ruta]).then(success => {
+            console.log("Navigation success:", success);
+          }).catch(err => {
+            console.error("Navigation error:", err);
+          });
         }
       },
       error: (err) => {
+        this.isLoading = false;
+        console.error("LOGIN ERROR", err);
         if (err.error && err.error.errors) {
           const errors = err.error.errors;
           if (errors.system_suspended) {
@@ -95,13 +111,14 @@ export class LoginComponent {
             return;
           }
         }
-        alert('Credenciales incorrectas o error en el servidor.');
+        alert('Credenciales incorrectas o error en el servidor. Revisa la consola.');
       }
     });
   }
 
   // Envía la nueva contraseña para forzar el cambio inicial
   submitNewPassword(): void {
+    this.isLoading = true;
     const payload = {
       email: this.credentials.email,
       current_password: this.credentials.password,
@@ -110,10 +127,12 @@ export class LoginComponent {
 
     this.authService.changeInitialPassword(payload).subscribe({
       next: (response) => {
+        this.isLoading = false;
         alert(response.message);
         window.location.reload();
       },
       error: (err) => {
+        this.isLoading = false;
         if (err.error && err.error.errors) {
           const firstError = Object.values(err.error.errors)[0] as string[];
           alert(firstError[0]);

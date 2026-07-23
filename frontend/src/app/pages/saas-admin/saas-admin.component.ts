@@ -41,6 +41,7 @@ export class SaasAdminComponent implements OnInit {
   user: any = null;
   isAccessibilityMenuOpen = false;
   empresas: any[] = [];
+  isLoadingEmpresas: boolean = true;
   empresasEnMora: number = 0;
   empresaDestacadaId: number | null = null;
   camposAprobados: { [key: string]: boolean } = {};
@@ -805,8 +806,10 @@ export class SaasAdminComponent implements OnInit {
   }
 
   cargarEmpresas() {
+    this.isLoadingEmpresas = true;
     this.empresaService.getEmpresas().subscribe({
       next: (data) => {
+        this.isLoadingEmpresas = false;
         this.empresas = data.map((emp: any) => {
           if (emp.tipo_empresa?.includes('Ventas y Servicios')) emp.tipo_empresa = 'Mixto';
           else if (emp.tipo_empresa?.includes('Ventas')) emp.tipo_empresa = 'Ventas';
@@ -816,7 +819,10 @@ export class SaasAdminComponent implements OnInit {
         this.empresasEnMora = data.filter((e: any) => e.activo && e.estado_pago === 'mora').length;
         this.cdr.detectChanges();
       },
-      error: (err) => console.error('Error al cargar:', err),
+      error: (err) => {
+        this.isLoadingEmpresas = false;
+        console.error('Error al cargar:', err);
+      }
     });
   }
 
@@ -1251,6 +1257,7 @@ export class SaasAdminComponent implements OnInit {
   }
 
   guardarEmpresa() {
+    this.isSubmitting = true;
     // Preparar el campo descuento uniendo el array
     this.nuevaEmpresa.descuento = this.listaDescuentosEmpresa.filter(d => d !== 'N/A').length > 0 
       ? this.listaDescuentosEmpresa.filter(d => d !== 'N/A').join(', ') 
@@ -1262,11 +1269,13 @@ export class SaasAdminComponent implements OnInit {
     if (this.isEditMode && this.editingId) {
       this.empresaService.updateEmpresa(this.editingId, payload).subscribe({
         next: () => {
+          this.isSubmitting = false;
           this.sincronizarMockSuscripciones();
           this.cargarEmpresas();
           this.cerrarModal();
         },
         error: (err) => {
+          this.isSubmitting = false;
           let msg = 'Error al actualizar la empresa.';
           if (err.error && err.error.message) msg += ' ' + err.error.message;
           this.toastService.error(msg);
@@ -1276,6 +1285,7 @@ export class SaasAdminComponent implements OnInit {
     } else {
       this.empresaService.createEmpresa(payload).subscribe({
         next: (response) => {
+          this.isSubmitting = false;
           this.createdAdminEmail = response.admin_email;
           this.showSuccessModal = true;
           this.sincronizarMockSuscripciones();
@@ -1283,6 +1293,7 @@ export class SaasAdminComponent implements OnInit {
           this.cerrarModal();
         },
         error: (err) => {
+          this.isSubmitting = false;
           let msg = 'Error al crear la empresa. Revisa los datos.';
           if (err.error && err.error.message) msg += ' ' + err.error.message;
           this.toastService.error(msg);

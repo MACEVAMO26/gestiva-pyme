@@ -74,12 +74,14 @@
           <td>{{ emp.area?.nombre || 'Sin Asignar' }}</td>
           <td>{{ emp.cargo?.nombre || 'Sin Asignar' }}</td>
           <td>
-            <span class="status-badge status-active">ACTIVO</span>
+            <span class="status-badge status-active" *ngIf="!emp.baja_solicitada">ACTIVO</span>
+            <span class="status-badge status-pending" *ngIf="emp.baja_solicitada">BAJA EN PROCESO</span>
           </td>
           <td>
-            <button class="btn-secondary btn-sm" (click)="verDetalles(emp)">
-              Detalles
-            </button>
+            <div style="display: flex; gap: 0.5rem;">
+              <button class="btn-secondary btn-sm" (click)="verDetalles(emp)">Detalles</button>
+              <button class="btn-primary btn-sm" style="background: #ef4444;" (click)="abrirModalBaja(emp)" *ngIf="!emp.baja_solicitada">Baja</button>
+            </div>
           </td>
         </tr>
         <tr *ngIf="empleados.length === 0">
@@ -173,11 +175,54 @@
 
         <div class="form-actions mt-3">
           <button type="button" class="btn-secondary" (click)="cerrarModalFormalizar()">Cancelar</button>
-          <button type="submit" class="btn-primary" [disabled]="isSubmitting">
-            {{ isSubmitting ? 'Guardando...' : 'Completar Formalización' }}
+          <button type="submit" class="btn-primary flex items-center justify-center" [disabled]="isSubmitting">
+            <span *ngIf="!isSubmitting">Completar Formalización</span>
+            <span *ngIf="isSubmitting" class="flex items-center">
+              <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              Guardando...
+            </span>
           </button>
         </div>
       </form>
     </div>
   </div>
+
+  <!-- MODAL SOLICITAR BAJA -->
+  <div class="modal-overlay fade-in" *ngIf="isBajaModalOpen">
+    <div class="modal-content glass-panel" style="max-width: 500px; width: 100%;">
+      <div class="modal-header">
+        <h3>Solicitar Baja de Empleado</h3>
+        <button class="btn-close" (click)="cerrarModalBaja()">✕</button>
+      </div>
+      
+      <div class="alert-info" style="background: rgba(239, 68, 68, 0.1); border-left-color: #ef4444;">
+        <p>Estás a punto de solicitar la inactivación de <strong>{{empleadoABaja?.usuario?.nombres}} {{empleadoABaja?.usuario?.apellidos}}</strong>. Esta acción debe ser aprobada por Gerencia.</p>
+      </div>
+
+      <form (ngSubmit)="submitBaja()">
+        <div class="form-group mb-3">
+          <label>Motivo de la baja (Despido, Renuncia, etc.)</label>
+          <textarea class="form-control" name="motivoBaja" [(ngModel)]="motivoBaja" rows="4" required placeholder="Describe brevemente el motivo..."></textarea>
+        </div>
+        
+        <div class="form-actions">
+          <button type="button" class="btn-secondary" (click)="cerrarModalBaja()">Cancelar</button>
+          <button type="submit" class="btn-primary flex items-center justify-center" style="background: #ef4444;" [disabled]="isSubmitting">
+            <span *ngIf="!isSubmitting">Solicitar Baja</span>
+            <span *ngIf="isSubmitting" class="flex items-center">
+              <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              Enviando...
+            </span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
 </div>
