@@ -53,7 +53,7 @@
       </div>
 
       <!-- HTML TARJETA GESTION USUARIOS -->
-      <div class="admin-card dark-card">
+      <div class="admin-card dark-card" (click)="goToUsuarios()">
         <div class="card-icon">
           <svg
             fill="none"
@@ -358,5 +358,8 @@
       <h2>Enviar Comprobante de Pago Mensual</h2>
     </div>
     <app-pagos></app-pagos>
+  }
+  @if (currentView === 'usuarios') {
+    <app-usuarios></app-usuarios>
   }
 </div>

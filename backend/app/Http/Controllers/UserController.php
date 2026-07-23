@@ -15,7 +15,7 @@ class UserController extends Controller
         return User::with(['cargo', 'rol'])->where('empresa_id', auth()->user()->empresa_id)->get();
     }
 
-    // Registra un nuevo empleado o usuario
+    // Registra la "cáscara" de un nuevo usuario (Hecho por el Gerente)
     public function store(Request $request)
     {
         $validatedData = $request->validate([
@@ -23,25 +23,33 @@ class UserController extends Controller
             'apellidos' => 'required|string|max:255',
             'documento' => 'required|string|max:255|unique:usuarios',
             'email' => 'required|string|email|max:255|unique:usuarios',
-            'cargo_id' => 'required|integer|exists:cargos,id',
-            'rol_id' => 'required|integer|exists:roles,id',
+            'telefono' => 'nullable|string|max:255',
+            'direccion' => 'nullable|string|max:255',
         ]);
+
+        // Generar una contraseña temporal aleatoria de 8 caracteres
+        $tempPassword = \Str::random(8);
 
         $user = User::create([
             'nombres' => $validatedData['nombres'],
             'apellidos' => $validatedData['apellidos'],
             'documento' => $validatedData['documento'],
             'email' => $validatedData['email'],
-            // Usa el documento como clave temporal
-            'password_hash' => Hash::make($validatedData['documento']),
+            'telefono' => $validatedData['telefono'] ?? null,
+            'direccion' => $validatedData['direccion'] ?? null,
+            'password_hash' => Hash::make($tempPassword),
             'debe_cambiar_clave' => true,
-            // Asigna la misma empresa del admin al nuevo usuario
+            'perfil_formalizado' => false, // Obliga a esperar a RRHH
             'empresa_id' => auth()->user()->empresa_id,
-            'cargo_id' => $validatedData['cargo_id'],
-            'rol_id' => $validatedData['rol_id'],
         ]);
 
-        return response()->json($user, 201);
+        // TODO: Enviar correo al usuario con su $tempPassword (pendiente de integración de correos)
+
+        return response()->json([
+            'user' => $user,
+            'temp_password' => $tempPassword, // Se devuelve para mostrar en pantalla al gerente mientras se configuran correos
+            'message' => 'Usuario creado exitosamente. Perfil pendiente de formalización por Gestión Humana.'
+        ], 201);
     }
 
     // Trae la informacion de un usuario especifico

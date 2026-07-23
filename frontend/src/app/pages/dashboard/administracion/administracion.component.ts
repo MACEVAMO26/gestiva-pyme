@@ -5,10 +5,12 @@ import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../../services/auth.service';
 import { PagosComponent } from '../pagos/pagos.component';
 
+import { Usuarios } from './usuarios/usuarios';
+
 @Component({
   selector: 'app-administracion',
   standalone: true,
-  imports: [CommonModule, FormsModule, PagosComponent],
+  imports: [CommonModule, FormsModule, PagosComponent, Usuarios],
   templateUrl: './administracion.component.html',
   styleUrl: './administracion.component.scss'
 })
@@ -70,6 +72,10 @@ export class AdministracionComponent implements OnInit {
 
   goToPagos() {
     this.currentView = 'pagos';
+  }
+
+  goToUsuarios() {
+    this.currentView = 'usuarios';
   }
 
   solicitarCambioDatos() {

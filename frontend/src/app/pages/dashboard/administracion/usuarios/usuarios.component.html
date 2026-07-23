@@ -1,0 +1,141 @@
+<div class="usuarios-module fade-in">
+  <div class="admin-header with-back">
+    <button class="btn-back" (click)="cerrarModal()" *ngIf="false"> <!-- handled by parent --> </button>
+    <!-- Wait, parent handles navigation. But we can still have our header here! -->
+    <h2>Gestión de Usuarios</h2>
+    <p>Crea el perfil inicial de los usuarios para que Gestión Humana los asigne.</p>
+  </div>
+
+  <div class="actions-bar">
+    <button class="btn-primary" (click)="abrirModal()">
+      <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="icon-sm">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+      </svg>
+      Nuevo Usuario
+    </button>
+  </div>
+
+  <!-- HTML TABLA USUARIOS -->
+  <div class="table-container glass-panel">
+    <table class="premium-table">
+      <thead>
+        <tr>
+          <th>Documento</th>
+          <th>Nombres</th>
+          <th>Apellidos</th>
+          <th>Email</th>
+          <th>Estado (Formalización)</th>
+          <th>Estado Sistema</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let u of usuarios">
+          <td>{{ u.documento }}</td>
+          <td>{{ u.nombres }}</td>
+          <td>{{ u.apellidos }}</td>
+          <td>{{ u.email }}</td>
+          <td>
+            <span class="status-badge" [ngClass]="{'status-active': u.perfil_formalizado, 'status-pending': !u.perfil_formalizado}">
+              {{ u.perfil_formalizado ? 'FORMALIZADO' : 'PENDIENTE RRHH' }}
+            </span>
+          </td>
+          <td>
+            <span class="status-badge" [ngClass]="{'status-active': u.activo, 'status-inactive': !u.activo}">
+              {{ u.activo ? 'ACTIVO' : 'INACTIVO' }}
+            </span>
+          </td>
+        </tr>
+        <tr *ngIf="usuarios.length === 0 && !isLoading">
+          <td colspan="6" class="empty-state">No hay usuarios registrados aún.</td>
+        </tr>
+        <tr *ngIf="isLoading">
+          <td colspan="6" class="empty-state">Cargando...</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- HTML MODAL CREACION USUARIO -->
+  <div class="modal-overlay fade-in" *ngIf="showModal && !tempPasswordGenerated">
+    <div class="modal-content glass-panel form-modal">
+      <div class="modal-header">
+        <h3>Crear Nuevo Usuario</h3>
+        <button class="btn-close" (click)="cerrarModal()">✕</button>
+      </div>
+
+      <div class="alert-info">
+        <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="icon-md text-blue">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
+        </svg>
+        <p>Solo estás creando la "cáscara" del usuario. RRHH se encargará de asignarle área, cargo y permisos después.</p>
+      </div>
+
+      <div class="modal-body">
+        <form (ngSubmit)="crearUsuario()">
+          <div class="form-row split">
+            <div class="form-group">
+              <label>Nombres</label>
+              <input type="text" class="form-control" name="nombres" [(ngModel)]="formData.nombres" required placeholder="Nombres">
+            </div>
+            <div class="form-group">
+              <label>Apellidos</label>
+              <input type="text" class="form-control" name="apellidos" [(ngModel)]="formData.apellidos" required placeholder="Apellidos">
+            </div>
+          </div>
+          
+          <div class="form-row split">
+            <div class="form-group">
+              <label>Documento de Identidad</label>
+              <input type="text" class="form-control" name="documento" [(ngModel)]="formData.documento" required placeholder="Número de Documento">
+            </div>
+            <div class="form-group">
+              <label>Correo Electrónico</label>
+              <input type="email" class="form-control" name="email" [(ngModel)]="formData.email" required placeholder="correo@ejemplo.com">
+            </div>
+          </div>
+
+          <div class="form-row split">
+            <div class="form-group">
+              <label>Teléfono</label>
+              <input type="text" class="form-control" name="telefono" [(ngModel)]="formData.telefono" placeholder="Opcional">
+            </div>
+            <div class="form-group">
+              <label>Dirección</label>
+              <input type="text" class="form-control" name="direccion" [(ngModel)]="formData.direccion" placeholder="Opcional">
+            </div>
+          </div>
+
+          <div class="form-actions mt-3">
+            <button type="button" class="btn-secondary" (click)="cerrarModal()">Cancelar</button>
+            <button type="submit" class="btn-primary" [disabled]="isSubmitting">
+              {{ isSubmitting ? 'Creando...' : 'Crear Usuario' }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- HTML MODAL ALERTA CONTRASEÑA -->
+  <div class="modal-overlay fade-in" *ngIf="tempPasswordGenerated">
+    <div class="modal-content glass-panel success-modal text-center">
+      <div class="success-icon-container">
+        <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="icon-xl text-green">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      </div>
+      <h3>¡Usuario Creado con Éxito!</h3>
+      <p>El perfil "cáscara" para <strong>{{nuevoUsuarioNombre}}</strong> está listo y a la espera de que Gestión Humana lo formalice.</p>
+      
+      <div class="password-box mt-3 mb-3">
+        <label>CONTRASEÑA TEMPORAL DEL USUARIO</label>
+        <div class="password-display">
+          {{ tempPasswordGenerated }}
+        </div>
+        <small class="text-gray mt-1">Cópiala y envíasela al usuario de forma segura. El sistema le pedirá cambiarla al primer inicio de sesión.</small>
+      </div>
+
+      <button class="btn-primary w-full" (click)="cerrarModal()">Entendido</button>
+    </div>
+  </div>
+</div>
