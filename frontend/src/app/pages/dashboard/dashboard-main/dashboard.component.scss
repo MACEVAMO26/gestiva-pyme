@@ -676,3 +676,45 @@ $transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
     }
   }
 }
+
+/* --- WAITING SCREEN (FASE 3) --- */
+.waiting-area {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 70vh;
+}
+
+.waiting-card {
+  max-width: 500px;
+  padding: 3rem 2rem;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+  
+  .icon-container {
+    width: 80px;
+    height: 80px;
+    background: rgba(59, 130, 246, 0.1);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto 1.5rem auto;
+  }
+  
+  .icon-xxl { width: 40px; height: 40px; }
+  .text-blue { color: #3b82f6; }
+  .text-muted { color: #94a3b8; line-height: 1.5; font-size: 0.95rem; }
+  
+  h2 {
+    color: #f8fafc;
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+  }
+}
+

@@ -14,6 +14,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
     $middleware->alias([
         'auth' => \App\Http\Middleware\Authenticate::class,
+        'formalizado' => \App\Http\Middleware\CheckFormalizado::class,
     ]);
     
     $middleware->api(append: [

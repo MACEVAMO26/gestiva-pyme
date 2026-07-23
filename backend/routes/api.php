@@ -92,7 +92,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/empleados', [\App\Http\Controllers\EmpleadoController::class, 'index']);
     Route::post('/empleados/{usuarioId}/formalizar', [\App\Http\Controllers\EmpleadoController::class, 'formalizar']);
 
-
+    // ==========================================
+    // RUTAS RESTRINGIDAS (Solo usuarios formalizados)
+    // ==========================================
+    Route::middleware('formalizado')->group(function () {
+    
     Route::get('/autogestion/afiliaciones', [AutogestionController::class, 'misAfiliaciones']);
     Route::post('/autogestion/afiliaciones', [AutogestionController::class, 'guardarAfiliaciones']);
 
@@ -192,5 +196,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/recordatorios', [\App\Http\Controllers\RecordatorioController::class, 'index']);
     Route::post('/recordatorios', [\App\Http\Controllers\RecordatorioController::class, 'store']);
     Route::delete('/recordatorios/{id}', [\App\Http\Controllers\RecordatorioController::class, 'destroy']);
+
+    }); // Fin del middleware 'formalizado'
 
 });

@@ -32,6 +32,7 @@ export class DashboardComponent implements OnInit {
   isMobileMenuOpen = false;
   currentModule = 'inicio';
   isCompanyInactive = false;
+  isFormalizado = true;
   tipoEmpresa = '';
   tipoEmpresaClass = '';
 
@@ -44,6 +45,10 @@ export class DashboardComponent implements OnInit {
   ngOnInit(): void {
     this.user = this.authService.getUser();
     
+    // Guardian Frontend
+    const rol = this.user?.rol?.nombre;
+    this.isFormalizado = (rol === 'Gerente' || rol === 'Admin Saas' || rol === 'Administrador' || !!this.user?.perfil_formalizado);
+
     // Determina los módulos activos de la empresa
     if (this.user && this.user.empresa) {
       const tipo = this.user.empresa.tipo_empresa;
