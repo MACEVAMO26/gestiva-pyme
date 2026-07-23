@@ -134,6 +134,7 @@ class EmpresaController extends Controller
     {
         $validatedData = $request->validate([
             'razon_social' => 'required|string|max:255',
+            'dominio' => 'required|string|unique:empresa,dominio|max:255',
             'nit' => 'required|string|max:255|unique:empresa',
             'tipo_empresa' => 'required|in:Servicios,Ventas,Ventas y Servicios',
             'direccion' => 'nullable|string|max:255',
@@ -159,9 +160,8 @@ class EmpresaController extends Controller
             }
             $empresa = Empresa::create($validatedData);
 
-            // Construye un correo por defecto para el administrador usando el ID de la empresa y su nombre
-            $nombreSinEspacios = preg_replace('/\s+/', '', $empresa->razon_social);
-            $adminEmail = 'sadmin-id' . $empresa->id . '-' . $nombreSinEspacios . '@gestivapyme.com';
+            // Construye el correo máscara institucional usando el dominio
+            $adminEmail = 'gerencia@' . $empresa->dominio . '.gestivapyme.com';
 
             // Crea el rol "Gerente" para la empresa
             $rolGerente = \App\Models\Role::create([
@@ -222,6 +222,7 @@ class EmpresaController extends Controller
 
         $validatedData = $request->validate([
             'razon_social' => 'required|string|max:255',
+            'dominio' => ['required', 'string', 'max:255', Rule::unique('empresa')->ignore($empresa->id)],
             'nit' => ['required', 'string', 'max:255', Rule::unique('empresa')->ignore($empresa->id)],
             'tipo_empresa' => 'required|in:Servicios,Ventas,Ventas y Servicios',
             'direccion' => 'nullable|string|max:255',

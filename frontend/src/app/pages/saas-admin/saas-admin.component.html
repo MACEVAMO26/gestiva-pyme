@@ -1353,6 +1353,34 @@
           />
         </div>
         <div class="saas-form-group">
+          <label class="saas-label">Correo del Cliente / Gerente (Real)</label>
+          <input
+            type="email"
+            [(ngModel)]="nuevaEmpresa.email"
+            name="email"
+            required
+            class="saas-input"
+            placeholder="ej: cliente@gmail.com"
+          />
+        </div>
+        <div class="saas-form-group">
+          <label class="saas-label flex justify-between items-center">
+            Ruta / Dominio Personalizado
+            <button type="button" (click)="generarDominio()" class="text-xs text-emerald-400 hover:text-emerald-300 font-semibold underline bg-transparent border-none cursor-pointer p-0 m-0">Autogenerar</button>
+          </label>
+          <div class="flex items-center">
+            <span class="text-gray-400 text-sm mr-2 select-none">gestivapyme.com/</span>
+            <input
+              type="text"
+              [(ngModel)]="nuevaEmpresa.dominio"
+              name="dominio"
+              class="saas-input flex-1"
+              placeholder="ej: miempresa"
+            />
+          </div>
+          <span class="text-xs text-gray-500 mt-1 block">Deja vacío para autogenerar. Dale clic varias veces a "Autogenerar" para ver más opciones.</span>
+        </div>
+        <div class="saas-form-group">
           <label class="saas-label">NIT</label>
           <input
             type="text"

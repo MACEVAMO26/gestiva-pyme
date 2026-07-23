@@ -44,7 +44,7 @@ export class AutogestionComponent implements OnInit {
   }
 
   cargarAfiliaciones() {
-    this.http.get('https://gestiva-pyme.onrender.com/api/autogestion/afiliaciones').subscribe({
+    this.http.get('http://127.0.0.1:8000/api/autogestion/afiliaciones').subscribe({
       next: (res: any) => {
         if (res.afiliacion) {
           this.afiliacion = res.afiliacion;
@@ -72,7 +72,7 @@ export class AutogestionComponent implements OnInit {
       this.formAfiliacion.estado = 'pendiente';
     }
 
-    this.http.post('https://gestiva-pyme.onrender.com/api/autogestion/afiliaciones', this.formAfiliacion).subscribe({
+    this.http.post('http://127.0.0.1:8000/api/autogestion/afiliaciones', this.formAfiliacion).subscribe({
       next: (res: any) => {
         alert(res.message || 'Datos guardados. Tu información ha entrado en revisión.');
         this.cargarAfiliaciones();
@@ -90,7 +90,7 @@ export class AutogestionComponent implements OnInit {
   // Gestiona las fechas de afiliación por parte del administrador
   gestionarAfiliacionAdmin() {
     if(!this.user) return;
-    this.http.post(`https://gestiva-pyme.onrender.com/api/autogestion/empleado/${this.user.id}/afiliaciones`, this.formAfiliacion).subscribe({
+    this.http.post(`http://127.0.0.1:8000/api/autogestion/empleado/${this.user.id}/afiliaciones`, this.formAfiliacion).subscribe({
       next: (res: any) => {
         alert(res.message);
         this.cargarAfiliaciones();
@@ -123,7 +123,7 @@ export class AutogestionComponent implements OnInit {
       const formData = new FormData();
       formData.append('avatar', file);
 
-      this.http.post('https://gestiva-pyme.onrender.com/api/profile/avatar', formData).subscribe({
+      this.http.post('http://127.0.0.1:8000/api/profile/avatar', formData).subscribe({
         next: (res: any) => {
           console.log('Imagen guardada permanentemente en la nube:', res);
         },

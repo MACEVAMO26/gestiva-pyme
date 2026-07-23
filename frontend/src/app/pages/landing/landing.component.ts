@@ -31,7 +31,7 @@ export class LandingComponent implements OnInit {
 
   ngOnInit(): void {
     // Ping "Ninja" para despertar a Render de su inactividad gratuita
-    this.http.get('https://gestiva-pyme.onrender.com/api/ping').subscribe({
+    this.http.get('http://127.0.0.1:8000/api/ping').subscribe({
       next: () => console.log('Servidor despertado'),
       error: () => console.log('Error despertando servidor')
     });
@@ -67,7 +67,7 @@ export class LandingComponent implements OnInit {
 
     this.isSubmitting = true;
 
-    this.http.post('https://gestiva-pyme.onrender.com/api/leads', this.leadForm)
+    this.http.post('http://127.0.0.1:8000/api/leads', this.leadForm)
       .subscribe({
         next: () => {
           this.isSubmitting = false;

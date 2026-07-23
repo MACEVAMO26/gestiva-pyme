@@ -70,7 +70,17 @@ export class LoginComponent {
         if (user && user.empresa_id === null) {
           this.router.navigate(['/saas-admin']);
         } else {
-          this.router.navigate(['/dashboard']);
+          let ruta = '/dashboard';
+          if (user && user.empresa) {
+            if (user.empresa.dominio) {
+              ruta = '/' + user.empresa.dominio + '/dashboard';
+            } else if (user.empresa.razon_social) {
+              // Fallback para empresas creadas antes del cambio
+              const slug = user.empresa.razon_social.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]/g, '');
+              ruta = '/' + slug + '/dashboard';
+            }
+          }
+          this.router.navigate([ruta]);
         }
       },
       error: (err) => {

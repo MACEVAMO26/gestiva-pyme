@@ -8,7 +8,7 @@ import { AuthService } from './auth.service';
 })
 export class EmpleadoService {
 
-  private apiUrl = 'https://gestiva-pyme.onrender.com/api';
+  private apiUrl = 'http://127.0.0.1:8000/api';
   private http = inject(HttpClient);
   private authService = inject(AuthService);
 

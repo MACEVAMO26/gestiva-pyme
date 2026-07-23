@@ -9,7 +9,7 @@ import { Router } from '@angular/router';
 export class AuthService {
 
   // 1. URL base de nuestra API en Laravel
-  private apiUrl = 'https://gestiva-pyme.onrender.com/api';
+  private apiUrl = 'http://127.0.0.1:8000/api';
 
   constructor(
     private http: HttpClient,

@@ -11,10 +11,12 @@ import { AutogestionComponent } from '../autogestion/autogestion';
 import { ClientesComponent } from '../clientes/clientes';
 import { ProveedoresComponent } from '../proveedores/proveedores';
 
+import { RouterModule } from '@angular/router';
+
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, EmpleadosComponent, AdministracionComponent, PagosComponent, AutogestionComponent, ClientesComponent, ProveedoresComponent],
+  imports: [CommonModule, RouterModule],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss'
 })
@@ -69,7 +71,7 @@ export class DashboardComponent implements OnInit {
   getLogoUrl(): string {
     if (this.user?.empresa?.logo_url) {
       const url = this.user.empresa.logo_url;
-      return url.startsWith('http') ? url : `https://gestiva-pyme.onrender.com${url}`;
+      return url.startsWith('http') ? url : `http://127.0.0.1:8000${url}`;
     }
     return 'assets/images/Logos/GESTIVAPYME(7).png';
   }
@@ -126,7 +128,7 @@ export class DashboardComponent implements OnInit {
     const token = sessionStorage.getItem('auth_token');
     if (!token) return;
 
-    this.http.post('https://gestiva-pyme.onrender.com/api/user/avatar', { avatar_url: newAvatarUrl }, {
+    this.http.post('http://127.0.0.1:8000/api/user/avatar', { avatar_url: newAvatarUrl }, {
       headers: { 'Authorization': `Bearer ${token}` }
     }).subscribe({
       next: (res: any) => {

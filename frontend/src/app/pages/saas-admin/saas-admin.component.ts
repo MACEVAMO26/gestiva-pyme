@@ -10,7 +10,7 @@ import {
 import { EmpresaService } from '../../services/empresa.service';
 import { TarifaService } from '../../services/tarifa.service';
 import { ToastService } from '../../services/toast.service';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { ModulosService } from '../../services/modulos.service';
 
@@ -54,9 +54,14 @@ export class SaasAdminComponent implements OnInit {
   isEditMode = false;
   editingId: number | null = null;
   isSubmitting: boolean = false;
+  opcionesDominio: string[] = [];
+  dominioIndex: number = 0;
+  lastRazonSocialGenerada: string = '';
   nuevaEmpresa: any = {
     razon_social: '',
+    dominio: '',
     nit: '',
+    email: '',
     tipo_empresa: 'Servicios',
     color_primario: '#6366f1',
     color_secundario: '#1e293b',
@@ -329,15 +334,27 @@ export class SaasAdminComponent implements OnInit {
   constructor(
     private authService: AuthService,
     private router: Router,
+    private route: ActivatedRoute,
     private http: HttpClient,
     private modulosService: ModulosService,
   ) {}
 
   ngOnInit(): void {
-    const savedView = localStorage.getItem('saas_current_view');
-    if (savedView) {
-      this.currentView = savedView;
-    }
+    this.route.paramMap.subscribe(params => {
+      const vista = params.get('vista');
+      if (vista) {
+        this.currentView = vista;
+        localStorage.setItem('saas_current_view', vista);
+        if (vista === 'comercial') {
+          this.cargarLeads();
+        }
+      } else {
+        const savedView = localStorage.getItem('saas_current_view');
+        if (savedView) {
+          this.currentView = savedView;
+        }
+      }
+    });
 
     this.user = this.authService.getUser();
     
@@ -411,7 +428,7 @@ export class SaasAdminComponent implements OnInit {
     const token = sessionStorage.getItem('auth_token');
     const headers = { Authorization: `Bearer ${token}` };
     this.http
-      .patch(`https://gestiva-pyme.onrender.com/api/leads/${this.leadSeleccionadoParaNotas.id}`, { notas: this.leadSeleccionadoParaNotas.notas }, { headers })
+      .patch(`http://127.0.0.1:8000/api/leads/${this.leadSeleccionadoParaNotas.id}`, { notas: this.leadSeleccionadoParaNotas.notas }, { headers })
       .subscribe({
         next: () => {},
         error: () => this.toastService.error('Error al guardar la nota.')
@@ -423,11 +440,7 @@ export class SaasAdminComponent implements OnInit {
   }
 
   cambiarVista(vista: string) {
-    this.currentView = vista;
-    localStorage.setItem('saas_current_view', vista);
-    if (vista === 'comercial') {
-      this.cargarLeads();
-    }
+    this.router.navigate(['/saas-admin', vista]);
   }
 
   setComercialTab(tab: 'interesados' | 'correos') {
@@ -443,7 +456,7 @@ export class SaasAdminComponent implements OnInit {
     }
     const headers = { Authorization: `Bearer ${token}` };
     const t = new Date().getTime();
-    this.http.get<any[]>(`https://gestiva-pyme.onrender.com/api/leads?t=${t}`, { headers }).subscribe({
+    this.http.get<any[]>(`http://127.0.0.1:8000/api/leads?t=${t}`, { headers }).subscribe({
       next: (data) => {
         this.leads = [...data];
         if (this.leads.length === 0) {
@@ -470,7 +483,7 @@ export class SaasAdminComponent implements OnInit {
   // --- MÉTODOS DE PERFIL Y SEGURIDAD ---
   actualizarPerfil() {
     this.isUpdatingProfile = true;
-    this.http.put('https://gestiva-pyme.onrender.com/api/profile', this.profileForm, { headers: this.getHeaders() }).subscribe({
+    this.http.put('http://127.0.0.1:8000/api/profile', this.profileForm, { headers: this.getHeaders() }).subscribe({
         next: (res: any) => {
           this.userName = res.user.nombres;
           this.userEmail = res.user.email;
@@ -499,7 +512,7 @@ export class SaasAdminComponent implements OnInit {
     this.confirmModalTitle = 'Forzar Cambio de Clave';
     this.confirmModalMessage = 'Al aceptar, tu sesión se cerrará de inmediato y el sistema te obligará a registrar una nueva contraseña. ¿Estás segura?';
     this.confirmActionCallback = () => {
-      this.http.post('https://gestiva-pyme.onrender.com/api/profile/force-password-reset', {}, { headers: this.getHeaders() }).subscribe({
+      this.http.post('http://127.0.0.1:8000/api/profile/force-password-reset', {}, { headers: this.getHeaders() }).subscribe({
         next: (res: any) => {
           this.toastService.warning(res.message || 'Se requerirá cambio de contraseña en el próximo ingreso.');
           setTimeout(() => {
@@ -559,7 +572,7 @@ export class SaasAdminComponent implements OnInit {
                 const formData = new FormData();
                 formData.append('avatar', compressedFile);
 
-                this.http.post('https://gestiva-pyme.onrender.com/api/profile/avatar', formData, { 
+                this.http.post('http://127.0.0.1:8000/api/profile/avatar', formData, { 
                   headers: this.getHeaders()
                 }).subscribe({
                   next: (res: any) => {
@@ -612,7 +625,7 @@ export class SaasAdminComponent implements OnInit {
       formData.append('adjunto', this.archivoAdjuntoBrevo);
     }
 
-    this.http.post(`https://gestiva-pyme.onrender.com/api/comercial/enviar-masivo`, formData, { 
+    this.http.post(`http://127.0.0.1:8000/api/comercial/enviar-masivo`, formData, { 
       headers: { Authorization: `Bearer ${token}` }
     }).subscribe({
       next: (res: any) => {
@@ -638,7 +651,7 @@ export class SaasAdminComponent implements OnInit {
     const token = sessionStorage.getItem('auth_token');
     const headers = { Authorization: `Bearer ${token}` };
     this.http
-      .patch(`https://gestiva-pyme.onrender.com/api/leads/${id}`, { estado: nuevoEstado }, { headers })
+      .patch(`http://127.0.0.1:8000/api/leads/${id}`, { estado: nuevoEstado }, { headers })
       .subscribe({
         next: () => {
           this.cargarLeads();
@@ -651,7 +664,7 @@ export class SaasAdminComponent implements OnInit {
     this.abrirConfirmacion('Confirmar Acción', '¿Estás seguro de que deseas eliminar este lead? Esta acción no se puede deshacer.', () => {
       const token = sessionStorage.getItem('auth_token');
       const headers = { Authorization: `Bearer ${token}` };
-      this.http.delete(`https://gestiva-pyme.onrender.com/api/leads/${id}`, { headers }).subscribe({
+      this.http.delete(`http://127.0.0.1:8000/api/leads/${id}`, { headers }).subscribe({
         next: () => {
           this.cargarLeads();
         },
@@ -663,7 +676,7 @@ export class SaasAdminComponent implements OnInit {
   cargarSolicitudes() {
     const token = sessionStorage.getItem('auth_token');
     const headers = { Authorization: `Bearer ${token}` };
-    this.http.get<any[]>('https://gestiva-pyme.onrender.com/api/admin-requests', { headers }).subscribe({
+    this.http.get<any[]>('http://127.0.0.1:8000/api/admin-requests', { headers }).subscribe({
       next: (data) => {
         this.solicitudes = data;
         this.solicitudesPendientes = data.filter((s: any) => s.estado === 'pendiente').length;
@@ -710,7 +723,7 @@ export class SaasAdminComponent implements OnInit {
       }
       return path;
     }
-    return `https://gestiva-pyme.onrender.com/storage/${path}`;
+    return `http://127.0.0.1:8000/storage/${path}`;
   }
 
   cerrarModalSolicitud() {
@@ -744,7 +757,7 @@ export class SaasAdminComponent implements OnInit {
 
     this.http
       .patch(
-        `https://gestiva-pyme.onrender.com/api/admin-requests/${this.solicitudSeleccionada.id}/process`,
+        `http://127.0.0.1:8000/api/admin-requests/${this.solicitudSeleccionada.id}/process`,
         body,
         { headers },
       )
@@ -779,7 +792,7 @@ export class SaasAdminComponent implements OnInit {
 
     this.http
       .patch(
-        `https://gestiva-pyme.onrender.com/api/admin-requests/${solicitud.id}/process`,
+        `http://127.0.0.1:8000/api/admin-requests/${solicitud.id}/process`,
         body,
         { headers },
       )
@@ -907,12 +920,75 @@ export class SaasAdminComponent implements OnInit {
     });
   }
 
+  abrirModalCrearEmpresa() {
+    this.isEditMode = false;
+    this.editingId = null;
+    this.listaDescuentosEmpresa = [];
+    this.nuevaEmpresa = { 
+      razon_social: '', 
+      dominio: '',
+      nit: '', 
+      tipo_empresa: 'Servicios', 
+      fecha_inscripcion: '', 
+      periodo: 'Mensual', 
+      descuento: 'N/A' 
+    };
+    this.showModal = true;
+  }
+
+  generarDominio() {
+    if (!this.nuevaEmpresa.razon_social) return;
+
+    if (this.opcionesDominio.length === 0 || this.nuevaEmpresa.razon_social !== this.lastRazonSocialGenerada) {
+      // Limpiar y preparar texto base
+      let cleanText = this.nuevaEmpresa.razon_social.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9\s]/g, '').trim();
+      let tokens = cleanText.split(/\s+/);
+      
+      // Remover sufijos corporativos comunes
+      const suffixes = ['sa', 'sas', 'ltda', 'cia', 'inc', 'llc', 'srl', 'solutions', 'group'];
+      const tokensNoSuffix = tokens.filter((t: string) => !suffixes.includes(t));
+      
+      let opciones = new Set<string>();
+      
+      // 1. Completo sin sufijos (techventasolutions -> techventa si aplicara, sino todo)
+      if (tokensNoSuffix.length > 0) opciones.add(tokensNoSuffix.join(''));
+      
+      // 2. Solo primera palabra
+      opciones.add(tokens[0]);
+      
+      // 3. Dos primeras palabras
+      if (tokens.length > 1) opciones.add(tokens[0] + tokens[1]);
+      if (tokensNoSuffix.length > 1) opciones.add(tokensNoSuffix[0] + tokensNoSuffix[1]);
+      
+      // 4. Siglas (tssa)
+      if (tokens.length > 1) opciones.add(tokens.map((t: string) => t.charAt(0)).join(''));
+      
+      // 5. Original todo junto (techventasolutionssa)
+      opciones.add(tokens.join(''));
+
+      // 6. Con sufijo numerico corto
+      if (tokensNoSuffix.length > 0) opciones.add(tokensNoSuffix.join('') + Math.floor(Math.random() * 100));
+
+      this.opcionesDominio = Array.from(opciones).filter(o => o.length >= 3);
+      this.dominioIndex = 0;
+      this.lastRazonSocialGenerada = this.nuevaEmpresa.razon_social;
+    } else {
+      // Ciclar al siguiente
+      this.dominioIndex = (this.dominioIndex + 1) % this.opcionesDominio.length;
+    }
+
+    if (this.opcionesDominio.length > 0) {
+      this.nuevaEmpresa.dominio = this.opcionesDominio[this.dominioIndex];
+    }
+  }
+
   abrirModal() {
     this.isEditMode = false;
     this.editingId = null;
     this.listaDescuentosEmpresa = [];
     this.nuevaEmpresa = { 
       razon_social: '', 
+      dominio: '',
       nit: '', 
       tipo_empresa: 'Servicios', 
       fecha_inscripcion: '', 
@@ -932,7 +1008,9 @@ export class SaasAdminComponent implements OnInit {
     this.listaDescuentosEmpresa = (empresa.descuento && empresa.descuento !== 'N/A') ? empresa.descuento.split(',').map((d: string) => d.trim()) : [];
     this.nuevaEmpresa = {
       razon_social: empresa.razon_social,
+      dominio: empresa.dominio || '',
       nit: empresa.nit,
+      email: empresa.email || '',
       tipo_empresa: empresa.tipo_empresa,
       fecha_inscripcion: empresa.fecha_inscripcion ? empresa.fecha_inscripcion.substring(0, 10) : '',
       periodo: empresa.periodo || 'Mensual',
@@ -1164,8 +1242,9 @@ export class SaasAdminComponent implements OnInit {
     this.isEditMode = false;
     this.editingId = null;
     this.listaDescuentosEmpresa = [];
-    this.nuevaEmpresa = { razon_social: '', nit: '', tipo_empresa: 'Servicios', fecha_inscripcion: '', periodo: 'Mensual', descuento: 'N/A' };
+    this.nuevaEmpresa = { razon_social: '', dominio: '', nit: '', email: '', tipo_empresa: 'Servicios', fecha_inscripcion: '', periodo: 'Mensual', descuento: 'N/A' };
   }
+
 
   cerrarSuccessModal() {
     this.showSuccessModal = false;

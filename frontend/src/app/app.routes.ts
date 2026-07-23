@@ -8,7 +8,8 @@ export const routes: Routes = [
     { path: 'demo-ventas', loadComponent: () => import('./pages/dashboard-demo/dashboard-demo').then(m => m.DashboardDemoComponent), canActivate: [authGuard] },
     { path: 'demo-servicios', loadComponent: () => import('./pages/dashboard-demo/dashboard-demo').then(m => m.DashboardDemoComponent), canActivate: [authGuard] },
     { path: 'demo-mixto', loadComponent: () => import('./pages/dashboard-demo/dashboard-demo').then(m => m.DashboardDemoComponent), canActivate: [authGuard] },
-    { path: 'saas-admin', loadComponent: () => import('./pages/saas-admin/saas-admin.component').then(m => m.SaasAdminComponent), canActivate: [authGuard] },
+    { path: 'saas-admin', redirectTo: 'saas-admin/dashboard', pathMatch: 'full' },
+    { path: 'saas-admin/:vista', loadComponent: () => import('./pages/saas-admin/saas-admin.component').then(m => m.SaasAdminComponent), canActivate: [authGuard] },
     
     // Dynamic Environment Routing
     { 

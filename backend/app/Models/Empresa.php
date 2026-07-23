@@ -21,6 +21,7 @@ class Empresa extends Model
     
     protected $fillable = [
         'razon_social',
+        'dominio',
         'nit',
         'tipo_empresa',
         'direccion',

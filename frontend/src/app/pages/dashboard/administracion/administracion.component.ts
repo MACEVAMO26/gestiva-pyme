@@ -45,7 +45,7 @@ export class AdministracionComponent implements OnInit {
   cargarSolicitudes() {
     const token = sessionStorage.getItem('auth_token');
     const headers = { 'Authorization': `Bearer ${token}` };
-    this.http.get<any[]>('https://gestiva-pyme.onrender.com/api/admin-requests/my-requests', { headers })
+    this.http.get<any[]>('http://127.0.0.1:8000/api/admin-requests/my-requests', { headers })
       .subscribe({
         next: (data) => this.misSolicitudes = data,
         error: (err) => console.error('Error al cargar solicitudes', err)
@@ -106,7 +106,7 @@ export class AdministracionComponent implements OnInit {
       body.append('documento', this.documentoFile);
     }
 
-    this.http.post('https://gestiva-pyme.onrender.com/api/admin-requests', body, { headers })
+    this.http.post('http://127.0.0.1:8000/api/admin-requests', body, { headers })
       .subscribe({
         next: () => {
           alert('¡Solicitud enviada exitosamente a GestivaPyme!');
