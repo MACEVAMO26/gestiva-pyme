@@ -1,134 +1,183 @@
-<div class="module-container">
-  <div class="module-header">
-    <div class="header-info">
-      <h2>Gestión de Empleados</h2>
-      <p>Administra los accesos y roles de tu equipo de trabajo.</p>
-    </div>
-    <button class="btn-primary" (click)="openModal()">
-      <i class="icon">+</i> Nuevo Empleado
+<div class="empleados-module fade-in">
+  <div class="admin-header">
+    <h2>Gestión Humana: Empleados</h2>
+    <p>Administra la formalización, contratos y perfiles laborales del personal.</p>
+  </div>
+
+  <!-- TABS NAV -->
+  <div class="tabs-nav">
+    <button class="tab-btn" [class.active]="currentTab === 'pendientes'" (click)="setTab('pendientes')">
+      Pendientes de Formalizar
+      <span class="badge" *ngIf="pendientes.length > 0">{{pendientes.length}}</span>
+    </button>
+    <button class="tab-btn" [class.active]="currentTab === 'activos'" (click)="setTab('activos')">
+      Empleados Activos
     </button>
   </div>
 
-  <!-- HTML TABLA EMPLEADOS -->
-  <div class="table-card glass-panel">
-    <div class="table-responsive">
-      <table class="premium-table">
-        <thead>
-          <tr>
-            <th>Nombre Completo</th>
-            <th>Documento</th>
-            <th>Correo</th>
-            <th>Cargo</th>
-            <th>Estado</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (empleado of empleados; track empleado.id) {
-            <tr>
-              <td>
-                <div class="user-cell">
-                  <span class="name">{{empleado.nombres}} {{empleado.apellidos}}</span>
-                </div>
-              </td>
-              <td>{{empleado.documento}}</td>
-              <td>{{empleado.email}}</td>
-              <td>
-                <span class="badge-role">{{ empleado.cargo?.nombre || (empleado.rol_id === 1 ? 'Administrativo' : 'Empleado') }}</span>
-              </td>
-              <td>
-                <span class="status-badge" [ngClass]="empleado.activo ? 'status-active' : 'status-inactive'">
-                  {{empleado.activo ? 'Activo' : 'Inactivo'}}
-                </span>
-              </td>
-              <td>
-                <div class="actions">
-                  <button class="action-btn edit-btn" (click)="openModal(empleado)" title="Editar">✏️</button>
-                  <button class="action-btn toggle-btn" (click)="toggleStatus(empleado.id)" [title]="empleado.activo ? 'Inactivar' : 'Activar'">
-                    {{empleado.activo ? '❌' : '✅'}}
-                  </button>
-                </div>
-              </td>
-            </tr>
-          } @empty {
-            <tr>
-              <td colspan="6" class="empty-state">
-                No hay empleados registrados. ¡Agrega el primero!
-              </td>
-            </tr>
-          }
-        </tbody>
-      </table>
+  <!-- TABLA PENDIENTES -->
+  <div class="table-container glass-panel fade-in" *ngIf="currentTab === 'pendientes'">
+    <div class="alert-info m-3">
+      <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="icon-md text-orange">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3Z" />
+      </svg>
+      <p>Estos usuarios fueron creados por Gerencia y están bloqueados en el sistema hasta que completes su perfil laboral.</p>
     </div>
+    <table class="premium-table">
+      <thead>
+        <tr>
+          <th>Documento</th>
+          <th>Nombre Completo</th>
+          <th>Correo</th>
+          <th>Fecha Creación</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let p of pendientes">
+          <td>{{ p.documento }}</td>
+          <td>{{ p.nombres }} {{ p.apellidos }}</td>
+          <td>{{ p.email }}</td>
+          <td>{{ p.created_at | date:'shortDate' }}</td>
+          <td>
+            <button class="btn-primary btn-sm" (click)="abrirModalFormalizar(p)">
+              Formalizar Perfil
+            </button>
+          </td>
+        </tr>
+        <tr *ngIf="pendientes.length === 0">
+          <td colspan="5" class="empty-state">No hay usuarios pendientes de formalización.</td>
+        </tr>
+      </tbody>
+    </table>
   </div>
-</div>
 
-<!-- HTML MODAL EMPLEADOS -->
-@if(isModalOpen) {
-  <div class="modal-overlay">
-    <div class="modal-content animate-slide-up">
+  <!-- TABLA ACTIVOS -->
+  <div class="table-container glass-panel fade-in" *ngIf="currentTab === 'activos'">
+    <table class="premium-table">
+      <thead>
+        <tr>
+          <th>Cod. Emp</th>
+          <th>Documento</th>
+          <th>Nombre Completo</th>
+          <th>Área</th>
+          <th>Cargo</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let emp of empleados">
+          <td>{{ emp.codigo_empleado || 'N/A' }}</td>
+          <td>{{ emp.usuario?.documento }}</td>
+          <td>{{ emp.usuario?.nombres }} {{ emp.usuario?.apellidos }}</td>
+          <td>{{ emp.area?.nombre || 'Sin Asignar' }}</td>
+          <td>{{ emp.cargo?.nombre || 'Sin Asignar' }}</td>
+          <td>
+            <span class="status-badge status-active">ACTIVO</span>
+          </td>
+          <td>
+            <button class="btn-secondary btn-sm" (click)="verDetalles(emp)">
+              Detalles
+            </button>
+          </td>
+        </tr>
+        <tr *ngIf="empleados.length === 0">
+          <td colspan="7" class="empty-state">No hay empleados activos en el sistema.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- MODAL FORMALIZAR -->
+  <div class="modal-overlay fade-in" *ngIf="isFormalizarModalOpen">
+    <div class="modal-content glass-panel form-modal">
       <div class="modal-header">
-        <h3>{{isEditMode ? 'Editar Empleado' : 'Nuevo Empleado'}}</h3>
-        <button class="close-btn" (click)="closeModal()">&times;</button>
+        <h3>Formalizar Empleado</h3>
+        <button class="btn-close" (click)="cerrarModalFormalizar()">✕</button>
       </div>
       
-      <form (ngSubmit)="saveEmpleado()" class="modal-form">
+      <div class="user-summary mb-3">
+        <p><strong>Usuario:</strong> {{usuarioAFormalizar?.nombres}} {{usuarioAFormalizar?.apellidos}}</p>
+        <p><strong>Documento:</strong> {{usuarioAFormalizar?.documento}}</p>
+      </div>
+
+      <form (ngSubmit)="submitFormalizar()">
         
-        @if(!isEditMode) {
-          <div class="alert-info">
-            <span class="alert-icon">ℹ️</span>
-            <p>La contraseña inicial será el <strong>Número de Documento</strong>. El sistema obligará al empleado a cambiarla cuando ingrese por primera vez.</p>
-          </div>
-        }
-
-        <div class="form-grid">
+        <h4 class="section-title">Datos Organizacionales</h4>
+        <div class="form-row split">
           <div class="form-group">
-            <label>Nombres</label>
-            <input type="text" name="nombres" [(ngModel)]="currentEmpleado.nombres" required class="form-input">
-          </div>
-          
-          <div class="form-group">
-            <label>Apellidos</label>
-            <input type="text" name="apellidos" [(ngModel)]="currentEmpleado.apellidos" required class="form-input">
-          </div>
-
-          <div class="form-group">
-            <label>Documento</label>
-            <input type="text" name="documento" [(ngModel)]="currentEmpleado.documento" required class="form-input">
-          </div>
-
-          <div class="form-group">
-            <label>Correo Electrónico</label>
-            <input type="email" name="email" [(ngModel)]="currentEmpleado.email" required class="form-input">
-          </div>
-
-          <div class="form-group">
-            <label>Cargo</label>
-            <select name="cargo_id" [(ngModel)]="currentEmpleado.cargo_id" required class="form-input">
-              <option value="" disabled>Seleccione un cargo...</option>
-              @for (cargo of cargos; track cargo.id) {
-                <option [value]="cargo.id">{{cargo.nombre}}</option>
-              }
+            <label>Área / Departamento</label>
+            <select class="form-control" name="area_id" [(ngModel)]="formalizarForm.area_id" required>
+              <option value="">Seleccione...</option>
+              <option *ngFor="let a of areas" [value]="a.id">{{a.nombre}}</option>
             </select>
           </div>
-
           <div class="form-group">
-            <label>Rol de Acceso</label>
-            <select name="rol_id" [(ngModel)]="currentEmpleado.rol_id" required class="form-input">
-              <option value="" disabled>Seleccione un rol...</option>
-              @for (rol of roles; track rol.id) {
-                <option [value]="rol.id">{{rol.nombre}}</option>
-              }
+            <label>Cargo</label>
+            <select class="form-control" name="cargo_id" [(ngModel)]="formalizarForm.cargo_id" required>
+              <option value="">Seleccione...</option>
+              <option *ngFor="let c of cargos" [value]="c.id">{{c.nombre}}</option>
             </select>
           </div>
         </div>
 
-        <div class="modal-footer">
-          <button type="button" class="btn-secondary" (click)="closeModal()">Cancelar</button>
-          <button type="submit" class="btn-primary">Guardar Empleado</button>
+        <h4 class="section-title">Datos Laborales</h4>
+        <div class="form-row split">
+          <div class="form-group">
+            <label>Tipo de Contrato</label>
+            <select class="form-control" name="tipo_contrato" [(ngModel)]="formalizarForm.tipo_contrato" required>
+              <option value="">Seleccione...</option>
+              <option value="Fijo">Término Fijo</option>
+              <option value="Indefinido">Término Indefinido</option>
+              <option value="Obra o Labor">Obra o Labor</option>
+              <option value="Prestación de Servicios">Prestación de Servicios</option>
+              <option value="Aprendizaje">Contrato de Aprendizaje</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Fecha Contratación</label>
+            <input type="date" class="form-control" name="fecha_contratacion" [(ngModel)]="formalizarForm.fecha_contratacion" required>
+          </div>
+        </div>
+
+        <div class="form-row split">
+          <div class="form-group">
+            <label>Salario Básico (Opcional)</label>
+            <input type="number" class="form-control" name="salario" [(ngModel)]="formalizarForm.salario">
+          </div>
+        </div>
+
+        <h4 class="section-title">Seguridad Social</h4>
+        <div class="form-row split">
+          <div class="form-group">
+            <label>EPS</label>
+            <input type="text" class="form-control" name="eps" [(ngModel)]="formalizarForm.eps">
+          </div>
+          <div class="form-group">
+            <label>ARL</label>
+            <input type="text" class="form-control" name="arl" [(ngModel)]="formalizarForm.arl">
+          </div>
+        </div>
+        
+        <div class="form-row split">
+          <div class="form-group">
+            <label>Fondo de Pensión</label>
+            <input type="text" class="form-control" name="fondo_pension" [(ngModel)]="formalizarForm.fondo_pension">
+          </div>
+          <div class="form-group">
+            <label>Caja de Compensación</label>
+            <input type="text" class="form-control" name="caja_compensacion" [(ngModel)]="formalizarForm.caja_compensacion">
+          </div>
+        </div>
+
+        <div class="form-actions mt-3">
+          <button type="button" class="btn-secondary" (click)="cerrarModalFormalizar()">Cancelar</button>
+          <button type="submit" class="btn-primary" [disabled]="isSubmitting">
+            {{ isSubmitting ? 'Guardando...' : 'Completar Formalización' }}
+          </button>
         </div>
       </form>
     </div>
   </div>
-}
-
+</div>

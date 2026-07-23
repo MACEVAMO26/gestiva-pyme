@@ -81,10 +81,16 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/permisos/{id}', [PermisoController::class, 'update']);
     Route::delete('/permisos/{id}', [PermisoController::class, 'destroy']);
 
+    Route::get('/areas', [\App\Http\Controllers\AreaController::class, 'index']);
 
     Route::post('/user/avatar', [UserController::class, 'uploadAvatar']);
     Route::apiResource('usuarios', UserController::class);
     Route::patch('usuarios/{id}/status', [UserController::class, 'changeStatus']);
+
+    // --- GESTION HUMANA (Empleados) ---
+    Route::get('/empleados/pendientes', [\App\Http\Controllers\EmpleadoController::class, 'pendientes']);
+    Route::get('/empleados', [\App\Http\Controllers\EmpleadoController::class, 'index']);
+    Route::post('/empleados/{usuarioId}/formalizar', [\App\Http\Controllers\EmpleadoController::class, 'formalizar']);
 
 
     Route::get('/autogestion/afiliaciones', [AutogestionController::class, 'misAfiliaciones']);

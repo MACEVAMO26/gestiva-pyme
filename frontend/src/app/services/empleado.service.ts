@@ -21,26 +21,35 @@ export class EmpleadoService {
     };
   }
 
-  // --- Empleados (Usuarios) ---
+  // --- GESTIÓN HUMANA ---
+  
+  // Trae los usuarios "cáscara" pendientes de formalizar
+  getPendientes(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/empleados/pendientes`, this.getHeaders());
+  }
+
+  // Trae los empleados ya formalizados
   getEmpleados(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/usuarios`, this.getHeaders());
+    return this.http.get<any[]>(`${this.apiUrl}/empleados`, this.getHeaders());
   }
 
-  createEmpleado(empleado: any): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/usuarios`, empleado, this.getHeaders());
+  // Formaliza un usuario y lo convierte en empleado
+  formalizarEmpleado(usuarioId: number, data: any): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/empleados/${usuarioId}/formalizar`, data, this.getHeaders());
   }
 
-  updateEmpleado(id: number, empleado: any): Observable<any> {
-    return this.http.put<any>(`${this.apiUrl}/usuarios/${id}`, empleado, this.getHeaders());
-  }
+  // Despide / Da de baja a un empleado (Fase 4 - pendiente)
+  // solicitarBaja(id: number): Observable<any> { ... }
 
-  toggleStatus(id: number): Observable<any> {
-    return this.http.patch<any>(`${this.apiUrl}/usuarios/${id}/status`, {}, this.getHeaders());
-  }
-
-  // --- Cargos y Roles (Listados para el formulario) ---
+  // --- Cargos, Áreas y Roles (Listados para el formulario) ---
   getCargos(): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/cargos`, this.getHeaders());
+  }
+
+  // Asumimos que existe un endpoint /areas en api.php
+  // Si no existe, lo tendremos que crear o usar roles provisionalmente
+  getAreas(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/areas`, this.getHeaders());
   }
 
   getRoles(): Observable<any[]> {
