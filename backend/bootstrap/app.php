@@ -16,9 +16,8 @@ return Application::configure(basePath: dirname(__DIR__))
         'auth' => \App\Http\Middleware\Authenticate::class,
         'formalizado' => \App\Http\Middleware\CheckFormalizado::class,
     ]);
-    
     $middleware->api(append: [
-        \App\Http\Middleware\UpdateLastActivity::class,
+        // \App\Http\Middleware\UpdateLastActivity::class,
     ]);
 })
     ->withExceptions(function (Exceptions $exceptions): void {

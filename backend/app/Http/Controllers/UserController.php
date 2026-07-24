@@ -20,30 +20,123 @@ class UserController extends Controller
     {
         $validatedData = $request->validate([
             'nombres' => 'required|string|max:255',
-            'apellidos' => 'required|string|max:255',
+            'primer_apellido' => 'required|string|max:255',
+            'segundo_apellido' => 'required|string|max:255',
             'documento' => 'required|string|max:255|unique:usuarios',
-            'email' => 'required|string|email|max:255|unique:usuarios',
+            'email_personal' => 'required|string|email|max:255',
             'telefono' => 'nullable|string|max:255',
             'direccion' => 'nullable|string|max:255',
         ]);
 
-        // Generar una contraseña temporal aleatoria de 8 caracteres
-        $tempPassword = \Str::random(8);
+        // 1. Limpiar strings para generar el correo
+        $cleanString = function($string) {
+            $string = strtolower(trim($string));
+            $string = str_replace(['á','é','í','ó','ú','ñ',' '], ['a','e','i','o','u','n',''], $string);
+            return preg_replace('/[^a-z0-9]/', '', $string);
+        };
 
-        $user = User::create([
-            'nombres' => $validatedData['nombres'],
-            'apellidos' => $validatedData['apellidos'],
-            'documento' => $validatedData['documento'],
-            'email' => $validatedData['email'],
-            'telefono' => $validatedData['telefono'] ?? null,
-            'direccion' => $validatedData['direccion'] ?? null,
-            'password_hash' => Hash::make($tempPassword),
-            'debe_cambiar_clave' => true,
-            'perfil_formalizado' => false, // Obliga a esperar a RRHH
-            'empresa_id' => auth()->user()->empresa_id,
-        ]);
+        $n = $cleanString($validatedData['nombres']);
+        $p = $cleanString($validatedData['primer_apellido']);
+        $s = $cleanString($validatedData['segundo_apellido']);
 
-        // TODO: Enviar correo al usuario con su $tempPassword (pendiente de integración de correos)
+        $prefixBase = substr($n, 0, 4) . substr($p, 0, 3) . substr($s, 0, 2);
+        
+        $empresa = \App\Models\Empresa::find(auth()->user()->empresa_id);
+        $domain = '@' . \Str::slug($empresa->nombre, '') . '.gestivapyme.com';
+        
+        $finalEmail = $prefixBase . $domain;
+        
+        // Estrategias alternativas de corte si el correo ya existe (sin usar números)
+        $strategies = [
+            fn() => substr($n, 0, 5) . substr($p, 0, 2) . substr($s, 0, 2), // 5-2-2
+            fn() => substr($n, 0, 3) . substr($p, 0, 4) . substr($s, 0, 2), // 3-4-2
+            fn() => substr($n, 0, 4) . substr($p, 0, 2) . substr($s, 0, 3), // 4-2-3
+            fn() => $n . substr($p, 0, 3) . substr($s, 0, 2),               // Nombre completo + 3 + 2
+            fn() => substr($n, 0, 4) . $p . substr($s, 0, 2),               // 4 + Apellido1 completo + 2
+            fn() => $n . $p . substr($s, 0, 2),                             // Nombre completo + Apellido1 + 2
+            fn() => substr($n, 0, 4) . substr($p, 0, 3) . $validatedData['documento'] // Si todo falla, usar el documento
+        ];
+
+        $strategyIndex = 0;
+        
+        // Garantizar que no se repita usando combinaciones alternativas
+        while (User::where('email', $finalEmail)->exists()) {
+            if (isset($strategies[$strategyIndex])) {
+                $newPrefix = $strategies[$strategyIndex]();
+                $finalEmail = $newPrefix . $domain;
+                $strategyIndex++;
+            } else {
+                // Como ultimísimo recurso en caso extremo de tocayos idénticos y múltiples fallos
+                $finalEmail = $prefixBase . rand(10, 99) . $domain; 
+            }
+        }
+
+        // 2. La contraseña es el documento de identidad
+        $tempPassword = $validatedData['documento'];
+        $apellidosCompletos = trim($validatedData['primer_apellido'] . ' ' . $validatedData['segundo_apellido']);
+
+        $user = \Illuminate\Support\Facades\DB::transaction(function () use ($validatedData, $apellidosCompletos, $finalEmail, $tempPassword) {
+            $user = User::create([
+                'nombres' => $validatedData['nombres'],
+                'apellidos' => $apellidosCompletos,
+                'documento' => $validatedData['documento'],
+                'email' => $finalEmail,
+                'email_personal' => $validatedData['email_personal'],
+                'telefono' => $validatedData['telefono'] ?? null,
+                'direccion' => $validatedData['direccion'] ?? null,
+                'password_hash' => Hash::make($tempPassword),
+                'debe_cambiar_clave' => true,
+                'perfil_formalizado' => false,
+                'empresa_id' => auth()->user()->empresa_id,
+            ]);
+
+            // LEY: El primer usuario creado por el gerente asume el rol de RRHH
+            $companyUsersCount = User::where('empresa_id', auth()->user()->empresa_id)->count();
+            
+            // Si hay exactamente 2 usuarios (El gerente y este nuevo que se acaba de crear)
+            if ($companyUsersCount === 2) {
+                $roleJefe = \App\Models\Role::firstOrCreate(
+                    ['empresa_id' => auth()->user()->empresa_id, 'nombre' => 'Jefe de Área']
+                );
+                
+                $cargoRRHH = \App\Models\Cargo::firstOrCreate(
+                    ['empresa_id' => auth()->user()->empresa_id, 'nombre' => 'Jefe de Recursos Humanos'],
+                    ['descripcion' => 'Responsable de la gestión humana de la empresa']
+                );
+
+                $areaRRHH = \App\Models\Area::firstOrCreate(
+                    ['empresa_id' => auth()->user()->empresa_id, 'nombre' => 'Recursos Humanos'],
+                    ['descripcion' => 'Área encargada de nómina, contratación y bienestar']
+                );
+
+                // Asignar los permisos inmediatamente a este primer usuario
+                $user->rol_id = $roleJefe->id;
+                $user->cargo_id = $cargoRRHH->id;
+                $user->perfil_formalizado = true; // No requiere formalización adicional
+                $user->save();
+
+                // Formalizar su registro como Empleado
+                \App\Models\Empleado::create([
+                    'usuario_id' => $user->id,
+                    'empresa_id' => $user->empresa_id,
+                    'area_id' => $areaRRHH->id,
+                    'cargo_id' => $cargoRRHH->id,
+                    'codigo_empleado' => 'EMP-' . $user->empresa_id . '-001',
+                    'fecha_contratacion' => now()
+                ]);
+            }
+            
+            return $user;
+        });
+
+        // Enviar el correo con las credenciales usando Brevo (SMTP)
+        try {
+            $empresa = \App\Models\Empresa::find(auth()->user()->empresa_id);
+            \Mail::to($user->email_personal)->send(new \App\Mail\CredencialesUsuarioMail($user, $tempPassword, $empresa->nombre));
+        } catch (\Exception $e) {
+            \Log::error("Error enviando correo a {$user->email_personal}: " . $e->getMessage());
+            // No detenemos la creación del usuario si falla el envío de correo.
+        }
 
         return response()->json([
             'user' => $user,

@@ -2,6 +2,7 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
+import { ToastService } from '../../../../services/toast.service';
 
 @Component({
   selector: 'app-usuarios',
@@ -12,6 +13,7 @@ import { HttpClient } from '@angular/common/http';
 })
 export class UsuariosComponent implements OnInit {
   http = inject(HttpClient);
+  toast = inject(ToastService);
 
   // --- ESTADOS ---
   isApprovingBaja = false;
@@ -24,15 +26,17 @@ export class UsuariosComponent implements OnInit {
   isSubmitting = false;
   formData = {
     nombres: '',
-    apellidos: '',
+    primer_apellido: '',
+    segundo_apellido: '',
     documento: '',
-    email: '',
+    email_personal: '',
     telefono: '',
     direccion: ''
   };
   
   // Alerta post-creación
   tempPasswordGenerated = '';
+  emailGenerado = '';
   nuevoUsuarioNombre = '';
 
   ngOnInit() {
@@ -54,7 +58,7 @@ export class UsuariosComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error al cargar usuarios:', err);
-        this.errorMessage = 'No se pudieron cargar los usuarios.';
+        this.toast.error('No se pudieron cargar los usuarios.');
         this.isLoading = false;
       }
     });
@@ -72,12 +76,14 @@ export class UsuariosComponent implements OnInit {
 
   resetForm() {
     this.formData = {
-      nombres: '', apellidos: '', documento: '',
-      email: '', telefono: '', direccion: ''
+      nombres: '', primer_apellido: '', segundo_apellido: '', documento: '',
+      email_personal: '', telefono: '', direccion: ''
     };
     this.tempPasswordGenerated = '';
+    this.emailGenerado = '';
   }
 
+  // Para guardar el nuevo usuario y gestionar sus credenciales automáticas
   crearUsuario() {
     this.isSubmitting = true;
     const token = sessionStorage.getItem('auth_token');
@@ -89,17 +95,20 @@ export class UsuariosComponent implements OnInit {
           this.isSubmitting = false;
           // Mostramos la alerta con la contraseña generada
           this.tempPasswordGenerated = res.temp_password;
+          this.emailGenerado = res.user.email;
           this.nuevoUsuarioNombre = `${res.user.nombres} ${res.user.apellidos}`;
+          this.toast.success(`Usuario creado exitosamente: ${this.emailGenerado}`);
           this.cargarUsuarios(); // Recarga la tabla
         },
         error: (err) => {
           this.isSubmitting = false;
-          alert('Error al crear el usuario. Verifique los datos o que el documento/correo no existan ya.');
+          this.toast.error('Error al crear el usuario. Verifique los datos o que el documento/correo no existan ya.');
           console.error(err);
         }
       });
   }
 
+  // Para confirmar la inactivación definitiva de un empleado
   aprobarBaja(usuario: any) {
     if (!usuario.empleado) return;
     if (!confirm(`¿Está seguro de aprobar la inactivación del empleado ${usuario.nombres} ${usuario.apellidos}? Esta acción bloqueará su acceso al sistema.`)) {

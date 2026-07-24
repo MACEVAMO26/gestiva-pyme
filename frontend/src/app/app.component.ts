@@ -19,8 +19,10 @@ export class AppComponent implements OnInit {
   ngOnInit() {
     // Aterrizaje Forzoso en el Dashboard al cargar la aplicación si hay sesión.
     if (this.authService.getToken()) {
+      const currentUrl = window.location.pathname;
       const user = this.authService.getUser();
-      if (user) {
+      
+      if (user && (currentUrl === '/' || currentUrl === '/login')) {
         if (user.empresa_id === null) {
           this.router.navigate(['/saas-admin']);
         } else {

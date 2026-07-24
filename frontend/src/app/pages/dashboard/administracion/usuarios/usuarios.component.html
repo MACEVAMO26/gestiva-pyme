@@ -62,10 +62,20 @@
           <td colspan="6" class="empty-state">No hay usuarios registrados aún.</td>
         </tr>
         <tr *ngIf="isLoading">
-          <td colspan="6" class="empty-state">Cargando...</td>
+          <td colspan="7" class="loading-state">
+            <div class="skeleton-row" *ngFor="let i of [1,2,3,4,5]">
+              <div class="skeleton-cell"></div>
+              <div class="skeleton-cell"></div>
+              <div class="skeleton-cell"></div>
+              <div class="skeleton-cell"></div>
+              <div class="skeleton-cell"></div>
+              <div class="skeleton-cell"></div>
+              <div class="skeleton-cell"></div>
+            </div>
+          </td>
         </tr>
         <tr *ngIf="errorMessage">
-          <td colspan="6" class="empty-state text-red-500 font-bold">Error: {{ errorMessage }}</td>
+          <td colspan="7" class="empty-state text-red-500 font-bold">Error: {{ errorMessage }}</td>
         </tr>
       </tbody>
     </table>
@@ -96,20 +106,25 @@
               <input type="text" class="form-control" name="nombres" [(ngModel)]="formData.nombres" required placeholder="Nombres">
             </div>
             <div class="form-group">
-              <label>Apellidos</label>
-              <input type="text" class="form-control" name="apellidos" [(ngModel)]="formData.apellidos" required placeholder="Apellidos">
+              <label>Documento de Identidad</label>
+              <input type="text" class="form-control" name="documento" [(ngModel)]="formData.documento" required placeholder="Número de Documento">
             </div>
           </div>
           
           <div class="form-row split">
             <div class="form-group">
-              <label>Documento de Identidad</label>
-              <input type="text" class="form-control" name="documento" [(ngModel)]="formData.documento" required placeholder="Número de Documento">
+              <label>Primer Apellido</label>
+              <input type="text" class="form-control" name="primer_apellido" [(ngModel)]="formData.primer_apellido" required placeholder="Primer Apellido">
             </div>
             <div class="form-group">
-              <label>Correo Electrónico</label>
-              <input type="email" class="form-control" name="email" [(ngModel)]="formData.email" required placeholder="correo@ejemplo.com">
+              <label>Segundo Apellido</label>
+              <input type="text" class="form-control" name="segundo_apellido" [(ngModel)]="formData.segundo_apellido" required placeholder="Segundo Apellido">
             </div>
+          </div>
+
+          <div class="form-group full-width">
+            <label>Correo Personal</label>
+            <input type="email" class="form-control" name="email_personal" [(ngModel)]="formData.email_personal" required placeholder="correo@personal.com">
           </div>
 
           <div class="form-row split">
@@ -153,11 +168,15 @@
       <p>El perfil de <strong>{{nuevoUsuarioNombre}}</strong> ha sido creado exitosamente y está a la espera de que Gestión Humana complete su formalización.</p>
       
       <div class="password-box mt-3 mb-3">
-        <label>CONTRASEÑA TEMPORAL DEL USUARIO</label>
+        <label>USUARIO (CORREO CORPORATIVO)</label>
+        <div class="password-display text-blue" style="font-size: 1.1rem; text-transform: lowercase;">
+          {{ emailGenerado }}
+        </div>
+        <label class="mt-3">CONTRASEÑA TEMPORAL</label>
         <div class="password-display">
           {{ tempPasswordGenerated }}
         </div>
-        <small class="text-gray mt-1">Cópiala y envíasela al usuario de forma segura. El sistema le pedirá cambiarla al primer inicio de sesión.</small>
+        <small class="text-gray mt-1">Cópialos y envíaselos al usuario de forma segura. El sistema le pedirá cambiar la contraseña al primer inicio de sesión.</small>
       </div>
 
       <button class="btn-primary w-full" (click)="cerrarModal()">Entendido</button>

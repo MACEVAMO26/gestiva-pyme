@@ -181,3 +181,47 @@ textarea:focus {
   font-size: 0.95rem !important;
   line-height: 1.5 !important;
 }
+
+/* 5. Ajuste global para Badges y Etiquetas (Pills) */
+/* El usuario solicitó específicamente disminuir el tamaño de los tags (ej. VENTAS Y SERVICIOS) */
+.badge,
+.badge-plan,
+.badge-modulos,
+.badge-solicitud,
+.status-badge,
+.badge-role {
+  font-size: 0.7rem !important; /* Reducido drásticamente para que se vea como una etiqueta compacta */
+  padding: 0.25rem 0.6rem !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+  white-space: nowrap;
+}
+
+/* 6. Botón de Accesibilidad (Ojo) Unificado */
+/* El usuario solicitó el ojo en amarillo quemado y contornos negros delgados */
+.accessibility-btn {
+  background-color: #d97706 !important; /* Amarillo quemado */
+  border: 1.5px solid #000000 !important; /* Contorno del botón negro no tan grueso */
+  width: 42px !important;
+  height: 42px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-radius: 50% !important;
+  padding: 0 !important;
+  cursor: pointer !important;
+  transition: all 0.3s ease !important;
+  box-shadow: none !important;
+}
+
+.accessibility-btn svg {
+  width: 22px !important;
+  height: 22px !important;
+  stroke: #000000 !important; /* Contorno del ojo negro */
+  stroke-width: 1.5 !important; /* Contorno no tan grueso */
+}
+
+.accessibility-btn:hover {
+  background-color: #b45309 !important; /* Amarillo oscuro al pasar el ratón */
+}

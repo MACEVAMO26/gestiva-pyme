@@ -6,5 +6,5 @@ use Illuminate\Database\Eloquent\Model;
 
 class Area extends Model
 {
-    //
+    protected $fillable = ['nombre', 'descripcion', 'empresa_id'];
 }

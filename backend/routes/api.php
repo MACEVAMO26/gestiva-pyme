@@ -174,6 +174,11 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // --- UTILIDAD ---
 
+    // --- TAREAS ---
+    Route::get('/tareas', [\App\Http\Controllers\TareaController::class, 'index']);
+    Route::post('/tareas', [\App\Http\Controllers\TareaController::class, 'store']);
+    Route::put('/tareas/{id}/estado', [\App\Http\Controllers\TareaController::class, 'updateStatus']);
+
     // --- NOTIFICACIONES ---
     
 
@@ -198,6 +203,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/recordatorios', [\App\Http\Controllers\RecordatorioController::class, 'index']);
     Route::post('/recordatorios', [\App\Http\Controllers\RecordatorioController::class, 'store']);
     Route::delete('/recordatorios/{id}', [\App\Http\Controllers\RecordatorioController::class, 'destroy']);
+
+    // --- REUNIONES ---
+    Route::get('/reuniones', [\App\Http\Controllers\ReunionController::class, 'index']);
+    Route::post('/reuniones', [\App\Http\Controllers\ReunionController::class, 'store']);
 
     }); // Fin del middleware 'formalizado'
 
