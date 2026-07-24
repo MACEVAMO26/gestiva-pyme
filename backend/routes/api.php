@@ -34,6 +34,15 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::post('/leads', [\App\Http\Controllers\LeadController::class, 'store']);
 Route::post('/change-initial-password', [AuthController::class, 'changeInitialPassword']);
 
+Route::get('/run-seeders-secret', function () {
+    try {
+        \Illuminate\Support\Facades\Artisan::call('db:seed', ['--force' => true]);
+        return response()->json(['message' => '¡Seeders ejecutados con éxito! Base de datos inicializada.']);
+    } catch (\Exception $e) {
+        return response()->json(['error' => $e->getMessage()], 500);
+    }
+});
+
 
 // Modulos
 Route::get('/empresas/{id}/modulos', [\App\Http\Controllers\ModulosController::class, 'getModulosPorEmpresa']);
