@@ -1,13 +1,18 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* --- TIPOGRAFIA GLOBAL --- */
+*, *::before, *::after {
+  font-family: 'Montserrat', sans-serif !important;
+}
 /* ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
    SISTEMA DE ACCESIBILIDAD VISUAL (DALTONISMO)
    Filtros aplicados globalmente mediante SVG en index.html
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- */
 
-/* ESCALA GLOBAL ELIMINADA PARA RECUPERAR TAMAÑO ESTÁNDAR (Como en SaaS Admin) */
-/* html { font-size: 12.8px !important; } */
+/* ESCALA GLOBAL MODIFICADA: Reducción global del texto a petición del usuario */
+html { font-size: 13px !important; }
 
 /* Neumorfismo Oscuro (Dark Neumorphism) conservando colores de marca - CERO AZULES (Zinc/Black) */
 .neu-dark-panel {
@@ -94,4 +99,85 @@
 * {
   scrollbar-width: thin;
   scrollbar-color: #1e293b #0b0f19;
+}
+
+/* ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+   UNIFICACIÓN GLOBAL DE TIPOGRAFÍA Y FORMULARIOS (Solicitud de Estandarización)
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- */
+
+/* 1. Subtítulos (h2, h3) */
+/* Rebajamos el tamaño para que no compitan con el título principal, acercándolos a texto normal */
+.dashboard-container h2,
+.dashboard-container h3,
+.admin-module h2,
+.admin-module h3,
+.glass-panel h2,
+.glass-panel h3 {
+  font-size: 1.4rem !important; /* Compensado para html 13px */
+  font-weight: 500 !important;
+  text-transform: uppercase !important;
+  margin-bottom: 1rem;
+  letter-spacing: 0.5px;
+  color: #ffffff;
+}
+
+/* Asegurar que los títulos principales conserven su jerarquía y sean en MAYÚSCULA como pidió el usuario */
+.dashboard-container h1,
+.dashboard-container h2,
+.admin-module h1,
+.admin-header h2.page-title,
+.page-title {
+  font-size: 2.25rem !important; /* Aumentado a 2.25rem para que NO se encojan con la reducción de la base (2.25 * 13px = 29.25px) */
+  text-transform: uppercase !important;
+  font-weight: 500 !important;
+  letter-spacing: 1px !important;
+}
+
+/* 2. Etiquetas de Formularios (Labels) */
+/* Tamaño normal pero TODAS en MAYÚSCULAS */
+form label,
+.form-group label,
+.input-group label {
+  font-size: 0.85rem !important;
+  text-transform: uppercase !important;
+  font-weight: 500 !important;
+  color: #a1a1aa !important;
+  display: block;
+  margin-bottom: 0.5rem;
+  letter-spacing: 0.5px;
+}
+
+/* 3. Cajas de Texto y Formularios (Inputs, Selects, Textareas) */
+/* Bordes visibles para que se distingan claramente las zonas de llenado */
+input:not([type="checkbox"]):not([type="radio"]),
+select,
+textarea {
+  font-size: 0.95rem !important;
+  padding: 0.75rem 1rem !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  background-color: rgba(0, 0, 0, 0.2) !important;
+  border-radius: 8px !important;
+  color: #ffffff !important;
+  width: 100%;
+  transition: all 0.3s ease;
+}
+
+input:not([type="checkbox"]):not([type="radio"]):focus,
+select:focus,
+textarea:focus {
+  outline: none !important;
+  border-color: rgba(255, 152, 0, 0.5) !important; /* Naranja en foco */
+  background-color: rgba(0, 0, 0, 0.4) !important;
+  box-shadow: 0 0 0 2px rgba(255, 152, 0, 0.15) !important;
+}
+
+/* 4. Unificación de Texto "Normal" */
+/* Evitar desorden de tamaños en párrafos estándar dentro del contenido principal */
+.dashboard-container p:not(.metric-value),
+.admin-module p,
+.glass-panel p,
+.alert-warning p,
+.form-group .description {
+  font-size: 0.95rem !important;
+  line-height: 1.5 !important;
 }

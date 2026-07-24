@@ -1,15 +1,9 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, HostListener } from '@angular/core';
 import { AuthService } from '../../../services/auth.service';
 import { HttpClient } from '@angular/common/http';
 import { AccessibilityService, DaltonismMode } from '../../../services/accessibility/accessibility.service';
 import { ModulosService } from '../../../services/modulos.service';
 import { CommonModule } from '@angular/common';
-import { EmpleadosComponent } from '../empleados/empleados.component';
-import { AdministracionComponent } from '../administracion/administracion.component';
-import { PagosComponent } from '../pagos/pagos.component';
-import { AutogestionComponent } from '../autogestion/autogestion';
-import { ClientesComponent } from '../clientes/clientes';
-import { ProveedoresComponent } from '../proveedores/proveedores';
 
 import { RouterModule } from '@angular/router';
 
@@ -40,7 +34,22 @@ export class DashboardComponent implements OnInit {
   private http = inject(HttpClient);
   private modulosService = inject(ModulosService);
 
-  constructor(private authService: AuthService) { }
+  constructor(private authService: AuthService) {
+    this.checkScreenSize();
+  }
+
+  @HostListener('window:resize')
+  onResize() {
+    this.checkScreenSize();
+  }
+
+  private checkScreenSize() {
+    if (typeof window !== 'undefined') {
+      // Auto-colapsa la barra en pantallas divididas o tablets pequeñas,
+      // pero no en móviles verdaderos (donde se oculta con CSS)
+      this.isSidebarCollapsed = window.innerWidth <= 1024;
+    }
+  }
 
   ngOnInit(): void {
     this.user = this.authService.getUser();
@@ -76,7 +85,7 @@ export class DashboardComponent implements OnInit {
   getLogoUrl(): string {
     if (this.user?.empresa?.logo_url) {
       const url = this.user.empresa.logo_url;
-      return url.startsWith('http') ? url : `http://127.0.0.1:8000${url}`;
+      return url.startsWith('http') ? url : `http://localhost:8000${url}`;
     }
     return 'assets/images/Logos/GESTIVAPYME(7).png';
   }
@@ -133,7 +142,7 @@ export class DashboardComponent implements OnInit {
     const token = sessionStorage.getItem('auth_token');
     if (!token) return;
 
-    this.http.post('http://127.0.0.1:8000/api/user/avatar', { avatar_url: newAvatarUrl }, {
+    this.http.post('/api/user/avatar', { avatar_url: newAvatarUrl }, {
       headers: { 'Authorization': `Bearer ${token}` }
     }).subscribe({
       next: (res: any) => {

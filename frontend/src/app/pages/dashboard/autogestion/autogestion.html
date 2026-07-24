@@ -18,16 +18,20 @@
           <!-- Input oculto para subir foto -->
           <input type="file" #fileInput (change)="onFileSelected($event)" accept="image/*" style="display: none;">
           
-          <div class="avatar-wrapper" (click)="fileInput.click()" title="Haz clic para cambiar tu foto">
+          <div class="avatar-wrapper" (click)="!isUploadingAvatar && fileInput.click()" title="Haz clic para cambiar tu foto">
             @if (profileImageUrl || user?.avatar_url) {
-              <img [src]="profileImageUrl || user?.avatar_url" alt="Avatar" class="profile-avatar editable-avatar">
+              <img [src]="profileImageUrl || user?.avatar_url" alt="Avatar" class="profile-avatar editable-avatar" [class.opacity-50]="isUploadingAvatar">
             } @else {
-              <div class="profile-avatar-placeholder editable-avatar">{{ user?.nombres?.charAt(0) || 'A' }}</div>
+              <div class="profile-avatar-placeholder editable-avatar" [class.opacity-50]="isUploadingAvatar">{{ user?.nombres?.charAt(0) || 'A' }}</div>
             }
             <div class="edit-overlay">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="camera-icon">
+              <svg *ngIf="!isUploadingAvatar" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="camera-icon">
                 <path d="M12 9a3.75 3.75 0 1 0 0 7.5A3.75 3.75 0 0 0 12 9Z" />
                 <path fill-rule="evenodd" d="M9.344 3.071a49.52 49.52 0 0 1 5.312 0c.967.052 1.83.585 2.332 1.39l.821 1.317c.24.383.645.643 1.11.71.386.054.77.113 1.152.177 1.432.239 2.429 1.493 2.429 2.909V18a3 3 0 0 1-3 3h-15a3 3 0 0 1-3-3V9.574c0-1.416.997-2.67 2.429-2.909.382-.064.766-.123 1.151-.178a1.56 1.56 0 0 0 1.11-.71l.822-1.315a2.942 2.942 0 0 1 2.332-1.39ZM6.75 12.75a5.25 5.25 0 1 1 10.5 0 5.25 5.25 0 0 1-10.5 0Zm12-1.5a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z" clip-rule="evenodd" />
+              </svg>
+              <svg *ngIf="isUploadingAvatar" class="animate-spin h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
               </svg>
             </div>
           </div>
@@ -187,10 +191,28 @@
           
           <div class="form-actions">
             @if (isHR) {
-              <button type="button" class="primary-btn" (click)="gestionarAfiliacionAdmin()">Guardar Gestión (RRHH)</button>
+              <button type="button" class="primary-btn" (click)="gestionarAfiliacionAdmin()" [disabled]="isSavingAdmin">
+                <span *ngIf="!isSavingAdmin">Guardar Gestión (RRHH)</span>
+                <span *ngIf="isSavingAdmin" class="flex items-center">
+                  <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Guardando...
+                </span>
+              </button>
             } @else {
               @if (formAfiliacion.estado === 'nuevo') {
-                <button type="submit" class="primary-btn">Guardar Afiliaciones</button>
+                <button type="submit" class="primary-btn" [disabled]="isSaving">
+                  <span *ngIf="!isSaving">Guardar Afiliaciones</span>
+                  <span *ngIf="isSaving" class="flex items-center">
+                    <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Guardando...
+                  </span>
+                </button>
               } @else if (formAfiliacion.estado === 'pendiente') {
                 <span style="color: #f59e0b; font-weight: 700; font-size: 1.05rem;">
                   En espera de aprobación

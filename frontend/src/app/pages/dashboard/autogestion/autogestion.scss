@@ -2,7 +2,7 @@
   padding: 2rem;
   max-width: 1200px;
   margin: 0 auto;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Montserrat', sans-serif;
 }
 
 .module-header {
@@ -20,7 +20,7 @@
     p {
       color: #ffffff;
       margin: 0;
-      font-size: 0.75rem;
+      
     }
   }
 }
@@ -117,7 +117,7 @@
     margin: 0 0 0.5rem 0;
     color: #ffffff;
     font-weight: 700;
-    font-size: 1.1rem;
+    
     text-transform: uppercase;
     letter-spacing: 0.5px;
   }
@@ -126,7 +126,7 @@
     color: #ffffff;
     padding: 0.25rem 0.85rem;
     border-radius: 50px;
-    font-size: 0.75rem;
+    
     font-weight: 700;
     box-shadow: 2px 2px 5px #030303, -2px -2px 5px rgba(255,255,255,0.02);
     text-transform: uppercase;
@@ -144,7 +144,7 @@
     align-items: center;
     gap: 0.8rem;
     color: #ffffff;
-    font-size: 0.75rem;
+    
 
     .icon {
       width: 18px;
@@ -157,7 +157,7 @@
 /* --- 3. DOCS RAPIDOS --- */
 .docs-card {
   h3 { color: #ffffff; margin: 0 0 0.5rem 0; font-weight: 700; font-size: 1rem; text-transform: uppercase; }
-  p { color: #ffffff; margin: 0 0 1.5rem 0; font-size: 0.75rem; }
+  p { color: #ffffff; margin: 0 0 1.5rem 0;  }
   
   .action-btn-orange {
     display: flex;
@@ -170,7 +170,7 @@
     padding: 0.8rem;
     border-radius: 8px;
     font-weight: 700;
-    font-size: 0.75rem;
+    
     cursor: pointer;
     box-shadow: 4px 4px 8px #030303, -4px -4px 8px rgba(255,255,255,0.02);
     transition: all 0.2s ease;
@@ -194,10 +194,10 @@
     align-items: center;
     margin-bottom: 1.5rem;
     
-    h3 { margin: 0; color: #ffffff; font-weight: 700; font-size: 1.1rem; text-transform: uppercase; letter-spacing: 0.5px; }
+    h3 { margin: 0; color: #ffffff; font-weight: 700;  text-transform: uppercase; letter-spacing: 0.5px; }
     
     .status-badge {
-      font-size: 0.75rem;
+      
       padding: 0.3rem 0.85rem;
       border-radius: 50px;
       font-weight: 700;
@@ -220,7 +220,7 @@
     display: flex;
     flex-direction: column;
     gap: 0.4rem;
-    label { font-weight: 700; color: #ffffff; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; }
+    label { font-weight: 700; color: #ffffff;  text-transform: uppercase; letter-spacing: 0.5px; }
     
     input, select { 
       width: 100%; 
@@ -231,7 +231,7 @@
       padding: 0.8rem 1rem;
       border-radius: 8px;
       font-family: inherit;
-      font-size: 0.9rem;
+      
       transition: all 0.2s ease;
       box-shadow: inset 4px 4px 8px rgba(0,0,0,0.5);
       
@@ -281,7 +281,7 @@
       padding: 0.8rem 2rem;
       border-radius: 8px;
       font-weight: 800;
-      font-size: 0.9rem;
+      
       cursor: pointer;
       box-shadow: 4px 4px 8px #030303, -4px -4px 8px rgba(255,255,255,0.02);
       transition: all 0.2s ease;
@@ -302,14 +302,14 @@
   border-radius: 8px;
   margin-bottom: 1.5rem;
   font-weight: 700;
-  font-size: 0.75rem;
+  
   &.error { background: #7f1d1d; color: #ffffff; border-left: 4px solid #ef4444; }
 }
 
 /* --- 5. TIEMPOS --- */
 .times-card {
   h3 { color: #ffffff; margin: 0 0 0.5rem 0; font-weight: 700; font-size: 1rem; text-transform: uppercase; }
-  p { color: #ffffff; margin: 0 0 1.5rem 0; font-size: 0.75rem; }
+  p { color: #ffffff; margin: 0 0 1.5rem 0;  }
   
   .times-stats {
     display: grid;
@@ -326,7 +326,7 @@
       box-shadow: inset 4px 4px 8px rgba(0,0,0,0.5);
       
       h4 { margin: 0; font-size: 1.8rem; color: #f97316; font-weight: 800; }
-      span { font-size: 0.75rem; color: #ffffff; font-weight: 700; text-transform: uppercase; }
+      span {  color: #ffffff; font-weight: 700; text-transform: uppercase; }
     }
   }
   
@@ -337,7 +337,7 @@
     padding: 0.8rem;
     border-radius: 8px;
     font-weight: 800;
-    font-size: 0.9rem;
+    
     cursor: pointer;
     transition: all 0.2s ease;
     width: 100%;

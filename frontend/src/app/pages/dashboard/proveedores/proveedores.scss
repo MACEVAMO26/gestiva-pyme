@@ -30,7 +30,7 @@ $radius: 12px;
   p {
     margin: 0;
     color: $text-muted;
-    font-size: 0.9rem;
+    
   }
 }
 
@@ -89,13 +89,13 @@ $radius: 12px;
   th {
     color: $text-muted;
     font-weight: 500;
-    font-size: 0.75rem;
+    
     text-transform: uppercase;
     letter-spacing: 0.5px;
   }
 
   td {
-    font-size: 0.9rem;
+    
     vertical-align: middle;
   }
 
@@ -104,7 +104,7 @@ $radius: 12px;
   }
 }
 
-.text-sm { font-size: 0.8rem; }
+.text-sm {  }
 .text-muted { color: $text-muted; }
 .text-center { text-align: center; }
 
@@ -113,7 +113,7 @@ $radius: 12px;
   display: inline-block;
   padding: 0.25rem 0.6rem;
   border-radius: 20px;
-  font-size: 0.75rem;
+  
   font-weight: 600;
   background: rgba(255, 255, 255, 0.05);
   color: $text-dark;
@@ -204,7 +204,7 @@ $radius: 12px;
   align-items: center;
   margin-bottom: 1.5rem;
   
-  h2 { margin: 0; font-size: 1.25rem; }
+  h2 { margin: 0;  }
 }
 
 .form-grid {
@@ -219,7 +219,7 @@ $radius: 12px;
   gap: 0.5rem;
 
   label {
-    font-size: 0.75rem;
+    
     color: $text-muted;
     font-weight: 500;
   }

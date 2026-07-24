@@ -14,8 +14,10 @@ export class UsuariosComponent implements OnInit {
   http = inject(HttpClient);
 
   // --- ESTADOS ---
+  isApprovingBaja = false;
   usuarios: any[] = [];
   isLoading = false;
+  errorMessage = '';
   
   // Modal de Creación
   showModal = false;
@@ -37,23 +39,25 @@ export class UsuariosComponent implements OnInit {
     this.cargarUsuarios();
   }
 
+  // Para traer la lista de usuarios de la empresa actual
   cargarUsuarios() {
     this.isLoading = true;
+    this.errorMessage = '';
     const token = sessionStorage.getItem('auth_token');
-    const headers = { 'Authorization': `Bearer ${token}` };
 
-    // Asumimos que /api/usuarios nos trae los usuarios de la empresa
-    this.http.get<any[]>('http://127.0.0.1:8000/api/usuarios', { headers })
-      .subscribe({
-        next: (data) => {
-          this.usuarios = data;
-          this.isLoading = false;
-        },
-        error: (err) => {
-          console.error(err);
-          this.isLoading = false;
-        }
-      });
+    this.http.get<any[]>('/api/usuarios', {
+      headers: { 'Authorization': `Bearer ${token}` }
+    }).subscribe({
+      next: (data) => {
+        this.usuarios = data;
+        this.isLoading = false;
+      },
+      error: (err) => {
+        console.error('Error al cargar usuarios:', err);
+        this.errorMessage = 'No se pudieron cargar los usuarios.';
+        this.isLoading = false;
+      }
+    });
   }
 
   abrirModal() {
@@ -63,6 +67,7 @@ export class UsuariosComponent implements OnInit {
 
   cerrarModal() {
     this.showModal = false;
+    this.tempPasswordGenerated = '';
   }
 
   resetForm() {
@@ -78,7 +83,7 @@ export class UsuariosComponent implements OnInit {
     const token = sessionStorage.getItem('auth_token');
     const headers = { 'Authorization': `Bearer ${token}` };
 
-    this.http.post<any>('http://127.0.0.1:8000/api/usuarios', this.formData, { headers })
+    this.http.post<any>('/api/usuarios', this.formData, { headers })
       .subscribe({
         next: (res) => {
           this.isSubmitting = false;
@@ -101,16 +106,19 @@ export class UsuariosComponent implements OnInit {
       return;
     }
 
+    this.isApprovingBaja = true;
     const token = sessionStorage.getItem('auth_token');
     const headers = { 'Authorization': `Bearer ${token}` };
 
-    this.http.post<any>(`http://127.0.0.1:8000/api/empleados/${usuario.empleado.id}/aprobar-baja`, {}, { headers })
+    this.http.post<any>(`/api/empleados/${usuario.empleado.id}/aprobar-baja`, {}, { headers })
       .subscribe({
         next: (res) => {
+          this.isApprovingBaja = false;
           alert(res.message);
           this.cargarUsuarios(); // Recarga la tabla para reflejar el estado inactivo
         },
         error: (err) => {
+          this.isApprovingBaja = false;
           console.error(err);
           alert('Error al aprobar la inactivación.');
         }

@@ -40,6 +40,8 @@ export class ClientesComponent implements OnInit {
   
   mostrarModal = false;
   isEditMode = false;
+  isSaving = false;
+  deletingId: number | null = null;
   
   clienteActual: Cliente = this.getEmptyCliente();
 
@@ -78,7 +80,7 @@ export class ClientesComponent implements OnInit {
     const user = this.authService.getUser();
     const empresaId = user?.empresa_id || user?.empresa?.id || '';
 
-    this.http.get<Cliente[]>('http://localhost:8000/api/clientes', {
+    this.http.get<Cliente[]>('/api/clientes', {
       headers: { 'X-Empresa-Id': empresaId.toString() }
     }).subscribe({
       next: (data) => {
@@ -129,20 +131,23 @@ export class ClientesComponent implements OnInit {
   }
 
   guardarCliente() {
+    this.isSaving = true;
     const user = this.authService.getUser();
     const empresaId = user?.empresa_id || user?.empresa?.id || '';
     const headers = { 'X-Empresa-Id': empresaId.toString() };
 
     if (this.isEditMode && this.clienteActual.id) {
       // PUT
-      this.http.put('http://localhost:8000/api/clientes/' + this.clienteActual.id, this.clienteActual, { headers })
+      this.http.put('/api/clientes/' + this.clienteActual.id, this.clienteActual, { headers })
         .subscribe({
           next: () => {
+            this.isSaving = false;
             this.toastService.show('Cliente actualizado con éxito', 'success');
             this.cargarClientes();
             this.cerrarModal();
           },
           error: (err) => {
+            this.isSaving = false;
             console.error('Error actualizando cliente', err);
             const msg = err.error?.message || err.message || 'Error al actualizar el cliente';
             this.toastService.show(msg, 'error');
@@ -150,14 +155,16 @@ export class ClientesComponent implements OnInit {
         });
     } else {
       // POST
-      this.http.post('http://localhost:8000/api/clientes', this.clienteActual, { headers })
+      this.http.post('/api/clientes', this.clienteActual, { headers })
         .subscribe({
           next: () => {
+            this.isSaving = false;
             this.toastService.show('Cliente guardado con éxito', 'success');
             this.cargarClientes();
             this.cerrarModal();
           },
           error: (err) => {
+            this.isSaving = false;
             console.error('Error creando cliente', err);
             const msg = err.error?.message || err.error?.error || err.message || 'Error al guardar el cliente';
             this.toastService.show(msg, 'error');
@@ -169,17 +176,20 @@ export class ClientesComponent implements OnInit {
   eliminarCliente(id?: number) {
     if (!id) return;
     if (confirm('¿Estás seguro de eliminar este cliente?')) {
+      this.deletingId = id;
       const user = this.authService.getUser();
       const empresaId = user?.empresa_id || user?.empresa?.id || '';
       const headers = { 'X-Empresa-Id': empresaId.toString() };
       
-      this.http.delete('http://localhost:8000/api/clientes/' + id, { headers })
+      this.http.delete('/api/clientes/' + id, { headers })
         .subscribe({
           next: () => {
+            this.deletingId = null;
             this.toastService.show('Cliente eliminado con éxito', 'success');
             this.cargarClientes();
           },
           error: (err) => {
+            this.deletingId = null;
             console.error('Error eliminando cliente', err);
             this.toastService.show('Error al eliminar el cliente', 'error');
           }

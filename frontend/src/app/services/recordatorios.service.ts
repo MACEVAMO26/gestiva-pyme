@@ -15,7 +15,7 @@ export interface Recordatorio {
   providedIn: 'root'
 })
 export class RecordatoriosService {
-  private apiUrl = 'http://127.0.0.1:8000/api/recordatorios';
+  private apiUrl = '/api/recordatorios';
 
   constructor(private http: HttpClient) { }
 

@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
 $primary-color: #0c6d0c; /* Verde oscuro (Botones/Highlights) */
 $primary-hover: #ff9800; /* Naranja (Hover) */
 $bg-color: #f8fafc; /* Fondo general (Neutro claro) */
@@ -21,7 +21,7 @@ $transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
 
 * {
   box-sizing: border-box;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Montserrat', sans-serif;
 }
 
 /* --- 3. LAYOUT --- */
@@ -78,14 +78,14 @@ $transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
     .welcome-text {
       h1 {
         margin: 0 0 0.15rem 0;
-        font-size: 1.15rem;
+        
         font-weight: 700;
         color: $text-dark;
       }
       p {
         margin: 0;
         color: $text-muted;
-        font-size: 0.75rem;
+        
       }
     }
 
@@ -126,7 +126,7 @@ $transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
           align-items: center;
           justify-content: center;
           font-weight: 700;
-          font-size: 0.9rem;
+          
         }
 
         .avatar-img {
@@ -233,7 +233,7 @@ $transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
       border: 1px solid rgba(0, 0, 0, 0.1);
       background: transparent;
       color: $text-dark;
-      font-size: 0.95rem;
+      
       font-weight: 600;
       text-decoration: none;
       cursor: pointer;
@@ -345,7 +345,7 @@ $transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
 
         .label {
           color: $text-muted;
-          font-size: 0.75rem;
+          
           font-weight: 600;
           text-transform: uppercase;
           letter-spacing: 0.5px;
@@ -353,7 +353,7 @@ $transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
 
         .value {
           color: $text-dark;
-          font-size: 1.2rem;
+          
           font-weight: 700;
         }
       }
@@ -370,7 +370,7 @@ $transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
     h3 {
       margin: 0 0 2rem 0;
       color: $text-dark;
-      font-size: 1.15rem;
+      
       font-weight: 600;
     }
 
@@ -405,7 +405,7 @@ $transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
     p {
       margin: 0;
       color: $text-muted;
-      font-size: 0.85rem;
+      
       font-weight: 500;
     }
   }
@@ -413,8 +413,8 @@ $transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
 
 /* --- 10. ESTILOS DE PLANES --- */
 .badge-plan {
-  font-family: 'Montserrat', 'Outfit', sans-serif;
-  font-size: 0.75rem;
+  font-family: 'Montserrat', sans-serif;
+  
   font-weight: 800;
   padding: 0.35rem 0.65rem;
   border-radius: 8px;
@@ -486,7 +486,7 @@ $transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
 
       p {
         color: #f59e0b;
-        font-size: 0.75rem;
+        
         font-weight: 700;
         text-transform: uppercase;
         margin: 0;
@@ -497,7 +497,7 @@ $transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
       width: 100%;
       text-align: left;
       padding: 0.75rem 1rem;
-      font-size: 0.875rem;
+      
       color: #e2e8f0;
       border: none;
       cursor: pointer;

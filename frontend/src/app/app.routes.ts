@@ -24,7 +24,11 @@ export const routes: Routes = [
             { path: 'autogestion', loadComponent: () => import('./pages/dashboard/autogestion/autogestion').then(m => m.AutogestionComponent) },
             { path: 'pagos', loadComponent: () => import('./pages/dashboard/pagos/pagos.component').then(m => m.PagosComponent) },
             { path: 'clientes', loadComponent: () => import('./pages/dashboard/clientes/clientes').then(m => m.ClientesComponent) },
-            { path: 'proveedores', loadComponent: () => import('./pages/dashboard/proveedores/proveedores').then(m => m.ProveedoresComponent) }
+            { path: 'proveedores', loadComponent: () => import('./pages/dashboard/proveedores/proveedores').then(m => m.ProveedoresComponent) },
+            { path: 'servicios', loadComponent: () => import('./pages/dashboard/servicios/servicios').then(m => m.Servicios) },
+            { path: 'inventario', loadComponent: () => import('./pages/dashboard/inventario/inventario').then(m => m.Inventario) },
+            { path: 'ventas', loadComponent: () => import('./pages/dashboard/ventas/ventas').then(m => m.Ventas) },
+            { path: 'compras', loadComponent: () => import('./pages/dashboard/compras/compras').then(m => m.Compras) }
         ]
     },
     { path: '**', redirectTo: '' }

@@ -61,7 +61,16 @@
                         </td>
                         <td class="actions-cell">
                             <button class="btn-icon edit" (click)="abrirModal(proveedor)" title="Editar">✏️</button>
-                            <button class="btn-icon delete" (click)="eliminarProveedor(proveedor.id)" title="Eliminar">🗑️</button>
+                            <button class="btn-icon delete" (click)="eliminarProveedor(proveedor.id)" title="Eliminar" [disabled]="deletingId === proveedor.id">
+                                <span *ngIf="deletingId !== proveedor.id">🗑️</span>
+                                <span *ngIf="deletingId === proveedor.id" class="flex items-center">
+                                    <svg class="animate-spin h-4 w-4 text-red-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    </svg>
+                                    <span style="font-size: 0.75rem; margin-left: 0.25rem;">Eliminando...</span>
+                                </span>
+                            </button>
                         </td>
                     </tr>
                     }
@@ -114,8 +123,15 @@
                 
                 <div class="modal-footer">
                     <button type="button" class="btn-secondary" (click)="cerrarModal()">Cancelar</button>
-                    <button type="submit" class="btn-primary" [disabled]="!proveedorForm.valid">
-                        {{ isEditMode ? 'Guardar Cambios' : 'Guardar Proveedor' }}
+                    <button type="submit" class="btn-primary" [disabled]="!proveedorForm.valid || isSaving">
+                        <span *ngIf="!isSaving">{{ isEditMode ? 'Guardar Cambios' : 'Guardar Proveedor' }}</span>
+                        <span *ngIf="isSaving" class="flex items-center">
+                            <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            Guardando...
+                        </span>
                     </button>
                 </div>
             </form>

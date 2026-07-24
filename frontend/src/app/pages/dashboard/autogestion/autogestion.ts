@@ -13,6 +13,9 @@ import { AuthService } from '../../../services/auth.service';
 })
 export class AutogestionComponent implements OnInit {
   // --- VARIABLES DE ESTADO ---
+  isSaving = false;
+  isSavingAdmin = false;
+  isUploadingAvatar = false;
   user: any = null;
   afiliacion: any = null;
   profileImageUrl: string | null = null;
@@ -44,7 +47,7 @@ export class AutogestionComponent implements OnInit {
   }
 
   cargarAfiliaciones() {
-    this.http.get('http://127.0.0.1:8000/api/autogestion/afiliaciones').subscribe({
+    this.http.get('/api/autogestion/afiliaciones').subscribe({
       next: (res: any) => {
         if (res.afiliacion) {
           this.afiliacion = res.afiliacion;
@@ -72,12 +75,17 @@ export class AutogestionComponent implements OnInit {
       this.formAfiliacion.estado = 'pendiente';
     }
 
-    this.http.post('http://127.0.0.1:8000/api/autogestion/afiliaciones', this.formAfiliacion).subscribe({
+    this.isSaving = true;
+    this.http.post('/api/autogestion/afiliaciones', this.formAfiliacion).subscribe({
       next: (res: any) => {
+        this.isSaving = false;
         alert(res.message || 'Datos guardados. Tu información ha entrado en revisión.');
         this.cargarAfiliaciones();
       },
-      error: (err) => console.error(err)
+      error: (err) => {
+        this.isSaving = false;
+        console.error(err);
+      }
     });
   }
 
@@ -90,12 +98,17 @@ export class AutogestionComponent implements OnInit {
   // Gestiona las fechas de afiliación por parte del administrador
   gestionarAfiliacionAdmin() {
     if(!this.user) return;
-    this.http.post(`http://127.0.0.1:8000/api/autogestion/empleado/${this.user.id}/afiliaciones`, this.formAfiliacion).subscribe({
+    this.isSavingAdmin = true;
+    this.http.post(`/api/autogestion/empleado/${this.user.id}/afiliaciones`, this.formAfiliacion).subscribe({
       next: (res: any) => {
+        this.isSavingAdmin = false;
         alert(res.message);
         this.cargarAfiliaciones();
       },
-      error: (err) => console.error(err)
+      error: (err) => {
+        this.isSavingAdmin = false;
+        console.error(err);
+      }
     });
   }
 
@@ -123,11 +136,14 @@ export class AutogestionComponent implements OnInit {
       const formData = new FormData();
       formData.append('avatar', file);
 
-      this.http.post('http://127.0.0.1:8000/api/profile/avatar', formData).subscribe({
+      this.isUploadingAvatar = true;
+      this.http.post('/api/profile/avatar', formData).subscribe({
         next: (res: any) => {
+          this.isUploadingAvatar = false;
           console.log('Imagen guardada permanentemente en la nube:', res);
         },
         error: (err) => {
+          this.isUploadingAvatar = false;
           console.warn('Nota técnica: El backend en Render rechazó la subida (probable falta de credenciales de Cloudinary en el servidor). Pero la imagen se mantendrá localmente para el demo.', err);
         }
       });

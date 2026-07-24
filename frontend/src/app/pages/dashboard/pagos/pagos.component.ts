@@ -39,7 +39,7 @@ export class PagosComponent implements OnInit {
   cargarSolicitudes() {
     const token = sessionStorage.getItem('auth_token');
     const headers = { 'Authorization': `Bearer ${token}` };
-    this.http.get<any[]>('http://127.0.0.1:8000/api/admin-requests', { headers })
+    this.http.get<any[]>('/api/admin-requests', { headers })
       .subscribe({
         next: (data) => {
           this.solicitudes = data;
@@ -55,7 +55,7 @@ export class PagosComponent implements OnInit {
       const token = sessionStorage.getItem('auth_token');
       const headers = { 'Authorization': `Bearer ${token}` };
       const body = { tipo: 'migracion' };
-      this.http.post('http://127.0.0.1:8000/api/admin-requests', body, { headers })
+      this.http.post('/api/admin-requests', body, { headers })
         .subscribe({
           next: () => {
             alert('¡Solicitud de migración enviada a GestivaPyme!');
@@ -91,7 +91,7 @@ export class PagosComponent implements OnInit {
       formData.append('comprobante', this.selectedFile);
     }
 
-    this.http.post('http://127.0.0.1:8000/api/admin-requests', formData, { headers })
+    this.http.post('/api/admin-requests', formData, { headers })
       .subscribe({
         next: () => {
           this.isSubmitting = false;

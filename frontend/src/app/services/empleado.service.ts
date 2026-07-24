@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { shareReplay } from 'rxjs/operators';
 import { AuthService } from './auth.service';
 
 @Injectable({
@@ -8,7 +9,7 @@ import { AuthService } from './auth.service';
 })
 export class EmpleadoService {
 
-  private apiUrl = 'http://127.0.0.1:8000/api';
+  private apiUrl = '/api';
   private http = inject(HttpClient);
   private authService = inject(AuthService);
 
@@ -48,17 +49,29 @@ export class EmpleadoService {
   }
 
   // --- Cargos, Áreas y Roles (Listados para el formulario) ---
+  private cargos$?: Observable<any[]>;
   getCargos(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/cargos`, this.getHeaders());
+    if (!this.cargos$) {
+      this.cargos$ = this.http.get<any[]>(`${this.apiUrl}/cargos`, this.getHeaders()).pipe(shareReplay(1));
+    }
+    return this.cargos$;
   }
 
   // Asumimos que existe un endpoint /areas en api.php
   // Si no existe, lo tendremos que crear o usar roles provisionalmente
+  private areas$?: Observable<any[]>;
   getAreas(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/areas`, this.getHeaders());
+    if (!this.areas$) {
+      this.areas$ = this.http.get<any[]>(`${this.apiUrl}/areas`, this.getHeaders()).pipe(shareReplay(1));
+    }
+    return this.areas$;
   }
 
+  private roles$?: Observable<any[]>;
   getRoles(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/roles`, this.getHeaders());
+    if (!this.roles$) {
+      this.roles$ = this.http.get<any[]>(`${this.apiUrl}/roles`, this.getHeaders()).pipe(shareReplay(1));
+    }
+    return this.roles$;
   }
 }

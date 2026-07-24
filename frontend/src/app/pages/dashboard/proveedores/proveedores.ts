@@ -35,6 +35,8 @@ export class ProveedoresComponent implements OnInit {
   // Modal y Formulario
   showModal = false;
   isEditMode = false;
+  isSaving = false;
+  deletingId: number | null = null;
   proveedorActual: Proveedor = this.getEmptyProveedor();
   
   // Filtros
@@ -65,7 +67,7 @@ export class ProveedoresComponent implements OnInit {
     const user = this.authService.getUser();
     const empresaId = user?.empresa_id || user?.empresa?.id || '';
 
-    this.http.get<Proveedor[]>('http://localhost:8000/api/proveedores', {
+    this.http.get<Proveedor[]>('/api/proveedores', {
       headers: { 'X-Empresa-Id': empresaId.toString() }
     }).subscribe({
       next: (data) => {
@@ -110,20 +112,23 @@ export class ProveedoresComponent implements OnInit {
   }
 
   guardarProveedor() {
+    this.isSaving = true;
     const user = this.authService.getUser();
     const empresaId = user?.empresa_id || user?.empresa?.id || '';
     const headers = { 'X-Empresa-Id': empresaId.toString() };
 
     if (this.isEditMode && this.proveedorActual.id) {
       // PUT
-      this.http.put('http://localhost:8000/api/proveedores/' + this.proveedorActual.id, this.proveedorActual, { headers })
+      this.http.put('/api/proveedores/' + this.proveedorActual.id, this.proveedorActual, { headers })
         .subscribe({
           next: () => {
+            this.isSaving = false;
             this.toastService.show('Proveedor actualizado con éxito', 'success');
             this.cargarProveedores();
             this.cerrarModal();
           },
           error: (err) => {
+            this.isSaving = false;
             console.error('Error actualizando proveedor', err);
             const msg = err.error?.message || err.message || 'Error al actualizar el proveedor';
             this.toastService.show(msg, 'error');
@@ -131,14 +136,16 @@ export class ProveedoresComponent implements OnInit {
         });
     } else {
       // POST
-      this.http.post('http://localhost:8000/api/proveedores', this.proveedorActual, { headers })
+      this.http.post('/api/proveedores', this.proveedorActual, { headers })
         .subscribe({
           next: () => {
+            this.isSaving = false;
             this.toastService.show('Proveedor guardado con éxito', 'success');
             this.cargarProveedores();
             this.cerrarModal();
           },
           error: (err) => {
+            this.isSaving = false;
             console.error('Error creando proveedor', err);
             const msg = err.error?.message || err.error?.error || err.message || 'Error al guardar el proveedor';
             this.toastService.show(msg, 'error');
@@ -150,17 +157,20 @@ export class ProveedoresComponent implements OnInit {
   eliminarProveedor(id?: number) {
     if (!id) return;
     if (confirm('¿Estás seguro de eliminar este proveedor?')) {
+      this.deletingId = id;
       const user = this.authService.getUser();
       const empresaId = user?.empresa_id || user?.empresa?.id || '';
       const headers = { 'X-Empresa-Id': empresaId.toString() };
       
-      this.http.delete('http://localhost:8000/api/proveedores/' + id, { headers })
+      this.http.delete('/api/proveedores/' + id, { headers })
         .subscribe({
           next: () => {
+            this.deletingId = null;
             this.toastService.show('Proveedor eliminado con éxito', 'success');
             this.cargarProveedores();
           },
           error: (err) => {
+            this.deletingId = null;
             console.error('Error eliminando proveedor', err);
             this.toastService.show('Error al eliminar el proveedor', 'error');
           }

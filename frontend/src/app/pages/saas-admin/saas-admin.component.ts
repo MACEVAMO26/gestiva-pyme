@@ -369,9 +369,17 @@ export class SaasAdminComponent implements OnInit {
       this.profileForm.email = this.userEmail;
     }
 
-    // Redirige al panel correspondiente según el tipo de usuario
     if (this.user && this.user.empresa_id !== null) {
-      this.router.navigate(['/dashboard']);
+      let ruta = '/dashboard';
+      if (this.user.empresa) {
+        if (this.user.empresa.dominio) {
+          ruta = '/' + this.user.empresa.dominio + '/dashboard';
+        } else if (this.user.empresa.razon_social) {
+          const slug = this.user.empresa.razon_social.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]/g, '');
+          ruta = '/' + slug + '/dashboard';
+        }
+      }
+      this.router.navigate([ruta]);
     }
 
     this.modulosService.getCatalogoModulos().subscribe(catalog => {
@@ -429,7 +437,7 @@ export class SaasAdminComponent implements OnInit {
     const token = sessionStorage.getItem('auth_token');
     const headers = { Authorization: `Bearer ${token}` };
     this.http
-      .patch(`http://127.0.0.1:8000/api/leads/${this.leadSeleccionadoParaNotas.id}`, { notas: this.leadSeleccionadoParaNotas.notas }, { headers })
+      .patch(`/api/leads/${this.leadSeleccionadoParaNotas.id}`, { notas: this.leadSeleccionadoParaNotas.notas }, { headers })
       .subscribe({
         next: () => {},
         error: () => this.toastService.error('Error al guardar la nota.')
@@ -457,7 +465,7 @@ export class SaasAdminComponent implements OnInit {
     }
     const headers = { Authorization: `Bearer ${token}` };
     const t = new Date().getTime();
-    this.http.get<any[]>(`http://127.0.0.1:8000/api/leads?t=${t}`, { headers }).subscribe({
+    this.http.get<any[]>(`/api/leads?t=${t}`, { headers }).subscribe({
       next: (data) => {
         this.leads = [...data];
         if (this.leads.length === 0) {
@@ -484,7 +492,7 @@ export class SaasAdminComponent implements OnInit {
   // --- MÉTODOS DE PERFIL Y SEGURIDAD ---
   actualizarPerfil() {
     this.isUpdatingProfile = true;
-    this.http.put('http://127.0.0.1:8000/api/profile', this.profileForm, { headers: this.getHeaders() }).subscribe({
+    this.http.put('/api/profile', this.profileForm, { headers: this.getHeaders() }).subscribe({
         next: (res: any) => {
           this.userName = res.user.nombres;
           this.userEmail = res.user.email;
@@ -513,7 +521,7 @@ export class SaasAdminComponent implements OnInit {
     this.confirmModalTitle = 'Forzar Cambio de Clave';
     this.confirmModalMessage = 'Al aceptar, tu sesión se cerrará de inmediato y el sistema te obligará a registrar una nueva contraseña. ¿Estás segura?';
     this.confirmActionCallback = () => {
-      this.http.post('http://127.0.0.1:8000/api/profile/force-password-reset', {}, { headers: this.getHeaders() }).subscribe({
+      this.http.post('/api/profile/force-password-reset', {}, { headers: this.getHeaders() }).subscribe({
         next: (res: any) => {
           this.toastService.warning(res.message || 'Se requerirá cambio de contraseña en el próximo ingreso.');
           setTimeout(() => {
@@ -573,7 +581,7 @@ export class SaasAdminComponent implements OnInit {
                 const formData = new FormData();
                 formData.append('avatar', compressedFile);
 
-                this.http.post('http://127.0.0.1:8000/api/profile/avatar', formData, { 
+                this.http.post('/api/profile/avatar', formData, { 
                   headers: this.getHeaders()
                 }).subscribe({
                   next: (res: any) => {
@@ -626,7 +634,7 @@ export class SaasAdminComponent implements OnInit {
       formData.append('adjunto', this.archivoAdjuntoBrevo);
     }
 
-    this.http.post(`http://127.0.0.1:8000/api/comercial/enviar-masivo`, formData, { 
+    this.http.post(`/api/comercial/enviar-masivo`, formData, { 
       headers: { Authorization: `Bearer ${token}` }
     }).subscribe({
       next: (res: any) => {
@@ -652,7 +660,7 @@ export class SaasAdminComponent implements OnInit {
     const token = sessionStorage.getItem('auth_token');
     const headers = { Authorization: `Bearer ${token}` };
     this.http
-      .patch(`http://127.0.0.1:8000/api/leads/${id}`, { estado: nuevoEstado }, { headers })
+      .patch(`/api/leads/${id}`, { estado: nuevoEstado }, { headers })
       .subscribe({
         next: () => {
           this.cargarLeads();
@@ -665,7 +673,7 @@ export class SaasAdminComponent implements OnInit {
     this.abrirConfirmacion('Confirmar Acción', '¿Estás seguro de que deseas eliminar este lead? Esta acción no se puede deshacer.', () => {
       const token = sessionStorage.getItem('auth_token');
       const headers = { Authorization: `Bearer ${token}` };
-      this.http.delete(`http://127.0.0.1:8000/api/leads/${id}`, { headers }).subscribe({
+      this.http.delete(`/api/leads/${id}`, { headers }).subscribe({
         next: () => {
           this.cargarLeads();
         },
@@ -677,7 +685,7 @@ export class SaasAdminComponent implements OnInit {
   cargarSolicitudes() {
     const token = sessionStorage.getItem('auth_token');
     const headers = { Authorization: `Bearer ${token}` };
-    this.http.get<any[]>('http://127.0.0.1:8000/api/admin-requests', { headers }).subscribe({
+    this.http.get<any[]>('/api/admin-requests', { headers }).subscribe({
       next: (data) => {
         this.solicitudes = data;
         this.solicitudesPendientes = data.filter((s: any) => s.estado === 'pendiente').length;
@@ -724,7 +732,7 @@ export class SaasAdminComponent implements OnInit {
       }
       return path;
     }
-    return `http://127.0.0.1:8000/storage/${path}`;
+    return `http://localhost:8000/storage/${path}`;
   }
 
   cerrarModalSolicitud() {
@@ -758,7 +766,7 @@ export class SaasAdminComponent implements OnInit {
 
     this.http
       .patch(
-        `http://127.0.0.1:8000/api/admin-requests/${this.solicitudSeleccionada.id}/process`,
+        `/api/admin-requests/${this.solicitudSeleccionada.id}/process`,
         body,
         { headers },
       )
@@ -793,7 +801,7 @@ export class SaasAdminComponent implements OnInit {
 
     this.http
       .patch(
-        `http://127.0.0.1:8000/api/admin-requests/${solicitud.id}/process`,
+        `/api/admin-requests/${solicitud.id}/process`,
         body,
         { headers },
       )
