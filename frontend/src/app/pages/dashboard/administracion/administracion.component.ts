@@ -6,11 +6,13 @@ import { AuthService } from '../../../services/auth.service';
 import { PagosComponent } from '../pagos/pagos.component';
 
 import { UsuariosComponent } from './usuarios/usuarios.component';
+import { Sedes } from './sedes/sedes';
+import { Seguridad } from './seguridad/seguridad';
 
 @Component({
   selector: 'app-administracion',
   standalone: true,
-  imports: [CommonModule, FormsModule, PagosComponent, UsuariosComponent],
+  imports: [CommonModule, FormsModule, PagosComponent, UsuariosComponent, Sedes, Seguridad],
   templateUrl: './administracion.component.html',
   styleUrl: './administracion.component.scss'
 })
@@ -76,6 +78,14 @@ export class AdministracionComponent implements OnInit {
 
   goToUsuarios() {
     this.currentView = 'usuarios';
+  }
+
+  goToSedes() {
+    this.currentView = 'sedes';
+  }
+
+  goToSeguridad() {
+    this.currentView = 'seguridad';
   }
 
   solicitarCambioDatos() {

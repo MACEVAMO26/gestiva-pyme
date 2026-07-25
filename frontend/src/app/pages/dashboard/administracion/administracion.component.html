@@ -30,7 +30,7 @@
       </div>
 
       <!-- HTML TARJETA GESTION SEDES -->
-      <div class="admin-card dark-card">
+      <div class="admin-card dark-card" (click)="goToSedes()">
         <div class="card-icon">
           <svg
             fill="none"
@@ -76,7 +76,7 @@
       </div>
 
       <!-- HTML TARJETA CONFIGURACIONES SEGURIDAD -->
-      <div class="admin-card dark-card">
+      <div class="admin-card dark-card" (click)="goToSeguridad()">
         <div class="card-icon">
           <svg
             fill="none"
@@ -385,6 +385,36 @@
     <app-pagos></app-pagos>
   }
   @if (currentView === 'usuarios') {
+    <div class="admin-header with-back">
+      <button class="btn-back" (click)="goToView('dashboard')">
+        <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="icon-btn">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"/>
+        </svg>
+        Volver
+      </button>
+    </div>
     <app-usuarios></app-usuarios>
+  }
+  @if (currentView === 'sedes') {
+    <div class="admin-header with-back">
+      <button class="btn-back" (click)="goToView('dashboard')">
+        <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="icon-btn">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"/>
+        </svg>
+        Volver
+      </button>
+    </div>
+    <app-sedes></app-sedes>
+  }
+  @if (currentView === 'seguridad') {
+    <div class="admin-header with-back">
+      <button class="btn-back" (click)="goToView('dashboard')">
+        <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="icon-btn">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"/>
+        </svg>
+        Volver
+      </button>
+    </div>
+    <app-seguridad></app-seguridad>
   }
 </div>

@@ -1,0 +1,131 @@
+<div class="usuarios-module fade-in">
+  <div class="admin-header">
+    <h2>Configuraciones de Seguridad</h2>
+    <p>Administra los roles y los permisos de acceso de cada módulo del sistema.</p>
+  </div>
+
+  <div class="actions-bar">
+    <button class="btn-primary" (click)="abrirModalNuevoRol()">
+      <svg class="icon-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+      Nuevo Rol
+    </button>
+  </div>
+
+  <div class="split-layout" style="display: grid; grid-template-columns: 300px 1fr; gap: 1.5rem; align-items: start;">
+    
+    <!-- Lista de Roles -->
+    <div class="glass-panel" style="padding: 1rem; border-radius: 12px;">
+      <h3 style="margin-top: 0; color: #f8fafc; font-size: 1.1rem; margin-bottom: 1rem;">Roles del Sistema</h3>
+      
+      <div *ngIf="isLoading" class="loading-state" style="padding: 1rem;">
+        <div class="skeleton-cell" style="height: 40px; margin-bottom: 0.5rem;" *ngFor="let i of [1,2,3]"></div>
+      </div>
+
+      <div *ngIf="!isLoading && roles.length === 0" class="empty-state">
+        No hay roles creados.
+      </div>
+
+      <div class="roles-list" style="display: flex; flex-direction: column; gap: 0.5rem;">
+        <div class="role-item" *ngFor="let rol of roles" 
+             (click)="seleccionarRol(rol)"
+             [ngClass]="{'active': selectedRole?.id === rol.id}"
+             style="padding: 0.75rem 1rem; border-radius: 8px; cursor: pointer; transition: all 0.2s; border: 1px solid transparent; background: rgba(255,255,255,0.02);">
+          <div style="font-weight: 600; color: #f8fafc;">{{ rol.nombre }}</div>
+          <div style="font-size: 0.8rem; color: #94a3b8; margin-top: 0.25rem;">{{ rol.descripcion || 'Sin descripción' }}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Panel de Permisos -->
+    <div class="glass-panel" style="padding: 1.5rem; border-radius: 12px; min-height: 400px;">
+      <div *ngIf="!selectedRole" class="empty-state" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: #94a3b8;">
+        <svg class="icon-xl" style="margin-bottom: 1rem; opacity: 0.5;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" /></svg>
+        Selecciona un rol a la izquierda para configurar sus permisos.
+      </div>
+
+      <div *ngIf="selectedRole" class="fade-in">
+        <h3 style="margin-top: 0; color: #3b82f6; font-size: 1.25rem; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+          <svg class="icon-md" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+          Permisos para: {{ selectedRole.nombre }}
+        </h3>
+        <p style="color: #94a3b8; margin-bottom: 1.5rem; font-size: 0.9rem;">Los cambios se guardan automáticamente al seleccionar las casillas.</p>
+
+        <div *ngIf="isLoadingPermisos" class="loading-state">
+          <div class="skeleton-cell" style="height: 20px; width: 100%; margin-bottom: 1rem;" *ngFor="let i of [1,2,3,4]"></div>
+        </div>
+
+        <table class="premium-table" *ngIf="!isLoadingPermisos">
+          <thead>
+            <tr>
+              <th>Módulo</th>
+              <th class="text-center">Ver</th>
+              <th class="text-center">Crear</th>
+              <th class="text-center">Editar</th>
+              <th class="text-center">Inactivar/Borrar</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let mod of modulosDisponibles">
+              <td style="font-weight: 500;">{{ mod }}</td>
+              <td class="text-center">
+                <input type="checkbox" style="width: 18px; height: 18px; accent-color: #3b82f6; cursor: pointer;"
+                       [checked]="getPermisoParaModulo(mod).puede_ver"
+                       (change)="togglePermiso(mod, 'puede_ver')">
+              </td>
+              <td class="text-center">
+                <input type="checkbox" style="width: 18px; height: 18px; accent-color: #3b82f6; cursor: pointer;"
+                       [checked]="getPermisoParaModulo(mod).puede_crear"
+                       (change)="togglePermiso(mod, 'puede_crear')">
+              </td>
+              <td class="text-center">
+                <input type="checkbox" style="width: 18px; height: 18px; accent-color: #3b82f6; cursor: pointer;"
+                       [checked]="getPermisoParaModulo(mod).puede_editar"
+                       (change)="togglePermiso(mod, 'puede_editar')">
+              </td>
+              <td class="text-center">
+                <input type="checkbox" style="width: 18px; height: 18px; accent-color: #3b82f6; cursor: pointer;"
+                       [checked]="getPermisoParaModulo(mod).puede_inactivar"
+                       (change)="togglePermiso(mod, 'puede_inactivar')">
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Nuevo Rol -->
+  <div class="modal-overlay" *ngIf="showModal">
+    <div class="modal-content form-modal glass-panel">
+      <div class="modal-header">
+        <h3>Nuevo Rol</h3>
+        <button class="btn-close" (click)="cerrarModal()">
+          <svg class="icon-md" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
+      </div>
+
+      <form (ngSubmit)="guardarRol()">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Nombre del Rol <span style="color: #ef4444">*</span></label>
+            <input type="text" class="form-control" name="nombre" [(ngModel)]="formData.nombre" required placeholder="Ej. Gerente Comercial">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Descripción</label>
+            <textarea class="form-control" name="descripcion" [(ngModel)]="formData.descripcion" rows="3" placeholder="Describe brevemente las responsabilidades del rol"></textarea>
+          </div>
+        </div>
+
+        <div class="form-actions mt-3">
+          <button type="button" class="btn-secondary" (click)="cerrarModal()" [disabled]="isSubmitting">Cancelar</button>
+          <button type="submit" class="btn-primary" [disabled]="isSubmitting || !formData.nombre">
+            {{ isSubmitting ? 'Guardando...' : 'Crear Rol' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

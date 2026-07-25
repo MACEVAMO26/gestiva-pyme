@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
@@ -14,6 +14,7 @@ import { ToastService } from '../../../../services/toast.service';
 export class UsuariosComponent implements OnInit {
   http = inject(HttpClient);
   toast = inject(ToastService);
+  cdr = inject(ChangeDetectorRef);
 
   // --- ESTADOS ---
   isApprovingBaja = false;
@@ -55,11 +56,13 @@ export class UsuariosComponent implements OnInit {
       next: (data) => {
         this.usuarios = data;
         this.isLoading = false;
+        this.cdr.detectChanges(); // Forzar actualización de la vista
       },
       error: (err) => {
         console.error('Error al cargar usuarios:', err);
         this.toast.error('No se pudieron cargar los usuarios.');
         this.isLoading = false;
+        this.cdr.detectChanges(); // Forzar actualización de la vista
       }
     });
   }
