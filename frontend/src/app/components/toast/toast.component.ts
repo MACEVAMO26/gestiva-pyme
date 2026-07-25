@@ -10,7 +10,7 @@ import { ToastService } from '../../services/toast.service';
     <div class="fixed top-5 right-5 z-[9999] flex flex-col gap-3 pointer-events-none">
       @for (toast of toastService.toasts(); track toast.id) {
         <div 
-          class="pointer-events-auto transform transition-all duration-300 ease-out translate-y-0 opacity-100 flex items-center gap-3 min-w-[300px] max-w-sm p-4 rounded-xl shadow-2xl border backdrop-blur-md"
+          class="pointer-events-auto transform transition-all duration-300 ease-out translate-y-0 opacity-100 flex items-center gap-3 min-w-[300px] max-w-sm p-4 rounded-xl shadow-2xl border"
           [ngClass]="{
             'bg-lime-900/90 border-lime-500/50 text-lime-100': toast.type === 'success',
             'bg-orange-900/90 border-orange-500/50 text-orange-100': toast.type === 'error',
