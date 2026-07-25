@@ -56,7 +56,7 @@ export class DashboardComponent implements OnInit {
     
     // Guardian Frontend
     const rol = this.user?.rol?.nombre;
-    this.isFormalizado = (rol === 'Gerente' || rol === 'Admin Saas' || rol === 'Administrador' || !!this.user?.perfil_formalizado);
+    this.isFormalizado = (rol === 'Gerente General' || rol === 'Admin Saas' || rol === 'Administrador' || !!this.user?.perfil_formalizado);
 
     // Determina los módulos activos de la empresa
     if (this.user && this.user.empresa) {

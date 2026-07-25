@@ -12,13 +12,195 @@
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- */
 
 /* ESCALA GLOBAL MODIFICADA: Reducción global del texto a petición del usuario */
-html { font-size: 13px !important; }
+html { 
+  font-size: 12px !important; /* Disminuido un tamaño más a la letra normal */
+  font-weight: 400; /* Resto de la letra normal */
+}
+
+/* FIX DE COLOR GLOBAL PARA LETRAS EN FONDO OSCURO */
+body {
+  color: #f3f4f6 !important; /* Gris muy claro, casi blanco */
+  background-color: #050505; /* Asegurar fondo oscuro global */
+}
+
+table, th, td, div, span, p {
+  color: inherit;
+}
 
 /* Neumorfismo Oscuro (Dark Neumorphism) conservando colores de marca - CERO AZULES (Zinc/Black) */
 .neu-dark-panel {
   background-color: #09090b; /* Zinc 900 - Negro suave sin azul */
   box-shadow: 8px 8px 16px #030303, -8px -8px 16px rgba(255,255,255,0.02);
   border-radius: 1rem;
+}
+
+/* PANEL GLASS GLOBAL UNIFICADO */
+.glass-panel {
+  background: rgba(9, 9, 11, 0.7); /* Fondo oscuro semitransparente unificado */
+  border: 1px solid rgba(255, 255, 255, 0.05); /* Borde súper sutil */
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 16px !important; /* Esquinas redondeadas obligatorias en toda la app */
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.3); /* Sombra elegante */
+}
+
+/* --- TITULOS Y ENCABEZADOS DE MODULO --- */
+.module-header {
+  text-align: center !important; /* Centrado como se acordó */
+  margin-bottom: 2rem;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  .header-text {
+    text-align: center;
+  }
+
+  .module-title, h1 {
+    font-size: 3rem !important; /* 3 veces el tamaño normal */
+    font-weight: 700 !important; /* Los únicos con negrita */
+    text-transform: uppercase !important; /* Mayúsculas */
+    margin-bottom: 0.5rem;
+    color: #ffffff;
+    text-align: center !important; /* Centrados */
+    width: 100%;
+  }
+
+  h2, h3 {
+    font-size: 2rem !important; /* 2 veces el tamaño normal */
+    font-weight: 400 !important; /* SIN negrita */
+    text-transform: uppercase !important; /* Mayúsculas */
+    color: #cbd5e1;
+    text-align: left !important; /* Alineados a la izquierda */
+    width: 100%;
+    margin-bottom: 0.5rem;
+  }
+
+  p, .module-subtitle {
+    font-size: 0.8rem !important; /* Disminuido 2 tamaños */
+    font-weight: 400 !important; /* Sin negrita */
+    text-transform: none !important; /* Evitar mayúsculas indeseadas */
+    color: #94a3b8; /* Gris más sutil */
+    text-align: center !important;
+    margin-bottom: 2rem !important; /* Espacio extra entre el texto y el botón inferior */
+  }
+}
+
+/* --- BOTON VOLVER --- */
+.btn-volver {
+  background-color: #7f1d1d !important; /* Rojo oscuro (red-900) */
+  color: #ffffff !important;
+  border: none;
+  padding: 0.5rem 1.2rem;
+  border-radius: 8px;
+  font-weight: 400 !important; /* Texto normal, sin negrita */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  margin: 0 auto; /* Botón general centrado */
+
+  &:hover {
+    background-color: #991b1b !important; /* Ligeramente más claro en hover */
+  }
+}
+
+/* --- BOTON AGREGAR / NUEVO --- */
+.btn-add {
+  background-color: #3b82f6 !important; /* Azul claro (blue-500) */
+  color: #ffffff !important;
+  border: none;
+  padding: 0.5rem 1.2rem;
+  border-radius: 8px;
+  font-weight: 400 !important;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  /* Este no va necesariamente centrado porque suele ir arriba a la derecha, pero no es general */
+
+  &:hover {
+    background-color: #2563eb !important;
+  }
+}
+
+/* --- BOTON GUARDAR EXCLUSIVO --- */
+.btn-save {
+  background-color: #16a34a !important; /* Verde flat (green-600) */
+  color: #ffffff !important;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 400 !important; /* Sin negrita */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center; /* Centrado */
+  gap: 0.5rem;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  box-shadow: none !important; /* Flat, sin luz/glow */
+  margin: 0 auto; /* Botón general centrado */
+
+  &:hover {
+    background-color: #15803d !important; /* Verde un tono más oscuro */
+  }
+  
+  &:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+}
+
+/* --- BOTONES GENERALES --- */
+.btn-general, .btn-secondary, .btn-primary {
+  display: flex !important;
+  margin: 0 auto !important; /* Siempre centrados */
+  align-items: center;
+  justify-content: center;
+}
+
+/* --- ESTILOS GLOBALES DE PESTAÑAS (TABS) --- */
+.tabs-nav {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  border-bottom: 2px solid #f97316;
+  padding-bottom: 0;
+  margin-bottom: 1.5rem;
+}
+
+.tab-btn {
+  background-color: #059669; /* Verde (Emerald 600) por defecto (unselected) */
+  border: 1px solid transparent;
+  border-bottom: none;
+  border-radius: 8px 8px 0 0; /* Forma de pestañita (folder tab) */
+  color: #ffffff;
+  font-weight: 500;
+  padding: 0.75rem 1.25rem;
+  cursor: pointer;
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.2s ease;
+  margin-bottom: -1px; /* Para solaparse con el borde de abajo */
+
+  &:hover {
+    color: #ffffff;
+    background-color: #047857; /* Verde más oscuro al hover */
+  }
+
+  &.active {
+    color: #ffffff;
+    background-color: #f97316 !important; /* Naranja cuando está seleccionado */
+    font-weight: 600;
+    border: 1px solid #f97316;
+    border-bottom: 1px solid #f97316;
+  }
 }
 
 .neu-dark-button {
@@ -105,32 +287,35 @@ html { font-size: 13px !important; }
    UNIFICACIÓN GLOBAL DE TIPOGRAFÍA Y FORMULARIOS (Solicitud de Estandarización)
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- */
 
-/* 1. Subtítulos (h2, h3) */
-/* Rebajamos el tamaño para que no compitan con el título principal, acercándolos a texto normal */
-.dashboard-container h2,
-.dashboard-container h3,
-.admin-module h2,
-.admin-module h3,
-.glass-panel h2,
-.glass-panel h3 {
-  font-size: 1.4rem !important; /* Compensado para html 13px */
-  font-weight: 500 !important;
-  text-transform: uppercase !important;
-  margin-bottom: 1rem;
-  letter-spacing: 0.5px;
+/* 1. Títulos Principales (h1, .module-title, .page-title) */
+/* Centrados, 3 veces texto normal, UNICOS con negrita */
+h1, .module-title, .page-title, .dashboard-container h1, .admin-module h1, .admin-header h2.page-title {
+  font-size: 3rem !important;
+  font-weight: 700 !important; /* Solo título lleva negrita */
+  text-align: center !important;
   color: #ffffff;
+  margin-bottom: 1.5rem;
+  width: 100%;
+  display: block;
 }
 
-/* Asegurar que los títulos principales conserven su jerarquía y sean en MAYÚSCULA como pidió el usuario */
-.dashboard-container h1,
-.dashboard-container h2,
-.admin-module h1,
-.admin-header h2.page-title,
-.page-title {
-  font-size: 2.25rem !important; /* Aumentado a 2.25rem para que NO se encojan con la reducción de la base (2.25 * 13px = 29.25px) */
+/* 2. Subtítulos (h2, h3, .module-subtitle) */
+/* Izquierda, mayúsculas, 2 veces texto normal, SIN negrita */
+h2:not(.page-title), h3, .module-subtitle, .dashboard-container h2, .dashboard-container h3, .admin-module h2, .admin-module h3, .glass-panel h2, .glass-panel h3 {
+  font-size: 2rem !important;
+  font-weight: 400 !important; /* Sin negrita */
+  text-align: left !important;
   text-transform: uppercase !important;
-  font-weight: 500 !important;
-  letter-spacing: 1px !important;
+  color: #cbd5e1;
+  margin-bottom: 1rem;
+  width: 100%;
+  display: block;
+}
+
+/* 3. Texto Normal (p, span, div sin clase de título) */
+/* 3 veces más pequeño que el título (1rem), SIN negrita */
+p, span, td, .text-sm, .text-muted {
+  font-weight: 400 !important; /* Sin negrita */
 }
 
 /* 2. Etiquetas de Formularios (Labels) */
@@ -151,7 +336,9 @@ form label,
 /* Bordes visibles para que se distingan claramente las zonas de llenado */
 input:not([type="checkbox"]):not([type="radio"]),
 select,
-textarea {
+textarea,
+.form-control,
+.input-neumorphic {
   font-size: 0.95rem !important;
   padding: 0.75rem 1rem !important;
   border: 1px solid rgba(255, 255, 255, 0.15) !important;
@@ -164,11 +351,28 @@ textarea {
 
 input:not([type="checkbox"]):not([type="radio"]):focus,
 select:focus,
-textarea:focus {
+textarea:focus,
+.form-control:focus,
+.input-neumorphic:focus {
   outline: none !important;
   border-color: rgba(255, 152, 0, 0.5) !important; /* Naranja en foco */
   background-color: rgba(0, 0, 0, 0.4) !important;
   box-shadow: 0 0 0 2px rgba(255, 152, 0, 0.15) !important;
+}
+
+/* Fijar el fondo de las opciones de select en oscuro y activar color-scheme nativo */
+select {
+  color-scheme: dark;
+}
+
+option {
+  background-color: #09090b;
+  color: #ffffff;
+}
+
+::placeholder {
+  color: rgba(255, 255, 255, 0.5) !important;
+  opacity: 1 !important; /* Fix for Firefox */
 }
 
 /* 4. Unificación de Texto "Normal" */
@@ -201,10 +405,12 @@ textarea:focus {
 /* 6. Botón de Accesibilidad (Ojo) Unificado */
 /* El usuario solicitó el ojo en amarillo quemado y contornos negros delgados */
 .accessibility-btn {
-  background-color: #d97706 !important; /* Amarillo quemado */
-  border: 1.5px solid #000000 !important; /* Contorno del botón negro no tan grueso */
-  width: 42px !important;
-  height: 42px !important;
+  background-color: #ca8a04 !important; /* Amarillo real (Yellow 600) */
+  border: none !important; /* Sin borde negro para igualar el avatar */
+  width: 28px !important; /* Tamaño exacto del avatar */
+  height: 28px !important; /* Tamaño exacto del avatar */
+  min-width: 28px !important;
+  min-height: 28px !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
@@ -212,16 +418,17 @@ textarea:focus {
   padding: 0 !important;
   cursor: pointer !important;
   transition: all 0.3s ease !important;
-  box-shadow: none !important;
+  box-shadow: 2px 2px 5px #030303, -2px -2px 5px rgba(255,255,255,0.02) !important;
 }
 
 .accessibility-btn svg {
-  width: 22px !important;
-  height: 22px !important;
+  width: 16px !important; /* Proporcional al botón de 28px */
+  height: 16px !important;
   stroke: #000000 !important; /* Contorno del ojo negro */
-  stroke-width: 1.5 !important; /* Contorno no tan grueso */
+  stroke-width: 1.5 !important;
 }
 
 .accessibility-btn:hover {
-  background-color: #b45309 !important; /* Amarillo oscuro al pasar el ratón */
+  background-color: #a16207 !important; /* Hover oscuro */
+  box-shadow: inset 2px 2px 5px rgba(0,0,0,0.5) !important;
 }

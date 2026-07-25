@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../../services/auth.service';
+import { TiempoService } from '../../../services/tiempo.service';
 
 @Component({
   selector: 'app-autogestion',
@@ -33,8 +34,19 @@ export class AutogestionComponent implements OnInit {
   cantidadRenovaciones: number = 0;
   solicitudEnviada: boolean = false;
 
+  // Variables para Vacaciones
+  misVacaciones: any[] = [];
+  nuevaVacacion = {
+    fecha_inicio: '',
+    fecha_fin: '',
+    tipo: 'Disfrute Legal',
+    observaciones: ''
+  };
+  isSubmittingVacacion = false;
+
   private authService = inject(AuthService);
   private http = inject(HttpClient);
+  private tiempoService = inject(TiempoService);
 
   get isHR(): boolean {
     const rol = this.user?.rol?.nombre?.toLowerCase() || '';
@@ -44,6 +56,43 @@ export class AutogestionComponent implements OnInit {
   ngOnInit(): void {
     this.user = this.authService.getUser() as any;
     this.cargarAfiliaciones();
+    this.cargarMisVacaciones();
+  }
+
+  cargarMisVacaciones() {
+    if (this.user) {
+      this.tiempoService.getMisVacaciones(this.user.id).subscribe({
+        next: (data) => this.misVacaciones = data,
+        error: (err) => console.error('Error cargando vacaciones', err)
+      });
+    }
+  }
+
+  solicitarVacaciones() {
+    if (!this.nuevaVacacion.fecha_inicio || !this.nuevaVacacion.fecha_fin) {
+      alert('Debes ingresar la fecha de inicio y fin.');
+      return;
+    }
+
+    this.isSubmittingVacacion = true;
+    const payload = {
+      ...this.nuevaVacacion,
+      usuario_id: this.user.id
+    };
+
+    this.tiempoService.solicitarVacaciones(payload).subscribe({
+      next: (res) => {
+        this.isSubmittingVacacion = false;
+        alert('Solicitud de vacaciones enviada con éxito.');
+        this.nuevaVacacion = { fecha_inicio: '', fecha_fin: '', tipo: 'Disfrute Legal', observaciones: '' };
+        this.cargarMisVacaciones();
+      },
+      error: (err) => {
+        this.isSubmittingVacacion = false;
+        console.error(err);
+        alert('Error al enviar la solicitud de vacaciones.');
+      }
+    });
   }
 
   cargarAfiliaciones() {

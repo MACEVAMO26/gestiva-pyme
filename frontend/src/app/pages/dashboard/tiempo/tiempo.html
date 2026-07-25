@@ -1,0 +1,255 @@
+<div class="tiempo-container">
+  
+  <div class="module-header">
+    <h1 class="page-title">Gestión de Tiempo y Novedades</h1>
+    <p class="text-gray-400 mt-2 text-sm">Administra los turnos de trabajo y revisa las solicitudes de vacaciones de los empleados.</p>
+  </div>
+
+  <!-- Tabs Navigation -->
+  <div class="tabs-nav mt-6">
+    <button class="tab-btn" [class.active]="currentTab === 'turnos'" (click)="setTab('turnos')">Creación de Turnos</button>
+    <button class="tab-btn" [class.active]="currentTab === 'asignacion'" (click)="setTab('asignacion')">Asignar Turnos</button>
+    <button class="tab-btn" [class.active]="currentTab === 'vacaciones'" (click)="setTab('vacaciones')">Solicitudes de Vacaciones</button>
+  </div>
+
+  <div class="tab-content mt-6">
+
+    <!-- TAB 1: CREACIÓN DE TURNOS -->
+    @if (currentTab === 'turnos') {
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        <!-- Formulario Crear Turno -->
+        <div class="lg:col-span-1">
+          <div class="glass-panel" style="padding: 1.5rem; border-radius: 12px;">
+            <h3 class="panel-title mb-4" style="color: #f8fafc; font-size: 1.1rem; border-bottom: 1px solid #374151; padding-bottom: 0.5rem;">Nuevo Turno</h3>
+            <form (ngSubmit)="crearTurno()" class="grid-form space-y-4 mt-4">
+              <div class="form-group">
+                <label>Nombre del Turno</label>
+                <input type="text" class="input-neumorphic" [(ngModel)]="nuevoTurno.nombre_turno" name="nombre_turno" placeholder="Ej. Turno Diurno L-V" required>
+              </div>
+              <div class="grid grid-cols-2 gap-4">
+                <div class="form-group">
+                  <label>Hora Entrada</label>
+                  <input type="time" class="input-neumorphic" [(ngModel)]="nuevoTurno.hora_entrada" name="hora_entrada" required>
+                </div>
+                <div class="form-group">
+                  <label>Hora Salida</label>
+                  <input type="time" class="input-neumorphic" [(ngModel)]="nuevoTurno.hora_salida" name="hora_salida" required>
+                </div>
+              </div>
+              <div class="form-group">
+                <label>Días de la semana</label>
+                <input type="text" class="input-neumorphic" [(ngModel)]="nuevoTurno.dias_semana" name="dias_semana" placeholder="L, M, M, J, V" required>
+              </div>
+              <button type="submit" class="btn-primary w-full mt-4" style="justify-content: center;" [disabled]="isSubmittingTurno">
+                {{ isSubmittingTurno ? 'Guardando...' : 'Crear Turno' }}
+              </button>
+            </form>
+          </div>
+        </div>
+
+        <!-- Lista de Turnos -->
+        <div class="lg:col-span-2">
+          <div class="glass-panel" style="padding: 1.5rem; border-radius: 12px; height: 100%;">
+            <h3 class="panel-title mb-4" style="color: #f8fafc; font-size: 1.1rem; border-bottom: 1px solid #374151; padding-bottom: 0.5rem;">Turnos Existentes</h3>
+            @if (turnos.length === 0) {
+              <div class="empty-state text-center text-gray-500 mt-8">No hay turnos creados.</div>
+            } @else {
+              <div class="table-responsive mt-4">
+                <table class="premium-table">
+                  <thead>
+                    <tr>
+                      <th>Nombre</th>
+                      <th>Horario</th>
+                      <th>Días</th>
+                      <th>Estado</th>
+                      <th>Acciones</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for (turno of turnos; track turno.id) {
+                      <tr>
+                        <td class="font-bold">{{ turno.nombre_turno }}</td>
+                        <td>{{ turno.hora_entrada }} - {{ turno.hora_salida }}</td>
+                        <td>{{ turno.dias_semana }}</td>
+                        <td>
+                          <span class="status-badge" [ngClass]="{'status-active': turno.activo, 'status-inactive': !turno.activo}">
+                            {{ turno.activo ? 'Activo' : 'Inactivo' }}
+                          </span>
+                        </td>
+                        <td>
+                          <button class="btn-sm" [ngClass]="turno.activo ? 'btn-danger' : 'btn-success'" (click)="toggleTurnoEstado(turno)">
+                            {{ turno.activo ? 'Desactivar' : 'Activar' }}
+                          </button>
+                        </td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- TAB 2: ASIGNACIÓN DE TURNOS -->
+    @if (currentTab === 'asignacion') {
+      <div class="glass-panel mx-auto" style="padding: 2rem; border-radius: 12px;">
+        <h3 class="panel-title mb-4" style="color: #f8fafc; font-size: 1.2rem; border-bottom: 1px solid #374151; padding-bottom: 0.5rem;">Asignar Turno a Empleado</h3>
+        <p class="text-sm text-gray-400 mb-6">Selecciona un empleado y asígnale un turno en un rango de fechas. El sistema validará que no se cruce con sus vacaciones aprobadas.</p>
+        
+        <form (ngSubmit)="asignarTurno()" class="grid-form">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="form-group">
+              <label>Empleado</label>
+              <select class="input-neumorphic" [(ngModel)]="asignacion.usuario_id" name="usuario_id" required>
+                <option [ngValue]="null" disabled selected>Seleccione un empleado...</option>
+                @for (emp of empleados; track emp.id) {
+                  <option [ngValue]="emp.id">{{ emp.nombre }} ({{ emp.rol?.nombre }})</option>
+                }
+              </select>
+            </div>
+            
+            <div class="form-group">
+              <label>Turno a Asignar</label>
+              <select class="input-neumorphic" [(ngModel)]="asignacion.turno_id" name="turno_id" required>
+                <option [ngValue]="null" disabled selected>Seleccione un turno...</option>
+                @for (turno of turnos; track turno.id) {
+                  @if (turno.activo) {
+                    <option [ngValue]="turno.id">{{ turno.nombre_turno }} ({{ turno.hora_entrada }} - {{ turno.hora_salida }})</option>
+                  }
+                }
+              </select>
+            </div>
+            
+            <div class="form-group">
+              <label>Fecha Desde</label>
+              <input type="date" class="input-neumorphic" [(ngModel)]="asignacion.fecha_desde" name="fecha_desde" required>
+            </div>
+            
+            <div class="form-group">
+              <label>Fecha Hasta</label>
+              <input type="date" class="input-neumorphic" [(ngModel)]="asignacion.fecha_hasta" name="fecha_hasta" required>
+            </div>
+          </div>
+          
+          <div class="mt-8 flex justify-end">
+            <button type="submit" class="btn-primary px-8" [disabled]="isSubmittingAsignacion">
+              {{ isSubmittingAsignacion ? 'Asignando...' : 'Asignar Turno' }}
+            </button>
+          </div>
+        </form>
+      </div>
+    }
+
+    <!-- TAB 3: VACACIONES (RRHH) -->
+    @if (currentTab === 'vacaciones') {
+      <div class="glass-panel" style="padding: 2rem; border-radius: 12px;">
+        <h3 class="panel-title mb-4" style="color: #f8fafc; font-size: 1.2rem; border-bottom: 1px solid #374151; padding-bottom: 0.5rem;">Bandeja de Solicitudes de Vacaciones</h3>
+        @if (vacaciones.length === 0) {
+          <div class="empty-state">No hay solicitudes de vacaciones registradas.</div>
+        } @else {
+          <div class="table-responsive mt-4">
+            <table class="premium-table">
+              <thead>
+                <tr>
+                  <th>Empleado</th>
+                  <th>Fechas</th>
+                  <th>Tipo</th>
+                  <th>Observaciones</th>
+                  <th>Estado</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (vac of vacaciones; track vac.id) {
+                  <tr>
+                    <td class="font-bold">{{ vac.usuario?.nombre || 'Desconocido' }}</td>
+                    <td>{{ vac.fecha_inicio }} al {{ vac.fecha_fin }}</td>
+                    <td>{{ vac.tipo }}</td>
+                    <td class="max-w-xs truncate" [title]="vac.observaciones">{{ vac.observaciones || 'Sin observaciones' }}</td>
+                    <td>
+                      <span class="status-badge" [ngClass]="{
+                        'status-pending': vac.estado === 'pendiente',
+                        'status-success': vac.estado === 'aprobada',
+                        'status-danger': vac.estado === 'rechazada'
+                      }">
+                        {{ vac.estado | titlecase }}
+                      </span>
+                    </td>
+                    <td>
+                      @if (vac.estado === 'pendiente') {
+                        <button class="btn-sm btn-primary" (click)="abrirModalVacaciones(vac)">
+                          Gestionar
+                        </button>
+                      } @else {
+                        <button class="btn-sm btn-secondary" (click)="abrirModalVacaciones(vac)">
+                          Ver Detalles
+                        </button>
+                      }
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+      </div>
+    }
+
+  </div>
+</div>
+
+<!-- Modal para Gestionar Vacaciones -->
+@if (showModalVacaciones && vacacionSeleccionada) {
+  <div class="modal-backdrop" (click)="cerrarModalVacaciones()"></div>
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3 class="text-xl font-bold text-white">Gestión de Vacaciones</h3>
+      <button class="close-btn" (click)="cerrarModalVacaciones()">×</button>
+    </div>
+    
+    <div class="modal-body space-y-4 text-gray-300">
+      <p><strong>Empleado:</strong> {{ vacacionSeleccionada.usuario?.nombre }}</p>
+      <p><strong>Fechas:</strong> Del {{ vacacionSeleccionada.fecha_inicio }} al {{ vacacionSeleccionada.fecha_fin }}</p>
+      <p><strong>Tipo:</strong> {{ vacacionSeleccionada.tipo }}</p>
+      <p><strong>Observaciones:</strong> {{ vacacionSeleccionada.observaciones || 'N/A' }}</p>
+      
+      <hr class="border-gray-700 my-4">
+      
+      @if (vacacionSeleccionada.estado === 'pendiente') {
+        <form (ngSubmit)="responderVacaciones()">
+          <div class="form-group">
+            <label>Decisión</label>
+            <select class="input-neumorphic" [(ngModel)]="respuestaVacacion.estado" name="estado_decision" required>
+              <option value="aprobada">Aprobar Solicitud</option>
+              <option value="rechazada">Rechazar Solicitud</option>
+            </select>
+          </div>
+          
+          @if (respuestaVacacion.estado === 'rechazada') {
+            <div class="form-group mt-4">
+              <label>Justificación del Rechazo <span class="text-red-500">*</span></label>
+              <textarea class="input-neumorphic" [(ngModel)]="respuestaVacacion.justificacion_respuesta" name="justificacion" rows="3" required placeholder="Motivo por el cual se rechazan o deben ser modificadas..."></textarea>
+            </div>
+          }
+          
+          <div class="flex justify-end gap-3 mt-6">
+            <button type="button" class="btn-secondary" (click)="cerrarModalVacaciones()">Cancelar</button>
+            <button type="submit" class="btn-primary" [disabled]="isSubmittingRespuesta">
+              {{ isSubmittingRespuesta ? 'Guardando...' : 'Confirmar Decisión' }}
+            </button>
+          </div>
+        </form>
+      } @else {
+        <div class="alert-box" [ngClass]="vacacionSeleccionada.estado === 'aprobada' ? 'success' : 'error'">
+          Esta solicitud fue <strong>{{ vacacionSeleccionada.estado }}</strong>.
+          @if (vacacionSeleccionada.justificacion_respuesta) {
+            <p class="mt-2"><strong>Justificación RRHH:</strong> {{ vacacionSeleccionada.justificacion_respuesta }}</p>
+          }
+        </div>
+      }
+    </div>
+  </div>
+}

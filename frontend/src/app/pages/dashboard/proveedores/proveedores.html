@@ -4,7 +4,7 @@
             <h1 class="module-title">Gestión de Proveedores</h1>
             <p class="module-subtitle">Administra el inventario de proveedores, contactos corporativos y documentos legales.</p>
         </div>
-        <button class="btn-primary" (click)="abrirModal()">
+        <button class="btn-add" (click)="abrirModal()">
             <i class="fas fa-plus"></i> Nuevo Proveedor
         </button>
     </header>
@@ -24,7 +24,7 @@
                     <th>PROVEEDOR</th>
                     <th>CONTACTO PRINCIPAL</th>
                     <th>EMAIL / DIRECCIÓN</th>
-                    <th>DOCUMENTOS</th>
+                    <th>EVALUACIÓN</th>
                     <th>ACCIONES</th>
                 </tr>
             </thead>
@@ -51,13 +51,19 @@
                             <span class="text-sm">📍 {{proveedor.direccion || 'N/A'}}</span>
                         </td>
                         <td>
-                            @if (proveedor.documentos_url) {
-                                <a [href]="proveedor.documentos_url" target="_blank" class="text-primary text-sm hover-underline">
-                                    <i class="fas fa-link"></i> Ver Documento
-                                </a>
-                            } @else {
-                                <span class="text-muted text-sm">Sin anexos</span>
-                            }
+                            <div class="evaluation-cell" style="display: flex; flex-direction: column; gap: 4px;">
+                                <span class="badge" [ngClass]="{
+                                    'bg-green-500 text-green-100': proveedor.estado_evaluacion === 'Excelente' || proveedor.estado_evaluacion === 'Bueno',
+                                    'bg-yellow-500 text-yellow-100': proveedor.estado_evaluacion === 'Regular',
+                                    'bg-red-500 text-red-100': proveedor.estado_evaluacion === 'Malo',
+                                    'bg-gray-500 text-gray-100': proveedor.estado_evaluacion === 'No Evaluado' || !proveedor.estado_evaluacion
+                                }">
+                                    {{ proveedor.estado_evaluacion || 'No Evaluado' }}
+                                </span>
+                                <div class="stars" style="color: #fbbf24; font-size: 0.8rem;">
+                                    {{ '★'.repeat(proveedor.calificacion || 0) }}{{ '☆'.repeat(5 - (proveedor.calificacion || 0)) }}
+                                </div>
+                            </div>
                         </td>
                         <td class="actions-cell">
                             <button class="btn-icon edit" (click)="abrirModal(proveedor)" title="Editar">✏️</button>
@@ -116,6 +122,26 @@
                         <input type="text" class="input-neumorphic" [(ngModel)]="proveedorActual.direccion" name="direccion">
                     </div>
                 </div>
+                <div class="form-grid" style="margin-top: 15px;">
+                    <div class="form-group">
+                        <label>Estado de Evaluación</label>
+                        <select class="input-neumorphic" [(ngModel)]="proveedorActual.estado_evaluacion" name="estado_evaluacion">
+                            <option value="No Evaluado">No Evaluado</option>
+                            <option value="Excelente">Excelente</option>
+                            <option value="Bueno">Bueno</option>
+                            <option value="Regular">Regular</option>
+                            <option value="Malo">Malo</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Calificación (1 al 5)</label>
+                        <input type="number" class="input-neumorphic" [(ngModel)]="proveedorActual.calificacion" name="calificacion" min="0" max="5">
+                    </div>
+                </div>
+                <div class="form-group" style="margin-top: 15px;">
+                    <label>Comentarios de Evaluación</label>
+                    <textarea class="input-neumorphic" [(ngModel)]="proveedorActual.comentarios_evaluacion" name="comentarios_evaluacion" rows="2"></textarea>
+                </div>
                 <div class="form-group" style="margin-top: 15px;">
                     <label>URL Documentos (RUT, Cámara de Comercio)</label>
                     <input type="text" class="input-neumorphic" [(ngModel)]="proveedorActual.documentos_url" name="documentos_url" placeholder="https://...">
@@ -123,7 +149,7 @@
                 
                 <div class="modal-footer">
                     <button type="button" class="btn-secondary" (click)="cerrarModal()">Cancelar</button>
-                    <button type="submit" class="btn-primary" [disabled]="!proveedorForm.valid || isSaving">
+                    <button type="submit" class="btn-save" [disabled]="!proveedorForm.valid || isSaving">
                         <span *ngIf="!isSaving">{{ isEditMode ? 'Guardar Cambios' : 'Guardar Proveedor' }}</span>
                         <span *ngIf="isSaving" class="flex items-center">
                             <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">

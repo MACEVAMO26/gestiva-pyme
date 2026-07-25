@@ -31,6 +31,23 @@ export class DashboardHome implements OnInit, OnDestroy {
   isLoading = false;
   tabActiva: 'recibidas' | 'asignadas' = 'recibidas';
 
+  // --- GETTERS PARA KANBAN ---
+  get getTareasActuales() {
+    return this.tabActiva === 'recibidas' ? this.tareasRecibidas : this.tareasAsignadas;
+  }
+
+  get tareasPendientes() {
+    return this.getTareasActuales.filter(t => t.estado === 'notificada');
+  }
+
+  get tareasEnProceso() {
+    return this.getTareasActuales.filter(t => t.estado === 'en_proceso');
+  }
+
+  get tareasTerminadas() {
+    return this.getTareasActuales.filter(t => t.estado === 'terminada');
+  }
+
   // Modal Crear Tarea
   showModal = false;
   isSubmitting = false;
@@ -63,7 +80,7 @@ export class DashboardHome implements OnInit, OnDestroy {
   ngOnInit() {
     this.currentUser = this.authService.getUser();
     const rol = this.currentUser?.rol?.nombre;
-    this.puedeAsignar = (rol === 'Gerente' || rol === 'Jefe de Área');
+    this.puedeAsignar = (rol === 'Gerente General' || rol === 'Jefe de Área');
     
     this.iniciarReloj();
     this.generarCalendario();

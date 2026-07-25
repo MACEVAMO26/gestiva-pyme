@@ -29,7 +29,7 @@ class ReunionController extends Controller
                     return true;
                 }
 
-                if ($reunion->audiencia === 'gerencia' && in_array($rol, ['Gerente', 'Jefe de Área'])) {
+                if ($reunion->audiencia === 'gerencia' && in_array($rol, ['Gerente General', 'Jefe de Área'])) {
                     return true;
                 }
 
@@ -57,7 +57,7 @@ class ReunionController extends Controller
         $user->load('rol');
         $rol = $user->rol ? $user->rol->nombre : null;
 
-        if (!in_array($rol, ['Gerente', 'Jefe de Área'])) {
+        if (!in_array($rol, ['Gerente General', 'Jefe de Área'])) {
             return response()->json(['message' => 'No tienes permiso para crear reuniones'], 403);
         }
 
@@ -82,7 +82,7 @@ class ReunionController extends Controller
 
         if ($data['audiencia'] === 'gerencia') {
             $query->whereHas('rol', function($q) {
-                $q->whereIn('nombre', ['Gerente', 'Jefe de Área']);
+                $q->whereIn('nombre', ['Gerente General', 'Jefe de Área']);
             });
         } elseif ($data['audiencia'] === 'area') {
             $user->load('empleado');

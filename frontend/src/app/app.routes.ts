@@ -21,6 +21,7 @@ export const routes: Routes = [
             { path: 'dashboard', loadComponent: () => import('./pages/dashboard-home/dashboard-home').then(m => m.DashboardHome) },
             { path: 'administracion', loadComponent: () => import('./pages/dashboard/administracion/administracion.component').then(m => m.AdministracionComponent) },
             { path: 'empleados', loadComponent: () => import('./pages/dashboard/empleados/empleados.component').then(m => m.EmpleadosComponent) },
+            { path: 'tiempo', loadComponent: () => import('./pages/dashboard/tiempo/tiempo').then(m => m.TiempoComponent) },
             { path: 'autogestion', loadComponent: () => import('./pages/dashboard/autogestion/autogestion').then(m => m.AutogestionComponent) },
             { path: 'pagos', loadComponent: () => import('./pages/dashboard/pagos/pagos.component').then(m => m.PagosComponent) },
             { path: 'clientes', loadComponent: () => import('./pages/dashboard/clientes/clientes').then(m => m.ClientesComponent) },
@@ -28,7 +29,8 @@ export const routes: Routes = [
             { path: 'servicios', loadComponent: () => import('./pages/dashboard/servicios/servicios').then(m => m.Servicios) },
             { path: 'inventario', loadComponent: () => import('./pages/dashboard/inventario/inventario').then(m => m.Inventario) },
             { path: 'ventas', loadComponent: () => import('./pages/dashboard/ventas/ventas').then(m => m.Ventas) },
-            { path: 'compras', loadComponent: () => import('./pages/dashboard/compras/compras').then(m => m.Compras) }
+            { path: 'compras', loadComponent: () => import('./pages/dashboard/compras/compras').then(m => m.Compras) },
+            { path: 'prefacturacion', loadComponent: () => import('./pages/dashboard/prefacturacion/prefacturacion').then(m => m.PrefacturacionComponent) }
         ]
     },
     { path: '**', redirectTo: '' }

@@ -2,6 +2,7 @@ import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
+import { forkJoin, Observable, of } from 'rxjs';
 
 @Component({
   selector: 'app-seguridad',
@@ -20,6 +21,7 @@ export class Seguridad implements OnInit {
   isLoading = true;
   isLoadingPermisos = false;
   isSubmitting = false;
+  isSavingPermisos = false;
   showModal = false;
 
   formData: any = {
@@ -105,37 +107,59 @@ export class Seguridad implements OnInit {
     });
   }
 
-  // Helpers para gestionar los permisos temporalmente en la vista
   getPermisoParaModulo(modulo: string) {
-    return this.permisos.find(p => p.modulo === modulo) || {
-      rol_id: this.selectedRole.id,
-      modulo: modulo,
-      puede_ver: false,
-      puede_crear: false,
-      puede_editar: false,
-      puede_inactivar: false
-    };
-  }
-
-  guardarPermiso(permiso: any) {
-    if (permiso.id) {
-      this.http.put(`/api/permisos/${permiso.id}`, permiso, { headers: this.getHeaders() }).subscribe({
-        next: () => console.log('Permiso actualizado'),
-        error: (err) => console.error(err)
-      });
-    } else {
-      this.http.post('/api/permisos', permiso, { headers: this.getHeaders() }).subscribe({
-        next: (data) => {
-          this.permisos.push(data); // Añadir para que ya tenga ID y se actualice en la prox.
-        },
-        error: (err) => console.error(err)
-      });
+    let p = this.permisos.find(p => p.modulo === modulo);
+    if (!p) {
+      p = {
+        rol_id: this.selectedRole.id,
+        modulo: modulo,
+        puede_ver: false,
+        puede_crear: false,
+        puede_editar: false,
+        puede_inactivar: false
+      };
+      this.permisos.push(p);
     }
+    return p;
   }
 
   togglePermiso(modulo: string, accion: 'puede_ver' | 'puede_crear' | 'puede_editar' | 'puede_inactivar') {
     let permiso = this.getPermisoParaModulo(modulo);
     permiso[accion] = !permiso[accion];
-    this.guardarPermiso(permiso);
+    // No guardamos automáticamente, se guarda con el botón Guardar
+  }
+
+  guardarTodosLosPermisos() {
+    this.isSavingPermisos = true;
+    
+    // Filtrar los permisos que tienen algún valor (aunque Angular los maneja todos si los recorremos)
+    const requests: Observable<any>[] = [];
+    
+    for (let p of this.permisos) {
+      if (p.id) {
+        requests.push(this.http.put(`/api/permisos/${p.id}`, p, { headers: this.getHeaders() }));
+      } else {
+        requests.push(this.http.post('/api/permisos', p, { headers: this.getHeaders() }));
+      }
+    }
+
+    if (requests.length === 0) {
+      this.isSavingPermisos = false;
+      return;
+    }
+
+    forkJoin(requests).subscribe({
+      next: (responses) => {
+        // Actualizamos los IDs de los nuevos permisos si es necesario recargándolos
+        this.cargarPermisos(this.selectedRole.id);
+        this.isSavingPermisos = false;
+        alert('Permisos guardados correctamente.');
+      },
+      error: (err) => {
+        console.error('Error guardando permisos:', err);
+        this.isSavingPermisos = false;
+        alert('Hubo un error al guardar los permisos.');
+      }
+    });
   }
 }

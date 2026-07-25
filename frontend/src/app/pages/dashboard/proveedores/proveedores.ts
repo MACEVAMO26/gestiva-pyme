@@ -14,6 +14,9 @@ export interface Proveedor {
   telefono?: string;
   direccion?: string;
   documentos_url?: string;
+  calificacion?: number;
+  comentarios_evaluacion?: string;
+  estado_evaluacion?: string;
 }
 
 @Component({
@@ -54,7 +57,10 @@ export class ProveedoresComponent implements OnInit {
       email: '',
       telefono: '',
       direccion: '',
-      documentos_url: ''
+      documentos_url: '',
+      calificacion: 0,
+      comentarios_evaluacion: '',
+      estado_evaluacion: 'No Evaluado'
     };
   }
 

@@ -19,7 +19,7 @@ class TareaController extends Controller
             'asignado:id,nombres,apellidos'
         ])->where('empresa_id', $user->empresa_id);
 
-        if (in_array($rolNombre, ['Gerente', 'Jefe de Área'])) {
+        if (in_array($rolNombre, ['Gerente General', 'Jefe de Área'])) {
             $query->where(function ($q) use ($user) {
                 $q->where('asignador_id', $user->id)
                   ->orWhere('asignado_id', $user->id);
@@ -37,7 +37,7 @@ class TareaController extends Controller
         $user = Auth::user();
         $rolNombre = $user->rol->nombre ?? '';
 
-        if (!in_array($rolNombre, ['Gerente', 'Jefe de Área'])) {
+        if (!in_array($rolNombre, ['Gerente General', 'Jefe de Área'])) {
             // Un empleado normal solo puede asignarse tareas a sí mismo
             if ($request->asignado_id != $user->id) {
                 return response()->json(['message' => 'No autorizado para asignar tareas a otros'], 403);

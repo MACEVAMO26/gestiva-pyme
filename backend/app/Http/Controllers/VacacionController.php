@@ -8,9 +8,15 @@ use Illuminate\Http\Request;
 class VacacionController extends Controller
 {
     // Trae la lista de todas las vacaciones registradas
-    public function index()
+    public function index(Request $request)
     {
-        return Vacacion::with('usuario')->get();
+        $query = Vacacion::with('usuario');
+        
+        if ($request->has('usuario_id')) {
+            $query->where('usuario_id', $request->usuario_id);
+        }
+
+        return $query->get();
     }
 
     // Registra una nueva solicitud de vacaciones

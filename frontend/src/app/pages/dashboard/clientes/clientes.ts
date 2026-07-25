@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../../services/auth.service';
 import { ToastService } from '../../../services/toast.service';
+import { LeadService, Lead } from '../../../services/lead.service';
 
 export interface Cliente {
   id?: number;
@@ -35,10 +36,18 @@ export class ClientesComponent implements OnInit {
   private toastService = inject(ToastService);
 
   // --- VARIABLES DE ESTADO ---
+  tabActiva: 'directorio' | 'leads' = 'directorio';
+
   clientes: Cliente[] = [];
   clientesFiltrados: Cliente[] = [];
   
+  leads: Lead[] = [];
+  leadsPendientes: Lead[] = [];
+  leadsContactados: Lead[] = [];
+  leadsArchivados: Lead[] = [];
+
   mostrarModal = false;
+  mostrarModalLead = false;
   isEditMode = false;
   isSaving = false;
   deletingId: number | null = null;
@@ -48,9 +57,24 @@ export class ClientesComponent implements OnInit {
   // Filtros
   searchTerm = '';
   tipoFiltro = '';
+  
+  private leadService = inject(LeadService);
+  leadActual: Lead = this.getEmptyLead();
 
   ngOnInit() {
     this.cargarClientes();
+    this.cargarLeads();
+  }
+
+  getEmptyLead(): Lead {
+    return {
+      nombre: '',
+      telefono: '',
+      correo: '',
+      horario_llamada: '',
+      mensaje: '',
+      estado: 'pendiente'
+    };
   }
 
   getEmptyCliente(): Cliente {
@@ -74,6 +98,12 @@ export class ClientesComponent implements OnInit {
   formatearId(id: number | undefined): string {
     if (!id) return 'CLI-000';
     return 'CLI' + id.toString().padStart(9, '0');
+  }
+
+  obtenerIniciales(nombres: string, apellidos?: string): string {
+    const n = nombres ? nombres.charAt(0).toUpperCase() : '';
+    const a = apellidos ? apellidos.charAt(0).toUpperCase() : '';
+    return n + a || 'CL';
   }
 
   cargarClientes() {
@@ -136,16 +166,26 @@ export class ClientesComponent implements OnInit {
     const empresaId = user?.empresa_id || user?.empresa?.id || '';
     const headers = { 'X-Empresa-Id': empresaId.toString() };
 
+    const onSuccess = () => {
+      this.isSaving = false;
+      this.toastService.show('Cliente guardado con éxito', 'success');
+      this.cargarClientes();
+      this.cerrarModal();
+
+      // Si venía de un lead, archivarlo (ya fue formalizado)
+      const leadId = (this.clienteActual as any)._leadSourceId;
+      if (leadId) {
+        this.leadService.actualizarLead(leadId, { estado: 'archivado' }).subscribe(() => {
+          this.cargarLeads(); // Recargar leads para limpiar el kanban
+        });
+      }
+    };
+
     if (this.isEditMode && this.clienteActual.id) {
       // PUT
       this.http.put('/api/clientes/' + this.clienteActual.id, this.clienteActual, { headers })
         .subscribe({
-          next: () => {
-            this.isSaving = false;
-            this.toastService.show('Cliente actualizado con éxito', 'success');
-            this.cargarClientes();
-            this.cerrarModal();
-          },
+          next: onSuccess,
           error: (err) => {
             this.isSaving = false;
             console.error('Error actualizando cliente', err);
@@ -157,12 +197,7 @@ export class ClientesComponent implements OnInit {
       // POST
       this.http.post('/api/clientes', this.clienteActual, { headers })
         .subscribe({
-          next: () => {
-            this.isSaving = false;
-            this.toastService.show('Cliente guardado con éxito', 'success');
-            this.cargarClientes();
-            this.cerrarModal();
-          },
+          next: onSuccess,
           error: (err) => {
             this.isSaving = false;
             console.error('Error creando cliente', err);
@@ -196,4 +231,101 @@ export class ClientesComponent implements OnInit {
         });
     }
   }
+
+  // --- LOGICA DE LEADS ---
+  
+  cargarLeads() {
+    this.leadService.getLeads().subscribe({
+      next: (data) => {
+        this.leads = data;
+        this.leadsPendientes = data.filter(l => l.estado === 'pendiente');
+        this.leadsContactados = data.filter(l => l.estado === 'contactado');
+        this.leadsArchivados = data.filter(l => l.estado === 'archivado');
+      },
+      error: (err) => {
+        console.error('Error cargando leads', err);
+      }
+    });
+  }
+
+  cambiarEstadoLead(lead: Lead, estado: string) {
+    this.leadService.actualizarLead(lead.id!, { estado }).subscribe({
+      next: () => {
+        this.toastService.show(`Lead movido a ${estado}`, 'success');
+        this.cargarLeads();
+      },
+      error: () => {
+        this.toastService.show('Error al cambiar el estado del lead', 'error');
+      }
+    });
+  }
+
+  abrirModalNuevoLead() {
+    this.isEditMode = false;
+    this.leadActual = this.getEmptyLead();
+    this.mostrarModalLead = true;
+  }
+
+  editarLead(lead: Lead) {
+    this.isEditMode = true;
+    this.leadActual = { ...lead };
+    this.mostrarModalLead = true;
+  }
+
+  cerrarModalLead() {
+    this.mostrarModalLead = false;
+  }
+
+  guardarLead() {
+    this.isSaving = true;
+    if (this.isEditMode && this.leadActual.id) {
+      this.leadService.actualizarLead(this.leadActual.id, this.leadActual).subscribe({
+        next: () => {
+          this.isSaving = false;
+          this.toastService.show('Lead actualizado', 'success');
+          this.cargarLeads();
+          this.cerrarModalLead();
+        },
+        error: () => {
+          this.isSaving = false;
+          this.toastService.show('Error actualizando lead', 'error');
+        }
+      });
+    } else {
+      this.leadService.crearLead(this.leadActual).subscribe({
+        next: () => {
+          this.isSaving = false;
+          this.toastService.show('Lead creado exitosamente', 'success');
+          this.cargarLeads();
+          this.cerrarModalLead();
+        },
+        error: () => {
+          this.isSaving = false;
+          this.toastService.show('Error creando lead', 'error');
+        }
+      });
+    }
+  }
+
+  convertirLeadACliente(lead: Lead) {
+    this.tabActiva = 'directorio';
+    this.isEditMode = false;
+    this.clienteActual = this.getEmptyCliente();
+    
+    // Mapear datos básicos
+    this.clienteActual.nombres = lead.nombre;
+    this.clienteActual.telefono = lead.telefono;
+    this.clienteActual.email = lead.correo;
+    this.clienteActual.comentarios = lead.mensaje;
+
+    // Guardar el id del lead que estamos convirtiendo para archivarlo luego
+    (this.clienteActual as any)._leadSourceId = lead.id;
+
+    // Abrir modal de cliente para que lo termine de llenar
+    this.mostrarModal = true;
+    this.toastService.show('Por favor completa los datos para formalizar al cliente', 'info');
+  }
+
+  // Modificar guardarCliente para que si viene de un lead, lo archive
+  // Lo haremos en el success de guardarCliente
 }

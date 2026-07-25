@@ -1,7 +1,17 @@
 <div class="empleados-module fade-in">
-  <div class="admin-header">
-    <h2>Gestión Humana: Empleados</h2>
-    <p>Administra la formalización, contratos y perfiles laborales del personal.</p>
+  <div class="module-header flex justify-between items-center">
+    <div>
+      <h1>Gestión Humana</h1>
+      <p>Administra la formalización, contratos y perfiles laborales del personal.</p>
+    </div>
+    <div class="header-actions">
+      <button (click)="irATiempos()" class="btn-general" style="display: flex; align-items: center; gap: 0.5rem; border: none; cursor: pointer; background-color: #2563eb; color: white;">
+        <svg class="icon" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width: 20px; height: 20px;">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+        </svg>
+        Módulo de Gestión de Tiempos para Empleados
+      </button>
+    </div>
   </div>
 
   <!-- TABS NAV -->
@@ -52,7 +62,7 @@
           <td>{{ p.email }}</td>
           <td>{{ p.created_at | date:'shortDate' }}</td>
           <td>
-            <button class="btn-primary btn-sm" (click)="abrirModalFormalizar(p)">
+            <button class="btn-general btn-sm" (click)="abrirModalFormalizar(p)">
               Formalizar Perfil
             </button>
           </td>
@@ -92,7 +102,7 @@
           <td>
             <div style="display: flex; gap: 0.5rem;">
               <button class="btn-secondary btn-sm" (click)="verDetalles(emp)">Detalles</button>
-              <button class="btn-primary btn-sm" style="background: #ef4444;" (click)="abrirModalBaja(emp)" *ngIf="!emp.baja_solicitada">Baja</button>
+              <button class="btn-volver btn-sm" (click)="abrirModalBaja(emp)" *ngIf="!emp.baja_solicitada">Baja</button>
             </div>
           </td>
         </tr>
@@ -167,8 +177,8 @@
       <h3 class="text-xl font-bold">Configuración de Seguridad Social</h3>
       <p class="text-muted">Establezca la Administradora de Riesgos Laborales y la Caja de Compensación para toda la empresa.</p>
     </div>
-    <form (ngSubmit)="guardarConfiguracionRRHH()" class="max-w-2xl">
-      <div class="form-row split">
+    <form (ngSubmit)="guardarConfiguracionRRHH()">
+      <div class="form-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
         <div class="form-group mb-3">
           <label>ARL (Administradora de Riesgos Laborales)</label>
           <input type="text" class="form-control" name="arl" [(ngModel)]="configuracionRRHH.arl" placeholder="Ej. SURA" required>
@@ -178,14 +188,14 @@
           <input type="text" class="form-control" name="caja_compensacion" [(ngModel)]="configuracionRRHH.caja_compensacion" placeholder="Ej. Comfama" required>
         </div>
       </div>
-      <div class="form-actions mt-3">
-        <button type="submit" class="btn-primary" [disabled]="isConfigSubmitting">Guardar Configuración</button>
+      <div class="form-actions" style="margin-top: 20px; text-align: right;">
+        <button type="submit" class="btn-save" [disabled]="isConfigSubmitting">Guardar Configuración</button>
       </div>
     </form>
   </div>
 
   <!-- ESTRUCTURA TAB -->
-  <div class="glass-panel fade-in" *ngIf="currentTab === 'estructura'">
+  <div class="fade-in" *ngIf="currentTab === 'estructura'">
     <app-estructura></app-estructura>
   </div>
 
@@ -251,7 +261,7 @@
 
         <div class="form-actions mt-3">
           <button type="button" class="btn-secondary" (click)="cerrarModalFormalizar()">Cancelar</button>
-          <button type="submit" class="btn-primary flex items-center justify-center" [disabled]="isSubmitting">
+          <button type="submit" class="btn-save flex items-center justify-center" [disabled]="isSubmitting">
             <span *ngIf="!isSubmitting">Completar Formalización</span>
             <span *ngIf="isSubmitting" class="flex items-center">
               <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -286,7 +296,7 @@
         
         <div class="form-actions">
           <button type="button" class="btn-secondary" (click)="cerrarModalBaja()">Cancelar</button>
-          <button type="submit" class="btn-primary flex items-center justify-center" style="background: #ef4444;" [disabled]="isSubmitting">
+          <button type="submit" class="btn-save flex items-center justify-center" [disabled]="isSubmitting">
             <span *ngIf="!isSubmitting">Solicitar Baja</span>
             <span *ngIf="isSubmitting" class="flex items-center">
               <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">

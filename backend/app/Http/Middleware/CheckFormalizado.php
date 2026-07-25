@@ -29,7 +29,7 @@ class CheckFormalizado
 
         // Si el usuario es Gerente o Administrador, no bloquear
         $roleName = $user->rol ? $user->rol->nombre : null;
-        if (in_array($roleName, ['Admin Saas', 'Gerente', 'Administrador'])) {
+        if (in_array($roleName, ['Admin Saas', 'Gerente General', 'Administrador'])) {
             return $next($request);
         }
 

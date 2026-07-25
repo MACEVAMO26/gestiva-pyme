@@ -1,0 +1,95 @@
+.tiempo-container {
+  padding: 1rem;
+}
+
+.page-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+
+
+/* STATUS BADGES */
+.status-badge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+
+  &.status-active, &.status-success {
+    background: rgba(16, 185, 129, 0.1);
+    color: #10b981;
+    border: 1px solid rgba(16, 185, 129, 0.2);
+  }
+  
+  &.status-inactive, &.status-danger {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+    border: 1px solid rgba(239, 68, 68, 0.2);
+  }
+  
+  &.status-pending {
+    background: rgba(245, 158, 11, 0.1);
+    color: #f59e0b;
+    border: 1px solid rgba(245, 158, 11, 0.2);
+  }
+}
+
+/* MODAL */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  z-index: 40;
+}
+
+.modal-content {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #1f2937;
+  border: 1px solid #374151;
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  width: 90%;
+  max-width: 500px;
+  z-index: 50;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    
+    .close-btn {
+      color: #9ca3af;
+      font-size: 1.5rem;
+      line-height: 1;
+      &:hover { color: #fff; }
+    }
+  }
+}
+
+/* ALERT BOXES */
+.alert-box {
+  padding: 1rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  
+  &.success {
+    background: rgba(16, 185, 129, 0.1);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+    color: #34d399;
+  }
+  &.error {
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    color: #f87171;
+  }
+}

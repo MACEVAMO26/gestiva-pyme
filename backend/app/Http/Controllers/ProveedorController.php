@@ -37,6 +37,9 @@ class ProveedorController extends Controller
             'email' => 'nullable|email|max:255',
             'direccion' => 'nullable|string|max:255',
             'documentos_url' => 'nullable|string|max:255',
+            'calificacion' => 'nullable|integer|min:0|max:5',
+            'comentarios_evaluacion' => 'nullable|string',
+            'estado_evaluacion' => 'nullable|string|max:50',
         ]);
 
         // Verificar si el NIT ya existe para esta empresa
@@ -70,6 +73,9 @@ class ProveedorController extends Controller
             'email' => 'nullable|email|max:255',
             'direccion' => 'nullable|string|max:255',
             'documentos_url' => 'nullable|string|max:255',
+            'calificacion' => 'nullable|integer|min:0|max:5',
+            'comentarios_evaluacion' => 'nullable|string',
+            'estado_evaluacion' => 'nullable|string|max:50',
         ]);
 
         // Verificar si el nuevo NIT ya existe para otra empresa

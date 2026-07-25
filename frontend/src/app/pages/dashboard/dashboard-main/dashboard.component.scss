@@ -76,17 +76,22 @@ $transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
     align-items: center;
     padding: 0 3rem;
 
-    .welcome-text {
-      h1 {
+    .welcome-text-top {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      
+      .title {
         margin: 0 0 0.15rem 0;
-        
-        font-weight: 700;
-        color: #ffffff; /* Texto claro sobre fondo oscuro */
+        font-size: 1.1rem; /* Tamaño discreto */
+        font-weight: 600;
+        text-transform: uppercase;
+        color: #ffffff;
       }
-      p {
+      .subtitle {
         margin: 0;
+        font-size: 0.75rem;
         color: #9CA3AF;
-        
       }
     }
 
@@ -127,33 +132,34 @@ $transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
       .user-profile {
         display: flex;
         align-items: center;
-        gap: 0.6rem;
-        background: #09090b; /* Zinc 900 */
-        padding: 0.35rem 1.25rem 0.35rem 0.35rem; /* Forma de píldora alargada */
+        gap: 0.4rem; /* Gap reducido */
+        background: #27272a; /* Tono sutil Zinc 800 que sobresale más del fondo */
+        padding: 0.2rem 0.8rem 0.2rem 0.2rem; /* Píldora más pequeña */
         border-radius: 50px;
-        box-shadow: 4px 4px 8px #030303, -4px -4px 8px rgba(255,255,255,0.02);
-        border: $glass-border;
+        box-shadow: 2px 2px 5px #030303, -2px -2px 5px rgba(255,255,255,0.02);
+        border: 1px solid rgba(255, 255, 255, 0.1); /* Borde sutil */
 
         .avatar, .avatar-img {
-          width: 36px;
-          height: 36px;
+          width: 28px; /* Avatar más pequeño */
+          height: 28px;
           border-radius: 50%;
-          background: #f97316; /* Naranja en lugar de verde/azul */
+          background: #f97316; 
           color: white;
           display: flex;
           align-items: center;
           justify-content: center;
-          font-weight: 700;
-          
-          border: 2px solid #ffffff; /* Borde para sofisticación */
+          font-weight: 600;
+          font-size: 0.75rem;
+          object-fit: cover;
+          border: 1px solid #ffffff; 
         }
 
         .btn-logout {
           background: transparent;
           border: none;
           color: #fafafa;
-          font-weight: 600;
-          
+          font-weight: 500;
+          font-size: 0.7rem; /* Letra más pequeña */
           cursor: pointer;
           transition: $transition;
           text-transform: uppercase;
@@ -169,19 +175,27 @@ $transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
         display: flex;
         align-items: center;
         justify-content: center;
-        width: 44px;
-        height: 44px;
+        width: 28px; /* Mismo tamaño que el circulito (avatar) */
+        height: 28px; 
+        min-width: 28px;
+        min-height: 28px;
+        padding: 0; /* Quitar padding por defecto del botón */
         border-radius: 50%;
-        background: #09090b; /* Zinc 900 */
-        color: #fafafa;
-        border: $glass-border;
+        background: #ca8a04; /* Amarillo quemado real (Yellow 600) */
+        color: #000000; /* Ícono oscuro para contrastar con el amarillo */
+        border: none;
         cursor: pointer;
         transition: $transition;
-        box-shadow: 4px 4px 8px #030303, -4px -4px 8px rgba(255,255,255,0.02);
+        box-shadow: 2px 2px 5px #030303, -2px -2px 5px rgba(255,255,255,0.02);
+
+        svg {
+          width: 16px;
+          height: 16px;
+        }
 
         &:hover {
-          color: #f97316;
-          box-shadow: inset 4px 4px 8px #030303, inset -4px -4px 8px rgba(255,255,255,0.02);
+          background: #a16207; /* Hover amarillo oscuro (Yellow 700) */
+          box-shadow: inset 2px 2px 5px rgba(0,0,0,0.5);
         }
       }
 
@@ -190,9 +204,9 @@ $transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
           .btn-logout {
             background: #f97316;
             color: #000000;
-            padding: 6px 14px;
+            padding: 4px 10px; /* Padding más discreto */
             border-radius: 20px;
-            margin-left: 6px;
+            margin-left: 4px;
 
             &:hover {
               background: #ea580c;
@@ -202,17 +216,7 @@ $transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
         }
         
         .accessibility-btn {
-          background-color: #ffb700 !important; /* Amarillo fuerte como en la imagen */
-          border: none !important;
-          color: #ffffff !important;
-          
-          svg {
-            color: #000000 !important;
-          }
-
-          &:hover {
-            background-color: #eab308 !important;
-          }
+          /* Ya está configurado globalmente en amarillo quemado */
         }
       }
     }

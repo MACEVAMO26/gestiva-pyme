@@ -1,16 +1,34 @@
 <div class="module-container">
     <header class="module-header">
         <div class="header-title">
-            <h1>Gestión de Clientes</h1>
-            <p class="text-gray-400 text-sm mt-1 mb-6">Administra el portafolio de clientes y su información comercial.</p>
+            <h1>Gestión de Clientes y Leads</h1>
+            <p class="text-gray-400 text-sm mt-1 mb-6">Administra tus contactos, prospectos comerciales y portafolio de clientes.</p>
         </div>
-        <button class="btn-primary" (click)="abrirModalNuevo()">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" style="margin-right: 8px;">
-              <path d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2Z"/>
-            </svg>
-            Nuevo Cliente
-        </button>
+        <div class="header-actions">
+            @if(tabActiva === 'directorio') {
+                <button class="btn-add" (click)="abrirModalNuevo()">
+                    + Nuevo Cliente
+                </button>
+            }
+            @if(tabActiva === 'leads') {
+                <button class="btn-add" (click)="abrirModalNuevoLead()">
+                    + Registrar Lead
+                </button>
+            }
+        </div>
     </header>
+
+    <!-- TABS NAV -->
+    <div class="tabs-nav">
+        <button class="tab-btn" [class.active]="tabActiva === 'directorio'" (click)="tabActiva = 'directorio'">
+            Directorio de Clientes
+        </button>
+        <button class="tab-btn" [class.active]="tabActiva === 'leads'" (click)="tabActiva = 'leads'">
+            Bandeja de Leads
+        </button>
+    </div>
+
+    @if(tabActiva === 'directorio') {
 
     <div class="glass-panel filter-panel">
         <div class="filter-controls">
@@ -41,8 +59,15 @@
                     @for (cliente of clientesFiltrados; track cliente.id) {
                     <tr>
                         <td>
-                            <strong>{{cliente.nombres}} {{cliente.apellidos}}</strong><br>
-                            <span class="text-muted text-sm">ID: {{ formatearId(cliente.id) }} | Doc: {{cliente.documento}}</span>
+                            <div style="display: flex; align-items: center; gap: 1rem;">
+                                <div class="avatar-circle" style="background: linear-gradient(135deg, #f97316, #ea580c); width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; color: white;">
+                                    {{ obtenerIniciales(cliente.nombres, cliente.apellidos) }}
+                                </div>
+                                <div>
+                                    <strong>{{cliente.nombres}} {{cliente.apellidos}}</strong><br>
+                                    <span class="text-muted text-sm">ID: {{ formatearId(cliente.id) }} | Doc: {{cliente.documento}}</span>
+                                </div>
+                            </div>
                         </td>
                         <td>
                             <span class="text-sm">📞 {{cliente.telefono || 'N/A'}}</span><br>
@@ -81,14 +106,106 @@
                         </td>
                     </tr>
                     } @empty {
+                    @if(clientesFiltrados.length === 0) {
                     <tr>
-                        <td colspan="7" class="text-center text-muted" style="padding: 2rem;">No hay clientes registrados.</td>
+                        <td colspan="7" class="text-center text-muted" style="padding: 2rem;">No se encontraron clientes.</td>
                     </tr>
+                    }
                     }
                 </tbody>
             </table>
         </div>
     </div>
+    } <!-- End if Directorio -->
+
+    @if(tabActiva === 'leads') {
+    <div class="kanban-board mt-4">
+        <!-- COLUMNA: NUEVOS / PENDIENTES -->
+        <div class="kanban-column">
+            <div class="kanban-header notificada">
+                <h4>Nuevos (Pendientes)</h4>
+                <span class="count">{{ leadsPendientes.length }}</span>
+            </div>
+            <div class="kanban-body">
+                @if (leadsPendientes.length === 0) {
+                    <div class="empty-kanban">Sin prospectos nuevos</div>
+                }
+                @for (lead of leadsPendientes; track lead.id) {
+                    <div class="kanban-card glass-panel">
+                        <h5>{{ lead.nombre }}</h5>
+                        <p class="text-sm">📞 {{ lead.telefono }}</p>
+                        <p class="text-sm text-muted">✉️ {{ lead.correo }}</p>
+                        <div class="kanban-meta mt-2">
+                            <span class="meta-tag assigned" style="background: rgba(245, 158, 11, 0.15); color: #fcd34d; border: 1px solid rgba(245, 158, 11, 0.3);">
+                                {{ lead.horario_llamada || 'Sin horario' }}
+                            </span>
+                        </div>
+                        <p class="mt-2 text-sm text-gray-400 clamp-text" [title]="lead.mensaje">{{ lead.mensaje || 'Sin mensaje' }}</p>
+                        <div class="kanban-actions mt-3">
+                            <button class="kanban-btn text-gray-400 hover:text-white" (click)="editarLead(lead)" title="Editar">✎</button>
+                            <button class="kanban-btn btn-iniciar" (click)="cambiarEstadoLead(lead, 'contactado')">En Contacto ▶</button>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- COLUMNA: EN CONTACTO -->
+        <div class="kanban-column">
+            <div class="kanban-header en_proceso">
+                <h4>En Contacto</h4>
+                <span class="count">{{ leadsContactados.length }}</span>
+            </div>
+            <div class="kanban-body">
+                @if (leadsContactados.length === 0) {
+                    <div class="empty-kanban">Sin prospectos en proceso</div>
+                }
+                @for (lead of leadsContactados; track lead.id) {
+                    <div class="kanban-card glass-panel">
+                        <h5>{{ lead.nombre }}</h5>
+                        <p class="text-sm">📞 {{ lead.telefono }}</p>
+                        <div class="kanban-meta mt-2">
+                            <span class="meta-tag assigned" style="background: rgba(59, 130, 246, 0.15); color: #93c5fd; border: 1px solid rgba(59, 130, 246, 0.3);">
+                                {{ lead.horario_llamada || 'Llamar pronto' }}
+                            </span>
+                        </div>
+                        <p class="mt-2 text-sm text-gray-400 clamp-text" [title]="lead.mensaje">{{ lead.mensaje || 'Sin mensaje' }}</p>
+                        <div class="kanban-actions mt-3" style="justify-content: space-between;">
+                            <div>
+                                <button class="kanban-btn text-gray-400 hover:text-white" (click)="editarLead(lead)" title="Editar">✎</button>
+                                <button class="kanban-btn text-red-400 hover:text-red-300" (click)="cambiarEstadoLead(lead, 'archivado')" title="Archivar/Perdido">✖</button>
+                            </div>
+                            <button class="kanban-btn btn-terminar font-bold" (click)="convertirLeadACliente(lead)">➜ Formalizar</button>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- COLUMNA: ARCHIVADOS -->
+        <div class="kanban-column">
+            <div class="kanban-header terminada">
+                <h4>Archivados</h4>
+                <span class="count">{{ leadsArchivados.length }}</span>
+            </div>
+            <div class="kanban-body">
+                @if (leadsArchivados.length === 0) {
+                    <div class="empty-kanban">Sin archivados</div>
+                }
+                @for (lead of leadsArchivados; track lead.id) {
+                    <div class="kanban-card glass-panel done">
+                        <h5>{{ lead.nombre }}</h5>
+                        <p class="text-sm">📞 {{ lead.telefono }}</p>
+                        <div class="kanban-actions mt-3">
+                            <button class="kanban-btn text-gray-400 hover:text-white" (click)="editarLead(lead)" title="Ver">👁️</button>
+                            <button class="kanban-btn text-blue-400 hover:text-blue-300" (click)="cambiarEstadoLead(lead, 'contactado')" title="Reactivar">⟲ Reactivar</button>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+    } <!-- End if Leads -->
 
     <!-- Modal (Oculto por defecto) -->
     @if(mostrarModal) {
@@ -144,7 +261,7 @@
                     
                     <div class="modal-footer">
                         <button type="button" class="btn-secondary" (click)="cerrarModal()">Cancelar</button>
-                        <button type="submit" class="btn-primary" [disabled]="!clienteForm.form.valid || isSaving">
+                        <button type="submit" class="btn-save" [disabled]="!clienteForm.form.valid || isSaving">
                             <span *ngIf="!isSaving">Guardar Cliente</span>
                             <span *ngIf="isSaving" class="flex items-center">
                                 <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -160,4 +277,70 @@
         </div>
     </div>
     }
+
+    <!-- Modal Lead (Oculto por defecto) -->
+    @if(mostrarModalLead) {
+    <div class="modal-overlay" (click)="cerrarModalLead()">
+        <div class="glass-panel modal-content" (click)="$event.stopPropagation()">
+            <div class="modal-header">
+                <h2>{{ isEditMode ? 'Editar Lead' : 'Registrar Nuevo Lead' }}</h2>
+                <button class="btn-icon" (click)="cerrarModalLead()">✕</button>
+            </div>
+            <div class="modal-body">
+                <form (ngSubmit)="guardarLead()" class="grid-form" #leadForm="ngForm">
+                    <div class="form-group">
+                        <label>Nombre del Prospecto *</label>
+                        <input type="text" [(ngModel)]="leadActual.nombre" name="leadNombre" class="input-neumorphic" required>
+                    </div>
+                    
+                    <div class="form-grid" style="margin-top: 1.25rem;">
+                        <div class="form-group">
+                            <label>Teléfono *</label>
+                            <input type="text" [(ngModel)]="leadActual.telefono" name="leadTelefono" class="input-neumorphic" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Correo Electrónico *</label>
+                            <input type="email" [(ngModel)]="leadActual.correo" name="leadCorreo" class="input-neumorphic" required>
+                        </div>
+                    </div>
+
+                    <div class="form-grid" style="margin-top: 1.25rem;">
+                        <div class="form-group">
+                            <label>Horario Preferido (Llamada)</label>
+                            <input type="text" [(ngModel)]="leadActual.horario_llamada" name="leadHorario" class="input-neumorphic" placeholder="Ej. Tarde 2pm-5pm">
+                        </div>
+                        <div class="form-group">
+                            <label>Estado</label>
+                            <select [(ngModel)]="leadActual.estado" name="leadEstado" class="input-neumorphic">
+                                <option value="pendiente">Pendiente</option>
+                                <option value="contactado">Contactado</option>
+                                <option value="archivado">Archivado</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group" style="margin-top: 1.25rem;">
+                        <label>Notas / Mensaje Inicial</label>
+                        <textarea [(ngModel)]="leadActual.mensaje" name="leadMensaje" class="input-neumorphic" rows="3"></textarea>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn-secondary" (click)="cerrarModalLead()">Cancelar</button>
+                        <button type="submit" class="btn-save" [disabled]="!leadForm.form.valid || isSaving">
+                            <span *ngIf="!isSaving">Guardar Lead</span>
+                            <span *ngIf="isSaving" class="flex items-center">
+                                <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                                Guardando...
+                            </span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    }
+
 </div>

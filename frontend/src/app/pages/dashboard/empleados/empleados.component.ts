@@ -1,4 +1,5 @@
 import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
+import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { EmpleadoService } from '../../../services/empleado.service';
@@ -16,6 +17,7 @@ export class EmpleadosComponent implements OnInit {
 
   empleadoService = inject(EmpleadoService);
   authService = inject(AuthService);
+  private router = inject(Router);
 
   pendientes: any[] = [];
   empleados: any[] = [];
@@ -196,5 +198,11 @@ export class EmpleadosComponent implements OnInit {
           alert('Error al solicitar la baja: ' + (err.error?.error || err.message));
         }
       });
+  }
+
+  irATiempos() {
+    const user = this.authService.getUser();
+    const entorno = user?.empresa?.slug || user?.empresa?.nombre_url || 'demo';
+    this.router.navigate(['/', entorno, 'tiempo']);
   }
 }

@@ -1,13 +1,13 @@
 <div class="usuarios-module fade-in">
   <!-- Header -->
-  <div class="admin-header">
-    <h2>Gestión de Sedes</h2>
+  <div class="module-header">
+    <h1>Gestión de Sedes</h1>
     <p>Administra las sucursales físicas de tu empresa</p>
   </div>
 
   <!-- Acciones -->
   <div class="actions-bar">
-    <button class="btn-primary" (click)="abrirModalNuevo()">
+    <button class="btn-add" (click)="abrirModalNuevo()">
       <svg class="icon-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
       </svg>
@@ -100,7 +100,7 @@
 
         <div class="form-actions">
           <button type="button" class="btn-secondary" (click)="cerrarModal()" [disabled]="isSubmitting">Cancelar</button>
-          <button type="submit" class="btn-primary" [disabled]="isSubmitting || !formData.nombre">
+          <button type="submit" class="btn-save" [disabled]="isSubmitting || !formData.nombre">
             {{ isSubmitting ? 'Guardando...' : (isEditMode ? 'Actualizar' : 'Guardar Sede') }}
           </button>
         </div>

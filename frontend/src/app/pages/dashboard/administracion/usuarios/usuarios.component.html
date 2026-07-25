@@ -1,13 +1,13 @@
 <div class="usuarios-module fade-in">
-  <div class="admin-header with-back">
+  <div class="module-header with-back">
     <button class="btn-back" (click)="cerrarModal()" *ngIf="false"> <!-- handled by parent --> </button>
     <!-- Wait, parent handles navigation. But we can still have our header here! -->
-    <h2>Gestión de Usuarios</h2>
+    <h1>Gestión de Usuarios</h1>
     <p>Crea el perfil inicial de los usuarios para que Gestión Humana los asigne.</p>
   </div>
 
   <div class="actions-bar">
-    <button class="btn-primary" (click)="abrirModal()">
+    <button class="btn-add" (click)="abrirModal()">
       <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="icon-sm">
         <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
       </svg>
@@ -46,7 +46,7 @@
             </span>
           </td>
           <td>
-            <button class="btn-primary btn-sm" style="background: #ef4444;" *ngIf="u.empleado?.baja_solicitada" (click)="aprobarBaja(u)" [disabled]="isApprovingBaja">
+            <button class="btn-save btn-sm" style="background: #ef4444;" *ngIf="u.empleado?.baja_solicitada" (click)="aprobarBaja(u)" [disabled]="isApprovingBaja">
               <span *ngIf="!isApprovingBaja">Aprobar Inactivar</span>
               <span *ngIf="isApprovingBaja" class="flex items-center">
                 <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -140,7 +140,7 @@
 
           <div class="form-actions mt-3">
             <button type="button" class="btn-secondary" (click)="cerrarModal()">Cancelar</button>
-            <button type="submit" class="btn-primary flex items-center justify-center" [disabled]="isSubmitting">
+            <button type="submit" class="btn-save flex items-center justify-center" [disabled]="isSubmitting">
               <span *ngIf="!isSubmitting">Crear Usuario</span>
               <span *ngIf="isSubmitting" class="flex items-center">
                 <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -179,7 +179,7 @@
         <small class="text-gray mt-1">Cópialos y envíaselos al usuario de forma segura. El sistema le pedirá cambiar la contraseña al primer inicio de sesión.</small>
       </div>
 
-      <button class="btn-primary w-full" (click)="cerrarModal()">Entendido</button>
+      <button class="btn-general w-full" (click)="cerrarModal()">Entendido</button>
     </div>
   </div>
 </div>

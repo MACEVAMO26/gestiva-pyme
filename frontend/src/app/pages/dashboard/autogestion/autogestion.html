@@ -2,7 +2,7 @@
   <!-- HTML ENCABEZADO -->
   <div class="module-header">
     <div class="header-content">
-      <h2>Autogestión del Empleado</h2>
+      <h1>Autogestión del Empleado</h1>
       <p>Administra tu perfil, solicita tiempos y mantén tus documentos al día.</p>
     </div>
   </div>
@@ -61,7 +61,7 @@
         <h3>Documentos y Certificados</h3>
         <p>Genera tus documentos al instante.</p>
         
-        <button class="neu-dark-button full-width action-btn-orange">
+        <button class="btn-general full-width">
           <svg class="icon" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
           Generar Certificado Laboral
         </button>
@@ -186,7 +186,7 @@
           
           <div class="form-actions">
             @if (isHR) {
-              <button type="button" class="primary-btn" (click)="gestionarAfiliacionAdmin()" [disabled]="isSavingAdmin">
+              <button type="button" class="btn-save" (click)="gestionarAfiliacionAdmin()" [disabled]="isSavingAdmin">
                 <span *ngIf="!isSavingAdmin">Guardar Gestión (RRHH)</span>
                 <span *ngIf="isSavingAdmin" class="flex items-center">
                   <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -198,7 +198,7 @@
               </button>
             } @else {
               @if (formAfiliacion.estado !== 'pendiente') {
-                <button type="submit" class="primary-btn" [disabled]="isSaving">
+                <button type="submit" class="btn-save" [disabled]="isSaving">
                   <span *ngIf="!isSaving">{{ formAfiliacion.estado === 'nuevo' ? 'Guardar Afiliaciones' : 'Actualizar Afiliaciones' }}</span>
                   <span *ngIf="isSaving" class="flex items-center">
                     <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -224,20 +224,79 @@
       <!-- HTML VACACIONES Y TIEMPOS -->
       <div class="neu-dark-panel times-card">
         <h3>Tiempos y Vacaciones</h3>
-        <p>Consulta tus días disponibles y realiza solicitudes de permisos o vacaciones.</p>
+        <p>Consulta tus días disponibles y realiza solicitudes de vacaciones.</p>
         
-        <div class="times-stats">
+        <div class="times-stats mb-6">
           <div class="time-stat">
             <h4>15</h4>
             <span>Días Disponibles</span>
           </div>
           <div class="time-stat">
-            <h4>0</h4>
-            <span>Solicitudes Pendientes</span>
+            <h4>{{ misVacaciones.length }}</h4>
+            <span>Solicitudes Históricas</span>
           </div>
         </div>
 
-        <button class="neu-dark-button outline-btn mt-3">Nueva Solicitud (Próximamente)</button>
+        <hr class="border-gray-600 mb-6">
+        
+        <h4 class="font-bold text-gray-300 mb-4">Nueva Solicitud de Vacaciones</h4>
+        <form (ngSubmit)="solicitarVacaciones()" class="grid-form mb-8">
+          <div class="grid grid-cols-2 gap-4">
+            <div class="form-group">
+              <label>Fecha Inicio</label>
+              <input type="date" [(ngModel)]="nuevaVacacion.fecha_inicio" name="vac_inicio" required>
+            </div>
+            <div class="form-group">
+              <label>Fecha Fin</label>
+              <input type="date" [(ngModel)]="nuevaVacacion.fecha_fin" name="vac_fin" required>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label>Tipo de Vacaciones</label>
+            <select [(ngModel)]="nuevaVacacion.tipo" name="vac_tipo" required>
+              <option value="Disfrute Legal">Disfrute Legal (Remuneradas)</option>
+              <option value="Colectivas">Colectivas</option>
+              <option value="Anticipadas">Anticipadas</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label>Observaciones (Opcional)</label>
+            <textarea [(ngModel)]="nuevaVacacion.observaciones" name="vac_obs" rows="2"></textarea>
+          </div>
+          
+          <button type="submit" class="btn-save w-full mt-2" [disabled]="isSubmittingVacacion">
+            {{ isSubmittingVacacion ? 'Enviando...' : 'Enviar Solicitud a RRHH' }}
+          </button>
+        </form>
+
+        @if (misVacaciones.length > 0) {
+          <h4 class="font-bold text-gray-300 mb-4">Mis Solicitudes</h4>
+          <div class="space-y-4">
+            @for (vac of misVacaciones; track vac.id) {
+              <div class="p-4 border border-gray-700 rounded-lg bg-gray-800/50">
+                <div class="flex justify-between items-center mb-2">
+                  <span class="font-bold text-white">{{ vac.fecha_inicio }} al {{ vac.fecha_fin }}</span>
+                  <span class="px-2 py-1 text-xs rounded-full font-bold uppercase"
+                        [ngClass]="{
+                          'bg-yellow-500/20 text-yellow-500': vac.estado === 'pendiente',
+                          'bg-green-500/20 text-green-500': vac.estado === 'aprobada',
+                          'bg-red-500/20 text-red-500': vac.estado === 'rechazada'
+                        }">
+                    {{ vac.estado }}
+                  </span>
+                </div>
+                <p class="text-sm text-gray-400">Tipo: {{ vac.tipo }}</p>
+                @if (vac.justificacion_respuesta) {
+                  <div class="mt-2 text-sm text-gray-300 p-2 bg-gray-900 rounded">
+                    <strong>Respuesta RRHH:</strong> {{ vac.justificacion_respuesta }}
+                  </div>
+                }
+              </div>
+            }
+          </div>
+        }
       </div>
 
     </div>

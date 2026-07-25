@@ -1,11 +1,11 @@
 <div class="usuarios-module fade-in">
-  <div class="admin-header">
-    <h2>Configuraciones de Seguridad</h2>
+  <div class="module-header">
+    <h1>Configuraciones de Seguridad</h1>
     <p>Administra los roles y los permisos de acceso de cada módulo del sistema.</p>
   </div>
 
   <div class="actions-bar">
-    <button class="btn-primary" (click)="abrirModalNuevoRol()">
+    <button class="btn-add" (click)="abrirModalNuevoRol()">
       <svg class="icon-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
       Nuevo Rol
     </button>
@@ -48,7 +48,19 @@
           <svg class="icon-md" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
           Permisos para: {{ selectedRole.nombre }}
         </h3>
-        <p style="color: #94a3b8; margin-bottom: 1.5rem; font-size: 0.9rem;">Los cambios se guardan automáticamente al seleccionar las casillas.</p>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+          <p style="color: #94a3b8; font-size: 0.9rem; margin: 0;">Selecciona los accesos y presiona Guardar.</p>
+          <button class="btn-save" (click)="guardarTodosLosPermisos()" [disabled]="isSavingPermisos" style="display: flex; align-items: center; gap: 0.5rem;">
+            <span *ngIf="!isSavingPermisos">Guardar Permisos</span>
+            <span *ngIf="isSavingPermisos" class="flex items-center">
+              <svg class="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              Guardando...
+            </span>
+          </button>
+        </div>
 
         <div *ngIf="isLoadingPermisos" class="loading-state">
           <div class="skeleton-cell" style="height: 20px; width: 100%; margin-bottom: 1rem;" *ngFor="let i of [1,2,3,4]"></div>
@@ -121,7 +133,7 @@
 
         <div class="form-actions mt-3">
           <button type="button" class="btn-secondary" (click)="cerrarModal()" [disabled]="isSubmitting">Cancelar</button>
-          <button type="submit" class="btn-primary" [disabled]="isSubmitting || !formData.nombre">
+          <button type="submit" class="btn-save" [disabled]="isSubmitting || !formData.nombre">
             {{ isSubmitting ? 'Guardando...' : 'Crear Rol' }}
           </button>
         </div>

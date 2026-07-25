@@ -98,7 +98,7 @@ class EmpleadoController extends Controller
         $empleado->save();
 
         // Buscar al gerente de la empresa para notificarle
-        $gerenteRole = Role::where('nombre', 'Gerente')->first();
+        $gerenteRole = Role::where('nombre', 'Gerente General')->first();
         if ($gerenteRole) {
             $gerentes = User::where('empresa_id', $empresaId)->where('rol_id', $gerenteRole->id)->get();
             foreach ($gerentes as $gerente) {

@@ -42,54 +42,7 @@ $error-color: #ef4444;
   }
 }
 
-.tabs-nav {
-  display: flex;
-  gap: 1rem;
-  border-bottom: 1px solid $glass-border;
-  padding-bottom: 0.5rem;
-}
 
-.tab-btn {
-  background: transparent;
-  border: none;
-  color: $text-muted;
-  
-  font-weight: 500;
-  padding: 0.5rem 1rem;
-  cursor: pointer;
-  position: relative;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  transition: color 0.2s ease;
-
-  &:hover {
-    color: $text-main;
-  }
-
-  &.active {
-    color: $primary-blue;
-    &::after {
-      content: '';
-      position: absolute;
-      bottom: -0.6rem;
-      left: 0;
-      right: 0;
-      height: 2px;
-      background: $primary-blue;
-      border-radius: 2px;
-    }
-  }
-
-  .badge {
-    background: rgba(245, 158, 11, 0.2);
-    color: $pending-color;
-    padding: 0.1rem 0.5rem;
-    border-radius: 99px;
-    
-    font-weight: 700;
-  }
-}
 
 /* --- 4. BUTTONS --- */
 .btn-primary, .btn-secondary {

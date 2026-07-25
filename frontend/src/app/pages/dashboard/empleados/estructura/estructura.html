@@ -1,10 +1,10 @@
 <div class="estructura-container fade-in">
   
-  <div class="tabs-nav-sub">
-    <button class="tab-btn-sub" [class.active]="currentTab === 'areas'" (click)="setTab('areas')">
+  <div class="tabs-nav">
+    <button class="tab-btn" [class.active]="currentTab === 'areas'" (click)="setTab('areas')">
       Áreas / Departamentos
     </button>
-    <button class="tab-btn-sub" [class.active]="currentTab === 'cargos'" (click)="setTab('cargos')">
+    <button class="tab-btn" [class.active]="currentTab === 'cargos'" (click)="setTab('cargos')">
       Cargos
     </button>
   </div>
@@ -13,7 +13,7 @@
   <div class="glass-panel p-4 fade-in" *ngIf="currentTab === 'areas'">
     <div class="flex justify-between items-center mb-4">
       <h3 class="text-xl font-bold">Gestión de Áreas</h3>
-      <button class="btn-primary btn-sm" (click)="abrirModalArea()">+ Nueva Área</button>
+      <button class="btn-add btn-sm" (click)="abrirModalArea()">+ Nueva Área</button>
     </div>
     
     <table class="premium-table">
@@ -45,7 +45,7 @@
   <div class="glass-panel p-4 fade-in" *ngIf="currentTab === 'cargos'">
     <div class="flex justify-between items-center mb-4">
       <h3 class="text-xl font-bold">Gestión de Cargos</h3>
-      <button class="btn-primary btn-sm" (click)="abrirModalCargo()">+ Nuevo Cargo</button>
+      <button class="btn-add btn-sm" (click)="abrirModalCargo()">+ Nuevo Cargo</button>
     </div>
     
     <table class="premium-table">
@@ -93,7 +93,7 @@
         </div>
         <div class="form-actions mt-4">
           <button type="button" class="btn-secondary" (click)="cerrarModalArea()">Cancelar</button>
-          <button type="submit" class="btn-primary" [disabled]="isSubmitting">Guardar Área</button>
+          <button type="submit" class="btn-save" [disabled]="isSubmitting">Guardar Área</button>
         </div>
       </form>
     </div>
@@ -125,7 +125,7 @@
         </div>
         <div class="form-actions mt-4">
           <button type="button" class="btn-secondary" (click)="cerrarModalCargo()">Cancelar</button>
-          <button type="submit" class="btn-primary" [disabled]="isSubmitting">Guardar Cargo</button>
+          <button type="submit" class="btn-save" [disabled]="isSubmitting">Guardar Cargo</button>
         </div>
       </form>
     </div>

@@ -166,7 +166,7 @@ class EmpresaController extends Controller
             // Crea el rol "Gerente" para la empresa
             $rolGerente = \App\Models\Role::create([
                 'empresa_id' => $empresa->id,
-                'nombre' => 'Gerente',
+                'nombre' => 'Gerente General',
                 'descripcion' => 'Administrador principal de la empresa',
                 'activo' => 1
             ]);

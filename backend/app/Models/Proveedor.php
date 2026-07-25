@@ -21,7 +21,10 @@ class Proveedor extends Model
         'email', 
         'documentos_url', 
         'activo', 
-        'inactive_at'
+        'inactive_at',
+        'calificacion',
+        'comentarios_evaluacion',
+        'estado_evaluacion'
     ];
 
     public function empresa()

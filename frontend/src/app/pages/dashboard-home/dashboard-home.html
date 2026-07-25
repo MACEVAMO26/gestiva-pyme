@@ -20,64 +20,99 @@
         </div>
       }
 
-      <div class="tareas-list">
+      <div class="kanban-board mt-4">
         @if (isLoading) {
           <div class="empty-state">Cargando tareas...</div>
         } @else {
           
-          <!-- TAREAS RECIBIDAS -->
-          @if (tabActiva === 'recibidas') {
-            @if (tareasRecibidas.length === 0) {
-              <div class="empty-state">No tienes tareas pendientes por el momento.</div>
-            }
-            @for (tarea of tareasRecibidas; track tarea.id) {
-              <div class="tarea-item">
-                <div class="tarea-info">
-                  <h4>{{ tarea.titulo }}</h4>
+          <!-- COLUMNA: PENDIENTES -->
+          <div class="kanban-column">
+            <div class="kanban-header notificada">
+              <h4>Pendientes</h4>
+              <span class="count">{{ tareasPendientes.length }}</span>
+            </div>
+            <div class="kanban-body">
+              @if (tareasPendientes.length === 0) {
+                <div class="empty-kanban">Sin tareas</div>
+              }
+              @for (tarea of tareasPendientes; track tarea.id) {
+                <div class="kanban-card">
+                  <h5>{{ tarea.titulo }}</h5>
                   <p>{{ tarea.descripcion }}</p>
-                  @if (tarea.asignador_id === tarea.asignado_id) {
-                    <span class="tarea-meta" style="color: #a855f7; font-weight: 600;">📋 Tarea Personal</span>
-                  } @else {
-                    <span class="tarea-meta">Asignada por: {{ tarea.asignador?.nombres }} {{ tarea.asignador?.apellidos }}</span>
+                  <div class="kanban-meta">
+                    @if (tarea.asignador_id === tarea.asignado_id) {
+                      <span class="meta-tag personal">Personal</span>
+                    } @else {
+                      <span class="meta-tag assigned">{{ tabActiva === 'recibidas' ? 'De: ' + tarea.asignador?.nombres : 'Para: ' + tarea.asignado?.nombres }}</span>
+                    }
+                  </div>
+                  @if (tabActiva === 'recibidas') {
+                    <div class="kanban-actions">
+                      <button class="kanban-btn btn-iniciar" (click)="cambiarEstado(tarea, 'en_proceso')">Iniciar ▶</button>
+                    </div>
                   }
                 </div>
-                <div class="tarea-status">
-                  <div class="badge-status" [ngClass]="tarea.estado">
-                    {{ tarea.estado === 'notificada' ? 'Notificada' : (tarea.estado === 'en_proceso' ? 'En Proceso' : 'Terminada') }}
-                  </div>
-                  <div class="status-actions">
-                    @if (tarea.estado === 'notificada') {
-                      <button class="btn-secondary small" (click)="cambiarEstado(tarea, 'en_proceso')">Iniciar</button>
-                    }
-                    @if (tarea.estado === 'en_proceso') {
-                      <button class="btn-success small" (click)="cambiarEstado(tarea, 'terminada')">Terminar</button>
-                    }
-                  </div>
-                </div>
-              </div>
-            }
-          } 
-          
-          <!-- TAREAS ASIGNADAS (Solo Gerente/Jefe) -->
-          @else {
-            @if (tareasAsignadas.length === 0) {
-              <div class="empty-state">No has asignado tareas a otros empleados.</div>
-            }
-            @for (tarea of tareasAsignadas; track tarea.id) {
-              <div class="tarea-item">
-                <div class="tarea-info">
-                  <h4>{{ tarea.titulo }}</h4>
+              }
+            </div>
+          </div>
+
+          <!-- COLUMNA: EN PROCESO -->
+          <div class="kanban-column">
+            <div class="kanban-header en_proceso">
+              <h4>En Proceso</h4>
+              <span class="count">{{ tareasEnProceso.length }}</span>
+            </div>
+            <div class="kanban-body">
+              @if (tareasEnProceso.length === 0) {
+                <div class="empty-kanban">Sin tareas</div>
+              }
+              @for (tarea of tareasEnProceso; track tarea.id) {
+                <div class="kanban-card">
+                  <h5>{{ tarea.titulo }}</h5>
                   <p>{{ tarea.descripcion }}</p>
-                  <span class="tarea-meta">Asignada a: {{ tarea.asignado?.nombres }} {{ tarea.asignado?.apellidos }}</span>
+                  <div class="kanban-meta">
+                    @if (tarea.asignador_id === tarea.asignado_id) {
+                      <span class="meta-tag personal">Personal</span>
+                    } @else {
+                      <span class="meta-tag assigned">{{ tabActiva === 'recibidas' ? 'De: ' + tarea.asignador?.nombres : 'Para: ' + tarea.asignado?.nombres }}</span>
+                    }
+                  </div>
+                  @if (tabActiva === 'recibidas') {
+                    <div class="kanban-actions">
+                      <button class="kanban-btn btn-terminar" (click)="cambiarEstado(tarea, 'terminada')">Terminar ✔</button>
+                    </div>
+                  }
                 </div>
-                <div class="tarea-status">
-                  <div class="badge-status" [ngClass]="tarea.estado">
-                    {{ tarea.estado === 'notificada' ? 'Notificada' : (tarea.estado === 'en_proceso' ? 'En Proceso' : 'Terminada') }}
+              }
+            </div>
+          </div>
+
+          <!-- COLUMNA: TERMINADAS -->
+          <div class="kanban-column">
+            <div class="kanban-header terminada">
+              <h4>Terminadas</h4>
+              <span class="count">{{ tareasTerminadas.length }}</span>
+            </div>
+            <div class="kanban-body">
+              @if (tareasTerminadas.length === 0) {
+                <div class="empty-kanban">Sin tareas</div>
+              }
+              @for (tarea of tareasTerminadas; track tarea.id) {
+                <div class="kanban-card done">
+                  <h5>{{ tarea.titulo }}</h5>
+                  <p>{{ tarea.descripcion }}</p>
+                  <div class="kanban-meta">
+                    @if (tarea.asignador_id === tarea.asignado_id) {
+                      <span class="meta-tag personal">Personal</span>
+                    } @else {
+                      <span class="meta-tag assigned">{{ tabActiva === 'recibidas' ? 'De: ' + tarea.asignador?.nombres : 'Para: ' + tarea.asignado?.nombres }}</span>
+                    }
                   </div>
                 </div>
-              </div>
-            }
-          }
+              }
+            </div>
+          </div>
+
         }
       </div>
     </div>

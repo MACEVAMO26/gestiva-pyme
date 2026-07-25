@@ -1,7 +1,7 @@
 <div class="admin-module fade-in">
   @if (currentView === 'dashboard') {
-    <div class="admin-header">
-      <h2>ADMINISTRACIÓN</h2>
+    <div class="module-header">
+      <h1>ADMINISTRACIÓN</h1>
       <p>Centro de configuración y control de tu empresa.</p>
     </div>
 
@@ -101,8 +101,8 @@
   }
 
   @if (currentView === 'info-empresa') {
-    <div class="admin-header with-back">
-      <button class="btn-back" (click)="goToView('dashboard')">
+    <div class="module-header with-back">
+      <button class="btn-volver" (click)="goToView('dashboard')">
         <svg
           fill="none"
           viewBox="0 0 24 24"
@@ -258,7 +258,7 @@
         <div class="form-actions">
           <button
             type="submit"
-            class="btn-primary flex items-center justify-center"
+            class="btn-save flex items-center justify-center"
             [disabled]="isSubmitting"
           >
             <span *ngIf="!isSubmitting">Guardar Información Empresa</span>
@@ -363,8 +363,8 @@
   }
 
   @if (currentView === 'pagos') {
-    <div class="admin-header with-back">
-      <button class="btn-back" (click)="goToView('dashboard')">
+    <div class="module-header with-back">
+      <button class="btn-volver" (click)="goToView('dashboard')">
         <svg
           fill="none"
           viewBox="0 0 24 24"
@@ -385,8 +385,8 @@
     <app-pagos></app-pagos>
   }
   @if (currentView === 'usuarios') {
-    <div class="admin-header with-back">
-      <button class="btn-back" (click)="goToView('dashboard')">
+    <div class="module-header with-back">
+      <button class="btn-volver" (click)="goToView('dashboard')">
         <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="icon-btn">
           <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"/>
         </svg>
@@ -396,8 +396,8 @@
     <app-usuarios></app-usuarios>
   }
   @if (currentView === 'sedes') {
-    <div class="admin-header with-back">
-      <button class="btn-back" (click)="goToView('dashboard')">
+    <div class="module-header with-back">
+      <button class="btn-volver" (click)="goToView('dashboard')">
         <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="icon-btn">
           <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"/>
         </svg>
@@ -407,8 +407,8 @@
     <app-sedes></app-sedes>
   }
   @if (currentView === 'seguridad') {
-    <div class="admin-header with-back">
-      <button class="btn-back" (click)="goToView('dashboard')">
+    <div class="module-header with-back">
+      <button class="btn-volver" (click)="goToView('dashboard')">
         <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="icon-btn">
           <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"/>
         </svg>
