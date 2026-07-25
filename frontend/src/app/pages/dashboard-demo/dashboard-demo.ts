@@ -7,13 +7,19 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { EmpleadosComponent } from '../dashboard/empleados/empleados.component';
 import { AdministracionComponent } from '../dashboard/administracion/administracion.component';
-import { PagosComponent } from '../dashboard/pagos/pagos.component';
 import { AutogestionComponent } from '../dashboard/autogestion/autogestion';
+import { ClientesComponent } from '../dashboard/clientes/clientes';
+import { ProveedoresComponent } from '../dashboard/proveedores/proveedores';
+import { Servicios } from '../dashboard/servicios/servicios';
+import { Inventario } from '../dashboard/inventario/inventario';
+import { Ventas } from '../dashboard/ventas/ventas';
+import { Compras } from '../dashboard/compras/compras';
+import { PrefacturacionComponent } from '../dashboard/prefacturacion/prefacturacion';
 
 @Component({
   selector: 'app-dashboard-demo',
   standalone: true,
-  imports: [CommonModule, EmpleadosComponent, AdministracionComponent, PagosComponent, AutogestionComponent],
+  imports: [CommonModule, EmpleadosComponent, AdministracionComponent, AutogestionComponent, ClientesComponent, ProveedoresComponent, Servicios, Inventario, Ventas, Compras, PrefacturacionComponent],
   templateUrl: './dashboard-demo.html',
   styleUrl: './dashboard-demo.scss'
 })

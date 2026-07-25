@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../../services/auth.service';
-import { PagosComponent } from '../pagos/pagos.component';
 
 import { UsuariosComponent } from './usuarios/usuarios.component';
 import { Sedes } from './sedes/sedes';
@@ -12,7 +11,7 @@ import { Seguridad } from './seguridad/seguridad';
 @Component({
   selector: 'app-administracion',
   standalone: true,
-  imports: [CommonModule, FormsModule, PagosComponent, UsuariosComponent, Sedes, Seguridad],
+  imports: [CommonModule, FormsModule, UsuariosComponent, Sedes, Seguridad],
   templateUrl: './administracion.component.html',
   styleUrl: './administracion.component.scss'
 })
@@ -70,10 +69,6 @@ export class AdministracionComponent implements OnInit {
 
   goToView(view: string) {
     this.currentView = view;
-  }
-
-  goToPagos() {
-    this.currentView = 'pagos';
   }
 
   goToUsuarios() {

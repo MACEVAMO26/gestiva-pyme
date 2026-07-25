@@ -1,1 +1,257 @@
-<div class="module-container"><div class="module-header"><h1>Prefacturación y Caja</h1><p>Módulo en construcción...</p></div></div>
+<div class="module-container fade-in">
+  <div class="module-header">
+    <h1>Prefacturación y Caja</h1>
+    <p>Control de cuadre diario de caja, ingresos, egresos y documentos pendientes de pago.</p>
+  </div>
+
+  <!-- --- PESTAÑAS (TABS) --- -->
+  <div class="tabs-nav">
+    <button class="tab-btn" 
+            [class.active]="activeTab === 'caja'" 
+            (click)="switchTab('caja')">
+      Gestión de Caja
+    </button>
+    <button class="tab-btn" 
+            [class.active]="activeTab === 'prefacturas'" 
+            (click)="switchTab('prefacturas')">
+      Prefacturas Pendientes
+    </button>
+  </div>
+
+  <!-- --- CONTENIDO DE TABS --- -->
+  <div class="tab-content glass-panel p-4">
+    
+    <!-- TOMA: GESTIÓN DE CAJA -->
+    @if(activeTab === 'caja') {
+      <div class="fade-in">
+        
+        @if(!cajaAbierta) {
+          <!-- CAJA CERRADA -->
+          <div style="text-align: center; padding: 4rem 2rem;">
+            <i class="fas fa-cash-register" style="font-size: 5rem; color: #64748b; margin-bottom: 1.5rem;"></i>
+            <h2 style="text-align: center !important; color: #cbd5e1; margin-bottom: 1rem;">LA CAJA ESTÁ CERRADA</h2>
+            <p style="color: #94a3b8; margin-bottom: 2rem;">Debes realizar la apertura de caja para empezar a registrar movimientos en efectivo.</p>
+            <button class="btn-save" style="padding: 1rem 2rem; font-size: 1.2rem;" (click)="abrirCajaModal()">
+              <i class="fas fa-lock-open"></i> Abrir Caja
+            </button>
+          </div>
+        } @else {
+          <!-- CAJA ABIERTA -->
+          <div style="display: flex; gap: 1.5rem; flex-wrap: wrap; margin-bottom: 2rem;">
+            
+            <!-- TARJETAS DE RESUMEN -->
+            <div style="flex: 1; display: flex; flex-direction: column; gap: 1rem;">
+              <div class="glass-panel" style="padding: 1.5rem; text-align: center; border-bottom: 4px solid #10b981;">
+                <h3 style="margin-top: 0; color: #94a3b8; font-size: 0.9rem; text-transform: uppercase;">Total Ingresos</h3>
+                <span style="font-size: 2rem; font-weight: bold; color: #10b981;">{{totalIngresos | currency:'COP':'symbol':'1.0-0'}}</span>
+              </div>
+              <div class="glass-panel" style="padding: 1.5rem; text-align: center; border-bottom: 4px solid #ef4444;">
+                <h3 style="margin-top: 0; color: #94a3b8; font-size: 0.9rem; text-transform: uppercase;">Total Egresos</h3>
+                <span style="font-size: 2rem; font-weight: bold; color: #ef4444;">{{totalEgresos | currency:'COP':'symbol':'1.0-0'}}</span>
+              </div>
+              <div class="glass-panel" style="padding: 1.5rem; text-align: center; border-bottom: 4px solid #3b82f6; background: rgba(59, 130, 246, 0.1);">
+                <h3 style="margin-top: 0; color: #94a3b8; font-size: 0.9rem; text-transform: uppercase;">Saldo Actual en Caja</h3>
+                <span style="font-size: 2.5rem; font-weight: bold; color: white;">{{saldoActual | currency:'COP':'symbol':'1.0-0'}}</span>
+              </div>
+              
+              <button class="btn-volver" style="padding: 1rem; width: 100%; justify-content: center; font-size: 1.1rem; margin-top: auto;" (click)="abrirCierreModal()">
+                <i class="fas fa-lock"></i> Realizar Cierre de Caja
+              </button>
+            </div>
+
+            <!-- REGISTRO DE MOVIMIENTOS Y TABLA -->
+            <div style="flex: 2; display: flex; flex-direction: column; gap: 1.5rem; min-width: 300px;">
+              
+              <div class="glass-panel" style="padding: 1.5rem;">
+                <h3 style="margin-top: 0; color: #f97316; font-size: 1.2rem; text-transform: uppercase;">Registrar Movimiento Manual</h3>
+                <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                  <div class="form-group" style="flex: 1;">
+                    <label>Tipo</label>
+                    <select class="input-neumorphic" [(ngModel)]="tipoMovimiento">
+                      <option value="ingreso">Ingreso (+)</option>
+                      <option value="egreso">Egreso (-)</option>
+                    </select>
+                  </div>
+                  <div class="form-group" style="flex: 1;">
+                    <label>Monto</label>
+                    <input type="number" class="input-neumorphic" [(ngModel)]="montoMovimiento" placeholder="0">
+                  </div>
+                  <div class="form-group" style="flex: 2;">
+                    <label>Concepto / Razón</label>
+                    <input type="text" class="input-neumorphic" [(ngModel)]="conceptoMovimiento" placeholder="Ej. Pago servicio internet">
+                  </div>
+                  <div style="display: flex; align-items: flex-end; padding-bottom: 0.5rem;">
+                    <button class="btn-add" style="padding: 0.75rem 1.5rem;" (click)="registrarMovimiento()">
+                      Guardar
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="glass-panel" style="padding: 1.5rem; flex: 1;">
+                <h3 style="margin-top: 0; color: #cbd5e1; font-size: 1.2rem; text-transform: uppercase;">Últimos Movimientos del Día</h3>
+                <div class="table-responsive" style="margin-top: 0;">
+                  <table class="premium-table data-table">
+                    <thead>
+                      <tr>
+                        <th>FECHA/HORA</th>
+                        <th>TIPO</th>
+                        <th>CONCEPTO</th>
+                        <th>MONTO</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      @for(mov of movimientos; track $index) {
+                        <tr>
+                          <td>{{mov.fecha}}</td>
+                          <td>
+                            @if(mov.tipo === 'ingreso' || mov.tipo === 'apertura') {
+                              <span class="badge badge-success" style="text-transform: capitalize;">{{mov.tipo}}</span>
+                            } @else {
+                              <span class="badge badge-danger" style="text-transform: capitalize;">{{mov.tipo}}</span>
+                            }
+                          </td>
+                          <td>{{mov.concepto}}</td>
+                          <td [ngStyle]="{'color': (mov.tipo === 'egreso') ? '#ef4444' : '#10b981', 'font-weight': 'bold'}">
+                            {{mov.tipo === 'egreso' ? '-' : '+'}}{{mov.monto | currency:'COP':'symbol':'1.0-0'}}
+                          </td>
+                        </tr>
+                      }
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        }
+      </div>
+    }
+
+    <!-- TOMA: PREFACTURAS PENDIENTES -->
+    @if(activeTab === 'prefacturas') {
+      <div class="fade-in">
+        <p style="color: #94a3b8; margin-bottom: 1.5rem;">Documentos pendientes de confirmación de pago o emisión de factura final.</p>
+        
+        <div class="table-responsive">
+          <table class="premium-table data-table">
+            <thead>
+              <tr>
+                <th>CONSECUTIVO</th>
+                <th>CLIENTE</th>
+                <th>FECHA</th>
+                <th>MONTO</th>
+                <th>ESTADO</th>
+                <th style="text-align: center;">ACCIÓN DE CAJA</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for(pref of prefacturas; track pref.id) {
+                <tr>
+                  <td><strong>{{pref.consecutivo}}</strong></td>
+                  <td>{{pref.cliente}}</td>
+                  <td>{{pref.fecha}}</td>
+                  <td>{{pref.total | currency:'COP':'symbol':'1.0-0'}}</td>
+                  <td>
+                    <span class="badge" [ngClass]="getBadgeClass(pref.estado)">
+                      {{pref.estado}}
+                    </span>
+                  </td>
+                  <td style="text-align: center;">
+                    @if(pref.estado === 'Pendiente') {
+                      <button class="btn-save" style="padding: 0.5rem 1rem; font-size: 0.8rem;" (click)="generarDocumento(pref.id)">
+                        <i class="fas fa-file-invoice"></i> Generar Factura
+                      </button>
+                    } @else {
+                      <span style="color: #64748b; font-size: 0.8rem;"><i class="fas fa-check"></i> Procesada</span>
+                    }
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    }
+  </div>
+</div>
+
+<!-- --- MODAL APERTURA --- -->
+@if(showModalApertura) {
+<div class="modal-overlay fade-in">
+  <div class="modal-content glass-panel" style="max-width: 400px; text-align: center;">
+    <div class="modal-header" style="justify-content: center; border-bottom: none;">
+      <i class="fas fa-key" style="font-size: 3rem; color: #10b981; margin-bottom: 1rem;"></i>
+    </div>
+    <div class="modal-body">
+      <h2 style="margin-top: 0; color: white; text-align: center !important;">APERTURA DE CAJA</h2>
+      <p style="color: #cbd5e1; margin-bottom: 1.5rem;">Indica el monto base (sencillo) con el que inicia la caja hoy.</p>
+      
+      <div class="form-group" style="text-align: left;">
+        <label>Base Inicial ($)</label>
+        <input type="number" class="input-neumorphic" [(ngModel)]="montoApertura" style="font-size: 1.5rem; text-align: right;" placeholder="0">
+      </div>
+      
+      <div style="display: flex; justify-content: center; gap: 1rem; margin-top: 2rem;">
+        <button class="btn-volver" (click)="cerrarCajaModal()">Cancelar</button>
+        <button class="btn-save" (click)="confirmarApertura()" [disabled]="guardando">
+          @if(guardando) {
+            <i class="fas fa-spinner fa-spin"></i> Abriendo...
+          } @else {
+            Confirmar Apertura
+          }
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+}
+
+<!-- --- MODAL CIERRE --- -->
+@if(showModalCierre) {
+<div class="modal-overlay fade-in">
+  <div class="modal-content glass-panel" style="max-width: 400px; text-align: center;">
+    <div class="modal-header" style="justify-content: center; border-bottom: none;">
+      <i class="fas fa-lock" style="font-size: 3rem; color: #ef4444; margin-bottom: 1rem;"></i>
+    </div>
+    <div class="modal-body">
+      <h2 style="margin-top: 0; color: #ef4444; text-align: center !important;">CIERRE DE CAJA</h2>
+      <p style="color: #cbd5e1; margin-bottom: 1.5rem;">El sistema registrará un saldo esperado de <strong>{{saldoActual | currency:'COP':'symbol':'1.0-0'}}</strong>. ¿Estás seguro de realizar el cuadre y cerrar la caja?</p>
+      
+      <div style="display: flex; justify-content: center; gap: 1rem; margin-top: 2rem;">
+        <button class="btn-volver" style="background-color: #3f3f46 !important;" (click)="cerrarCierreModal()">Cancelar</button>
+        <!-- Notar que el botón de cerrar usa el fondo rojo (volver) como botón de peligro -->
+        <button class="btn-volver" (click)="confirmarCierre()" [disabled]="guardando">
+          @if(guardando) {
+            <i class="fas fa-spinner fa-spin"></i> Cerrando...
+          } @else {
+            Sí, Cerrar Caja
+          }
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+}
+
+<!-- --- TOAST NOTIFICATION --- -->
+@if(showToast) {
+<div class="toast-container fade-in">
+  <div class="toast-card" [ngClass]="'toast-' + toastType">
+    <div class="toast-icon">
+      @if(toastType === 'success') { <i class="fas fa-check-circle"></i> }
+      @if(toastType === 'warning') { <i class="fas fa-exclamation-triangle"></i> }
+      @if(toastType === 'error') { <i class="fas fa-times-circle"></i> }
+    </div>
+    <div class="toast-content">
+      <h4 class="toast-title">
+        @if(toastType === 'success') { Éxito }
+        @if(toastType === 'warning') { Advertencia }
+        @if(toastType === 'error') { Error }
+      </h4>
+      <p class="toast-message">{{toastMessage}}</p>
+    </div>
+    <button class="toast-close" (click)="showToast = false">&times;</button>
+  </div>
+</div>
+}

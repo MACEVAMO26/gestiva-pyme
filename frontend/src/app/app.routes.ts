@@ -23,7 +23,6 @@ export const routes: Routes = [
             { path: 'empleados', loadComponent: () => import('./pages/dashboard/empleados/empleados.component').then(m => m.EmpleadosComponent) },
             { path: 'tiempo', loadComponent: () => import('./pages/dashboard/tiempo/tiempo').then(m => m.TiempoComponent) },
             { path: 'autogestion', loadComponent: () => import('./pages/dashboard/autogestion/autogestion').then(m => m.AutogestionComponent) },
-            { path: 'pagos', loadComponent: () => import('./pages/dashboard/pagos/pagos.component').then(m => m.PagosComponent) },
             { path: 'clientes', loadComponent: () => import('./pages/dashboard/clientes/clientes').then(m => m.ClientesComponent) },
             { path: 'proveedores', loadComponent: () => import('./pages/dashboard/proveedores/proveedores').then(m => m.ProveedoresComponent) },
             { path: 'servicios', loadComponent: () => import('./pages/dashboard/servicios/servicios').then(m => m.Servicios) },

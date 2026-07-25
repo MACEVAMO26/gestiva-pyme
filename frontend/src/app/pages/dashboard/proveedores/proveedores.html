@@ -1,167 +1,316 @@
-<div class="module-container">
-    <header class="module-header">
-        <div class="header-text">
-            <h1 class="module-title">Gestión de Proveedores</h1>
-            <p class="module-subtitle">Administra el inventario de proveedores, contactos corporativos y documentos legales.</p>
-        </div>
-        <button class="btn-add" (click)="abrirModal()">
+<div class="module-container fade-in">
+  <div class="module-header">
+    <h1>Gestión de Proveedores</h1>
+    <p>Administra el inventario de proveedores, cuentas por pagar y evaluaciones de desempeño.</p>
+  </div>
+
+  <!-- --- PESTAÑAS (TABS) --- -->
+  <div class="tabs-nav">
+    <button class="tab-btn" 
+            [class.active]="activeTab === 'directorio'" 
+            (click)="switchTab('directorio')">
+      Directorio
+    </button>
+    <button class="tab-btn" 
+            [class.active]="activeTab === 'cuentas'" 
+            (click)="switchTab('cuentas')">
+      Cuentas por Pagar
+    </button>
+    <button class="tab-btn" 
+            [class.active]="activeTab === 'evaluaciones'" 
+            (click)="switchTab('evaluaciones')">
+      Evaluaciones y Contratos
+    </button>
+  </div>
+
+  <!-- --- CONTENIDO DE TABS --- -->
+  <div class="tab-content glass-panel p-4">
+    
+    <!-- TOMA: DIRECTORIO -->
+    @if(activeTab === 'directorio') {
+      <div class="fade-in">
+        <div class="action-bar" style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
+          <input type="text" 
+                 class="search-input input-neumorphic" 
+                 style="width: 300px;"
+                 placeholder="Buscar por Razón Social, NIT, Contacto..."
+                 [(ngModel)]="searchTerm"
+                 (input)="filtrarProveedores()">
+                 
+          <button class="btn-add" (click)="abrirModal()">
             <i class="fas fa-plus"></i> Nuevo Proveedor
-        </button>
-    </header>
+          </button>
+        </div>
 
-    <div class="search-bar-container">
-        <input type="text" 
-               class="search-input input-neumorphic" 
-               placeholder="Buscar por Razón Social, NIT, Contacto..."
-               [(ngModel)]="searchTerm"
-               (input)="filtrarProveedores()">
-    </div>
-
-    <div class="table-responsive glass-panel">
-        <table class="premium-table">
+        <div class="table-responsive">
+          <table class="premium-table data-table">
             <thead>
-                <tr>
-                    <th>PROVEEDOR</th>
-                    <th>CONTACTO PRINCIPAL</th>
-                    <th>EMAIL / DIRECCIÓN</th>
-                    <th>EVALUACIÓN</th>
-                    <th>ACCIONES</th>
-                </tr>
+              <tr>
+                <th>PROVEEDOR</th>
+                <th>CONTACTO PRINCIPAL</th>
+                <th>EMAIL / DIRECCIÓN</th>
+                <th>EVALUACIÓN BASE</th>
+                <th>ACCIONES</th>
+              </tr>
             </thead>
             <tbody>
-                @if (proveedoresFiltrados.length === 0) {
-                    <tr>
-                        <td colspan="5" class="text-center text-muted py-4">
-                            No hay proveedores registrados.
-                        </td>
-                    </tr>
-                } @else {
-                    @for (proveedor of proveedoresFiltrados; track proveedor.id) {
-                    <tr>
-                        <td>
-                            <strong>{{proveedor.razon_social}}</strong><br>
-                            <span class="text-muted text-sm">ID: {{ formatearId(proveedor.id) }} | NIT: {{proveedor.nit}}</span>
-                        </td>
-                        <td>
-                            <strong>{{proveedor.contacto || 'N/A'}}</strong><br>
-                            <span class="text-sm">📞 {{proveedor.telefono || 'N/A'}}</span>
-                        </td>
-                        <td>
-                            <span class="text-sm">✉️ {{proveedor.email || 'N/A'}}</span><br>
-                            <span class="text-sm">📍 {{proveedor.direccion || 'N/A'}}</span>
-                        </td>
-                        <td>
-                            <div class="evaluation-cell" style="display: flex; flex-direction: column; gap: 4px;">
-                                <span class="badge" [ngClass]="{
-                                    'bg-green-500 text-green-100': proveedor.estado_evaluacion === 'Excelente' || proveedor.estado_evaluacion === 'Bueno',
-                                    'bg-yellow-500 text-yellow-100': proveedor.estado_evaluacion === 'Regular',
-                                    'bg-red-500 text-red-100': proveedor.estado_evaluacion === 'Malo',
-                                    'bg-gray-500 text-gray-100': proveedor.estado_evaluacion === 'No Evaluado' || !proveedor.estado_evaluacion
-                                }">
-                                    {{ proveedor.estado_evaluacion || 'No Evaluado' }}
-                                </span>
-                                <div class="stars" style="color: #fbbf24; font-size: 0.8rem;">
-                                    {{ '★'.repeat(proveedor.calificacion || 0) }}{{ '☆'.repeat(5 - (proveedor.calificacion || 0)) }}
-                                </div>
-                            </div>
-                        </td>
-                        <td class="actions-cell">
-                            <button class="btn-icon edit" (click)="abrirModal(proveedor)" title="Editar">✏️</button>
-                            <button class="btn-icon delete" (click)="eliminarProveedor(proveedor.id)" title="Eliminar" [disabled]="deletingId === proveedor.id">
-                                <span *ngIf="deletingId !== proveedor.id">🗑️</span>
-                                <span *ngIf="deletingId === proveedor.id" class="flex items-center">
-                                    <svg class="animate-spin h-4 w-4 text-red-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                    </svg>
-                                    <span style="font-size: 0.75rem; margin-left: 0.25rem;">Eliminando...</span>
-                                </span>
-                            </button>
-                        </td>
-                    </tr>
-                    }
+              @if (proveedoresFiltrados.length === 0) {
+                <tr>
+                  <td colspan="5" style="text-align: center; color: #64748b; padding: 2rem;">No hay proveedores registrados.</td>
+                </tr>
+              } @else {
+                @for (proveedor of proveedoresFiltrados; track proveedor.id) {
+                  <tr>
+                    <td>
+                      <strong>{{proveedor.razon_social}}</strong><br>
+                      <span style="font-size: 0.8rem; color: #94a3b8;">ID: {{ formatearId(proveedor.id) }} | NIT: {{proveedor.nit}}</span>
+                    </td>
+                    <td>
+                      <strong>{{proveedor.contacto || 'N/A'}}</strong><br>
+                      <span style="font-size: 0.8rem;">📞 {{proveedor.telefono || 'N/A'}}</span>
+                    </td>
+                    <td>
+                      <span style="font-size: 0.8rem;">✉️ {{proveedor.email || 'N/A'}}</span><br>
+                      <span style="font-size: 0.8rem;">📍 {{proveedor.direccion || 'N/A'}}</span>
+                    </td>
+                    <td>
+                      <span class="badge" [ngClass]="getBadgeEval(proveedor.estado_evaluacion || 'No Evaluado')">
+                        {{ proveedor.estado_evaluacion || 'No Evaluado' }}
+                      </span>
+                    </td>
+                    <td>
+                      <div style="display: flex; gap: 0.5rem;">
+                        <button class="btn-icon" (click)="abrirModal(proveedor)" title="Editar">✏️</button>
+                        <button class="btn-icon text-danger" (click)="eliminarProveedor(proveedor.id)" title="Eliminar" [disabled]="deletingId === proveedor.id">
+                          @if(deletingId === proveedor.id) {
+                            <i class="fas fa-spinner fa-spin"></i>
+                          } @else {
+                            🗑️
+                          }
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
                 }
+              }
             </tbody>
-        </table>
-    </div>
+          </table>
+        </div>
+      </div>
+    }
+
+    <!-- TOMA: CUENTAS POR PAGAR -->
+    @if(activeTab === 'cuentas') {
+      <div class="fade-in">
+        <div style="display: flex; gap: 1.5rem; margin-bottom: 2rem;">
+          <div class="glass-panel" style="padding: 1.5rem; border-bottom: 4px solid #ef4444; flex: 1;">
+            <h3 style="margin-top: 0; color: #94a3b8; font-size: 0.9rem; text-transform: uppercase;">Total Adeudado</h3>
+            <span style="font-size: 2.5rem; font-weight: bold; color: #ef4444;">{{totalDeuda | currency:'COP':'symbol':'1.0-0'}}</span>
+          </div>
+          <div style="flex: 2; padding-top: 1rem;">
+            <p style="color: #cbd5e1;">Aquí puedes visualizar las facturas pendientes de pago a tus proveedores. Recuerda registrar los pagos a tiempo para mantener un buen historial crediticio y una evaluación 'Excelente'.</p>
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table class="premium-table data-table">
+            <thead>
+              <tr>
+                <th>PROVEEDOR</th>
+                <th>FACTURA</th>
+                <th>EMISIÓN</th>
+                <th>VENCIMIENTO</th>
+                <th>MONTO</th>
+                <th>ESTADO</th>
+                <th style="text-align: center;">ACCIÓN</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for(cuenta of cuentasPorPagar; track cuenta.id) {
+                <tr>
+                  <td><strong>{{cuenta.proveedor}}</strong></td>
+                  <td>{{cuenta.factura}}</td>
+                  <td>{{cuenta.fecha_emision}}</td>
+                  <td>{{cuenta.fecha_vencimiento}}</td>
+                  <td style="font-weight: bold;">{{cuenta.monto | currency:'COP':'symbol':'1.0-0'}}</td>
+                  <td>
+                    <span class="badge" [ngClass]="getBadgeCuentas(cuenta.estado)">{{cuenta.estado}}</span>
+                  </td>
+                  <td style="text-align: center;">
+                    @if(cuenta.estado !== 'Pagada') {
+                      <button class="btn-save" style="padding: 0.5rem 1rem; font-size: 0.8rem;" (click)="abrirPago(cuenta)">
+                        <i class="fas fa-hand-holding-usd"></i> Registrar Pago
+                      </button>
+                    } @else {
+                      <span style="color: #10b981; font-size: 0.8rem;"><i class="fas fa-check-double"></i> Saldado</span>
+                    }
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    }
+
+    <!-- TOMA: EVALUACIONES Y CONTRATOS -->
+    @if(activeTab === 'evaluaciones') {
+      <div class="fade-in">
+        <p style="color: #cbd5e1; margin-bottom: 1.5rem;">Califica el desempeño de tus proveedores. Un historial de entregas a tiempo y buena calidad de repuestos impacta directamente en tu puntuación de calidad (SLAs).</p>
+        
+        <div class="table-responsive">
+          <table class="premium-table data-table">
+            <thead>
+              <tr>
+                <th>PROVEEDOR</th>
+                <th>VIGENCIA CONTRATO</th>
+                <th>CALIFICACIÓN</th>
+                <th>DESEMPEÑO (NRC)</th>
+                <th>COMENTARIOS DE SERVICIO</th>
+                <th style="text-align: center;">EVALUAR</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for(eval of contratos; track eval.id) {
+                <tr>
+                  <td><strong>{{eval.proveedor}}</strong></td>
+                  <td>{{eval.vigencia}}</td>
+                  <td style="color: #fbbf24; font-size: 1.1rem; letter-spacing: 2px;">
+                    {{ '★'.repeat(eval.calificacion || 0) }}{{ '☆'.repeat(5 - (eval.calificacion || 0)) }}
+                  </td>
+                  <td>
+                    <span class="badge" [ngClass]="getBadgeEval(eval.nrc)">{{eval.nrc}}</span>
+                  </td>
+                  <td style="max-width: 250px; overflow: hidden; text-overflow: ellipsis;">{{eval.comentarios}}</td>
+                  <td style="text-align: center;">
+                    <button class="btn-general" style="background-color: #3b82f6; color: white; padding: 0.4rem 0.8rem;" (click)="abrirEvaluar(eval)">
+                      <i class="fas fa-star-half-alt"></i> Calificar
+                    </button>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    }
+  </div>
 </div>
 
-<!-- Modal para Crear/Editar Proveedor -->
+<!-- ================= MODALES ================= -->
+
+<!-- MODAL: DIRECTORIO (CREAR/EDITAR) -->
 @if (showModal) {
-<div class="modal-overlay">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2>{{ isEditMode ? 'Editar Proveedor' : 'Nuevo Proveedor' }}</h2>
-            <button class="close-btn" (click)="cerrarModal()">×</button>
-        </div>
-        <div class="modal-body">
-            <form (ngSubmit)="guardarProveedor()" #proveedorForm="ngForm">
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label>Razón Social *</label>
-                        <input type="text" class="input-neumorphic" [(ngModel)]="proveedorActual.razon_social" name="razon_social" required>
-                    </div>
-                    <div class="form-group">
-                        <label>NIT / Documento *</label>
-                        <input type="text" class="input-neumorphic" [(ngModel)]="proveedorActual.nit" name="nit" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Persona de Contacto</label>
-                        <input type="text" class="input-neumorphic" [(ngModel)]="proveedorActual.contacto" name="contacto">
-                    </div>
-                    <div class="form-group">
-                        <label>Teléfono</label>
-                        <input type="text" class="input-neumorphic" [(ngModel)]="proveedorActual.telefono" name="telefono">
-                    </div>
-                    <div class="form-group">
-                        <label>Email</label>
-                        <input type="email" class="input-neumorphic" [(ngModel)]="proveedorActual.email" name="email">
-                    </div>
-                    <div class="form-group">
-                        <label>Dirección</label>
-                        <input type="text" class="input-neumorphic" [(ngModel)]="proveedorActual.direccion" name="direccion">
-                    </div>
-                </div>
-                <div class="form-grid" style="margin-top: 15px;">
-                    <div class="form-group">
-                        <label>Estado de Evaluación</label>
-                        <select class="input-neumorphic" [(ngModel)]="proveedorActual.estado_evaluacion" name="estado_evaluacion">
-                            <option value="No Evaluado">No Evaluado</option>
-                            <option value="Excelente">Excelente</option>
-                            <option value="Bueno">Bueno</option>
-                            <option value="Regular">Regular</option>
-                            <option value="Malo">Malo</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Calificación (1 al 5)</label>
-                        <input type="number" class="input-neumorphic" [(ngModel)]="proveedorActual.calificacion" name="calificacion" min="0" max="5">
-                    </div>
-                </div>
-                <div class="form-group" style="margin-top: 15px;">
-                    <label>Comentarios de Evaluación</label>
-                    <textarea class="input-neumorphic" [(ngModel)]="proveedorActual.comentarios_evaluacion" name="comentarios_evaluacion" rows="2"></textarea>
-                </div>
-                <div class="form-group" style="margin-top: 15px;">
-                    <label>URL Documentos (RUT, Cámara de Comercio)</label>
-                    <input type="text" class="input-neumorphic" [(ngModel)]="proveedorActual.documentos_url" name="documentos_url" placeholder="https://...">
-                </div>
-                
-                <div class="modal-footer">
-                    <button type="button" class="btn-secondary" (click)="cerrarModal()">Cancelar</button>
-                    <button type="submit" class="btn-save" [disabled]="!proveedorForm.valid || isSaving">
-                        <span *ngIf="!isSaving">{{ isEditMode ? 'Guardar Cambios' : 'Guardar Proveedor' }}</span>
-                        <span *ngIf="isSaving" class="flex items-center">
-                            <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                            </svg>
-                            Guardando...
-                        </span>
-                    </button>
-                </div>
-            </form>
-        </div>
+<div class="modal-overlay fade-in">
+  <div class="modal-content glass-panel" style="max-width: 600px;">
+    <div class="modal-header">
+      <h2 style="margin: 0; color: white; text-align: center !important;">{{ isEditMode ? 'EDITAR PROVEEDOR' : 'NUEVO PROVEEDOR' }}</h2>
+      <button class="btn-close" (click)="cerrarModal()">&times;</button>
     </div>
+    <div class="modal-body">
+      <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+        <div class="form-group" style="flex: 2; min-width: 200px;">
+          <label>Razón Social *</label>
+          <input type="text" class="input-neumorphic" [(ngModel)]="proveedorActual.razon_social" placeholder="Empresa S.A.S">
+        </div>
+        <div class="form-group" style="flex: 1; min-width: 150px;">
+          <label>NIT / RUT *</label>
+          <input type="text" class="input-neumorphic" [(ngModel)]="proveedorActual.nit" placeholder="900.123.456-7">
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+        <div class="form-group" style="flex: 1;">
+          <label>Contacto Principal</label>
+          <input type="text" class="input-neumorphic" [(ngModel)]="proveedorActual.contacto" placeholder="Nombre completo">
+        </div>
+        <div class="form-group" style="flex: 1;">
+          <label>Teléfono</label>
+          <input type="text" class="input-neumorphic" [(ngModel)]="proveedorActual.telefono" placeholder="300 000 0000">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Correo Electrónico (Para órdenes de compra)</label>
+        <input type="email" class="input-neumorphic" [(ngModel)]="proveedorActual.email" placeholder="ventas@empresa.com">
+      </div>
+
+      <div class="form-group">
+        <label>Dirección</label>
+        <input type="text" class="input-neumorphic" [(ngModel)]="proveedorActual.direccion" placeholder="Calle/Carrera">
+      </div>
+    </div>
+    <div class="modal-footer" style="display: flex; justify-content: center; gap: 1rem; margin-top: 1.5rem;">
+      <button class="btn-volver" (click)="cerrarModal()">Volver</button>
+      <button class="btn-save" (click)="guardarProveedor()" [disabled]="isSaving">
+        @if(isSaving) {
+          <i class="fas fa-spinner fa-spin"></i> Guardando...
+        } @else {
+          Guardar Proveedor
+        }
+      </button>
+    </div>
+  </div>
+</div>
+}
+
+<!-- MODAL: REGISTRAR PAGO -->
+@if(showModalPago && cuentaSeleccionada) {
+<div class="modal-overlay fade-in">
+  <div class="modal-content glass-panel" style="max-width: 450px; text-align: center;">
+    <div class="modal-header" style="justify-content: center; border-bottom: none;">
+      <i class="fas fa-money-check-alt" style="font-size: 3rem; color: #10b981; margin-bottom: 1rem;"></i>
+    </div>
+    <div class="modal-body">
+      <h2 style="margin-top: 0; color: white;">REGISTRAR PAGO</h2>
+      <p style="color: #cbd5e1; margin-bottom: 1rem;">¿Confirmas el pago total de la factura <strong>{{cuentaSeleccionada.factura}}</strong> por valor de <strong>{{cuentaSeleccionada.monto | currency:'COP':'symbol':'1.0-0'}}</strong> a {{cuentaSeleccionada.proveedor}}?</p>
+      
+      <div style="display: flex; justify-content: center; gap: 1rem; margin-top: 2rem;">
+        <button class="btn-volver" (click)="cerrarPago()">Cancelar</button>
+        <button class="btn-save" (click)="confirmarPago()" [disabled]="isSaving">
+          @if(isSaving) {
+            <i class="fas fa-spinner fa-spin"></i> Procesando...
+          } @else {
+            Confirmar Pago
+          }
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+}
+
+<!-- MODAL: EVALUACIÓN -->
+@if(showModalEvaluacion && evaluacionSeleccionada) {
+<div class="modal-overlay fade-in">
+  <div class="modal-content glass-panel" style="max-width: 500px;">
+    <div class="modal-header">
+      <h2 style="margin: 0; color: white; text-align: center !important;">EVALUAR PROVEEDOR</h2>
+      <button class="btn-close" (click)="cerrarEvaluar()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <p style="text-align: center; color: #94a3b8; margin-bottom: 1.5rem;">Evaluación para: <strong>{{evaluacionSeleccionada.proveedor}}</strong></p>
+      
+      <div class="form-group" style="text-align: center;">
+        <label>Calificación (1 a 5 Estrellas)</label>
+        <input type="number" class="input-neumorphic" [(ngModel)]="nuevaCalificacion" min="1" max="5" style="text-align: center; font-size: 1.5rem;">
+      </div>
+
+      <div class="form-group">
+        <label>Comentarios de Desempeño</label>
+        <textarea class="input-neumorphic" rows="3" [(ngModel)]="nuevoComentario" placeholder="Ej: Entregas rápidas, buena garantía..."></textarea>
+      </div>
+    </div>
+    <div class="modal-footer" style="display: flex; justify-content: center; gap: 1rem; margin-top: 1.5rem;">
+      <button class="btn-volver" (click)="cerrarEvaluar()">Volver</button>
+      <button class="btn-save" (click)="guardarEvaluacion()" [disabled]="isSaving">
+        @if(isSaving) {
+          <i class="fas fa-spinner fa-spin"></i> Guardando...
+        } @else {
+          Guardar Evaluación
+        }
+      </button>
+    </div>
+  </div>
 </div>
 }

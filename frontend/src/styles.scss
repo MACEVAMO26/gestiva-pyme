@@ -432,3 +432,148 @@ option {
   background-color: #a16207 !important; /* Hover oscuro */
   box-shadow: inset 2px 2px 5px rgba(0,0,0,0.5) !important;
 }
+
+/* 7. Estilos de Toasts / Alertas (Regla 7) */
+.toast-container {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  z-index: 9999;
+  pointer-events: none;
+}
+
+.toast-card {
+  width: 380px;
+  background: rgba(42, 38, 69, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 12px;
+  padding: 1rem 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+  border: 1px solid rgba(255,255,255,0.05);
+  pointer-events: auto;
+  position: relative;
+  overflow: hidden;
+  font-family: 'Helvetica', 'Arial', sans-serif;
+  
+  /* Borde izquierdo sutil */
+  border-left: 4px solid transparent;
+}
+
+.toast-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, transparent 100%);
+  pointer-events: none;
+}
+
+.toast-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  background: rgba(255,255,255,0.1);
+  color: white;
+}
+
+.toast-content {
+  flex: 1;
+}
+
+.toast-title {
+  margin: 0 0 0.2rem 0 !important;
+  font-size: 1rem !important;
+  font-weight: 700 !important;
+  text-transform: none !important;
+  text-align: left !important;
+}
+
+.toast-message {
+  margin: 0 !important;
+  font-size: 0.85rem !important;
+  color: #cbd5e1 !important;
+  text-align: left !important;
+  text-transform: none !important;
+}
+
+.toast-close {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+  transition: color 0.2s;
+  
+  &:hover {
+    color: white;
+  }
+}
+
+/* Variantes de Toasts */
+.toast-success {
+  border-left-color: #10b981;
+  .toast-title { color: #10b981 !important; }
+  .toast-icon { color: #10b981; background: rgba(16, 185, 129, 0.1); }
+}
+
+.toast-warning {
+  border-left-color: #f59e0b;
+  .toast-title { color: #f59e0b !important; }
+  .toast-icon { color: #f59e0b; background: rgba(245, 158, 11, 0.1); }
+}
+
+.toast-error {
+  border-left-color: #ef4444;
+  .toast-title { color: #ef4444 !important; }
+  .toast-icon { color: #ef4444; background: rgba(239, 68, 68, 0.1); }
+}
+
+/* 8. Estilos Globales de Tablas (Mejora de espacio) */
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  margin-top: 1rem;
+}
+
+table.premium-table, table.data-table {
+  width: 100% !important;
+  border-collapse: collapse;
+  min-width: 800px; /* Asegura que la tabla no se aplaste en pantallas normales */
+}
+
+table.premium-table th, table.premium-table td,
+table.data-table th, table.data-table td {
+  padding: 1rem 1.5rem !important; /* Aumenta el espaciado interno */
+  text-align: left;
+  vertical-align: middle;
+}
+
+table.premium-table th, table.data-table th {
+  font-weight: 600 !important;
+  color: #a1a1aa !important;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  text-transform: uppercase;
+  font-size: 0.85rem;
+}
+
+table.premium-table td, table.data-table td {
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  color: #f3f4f6;
+  font-size: 0.95rem;
+}
+
+table.premium-table tbody tr:hover, table.data-table tbody tr:hover {
+  background-color: rgba(255,255,255,0.02);
+}
+

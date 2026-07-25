@@ -9,7 +9,7 @@
         <svg class="icon" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width: 20px; height: 20px;">
           <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
         </svg>
-        Módulo de Gestión de Tiempos para Empleados
+        Módulo de Gestión de Tiempos
       </button>
     </div>
   </div>
@@ -21,7 +21,7 @@
       <span class="badge" *ngIf="pendientes.length > 0">{{pendientes.length}}</span>
     </button>
     <button class="tab-btn" [class.active]="currentTab === 'activos'" (click)="setTab('activos')">
-      Empleados Activos
+      Personal Activo
     </button>
     <button class="tab-btn" [class.active]="currentTab === 'inactivos'" (click)="setTab('inactivos')">
       Inactivos

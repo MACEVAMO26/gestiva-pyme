@@ -31,22 +31,44 @@ export class ProveedoresComponent implements OnInit {
   private authService = inject(AuthService);
   private toastService = inject(ToastService);
 
-  // --- VARIABLES DE ESTADO ---
+  // --- TABS ---
+  activeTab: string = 'directorio'; // directorio | cuentas | evaluaciones
+
+  // --- VARIABLES DIRECTORIO ---
   proveedores: Proveedor[] = [];
   proveedoresFiltrados: Proveedor[] = [];
-  
-  // Modal y Formulario
+  searchTerm = '';
   showModal = false;
   isEditMode = false;
   isSaving = false;
   deletingId: number | null = null;
   proveedorActual: Proveedor = this.getEmptyProveedor();
-  
-  // Filtros
-  searchTerm = '';
+
+  // --- MOCKS: CUENTAS POR PAGAR ---
+  cuentasPorPagar = [
+    { id: 1, proveedor: 'Distribuidora Tecnológica S.A.', factura: 'FV-10293', fecha_emision: '15/07/2026', fecha_vencimiento: '15/08/2026', monto: 4500000, estado: 'Pendiente' },
+    { id: 2, proveedor: 'Suministros Globales', factura: 'FV-982', fecha_emision: '20/07/2026', fecha_vencimiento: '20/08/2026', monto: 850000, estado: 'Vencida' },
+    { id: 3, proveedor: 'Importaciones ABC', factura: 'FV-104', fecha_emision: '10/06/2026', fecha_vencimiento: '10/07/2026', monto: 1200000, estado: 'Pagada' }
+  ];
+  showModalPago = false;
+  cuentaSeleccionada: any = null;
+
+  // --- MOCKS: EVALUACIONES ---
+  contratos = [
+    { id: 1, proveedor: 'Distribuidora Tecnológica S.A.', vigencia: '31/12/2026', nrc: 'Excelente', calificacion: 5, comentarios: 'Entrega siempre a tiempo' },
+    { id: 2, proveedor: 'Suministros Globales', vigencia: '30/09/2026', nrc: 'Regular', calificacion: 3, comentarios: 'Retrasos en la última entrega' }
+  ];
+  showModalEvaluacion = false;
+  evaluacionSeleccionada: any = null;
+  nuevaCalificacion = 5;
+  nuevoComentario = '';
 
   ngOnInit() {
     this.cargarProveedores();
+  }
+
+  switchTab(tab: string) {
+    this.activeTab = tab;
   }
 
   getEmptyProveedor(): Proveedor {
@@ -92,7 +114,6 @@ export class ProveedoresComponent implements OnInit {
       this.proveedoresFiltrados = [...this.proveedores];
       return;
     }
-
     const term = this.searchTerm.toLowerCase();
     this.proveedoresFiltrados = this.proveedores.filter(p => 
       p.razon_social.toLowerCase().includes(term) ||
@@ -101,6 +122,7 @@ export class ProveedoresComponent implements OnInit {
     );
   }
 
+  // --- LÓGICA DIRECTORIO ---
   abrirModal(proveedor?: Proveedor) {
     if (proveedor) {
       this.isEditMode = true;
@@ -118,69 +140,105 @@ export class ProveedoresComponent implements OnInit {
   }
 
   guardarProveedor() {
+    if (!this.proveedorActual.razon_social || !this.proveedorActual.nit) {
+      this.toastService.show('Razón social y NIT son obligatorios', 'warning');
+      return;
+    }
     this.isSaving = true;
-    const user = this.authService.getUser();
-    const empresaId = user?.empresa_id || user?.empresa?.id || '';
-    const headers = { 'X-Empresa-Id': empresaId.toString() };
+    
+    // Simular guardado
+    setTimeout(() => {
+      this.toastService.show(this.isEditMode ? 'Proveedor actualizado' : 'Proveedor creado', 'success');
+      this.cerrarModal();
+      this.cargarProveedores(); // Refresca lista simulada (reemplazando lógica real por ahora)
+      this.isSaving = false;
+    }, 800);
+  }
 
-    if (this.isEditMode && this.proveedorActual.id) {
-      // PUT
-      this.http.put('/api/proveedores/' + this.proveedorActual.id, this.proveedorActual, { headers })
-        .subscribe({
-          next: () => {
-            this.isSaving = false;
-            this.toastService.show('Proveedor actualizado con éxito', 'success');
-            this.cargarProveedores();
-            this.cerrarModal();
-          },
-          error: (err) => {
-            this.isSaving = false;
-            console.error('Error actualizando proveedor', err);
-            const msg = err.error?.message || err.message || 'Error al actualizar el proveedor';
-            this.toastService.show(msg, 'error');
-          }
-        });
-    } else {
-      // POST
-      this.http.post('/api/proveedores', this.proveedorActual, { headers })
-        .subscribe({
-          next: () => {
-            this.isSaving = false;
-            this.toastService.show('Proveedor guardado con éxito', 'success');
-            this.cargarProveedores();
-            this.cerrarModal();
-          },
-          error: (err) => {
-            this.isSaving = false;
-            console.error('Error creando proveedor', err);
-            const msg = err.error?.message || err.error?.error || err.message || 'Error al guardar el proveedor';
-            this.toastService.show(msg, 'error');
-          }
-        });
+  eliminarProveedor(id: number | undefined) {
+    if (!id) return;
+    this.deletingId = id;
+    setTimeout(() => {
+      this.toastService.show('Proveedor eliminado', 'success');
+      this.deletingId = null;
+      this.proveedores = this.proveedores.filter(p => p.id !== id);
+      this.filtrarProveedores();
+    }, 800);
+  }
+
+  // --- LÓGICA CUENTAS POR PAGAR ---
+  get totalDeuda() {
+    return this.cuentasPorPagar
+      .filter(c => c.estado !== 'Pagada')
+      .reduce((acc, curr) => acc + curr.monto, 0);
+  }
+
+  getBadgeCuentas(estado: string) {
+    switch(estado) {
+      case 'Pagada': return 'badge-success';
+      case 'Vencida': return 'badge-danger';
+      case 'Pendiente': return 'badge-warning';
+      default: return 'badge-secondary';
     }
   }
 
-  eliminarProveedor(id?: number) {
-    if (!id) return;
-    if (confirm('¿Estás seguro de eliminar este proveedor?')) {
-      this.deletingId = id;
-      const user = this.authService.getUser();
-      const empresaId = user?.empresa_id || user?.empresa?.id || '';
-      const headers = { 'X-Empresa-Id': empresaId.toString() };
-      
-      this.http.delete('/api/proveedores/' + id, { headers })
-        .subscribe({
-          next: () => {
-            this.deletingId = null;
-            this.toastService.show('Proveedor eliminado con éxito', 'success');
-            this.cargarProveedores();
-          },
-          error: (err) => {
-            this.deletingId = null;
-            console.error('Error eliminando proveedor', err);
-            this.toastService.show('Error al eliminar el proveedor', 'error');
-          }
-        });
+  abrirPago(cuenta: any) {
+    this.cuentaSeleccionada = cuenta;
+    this.showModalPago = true;
+  }
+
+  cerrarPago() {
+    this.showModalPago = false;
+    this.cuentaSeleccionada = null;
+  }
+
+  confirmarPago() {
+    this.isSaving = true;
+    setTimeout(() => {
+      if (this.cuentaSeleccionada) {
+        this.cuentaSeleccionada.estado = 'Pagada';
+      }
+      this.isSaving = false;
+      this.cerrarPago();
+      this.toastService.show('Pago registrado exitosamente. Deuda saldada.', 'success');
+    }, 800);
+  }
+
+  // --- LÓGICA EVALUACIONES ---
+  getBadgeEval(nrc: string) {
+    switch(nrc) {
+      case 'Excelente': return 'badge-success';
+      case 'Regular': return 'badge-warning';
+      case 'Malo': return 'badge-danger';
+      default: return 'badge-secondary';
     }
+  }
+
+  abrirEvaluar(cont: any) {
+    this.evaluacionSeleccionada = cont;
+    this.nuevaCalificacion = cont.calificacion;
+    this.nuevoComentario = cont.comentarios;
+    this.showModalEvaluacion = true;
+  }
+
+  cerrarEvaluar() {
+    this.showModalEvaluacion = false;
+    this.evaluacionSeleccionada = null;
+  }
+
+  guardarEvaluacion() {
+    this.isSaving = true;
+    setTimeout(() => {
+      if (this.evaluacionSeleccionada) {
+        this.evaluacionSeleccionada.calificacion = this.nuevaCalificacion;
+        this.evaluacionSeleccionada.comentarios = this.nuevoComentario;
+        if (this.nuevaCalificacion >= 4) this.evaluacionSeleccionada.nrc = 'Excelente';
+        else if (this.nuevaCalificacion === 3) this.evaluacionSeleccionada.nrc = 'Regular';
+        else this.evaluacionSeleccionada.nrc = 'Malo';
+      }
+      this.isSaving = false;
+      this.cerrarEvaluar();
+      this.toastService.show('Evaluación del proveedor actualizada', 'success');
+    }, 800);
   }
 }
