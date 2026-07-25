@@ -97,7 +97,6 @@
           <div class="form-group">
             <label>EPS</label>
             <select [(ngModel)]="formAfiliacion.eps" name="eps" required
-                    [disabled]="formAfiliacion.estado !== 'nuevo' && !isHR"
                     [ngClass]="{'estado-pendiente': formAfiliacion.estado === 'pendiente', 'estado-aprobado': formAfiliacion.estado === 'aprobado'}">
               <option value="" disabled selected>Seleccione EPS...</option>
               <option value="Sura">EPS Sura</option>
@@ -110,9 +109,8 @@
             </select>
           </div>
           <div class="form-group">
-            <label>Fondo de Pensión / Cesantías</label>
+            <label>Fondo de Pensión</label>
             <select [(ngModel)]="formAfiliacion.afondo_pension" name="afondo_pension" required
-                    [disabled]="formAfiliacion.estado !== 'nuevo' && !isHR"
                     [ngClass]="{'estado-pendiente': formAfiliacion.estado === 'pendiente', 'estado-aprobado': formAfiliacion.estado === 'aprobado'}">
               <option value="" disabled selected>Seleccione Fondo...</option>
               <option value="Porvenir">Porvenir</option>
@@ -123,17 +121,14 @@
             </select>
           </div>
           <div class="form-group">
-            <label>ARL</label>
-            <select [(ngModel)]="formAfiliacion.arl" name="arl" required
-                    [disabled]="formAfiliacion.estado !== 'nuevo' && !isHR"
+            <label>Fondo de Cesantías</label>
+            <select [(ngModel)]="formAfiliacion.fondo_cesantias" name="fondo_cesantias" required
                     [ngClass]="{'estado-pendiente': formAfiliacion.estado === 'pendiente', 'estado-aprobado': formAfiliacion.estado === 'aprobado'}">
-              <option value="" disabled selected>Seleccione ARL...</option>
-              <option value="Sura">ARL Sura</option>
-              <option value="Positiva">ARL Positiva</option>
-              <option value="Bolivar">ARL Bolívar</option>
-              <option value="Colmena">ARL Colmena</option>
-              <option value="Equidad">ARL La Equidad</option>
-              <option value="Aurora">ARL Aurora</option>
+              <option value="" disabled selected>Seleccione Fondo de Cesantías...</option>
+              <option value="Porvenir">Porvenir</option>
+              <option value="Proteccion">Protección</option>
+              <option value="Colfondos">Colfondos</option>
+              <option value="FNA">Fondo Nacional del Ahorro (FNA)</option>
             </select>
           </div>
           @if (isHR) {
@@ -202,9 +197,9 @@
                 </span>
               </button>
             } @else {
-              @if (formAfiliacion.estado === 'nuevo') {
+              @if (formAfiliacion.estado !== 'pendiente') {
                 <button type="submit" class="primary-btn" [disabled]="isSaving">
-                  <span *ngIf="!isSaving">Guardar Afiliaciones</span>
+                  <span *ngIf="!isSaving">{{ formAfiliacion.estado === 'nuevo' ? 'Guardar Afiliaciones' : 'Actualizar Afiliaciones' }}</span>
                   <span *ngIf="isSaving" class="flex items-center">
                     <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                       <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -213,15 +208,13 @@
                     Guardando...
                   </span>
                 </button>
-              } @else if (formAfiliacion.estado === 'pendiente') {
+                @if (formAfiliacion.estado === 'aprobado' || formAfiliacion.estado === 'rechazado') {
+                  <p class="text-sm text-gray-400 mt-2">Nota: Si cambia sus afiliaciones actuales, volverán al estado <strong>Pendiente de Aprobación</strong> por RRHH.</p>
+                }
+              } @else {
                 <span style="color: #f59e0b; font-weight: 700; font-size: 1.05rem;">
                   En espera de aprobación
                 </span>
-              } @else {
-                <button type="button" class="outline-btn" style="border-color: #f59e0b; color: #f59e0b;" 
-                        (click)="solicitarCambio()" [disabled]="solicitudEnviada">
-                  {{ solicitudEnviada ? 'Solicitud Enviada' : 'Solicitar Modificación a RRHH' }}
-                </button>
               }
             }
           </div>

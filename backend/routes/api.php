@@ -82,6 +82,9 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::apiResource('sedes', \App\Http\Controllers\SedeController::class);
     Route::get('/areas', [\App\Http\Controllers\AreaController::class, 'index']);
+    Route::post('/areas', [\App\Http\Controllers\AreaController::class, 'store']);
+    Route::put('/areas/{id}', [\App\Http\Controllers\AreaController::class, 'update']);
+    Route::patch('/areas/{id}/status', [\App\Http\Controllers\AreaController::class, 'changeStatus']);
 
     Route::post('/user/avatar', [UserController::class, 'uploadAvatar']);
     Route::apiResource('usuarios', UserController::class);
@@ -113,6 +116,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('empresas/stats/suscripciones', [EmpresaController::class, 'suscripcionesStats']);
     Route::get('empresas/stats/system', [EmpresaController::class, 'systemStats']);
     Route::patch('empresas/{id}/tarifas', [EmpresaController::class, 'updateTarifas']);
+    Route::put('empresas/rrhh/settings', [EmpresaController::class, 'updateRRHHSettings']);
     Route::apiResource('empresas', EmpresaController::class);
     Route::patch('empresas/{id}/status', [EmpresaController::class, 'changeStatus']);
     Route::patch('empresas/{id}/renovar', [EmpresaController::class, 'registrarRenovacion']);

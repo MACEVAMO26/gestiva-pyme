@@ -22,7 +22,7 @@ export class AutogestionComponent implements OnInit {
   
   formAfiliacion = {
     eps: '',
-    arl: '',
+    fondo_cesantias: '',
     afondo_pension: '',
     fecha_contratacion: '',
     finalizacion_contrato: '',
@@ -53,7 +53,7 @@ export class AutogestionComponent implements OnInit {
           this.afiliacion = res.afiliacion;
           this.formAfiliacion = {
             eps: res.afiliacion.eps || '',
-            arl: res.afiliacion.arl || '',
+            fondo_cesantias: res.afiliacion.fondo_cesantias || '',
             afondo_pension: res.afiliacion.afondo_pension || '',
             fecha_contratacion: res.afiliacion.fecha_contratacion || '',
             finalizacion_contrato: res.afiliacion.finalizacion_contrato || '',

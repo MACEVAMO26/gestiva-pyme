@@ -74,4 +74,26 @@ export class EmpleadoService {
     }
     return this.roles$;
   }
+
+  // --- CRUD ÁREAS Y CARGOS ---
+  createArea(data: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/areas`, data, this.getHeaders());
+  }
+
+  updateArea(id: number, data: any): Observable<any> {
+    return this.http.put(`${this.apiUrl}/areas/${id}`, data, this.getHeaders());
+  }
+
+  createCargo(data: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/cargos`, data, this.getHeaders());
+  }
+
+  updateCargo(id: number, data: any): Observable<any> {
+    return this.http.put(`${this.apiUrl}/cargos/${id}`, data, this.getHeaders());
+  }
+
+  // --- CONFIGURACIÓN RRHH ---
+  updateRRHHSettings(data: any): Observable<any> {
+    return this.http.put(`${this.apiUrl}/empresas/rrhh/settings`, data, this.getHeaders());
+  }
 }

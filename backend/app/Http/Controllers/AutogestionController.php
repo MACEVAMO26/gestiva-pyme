@@ -24,8 +24,8 @@ class AutogestionController extends Controller
     {
         $request->validate([
             'eps' => 'nullable|string|max:255',
-            'arl' => 'nullable|string|max:255',
             'afondo_pension' => 'nullable|string|max:255',
+            'fondo_cesantias' => 'nullable|string|max:255',
         ]);
 
         $user = $request->user();
@@ -35,8 +35,8 @@ class AutogestionController extends Controller
         if ($existe) {
             DB::table('afiliaciones')->where('user_id', $user->id)->update([
                 'eps' => $request->eps,
-                'arl' => $request->arl,
                 'afondo_pension' => $request->afondo_pension,
+                'fondo_cesantias' => $request->fondo_cesantias,
                 'estado' => 'pendiente',
                 'updated_at' => now(),
             ]);
@@ -44,8 +44,8 @@ class AutogestionController extends Controller
             DB::table('afiliaciones')->insert([
                 'user_id' => $user->id,
                 'eps' => $request->eps,
-                'arl' => $request->arl,
                 'afondo_pension' => $request->afondo_pension,
+                'fondo_cesantias' => $request->fondo_cesantias,
                 'estado' => 'pendiente',
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -71,8 +71,8 @@ class AutogestionController extends Controller
     {
         $request->validate([
             'eps' => 'nullable|string|max:255',
-            'arl' => 'nullable|string|max:255',
             'afondo_pension' => 'nullable|string|max:255',
+            'fondo_cesantias' => 'nullable|string|max:255',
             'estado' => 'required|in:aprobado,rechazado,pendiente',
             'notas_rechazo' => 'nullable|string',
             'fecha_contratacion' => 'nullable|date',
@@ -85,8 +85,8 @@ class AutogestionController extends Controller
         if ($existe) {
             DB::table('afiliaciones')->where('user_id', $id)->update([
                 'eps' => $request->eps,
-                'arl' => $request->arl,
                 'afondo_pension' => $request->afondo_pension,
+                'fondo_cesantias' => $request->fondo_cesantias,
                 'estado' => $request->estado,
                 'notas_rechazo' => $request->notas_rechazo,
                 'fecha_contratacion' => $request->fecha_contratacion,
@@ -98,8 +98,8 @@ class AutogestionController extends Controller
             DB::table('afiliaciones')->insert([
                 'user_id' => $id,
                 'eps' => $request->eps,
-                'arl' => $request->arl,
                 'afondo_pension' => $request->afondo_pension,
+                'fondo_cesantias' => $request->fondo_cesantias,
                 'estado' => $request->estado,
                 'notas_rechazo' => $request->notas_rechazo,
                 'fecha_contratacion' => $request->fecha_contratacion,

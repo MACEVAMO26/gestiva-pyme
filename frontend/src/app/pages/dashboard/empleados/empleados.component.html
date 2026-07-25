@@ -13,6 +13,18 @@
     <button class="tab-btn" [class.active]="currentTab === 'activos'" (click)="setTab('activos')">
       Empleados Activos
     </button>
+    <button class="tab-btn" [class.active]="currentTab === 'inactivos'" (click)="setTab('inactivos')">
+      Inactivos
+    </button>
+    <button class="tab-btn" [class.active]="currentTab === 'ausentes'" (click)="setTab('ausentes')">
+      Ausentes / Vacaciones
+    </button>
+    <button class="tab-btn" [class.active]="currentTab === 'estructura'" (click)="setTab('estructura')">
+      Estructura Organizacional
+    </button>
+    <button class="tab-btn" [class.active]="currentTab === 'configuracion'" (click)="setTab('configuracion')">
+      Configuración Global
+    </button>
   </div>
 
   <!-- TABLA PENDIENTES -->
@@ -67,7 +79,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let emp of empleados">
+        <tr *ngFor="let emp of empleadosActivos">
           <td>{{ emp.codigo_empleado || 'N/A' }}</td>
           <td>{{ emp.usuario?.documento }}</td>
           <td>{{ emp.usuario?.nombres }} {{ emp.usuario?.apellidos }}</td>
@@ -84,11 +96,97 @@
             </div>
           </td>
         </tr>
-        <tr *ngIf="empleados.length === 0">
+        <tr *ngIf="empleadosActivos.length === 0">
           <td colspan="7" class="empty-state">No hay empleados activos en el sistema.</td>
         </tr>
       </tbody>
     </table>
+  </div>
+
+  <!-- TABLA INACTIVOS -->
+  <div class="table-container glass-panel fade-in" *ngIf="currentTab === 'inactivos'">
+    <table class="premium-table">
+      <thead>
+        <tr>
+          <th>Cod. Emp</th>
+          <th>Documento</th>
+          <th>Nombre Completo</th>
+          <th>Área</th>
+          <th>Cargo</th>
+          <th>Estado</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let emp of empleadosInactivos">
+          <td>{{ emp.codigo_empleado || 'N/A' }}</td>
+          <td>{{ emp.usuario?.documento }}</td>
+          <td>{{ emp.usuario?.nombres }} {{ emp.usuario?.apellidos }}</td>
+          <td>{{ emp.area?.nombre || 'Sin Asignar' }}</td>
+          <td>{{ emp.cargo?.nombre || 'Sin Asignar' }}</td>
+          <td><span class="status-badge" style="background: #ef4444; color: white;">INACTIVO</span></td>
+        </tr>
+        <tr *ngIf="empleadosInactivos.length === 0">
+          <td colspan="6" class="empty-state">No hay empleados inactivos.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- TABLA AUSENTES -->
+  <div class="table-container glass-panel fade-in" *ngIf="currentTab === 'ausentes'">
+    <table class="premium-table">
+      <thead>
+        <tr>
+          <th>Cod. Emp</th>
+          <th>Documento</th>
+          <th>Nombre Completo</th>
+          <th>Área</th>
+          <th>Cargo</th>
+          <th>Estado</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let emp of empleadosAusentes">
+          <td>{{ emp.codigo_empleado || 'N/A' }}</td>
+          <td>{{ emp.usuario?.documento }}</td>
+          <td>{{ emp.usuario?.nombres }} {{ emp.usuario?.apellidos }}</td>
+          <td>{{ emp.area?.nombre || 'Sin Asignar' }}</td>
+          <td>{{ emp.cargo?.nombre || 'Sin Asignar' }}</td>
+          <td><span class="status-badge status-pending" style="text-transform: uppercase;">{{ emp.estado }}</span></td>
+        </tr>
+        <tr *ngIf="empleadosAusentes.length === 0">
+          <td colspan="6" class="empty-state">No hay empleados ausentes (vacaciones, permiso, incapacidad).</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- CONFIGURACIÓN GLOBAL TAB -->
+  <div class="glass-panel p-4 fade-in" *ngIf="currentTab === 'configuracion'">
+    <div class="mb-4">
+      <h3 class="text-xl font-bold">Configuración de Seguridad Social</h3>
+      <p class="text-muted">Establezca la Administradora de Riesgos Laborales y la Caja de Compensación para toda la empresa.</p>
+    </div>
+    <form (ngSubmit)="guardarConfiguracionRRHH()" class="max-w-2xl">
+      <div class="form-row split">
+        <div class="form-group mb-3">
+          <label>ARL (Administradora de Riesgos Laborales)</label>
+          <input type="text" class="form-control" name="arl" [(ngModel)]="configuracionRRHH.arl" placeholder="Ej. SURA" required>
+        </div>
+        <div class="form-group mb-3">
+          <label>Caja de Compensación Familiar</label>
+          <input type="text" class="form-control" name="caja_compensacion" [(ngModel)]="configuracionRRHH.caja_compensacion" placeholder="Ej. Comfama" required>
+        </div>
+      </div>
+      <div class="form-actions mt-3">
+        <button type="submit" class="btn-primary" [disabled]="isConfigSubmitting">Guardar Configuración</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- ESTRUCTURA TAB -->
+  <div class="glass-panel fade-in" *ngIf="currentTab === 'estructura'">
+    <app-estructura></app-estructura>
   </div>
 
   <!-- MODAL FORMALIZAR -->
@@ -150,28 +248,6 @@
           </div>
         </div>
 
-        <h4 class="section-title">Seguridad Social</h4>
-        <div class="form-row split">
-          <div class="form-group">
-            <label>EPS</label>
-            <input type="text" class="form-control" name="eps" [(ngModel)]="formalizarForm.eps">
-          </div>
-          <div class="form-group">
-            <label>ARL</label>
-            <input type="text" class="form-control" name="arl" [(ngModel)]="formalizarForm.arl">
-          </div>
-        </div>
-        
-        <div class="form-row split">
-          <div class="form-group">
-            <label>Fondo de Pensión</label>
-            <input type="text" class="form-control" name="fondo_pension" [(ngModel)]="formalizarForm.fondo_pension">
-          </div>
-          <div class="form-group">
-            <label>Caja de Compensación</label>
-            <input type="text" class="form-control" name="caja_compensacion" [(ngModel)]="formalizarForm.caja_compensacion">
-          </div>
-        </div>
 
         <div class="form-actions mt-3">
           <button type="button" class="btn-secondary" (click)="cerrarModalFormalizar()">Cancelar</button>

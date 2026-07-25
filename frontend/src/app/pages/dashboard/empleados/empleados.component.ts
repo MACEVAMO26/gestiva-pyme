@@ -2,17 +2,20 @@ import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { EmpleadoService } from '../../../services/empleado.service';
+import { AuthService } from '../../../services/auth.service';
+import { EstructuraComponent } from './estructura/estructura';
 
 @Component({
   selector: 'app-empleados',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, EstructuraComponent],
   templateUrl: './empleados.component.html',
   styleUrl: './empleados.component.scss',
 })
 export class EmpleadosComponent implements OnInit {
 
   empleadoService = inject(EmpleadoService);
+  authService = inject(AuthService);
 
   pendientes: any[] = [];
   empleados: any[] = [];
@@ -36,13 +39,15 @@ export class EmpleadosComponent implements OnInit {
     cargo_id: '',
     tipo_contrato: '',
     fecha_contratacion: '',
-    salario: null,
-    eps: '',
+    salario: null
+  };
+
+  // Configuración RRHH
+  configuracionRRHH = {
     arl: '',
-    fondo_pension: '',
-    fondo_cesantias: '',
     caja_compensacion: ''
   };
+  isConfigSubmitting = false;
 
   ngOnInit(): void {
     this.loadListas();
@@ -55,15 +60,31 @@ export class EmpleadosComponent implements OnInit {
     this.empleadoService.getRoles().subscribe({ next: (data) => this.roles = data });
   }
 
+  // Filtered lists
+  empleadosActivos: any[] = [];
+  empleadosInactivos: any[] = [];
+  empleadosAusentes: any[] = [];
+
   cargarDatosTab() {
     if (this.currentTab === 'pendientes') {
       this.empleadoService.getPendientes().subscribe({
         next: (data) => this.pendientes = data,
         error: (err) => console.error(err)
       });
-    } else {
+    } else if (this.currentTab === 'configuracion') {
+      const u = this.authService.getUser();
+      if (u && u.empresa) {
+        this.configuracionRRHH.arl = u.empresa.arl || '';
+        this.configuracionRRHH.caja_compensacion = u.empresa.caja_compensacion || '';
+      }
+    } else if (this.currentTab !== 'estructura') {
       this.empleadoService.getEmpleados().subscribe({
-        next: (data) => this.empleados = data,
+        next: (data) => {
+          this.empleados = data;
+          this.empleadosActivos = this.empleados.filter((e: any) => e.estado === 'activo');
+          this.empleadosInactivos = this.empleados.filter((e: any) => e.estado === 'inactivo');
+          this.empleadosAusentes = this.empleados.filter((e: any) => ['vacaciones', 'permiso', 'incapacitado'].includes(e.estado));
+        },
         error: (err) => console.error(err)
       });
     }
@@ -74,6 +95,27 @@ export class EmpleadosComponent implements OnInit {
     this.cargarDatosTab();
   }
 
+  guardarConfiguracionRRHH() {
+    this.isConfigSubmitting = true;
+    this.empleadoService.updateRRHHSettings(this.configuracionRRHH).subscribe({
+      next: (res) => {
+        this.isConfigSubmitting = false;
+        alert('Configuración actualizada correctamente');
+        // Actualizamos el usuario en sesión (local) para reflejar cambios
+        const u = this.authService.getUser();
+        if (u) {
+          u.empresa = res.empresa;
+          localStorage.setItem('user', JSON.stringify(u));
+        }
+      },
+      error: (err) => {
+        this.isConfigSubmitting = false;
+        console.error(err);
+        alert('Error al guardar configuración');
+      }
+    });
+  }
+
   // --- FORMALIZAR USUARIO ---
   abrirModalFormalizar(usuario: any) {
     this.usuarioAFormalizar = usuario;
@@ -82,12 +124,7 @@ export class EmpleadosComponent implements OnInit {
       cargo_id: '',
       tipo_contrato: '',
       fecha_contratacion: new Date().toISOString().split('T')[0], // hoy
-      salario: null,
-      eps: '',
-      arl: '',
-      fondo_pension: '',
-      fondo_cesantias: '',
-      caja_compensacion: ''
+      salario: null
     };
     this.isFormalizarModalOpen = true;
   }

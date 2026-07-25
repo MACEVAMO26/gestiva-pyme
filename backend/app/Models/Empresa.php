@@ -48,7 +48,9 @@ class Empresa extends Model
         'periodo',
         'descuentos_aplicados',
         'cargos_extra',
-        'addons_personalizados'
+        'addons_personalizados',
+        'arl',
+        'caja_compensacion'
     ];
 
     protected $casts = [

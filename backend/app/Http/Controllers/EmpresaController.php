@@ -184,8 +184,25 @@ class EmpresaController extends Controller
                 ]);
             }
 
+            // Crea el Área por defecto "Gerencia"
+            $areaGerencia = \App\Models\Area::create([
+                'empresa_id' => $empresa->id,
+                'nombre' => 'Gerencia',
+                'descripcion' => 'Área administrativa y de dirección general',
+                'activo' => 1
+            ]);
+
+            // Crea el Cargo por defecto "Gerente General"
+            $cargoGerente = \App\Models\Cargo::create([
+                'empresa_id' => $empresa->id,
+                'rol_id' => $rolGerente->id,
+                'nombre' => 'Gerente General',
+                'descripcion' => 'Responsable legal y administrador principal',
+                'activo' => 1
+            ]);
+
             // Registra el usuario gerente con rol de administrador y lo asocia a la empresa
-            User::create([
+            $gerenteUser = User::create([
                 'empresa_id' => $empresa->id,
                 'rol_id' => $rolGerente->id,
                 'nombres' => 'Gerente',
@@ -193,7 +210,19 @@ class EmpresaController extends Controller
                 'documento' => $empresa->nit,
                 'email' => $adminEmail,
                 'password_hash' => Hash::make('Admin_123'),
-                'activo' => 1
+                'activo' => 1,
+                'perfil_formalizado' => true
+            ]);
+
+            // Formaliza al gerente como empleado
+            \App\Models\Empleado::create([
+                'usuario_id' => $gerenteUser->id,
+                'empresa_id' => $empresa->id,
+                'area_id' => $areaGerencia->id,
+                'cargo_id' => $cargoGerente->id,
+                'tipo_contrato' => 'Indefinido',
+                'fecha_contratacion' => date('Y-m-d'),
+                'estado' => 'activo'
             ]);
 
             DB::commit();
@@ -238,6 +267,24 @@ class EmpresaController extends Controller
 
         $empresa->update($validatedData);
         return response()->json($empresa);
+    }
+
+    // Actualiza la configuración global de Seguridad Social (ARL, Caja) desde RRHH
+    public function updateRRHHSettings(Request $request)
+    {
+        $empresaId = auth()->user()->empresa_id;
+        $empresa = Empresa::findOrFail($empresaId);
+
+        $validatedData = $request->validate([
+            'arl' => 'nullable|string|max:255',
+            'caja_compensacion' => 'nullable|string|max:255',
+        ]);
+
+        $empresa->update($validatedData);
+        return response()->json([
+            'message' => 'Configuración de RRHH actualizada correctamente.',
+            'empresa' => $empresa
+        ]);
     }
 
     // Registra la renovación de la suscripción mensual sumando 30 días a la fecha de pago

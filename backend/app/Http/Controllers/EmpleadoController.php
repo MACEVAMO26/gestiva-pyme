@@ -41,12 +41,7 @@ class EmpleadoController extends Controller
             'cargo_id' => 'required|integer|exists:cargos,id',
             'tipo_contrato' => 'required|string',
             'fecha_contratacion' => 'required|date',
-            'salario' => 'nullable|numeric',
-            'eps' => 'nullable|string',
-            'arl' => 'nullable|string',
-            'fondo_pension' => 'nullable|string',
-            'fondo_cesantias' => 'nullable|string',
-            'caja_compensacion' => 'nullable|string'
+            'salario' => 'nullable|numeric'
         ]);
 
         $empresaId = auth()->user()->empresa_id;
@@ -66,16 +61,15 @@ class EmpleadoController extends Controller
             'tipo_contrato' => $request->tipo_contrato,
             'fecha_contratacion' => $request->fecha_contratacion,
             'salario' => $request->salario,
-            'eps' => $request->eps,
-            'arl' => $request->arl,
-            'fondo_pension' => $request->fondo_pension,
-            'fondo_cesantias' => $request->fondo_cesantias,
-            'caja_compensacion' => $request->caja_compensacion,
             'estado' => 'activo'
         ]);
 
-        // 2. Actualizar el usuario para desbloquearlo
+        // 2. Obtener el Cargo para heredar sus permisos (rol)
+        $cargo = \App\Models\Cargo::findOrFail($request->cargo_id);
+
+        // 3. Actualizar el usuario para desbloquearlo y asignarle su nivel de seguridad
         $usuario->perfil_formalizado = true;
+        $usuario->rol_id = $cargo->rol_id;
         $usuario->save();
 
         return response()->json([
