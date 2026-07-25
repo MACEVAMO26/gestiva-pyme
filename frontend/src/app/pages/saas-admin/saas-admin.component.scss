@@ -59,6 +59,12 @@ $sidebar-text-muted: #0f172a;
   width: 100vw;
   background-color: $bg-color;
   overflow: hidden;
+  font-family: Arial, Helvetica, sans-serif !important;
+
+  * {
+    font-family: Arial, Helvetica, sans-serif !important;
+  }
+  overflow: hidden;
 }
 
 /* --- 4. CABECERA --- */
