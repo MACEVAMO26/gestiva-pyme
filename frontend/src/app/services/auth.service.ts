@@ -45,9 +45,11 @@ export class AuthService {
   // 3. Método para cerrar sesión
   logout(): void {
     // Limpiamos el almacenamiento local
-    sessionStorage.removeItem('auth_token');
-    sessionStorage.removeItem('current_user');
-    sessionStorage.removeItem('modulos_activos');
+    try {
+      sessionStorage.removeItem('auth_token');
+      sessionStorage.removeItem('current_user');
+      sessionStorage.removeItem('modulos_activos');
+    } catch (e) {}
 
     // Redirigimos al usuario a la página de login
     this.router.navigate(['/login']);
@@ -58,33 +60,45 @@ export class AuthService {
 
   // 4. Guardar el token en el Local Storage
   private saveToken(token: string): void {
-    sessionStorage.setItem('auth_token', token);
+    try {
+      sessionStorage.setItem('auth_token', token);
+    } catch (e) { console.warn('sessionStorage not accessible'); }
   }
 
   // 5. Obtener el token del Local Storage
   getToken(): string | null {
-    return sessionStorage.getItem('auth_token');
+    try {
+      return sessionStorage.getItem('auth_token');
+    } catch (e) { return null; }
   }
 
   // 6. Guardar los datos del usuario en el Local Storage
   private saveUser(user: any): void {
-    sessionStorage.setItem('current_user', JSON.stringify(user));
+    try {
+      sessionStorage.setItem('current_user', JSON.stringify(user));
+    } catch (e) { console.warn('sessionStorage not accessible'); }
   }
 
   // 7. Obtener los datos del usuario del Local Storage
   getUser(): any | null {
-    const user = sessionStorage.getItem('current_user');
-    return user ? JSON.parse(user) : null;
+    try {
+      const user = sessionStorage.getItem('current_user');
+      return user ? JSON.parse(user) : null;
+    } catch (e) { return null; }
   }
 
   // 8. Guardar modulos activos
   private saveModulosActivos(modulos: any): void {
-    sessionStorage.setItem('modulos_activos', JSON.stringify(modulos));
+    try {
+      sessionStorage.setItem('modulos_activos', JSON.stringify(modulos));
+    } catch (e) { console.warn('sessionStorage not accessible'); }
   }
 
   // 9. Obtener modulos activos
   getModulosActivos(): Record<string, boolean> | null {
-    const modulosJson = sessionStorage.getItem('modulos_activos');
-    return modulosJson ? JSON.parse(modulosJson) : null;
+    try {
+      const modulosJson = sessionStorage.getItem('modulos_activos');
+      return modulosJson ? JSON.parse(modulosJson) : null;
+    } catch (e) { return null; }
   }
 }

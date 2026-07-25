@@ -25,15 +25,23 @@ export class AccessibilityService {
   }
 
   private loadInitialMode() {
-    const saved = localStorage.getItem(this.STORAGE_KEY) as DaltonismMode;
-    if (saved && ['normal', 'protanopia', 'deuteranopia', 'tritanopia'].includes(saved)) {
-      this.setMode(saved);
+    try {
+      const saved = localStorage.getItem(this.STORAGE_KEY) as DaltonismMode;
+      if (saved && ['normal', 'protanopia', 'deuteranopia', 'tritanopia'].includes(saved)) {
+        this.setMode(saved);
+      }
+    } catch (e) {
+      console.warn('localStorage not accessible, using default mode');
     }
   }
 
   setMode(mode: DaltonismMode) {
     this.currentMode.set(mode);
-    localStorage.setItem(this.STORAGE_KEY, mode);
+    try {
+      localStorage.setItem(this.STORAGE_KEY, mode);
+    } catch (e) {
+      console.warn('localStorage not accessible, could not save mode');
+    }
     this.applyGlobalClass(mode);
   }
 
