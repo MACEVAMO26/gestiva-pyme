@@ -169,13 +169,12 @@
           <img src="assets/images/Logos/GESTIVAPYME(6).png" alt="GestivaPyme Logo" class="footer-logo-img" />
           <p>COPYRIGHT © 2026 GestivaPyme S.A.S. Todos los derechos reservados.</p>
         </footer>
+        <!-- Modal Onboarding -->
+        @if (showGestivaOnboarding) {
+          <app-gestiva-onboarding (close)="cerrarGestivaOnboarding()"></app-gestiva-onboarding>
+        }
       </main>
-    }
-    <!-- Modal Onboarding -->
-    @if (showGestivaOnboarding) {
-      <app-gestiva-onboarding (close)="cerrarGestivaOnboarding()"></app-gestiva-onboarding>
-    }
-} @else {
+    } @else {
       <!-- WAITING SCREEN (No formalizado) -->
       <main class="content-area waiting-area">
         <div class="waiting-card glass-panel fade-in text-center">

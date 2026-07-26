@@ -86,8 +86,9 @@ export class DashboardComponent implements OnInit {
   }
 
   checkGestivaTutorial() {
-    if (this.user && this.user.id && typeof window !== 'undefined') {
-      const tutorialVisto = localStorage.getItem('gestiva_tutorial_visto_' + this.user.id);
+    if (this.user && typeof window !== 'undefined') {
+      const userKey = this.user.email || this.user.id || 'default';
+      const tutorialVisto = localStorage.getItem('gestiva_tutorial_visto_' + userKey);
       if (!tutorialVisto) {
         this.showGestivaOnboarding = true;
       }
@@ -96,8 +97,9 @@ export class DashboardComponent implements OnInit {
 
   cerrarGestivaOnboarding() {
     this.showGestivaOnboarding = false;
-    if (this.user && this.user.id && typeof window !== 'undefined') {
-      localStorage.setItem('gestiva_tutorial_visto_' + this.user.id, 'true');
+    if (this.user && typeof window !== 'undefined') {
+      const userKey = this.user.email || this.user.id || 'default';
+      localStorage.setItem('gestiva_tutorial_visto_' + userKey, 'true');
     }
   }
 
