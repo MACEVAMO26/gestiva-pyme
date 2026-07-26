@@ -1,9 +1,9 @@
 <div class="login-container relative">
   
   <!-- HTML NAVEGACION -->
-  <a routerLink="/" class="absolute top-6 left-6 text-white font-medium transition-colors flex items-center bg-emerald-500 hover:bg-emerald-600 p-3 rounded-full md:rounded-xl border border-emerald-600 z-10">
+  <a routerLink="/" class="absolute top-6 left-6 text-white font-medium transition-colors flex items-center bg-[#0f1328] hover:bg-[#161b36] p-3 rounded-full md:rounded-xl border border-[#161b36] z-10 shadow-lg">
     <span class="mr-2 text-xl">&larr;</span> 
-    <span class="hidden md:inline">Volver a GestivaPyme</span>
+    <span class="hidden md:inline">VOLVER A GESTIVAPYME</span>
   </a>
 
   <!-- HTML AUTENTICACION -->
@@ -45,7 +45,7 @@
     
     <!-- HTML ENCABEZADO -->
     <div class="header-container">
-      <h2 class="welcome-text">Bienvenido a</h2>
+      <h2 class="welcome-text">BIENVENIDO A</h2>
       <img src="assets/images/Logos/GESTIVAPYME(5).png" alt="GestivaPyme Logo" class="brand-logo">
       <p class="subtitle-text">Ingresa tus credenciales para continuar</p>
     </div>
@@ -99,8 +99,8 @@
           <a href="#" class="forgot-link">¿Olvidaste tu contraseña?</a>
         </div>
 
-        <button type="submit" class="submit-btn" [disabled]="isLoading">
-          <span *ngIf="!isLoading">Iniciar Sesión</span>
+        <button type="submit" class="submit-btn text-[1.05rem]" [disabled]="isLoading">
+          <span *ngIf="!isLoading">INICIAR SESIÓN</span>
           <span *ngIf="isLoading" class="flex items-center justify-center">
             <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
               <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -132,14 +132,14 @@
           </div>
         </div>
 
-        <button type="submit" class="submit-btn save-password-btn" [disabled]="isLoading">
-          <span *ngIf="!isLoading">Guardar Contraseña</span>
+        <button type="submit" class="submit-btn save-password-btn text-[1.05rem]" [disabled]="isLoading">
+          <span *ngIf="!isLoading">GUARDAR CONTRASEÑA</span>
           <span *ngIf="isLoading" class="flex items-center justify-center">
             <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
               <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
               <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
             </svg>
-            Guardando...
+            GUARDANDO...
           </span>
         </button>
       </form>

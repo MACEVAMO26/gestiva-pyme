@@ -12,7 +12,7 @@
 
 .login-card {
   @apply w-full max-w-md p-8 space-y-6 rounded-2xl shadow-2xl border border-slate-700;
-  background-color: rgba(30, 41, 59, 0.95);
+  background-color: #0f1328;
 }
 
 .header-container {
@@ -20,20 +20,24 @@
 }
 
 .welcome-text {
-  @apply text-xl mb-2 text-center;
-  font-family: Arial, Helvetica, sans-serif !important;
-  font-weight: bold !important;
+  @apply text-2xl mb-2 uppercase tracking-widest;
+  width: 100%;
+  text-align: center !important;
+  font-weight: 800 !important;
   color: #FFFFFF !important;
 }
 
 .brand-logo {
-  @apply h-28 w-auto object-contain drop-shadow-lg mt-2 mb-2;
+  @apply h-28 w-auto object-contain mt-2 mb-2;
+  background-color: rgba(255, 255, 255, 0.95);
+  padding: 1rem;
+  border-radius: 1rem;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
 .subtitle-text {
   @apply text-sm mt-2 text-center;
-  font-family: Arial, Helvetica, sans-serif !important;
-  font-weight: bold !important;
+  font-weight: normal !important;
   color: #FFFFFF !important;
 }
 
@@ -48,8 +52,7 @@
 
 .form-label {
   @apply block text-sm mb-1;
-  font-family: Arial, Helvetica, sans-serif !important;
-  font-weight: bold !important;
+  font-weight: normal !important;
   color: #FFFFFF !important;
 }
 
@@ -64,8 +67,7 @@
 
 .checkbox-container {
   @apply flex items-center cursor-pointer;
-  font-family: Arial, Helvetica, sans-serif !important;
-  font-weight: bold !important;
+  font-weight: normal !important;
   color: #FFFFFF !important;
 }
 
@@ -75,8 +77,7 @@
 
 .forgot-link {
   @apply transition-colors;
-  font-family: Arial, Helvetica, sans-serif !important;
-  font-weight: bold !important;
+  font-weight: normal !important;
   color: #FFFFFF !important;
   &:hover {
     color: #e2e8f0 !important;
@@ -84,10 +85,13 @@
 }
 
 .submit-btn {
-  @apply w-full py-3 px-4 bg-emerald-600 hover:bg-emerald-500 rounded-lg shadow-md transition-all transform hover:-translate-y-0.5;
-  font-family: Arial, Helvetica, sans-serif !important;
+  @apply w-full py-3 px-4 rounded-lg transition-colors;
+  background-color: #064e3b; /* Verde oscuro exclusivo y flat */
   font-weight: bold !important;
   color: #FFFFFF !important;
+}
+.submit-btn:hover:not(:disabled) {
+  background-color: #022c22;
 }
 
 /* --- 3. PASSWORD WRAPPER --- */
@@ -98,6 +102,12 @@
   .form-input {
     padding-right: 40px;
     width: 100%;
+  }
+
+  /* Ocultar el ojo fantasma nativo de Edge/IE */
+  input[type="password"]::-ms-reveal,
+  input[type="password"]::-ms-clear {
+    display: none;
   }
 
   .toggle-password-btn {
@@ -112,8 +122,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #10b981;
-    opacity: 0.9;
+    color: #064e3b;
+    opacity: 1;
     svg {
       width: 100%;
       height: 100%;
@@ -153,13 +163,15 @@
 
   .accessibility-menu {
     position: absolute;
-    bottom: 4rem;
-    right: 0;
-    background-color: #1e293b;
-    border-radius: 0.75rem;
+    top: 0;
+    left: calc(100% + 0.75rem);
+    right: auto;
+    background-color: #0f172a;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
     width: 14rem;
     overflow: hidden;
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
     .menu-header {
       padding: 0.75rem 1rem;
       background-color: rgba(15, 23, 42, 0.8);
@@ -177,18 +189,23 @@
       width: 100%;
       text-align: left;
       padding: 0.75rem 1rem;
-      
-      color: #e2e8f0;
+      font-size: 0.9rem;
+      color: #cbd5e1;
       border: none;
       cursor: pointer;
       background-color: transparent;
-      border-bottom: 1px solid rgba(51, 65, 85, 0.5);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      transition: background-color 0.2s;
+      
       &:hover {
-        background-color: #334155;
+        background-color: rgba(255, 255, 255, 0.05);
+        color: #ffffff;
       }
 
       &.active {
-        background-color: #334155;
+        background-color: rgba(255, 255, 255, 0.1);
+        color: #f59e0b;
+        font-weight: bold;
       }
 
       &:last-child {

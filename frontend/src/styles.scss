@@ -1,10 +1,12 @@
+@import url('https://fonts.googleapis.com/css?family=Product+Sans:400,700');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 /* --- TIPOGRAFIA GLOBAL --- */
 *, *::before, *::after {
-  font-family: 'Montserrat', sans-serif !important;
+  font-family: 'Product Sans', sans-serif !important;
 }
 /* ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
    SISTEMA DE ACCESIBILIDAD VISUAL (DALTONISMO)
