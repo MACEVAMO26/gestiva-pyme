@@ -282,8 +282,7 @@ $sidebar-text-muted: #0f172a;
       border: 1px solid rgba(255, 255, 255, 0.4);
       background: transparent;
       color: #12243e;
-      
-      font-weight: 600;
+      font-weight: bold !important;
       text-decoration: none;
       cursor: pointer;
       transition: all 0.3s ease;

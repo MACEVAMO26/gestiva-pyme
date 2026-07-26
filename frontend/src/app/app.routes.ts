@@ -29,7 +29,8 @@ export const routes: Routes = [
             { path: 'inventario', loadComponent: () => import('./pages/dashboard/inventario/inventario').then(m => m.Inventario) },
             { path: 'ventas', loadComponent: () => import('./pages/dashboard/ventas/ventas').then(m => m.Ventas) },
             { path: 'compras', loadComponent: () => import('./pages/dashboard/compras/compras').then(m => m.Compras) },
-            { path: 'prefacturacion', loadComponent: () => import('./pages/dashboard/prefacturacion/prefacturacion').then(m => m.PrefacturacionComponent) }
+            { path: 'prefacturacion', loadComponent: () => import('./pages/dashboard/prefacturacion/prefacturacion').then(m => m.PrefacturacionComponent) },
+            { path: 'gestiva-ai', loadComponent: () => import('./pages/dashboard/gestiva-ai-assistant/dashboard/dashboard').then(m => m.Dashboard) }
         ]
     },
     { path: '**', redirectTo: '' }

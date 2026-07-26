@@ -6,11 +6,12 @@ import { ModulosService } from '../../../services/modulos.service';
 import { CommonModule } from '@angular/common';
 
 import { RouterModule } from '@angular/router';
+import { Onboarding } from '../gestiva-ai-assistant/onboarding/onboarding';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, Onboarding],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss'
 })
@@ -29,6 +30,7 @@ export class DashboardComponent implements OnInit {
   isFormalizado = true;
   tipoEmpresa = '';
   tipoEmpresaClass = '';
+  showGestivaOnboarding = false;
 
   public accessibilityService = inject(AccessibilityService);
   private http = inject(HttpClient);
@@ -79,6 +81,23 @@ export class DashboardComponent implements OnInit {
       }
 
       this.cargarModulos(this.user.empresa_id);
+      this.checkGestivaTutorial();
+    }
+  }
+
+  checkGestivaTutorial() {
+    if (this.user && this.user.id && typeof window !== 'undefined') {
+      const tutorialVisto = localStorage.getItem('gestiva_tutorial_visto_' + this.user.id);
+      if (!tutorialVisto) {
+        this.showGestivaOnboarding = true;
+      }
+    }
+  }
+
+  cerrarGestivaOnboarding() {
+    this.showGestivaOnboarding = false;
+    if (this.user && this.user.id && typeof window !== 'undefined') {
+      localStorage.setItem('gestiva_tutorial_visto_' + this.user.id, 'true');
     }
   }
 
