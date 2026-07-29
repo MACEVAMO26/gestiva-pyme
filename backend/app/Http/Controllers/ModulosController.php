@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Empresa;
 use App\Models\Modulo;
+use App\Models\Role;
 use Illuminate\Support\Facades\DB;
 
 class ModulosController extends Controller
@@ -73,6 +74,7 @@ class ModulosController extends Controller
         $syncData = [];
         foreach ($modulosAsignar as $moduloId) {
             $syncData[$moduloId] = ['activo' => true];
+            $this->crearRolBaseModulo($empresa->id, $moduloId);
         }
 
         $empresa->modulos()->sync($syncData);
@@ -97,6 +99,10 @@ class ModulosController extends Controller
               ->where('modulo_id', $moduloId)
               ->update(['activo' => $nuevoEstado, 'updated_at' => now()]);
             
+            if ($nuevoEstado) {
+                $this->crearRolBaseModulo($empresaId, $moduloId);
+            }
+            
             return response()->json(['message' => 'Módulo actualizado', 'activo' => $nuevoEstado]);
         } else {
             // Asigna y activa el módulo simulando la compra de un addon
@@ -107,6 +113,7 @@ class ModulosController extends Controller
                 'created_at' => now(),
                 'updated_at' => now()
             ]);
+            $this->crearRolBaseModulo($empresaId, $moduloId);
             return response()->json(['message' => 'Módulo asignado y activado', 'activo' => true]);
         }
     }
@@ -134,6 +141,10 @@ class ModulosController extends Controller
                   ->where('empresa_id', $empresaId)
                   ->where('modulo_id', $moduloId)
                   ->update(['activo' => $activo, 'updated_at' => now()]);
+                  
+                if ($activo) {
+                    $this->crearRolBaseModulo($empresaId, $moduloId);
+                }
             } else {
                 DB::table('empresa_modulo')->insert([
                     'empresa_id' => $empresaId,
@@ -142,6 +153,10 @@ class ModulosController extends Controller
                     'created_at' => now(),
                     'updated_at' => now()
                 ]);
+                
+                if ($activo) {
+                    $this->crearRolBaseModulo($empresaId, $moduloId);
+                }
             }
         }
 
@@ -197,5 +212,27 @@ class ModulosController extends Controller
         $modulo->delete();
 
         return response()->json(['message' => 'Módulo eliminado correctamente']);
+    }
+
+    private function crearRolBaseModulo($empresaId, $moduloId)
+    {
+        $modulo = Modulo::find($moduloId);
+        if (!$modulo) return;
+
+        $nombreRol = "Jefe de " . $modulo->nombre;
+
+        $existe = Role::where('empresa_id', $empresaId)
+                      ->where('nombre', $nombreRol)
+                      ->exists();
+
+        if (!$existe) {
+            Role::create([
+                'empresa_id' => $empresaId,
+                'nombre' => $nombreRol,
+                'descripcion' => '', // Dejado en blanco para que el gerente lo llene
+                'activo' => true,
+                'es_base' => true
+            ]);
+        }
     }
 }

@@ -25,14 +25,23 @@ export class Seguridad implements OnInit {
   showModal = false;
 
   formData: any = {
+    id: null,
     nombre: '',
-    descripcion: ''
+    descripcion: '',
+    es_base: false
   };
 
-  // Modulos principales que pueden tener permisos
-  modulosDisponibles = ['Administración', 'Gestión Humana', 'Clientes', 'Ventas', 'Inventario', 'Compras', 'Caja'];
+  // Modulos principales que pueden tener permisos (ahora dinámicos)
+  modulosDisponibles: string[] = [];
+  empresaId: string | number = '';
 
   ngOnInit() {
+    const userDataStr = sessionStorage.getItem('user_data');
+    if (userDataStr) {
+      const user = JSON.parse(userDataStr);
+      this.empresaId = user?.empresa_id || user?.empresa?.id || '';
+    }
+    this.cargarModulos();
     this.cargarRoles();
   }
 
@@ -59,6 +68,30 @@ export class Seguridad implements OnInit {
     });
   }
 
+  cargarModulos() {
+    if (!this.empresaId) return;
+    this.http.get<any>(`/api/empresas/${this.empresaId}/modulos`, { headers: this.getHeaders() }).subscribe({
+      next: (res) => {
+        const modulosList: string[] = [];
+        const grupos = res.modulos || {};
+        
+        for (const paquete in grupos) {
+          const modulosDelPaquete = grupos[paquete];
+          for (const mod of modulosDelPaquete) {
+            if (mod.activo && mod.asignado) {
+              modulosList.push(mod.nombre);
+            }
+          }
+        }
+        this.modulosDisponibles = modulosList;
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('Error cargando modulos', err);
+      }
+    });
+  }
+
   seleccionarRol(rol: any) {
     this.selectedRole = rol;
     this.cargarPermisos(rol.id);
@@ -81,7 +114,18 @@ export class Seguridad implements OnInit {
   }
 
   abrirModalNuevoRol() {
-    this.formData = { nombre: '', descripcion: '' };
+    this.formData = { id: null, nombre: '', descripcion: '', es_base: false };
+    this.showModal = true;
+  }
+
+  editarRol(rol: any, event: Event) {
+    event.stopPropagation();
+    this.formData = { 
+      id: rol.id, 
+      nombre: rol.nombre, 
+      descripcion: rol.descripcion,
+      es_base: rol.es_base 
+    };
     this.showModal = true;
   }
 
@@ -90,21 +134,36 @@ export class Seguridad implements OnInit {
   }
 
   guardarRol() {
-    if (!this.formData.nombre) return;
+    if (!this.formData.nombre && !this.formData.es_base) return;
     this.isSubmitting = true;
 
-    this.http.post('/api/roles', this.formData, { headers: this.getHeaders() }).subscribe({
-      next: () => {
-        this.cargarRoles();
-        this.cerrarModal();
-        this.isSubmitting = false;
-      },
-      error: (err) => {
-        console.error(err);
-        this.isSubmitting = false;
-        alert(err.error?.message || 'Error al crear rol');
-      }
-    });
+    if (this.formData.id) {
+      this.http.put(`/api/roles/${this.formData.id}`, this.formData, { headers: this.getHeaders() }).subscribe({
+        next: () => {
+          this.cargarRoles();
+          this.cerrarModal();
+          this.isSubmitting = false;
+        },
+        error: (err) => {
+          console.error(err);
+          this.isSubmitting = false;
+          alert(err.error?.message || 'Error al actualizar rol');
+        }
+      });
+    } else {
+      this.http.post('/api/roles', this.formData, { headers: this.getHeaders() }).subscribe({
+        next: () => {
+          this.cargarRoles();
+          this.cerrarModal();
+          this.isSubmitting = false;
+        },
+        error: (err) => {
+          console.error(err);
+          this.isSubmitting = false;
+          alert(err.error?.message || 'Error al crear rol');
+        }
+      });
+    }
   }
 
   getPermisoParaModulo(modulo: string) {
@@ -116,14 +175,16 @@ export class Seguridad implements OnInit {
         puede_ver: false,
         puede_crear: false,
         puede_editar: false,
-        puede_inactivar: false
+        puede_inactivar: false,
+        puede_descargar: false,
+        puede_subir: false
       };
       this.permisos.push(p);
     }
     return p;
   }
 
-  togglePermiso(modulo: string, accion: 'puede_ver' | 'puede_crear' | 'puede_editar' | 'puede_inactivar') {
+  togglePermiso(modulo: string, accion: 'puede_ver' | 'puede_crear' | 'puede_editar' | 'puede_inactivar' | 'puede_descargar' | 'puede_subir') {
     let permiso = this.getPermisoParaModulo(modulo);
     permiso[accion] = !permiso[accion];
     // No guardamos automáticamente, se guarda con el botón Guardar

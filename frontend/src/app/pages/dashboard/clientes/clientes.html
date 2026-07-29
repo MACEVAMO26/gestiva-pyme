@@ -108,7 +108,21 @@
                     } @empty {
                     @if(clientesFiltrados.length === 0) {
                     <tr>
-                        <td colspan="7" class="text-center text-muted" style="padding: 2rem;">No se encontraron clientes.</td>
+                        <td colspan="7" style="padding: 0;">
+                            <div class="empty-state-tutorial fade-in" style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 4rem 2rem; background: rgba(30, 41, 59, 0.4); border-radius: 12px; border: 1px dashed rgba(148, 163, 184, 0.2); margin: 1rem;">
+                                <div class="icon-wrapper" style="width: 80px; height: 80px; background: rgba(59, 130, 246, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 1.5rem; color: #3b82f6;">
+                                    <svg class="icon-xl" style="width: 40px; height: 40px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                                </div>
+                                <h3 style="color: #f1f5f9; font-size: 1.5rem; margin-bottom: 0.5rem; font-weight: 600;">No hay clientes registrados</h3>
+                                <p style="color: #94a3b8; text-align: center; max-width: 500px; line-height: 1.6; margin-bottom: 2rem;">
+                                    En este módulo podrás centralizar tu portafolio de clientes comerciales y particulares. Registra su información de contacto, categorízalos y haz seguimiento de su estado general para mantener relaciones comerciales exitosas.
+                                </p>
+                                <button class="btn-primary" (click)="abrirModalNuevo()" style="padding: 0.75rem 1.5rem; border-radius: 8px; font-weight: 500; display: flex; align-items: center; gap: 0.5rem;">
+                                    <svg class="icon-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                                    Comenzar agregando un Cliente
+                                </button>
+                            </div>
+                        </td>
                     </tr>
                     }
                     }

@@ -40,10 +40,17 @@ class RoleController extends Controller
     public function update(Request $request, $id)
     {
         $role = Role::findOrFail($id);
-        $validatedData = $request->validate([
-            'nombre' => ['required', 'string', 'max:255', Rule::unique('roles')->ignore($role->id)],
+        
+        $rules = [
             'descripcion' => 'nullable|string',
-        ]);
+        ];
+
+        // Solo permitir cambiar el nombre si NO es un rol base
+        if (!$role->es_base) {
+            $rules['nombre'] = ['required', 'string', 'max:255', Rule::unique('roles')->ignore($role->id)];
+        }
+
+        $validatedData = $request->validate($rules);
         $role->update($validatedData);
 
         return response()->json($role);
@@ -53,6 +60,11 @@ class RoleController extends Controller
     public function changeStatus($id)
     {
         $role = Role::findOrFail($id);
+        
+        if ($role->es_base) {
+            return response()->json(['error' => 'No se puede inactivar un rol base del sistema.'], 403);
+        }
+
         $role->activo = !$role->activo;
         $role->fecha_inactivacion = $role->activo ? null : now();
 

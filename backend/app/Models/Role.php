@@ -19,7 +19,8 @@ class Role extends Model
         'empresa_id',
         'nombre',
         'descripcion',
-        'activo'
+        'activo',
+        'es_base'
     ];
        
     // --- RELACIONES ---

@@ -88,7 +88,21 @@
               }
               @if(productosFiltrados.length === 0) {
                 <tr>
-                  <td colspan="8" style="text-align: center; color: #64748b; padding: 2rem;">No se encontraron productos.</td>
+                  <td colspan="8" style="padding: 0;">
+                    <div class="empty-state-tutorial fade-in" style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 4rem 2rem; background: rgba(30, 41, 59, 0.4); border-radius: 12px; border: 1px dashed rgba(148, 163, 184, 0.2); margin: 1rem;">
+                      <div class="icon-wrapper" style="width: 80px; height: 80px; background: rgba(59, 130, 246, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 1.5rem; color: #3b82f6;">
+                        <svg class="icon-xl" style="width: 40px; height: 40px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
+                      </div>
+                      <h3 style="color: #f1f5f9; font-size: 1.5rem; margin-bottom: 0.5rem; font-weight: 600;">No hay productos registrados</h3>
+                      <p style="color: #94a3b8; text-align: center; max-width: 500px; line-height: 1.6; margin-bottom: 2rem;">
+                        El módulo de Inventario te permite mantener un control estricto de tus existencias. Registra tus productos, administra categorías, costos y precios, y supervisa las alertas de stock mínimo para nunca quedarte sin mercancía.
+                      </p>
+                      <button class="btn-primary" (click)="abrirModal()" style="padding: 0.75rem 1.5rem; border-radius: 8px; font-weight: 500; display: flex; align-items: center; gap: 0.5rem;">
+                        <svg class="icon-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                        Crear el primer Producto
+                      </button>
+                    </div>
+                  </td>
                 </tr>
               }
             </tbody>

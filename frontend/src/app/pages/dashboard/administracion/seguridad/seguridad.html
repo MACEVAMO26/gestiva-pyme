@@ -29,9 +29,19 @@
         <div class="role-item" *ngFor="let rol of roles" 
              (click)="seleccionarRol(rol)"
              [ngClass]="{'active': selectedRole?.id === rol.id}"
-             style="padding: 0.75rem 1rem; border-radius: 8px; cursor: pointer; transition: all 0.2s; border: 1px solid transparent; background: rgba(255,255,255,0.02);">
-          <div style="font-weight: 600; color: #f8fafc;">{{ rol.nombre }}</div>
-          <div style="font-size: 0.8rem; color: #94a3b8; margin-top: 0.25rem;">{{ rol.descripcion || 'Sin descripción' }}</div>
+             style="padding: 0.75rem 1rem; border-radius: 8px; cursor: pointer; transition: all 0.2s; border: 1px solid transparent; background: rgba(255,255,255,0.02); display: flex; justify-content: space-between; align-items: center;">
+          
+          <div>
+            <div style="font-weight: 600; color: #f8fafc; display: flex; align-items: center; gap: 0.5rem;">
+              {{ rol.nombre }}
+              <span *ngIf="rol.es_base" style="font-size: 0.65rem; background: rgba(59, 130, 246, 0.2); color: #60a5fa; padding: 2px 6px; border-radius: 4px; font-weight: normal;">Base</span>
+            </div>
+            <div style="font-size: 0.8rem; color: #94a3b8; margin-top: 0.25rem;">{{ rol.descripcion || 'Sin descripción' }}</div>
+          </div>
+          
+          <button class="btn-icon" (click)="editarRol(rol, $event)" title="Editar Rol" style="background: none; border: none; color: #94a3b8; cursor: pointer; padding: 0.25rem;">
+            <svg class="icon-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+          </button>
         </div>
       </div>
     </div>
@@ -74,6 +84,8 @@
               <th class="text-center">Crear</th>
               <th class="text-center">Editar</th>
               <th class="text-center">Inactivar/Borrar</th>
+              <th class="text-center">Descargar</th>
+              <th class="text-center">Subir</th>
             </tr>
           </thead>
           <tbody>
@@ -99,6 +111,16 @@
                        [checked]="getPermisoParaModulo(mod).puede_inactivar"
                        (change)="togglePermiso(mod, 'puede_inactivar')">
               </td>
+              <td class="text-center">
+                <input type="checkbox" style="width: 18px; height: 18px; accent-color: #3b82f6; cursor: pointer;"
+                       [checked]="getPermisoParaModulo(mod).puede_descargar"
+                       (change)="togglePermiso(mod, 'puede_descargar')">
+              </td>
+              <td class="text-center">
+                <input type="checkbox" style="width: 18px; height: 18px; accent-color: #3b82f6; cursor: pointer;"
+                       [checked]="getPermisoParaModulo(mod).puede_subir"
+                       (change)="togglePermiso(mod, 'puede_subir')">
+              </td>
             </tr>
           </tbody>
         </table>
@@ -110,7 +132,7 @@
   <div class="modal-overlay" *ngIf="showModal">
     <div class="modal-content form-modal glass-panel">
       <div class="modal-header">
-        <h3>Nuevo Rol</h3>
+        <h3>{{ formData.id ? 'Editar Rol' : 'Nuevo Rol' }}</h3>
         <button class="btn-close" (click)="cerrarModal()">
           <svg class="icon-md" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
         </button>
@@ -120,7 +142,7 @@
         <div class="form-row">
           <div class="form-group">
             <label>Nombre del Rol <span style="color: #ef4444">*</span></label>
-            <input type="text" class="form-control" name="nombre" [(ngModel)]="formData.nombre" required placeholder="Ej. Gerente Comercial">
+            <input type="text" class="form-control" name="nombre" [(ngModel)]="formData.nombre" [readonly]="formData.es_base" required placeholder="Ej. Gerente Comercial" [title]="formData.es_base ? 'El nombre de un rol base no puede ser modificado' : ''">
           </div>
         </div>
 

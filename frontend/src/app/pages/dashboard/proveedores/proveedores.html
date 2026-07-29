@@ -56,7 +56,21 @@
             <tbody>
               @if (proveedoresFiltrados.length === 0) {
                 <tr>
-                  <td colspan="5" style="text-align: center; color: #64748b; padding: 2rem;">No hay proveedores registrados.</td>
+                  <td colspan="5" style="padding: 0;">
+                    <div class="empty-state-tutorial fade-in" style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 4rem 2rem; background: rgba(30, 41, 59, 0.4); border-radius: 12px; border: 1px dashed rgba(148, 163, 184, 0.2); margin: 1rem;">
+                      <div class="icon-wrapper" style="width: 80px; height: 80px; background: rgba(59, 130, 246, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 1.5rem; color: #3b82f6;">
+                        <svg class="icon-xl" style="width: 40px; height: 40px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+                      </div>
+                      <h3 style="color: #f1f5f9; font-size: 1.5rem; margin-bottom: 0.5rem; font-weight: 600;">No hay proveedores registrados</h3>
+                      <p style="color: #94a3b8; text-align: center; max-width: 500px; line-height: 1.6; margin-bottom: 2rem;">
+                        En este módulo podrás gestionar y evaluar a todas las empresas o personas que suministran bienes y servicios a tu organización. Haz clic en 'Nuevo Proveedor' para comenzar a estructurar tu cadena de suministro.
+                      </p>
+                      <button class="btn-primary" (click)="abrirModal()" style="padding: 0.75rem 1.5rem; border-radius: 8px; font-weight: 500; display: flex; align-items: center; gap: 0.5rem;">
+                        <svg class="icon-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                        Comenzar agregando un Proveedor
+                      </button>
+                    </div>
+                  </td>
                 </tr>
               } @else {
                 @for (proveedor of proveedoresFiltrados; track proveedor.id) {

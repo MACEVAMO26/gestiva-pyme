@@ -19,11 +19,7 @@ export class Compras implements OnInit {
   searchTerm = '';
 
   // --- DATOS MOCK ---
-  ordenes = [
-    { id: 1, numero: 'OC-2026-001', proveedor: 'Distribuidora Tecnológica S.A.', fecha: '25/07/2026', total: 4500000, estado: 'Pendiente' },
-    { id: 2, numero: 'OC-2026-002', proveedor: 'Suministros Globales', fecha: '23/07/2026', total: 850000, estado: 'Recibido' },
-    { id: 3, numero: 'OC-2026-003', proveedor: 'Papelería Central', fecha: '20/07/2026', total: 120000, estado: 'Anulado' }
-  ];
+  ordenes: any[] = [];
 
   // --- FORMULARIO ORDEN ---
   formOrden = {

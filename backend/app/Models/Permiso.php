@@ -25,7 +25,9 @@ class Permiso extends Model
         'puede_ver',
         'puede_crear',
         'puede_editar',
-        'puede_inactivar'
+        'puede_inactivar',
+        'puede_descargar',
+        'puede_subir'
     ];
 
     
