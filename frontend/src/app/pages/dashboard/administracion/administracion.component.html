@@ -159,6 +159,13 @@
         </p>
       </div>
 
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+        <h3 style="margin: 0;">Datos de la Empresa</h3>
+        <button type="button" class="btn-primary" (click)="toggleEditCompany()" style="display: flex; align-items: center; gap: 0.5rem; background: #3b82f6; border-radius: 8px;">
+          <i class="fas fa-edit"></i> {{ isEditingCompany ? 'Cancelar Edición' : 'Editar Datos' }}
+        </button>
+      </div>
+
       <form class="company-form" (ngSubmit)="solicitarCambioDatos()">
         <div class="form-row">
           <div class="form-group">
@@ -169,6 +176,7 @@
               [(ngModel)]="formData.nombre"
               class="form-control"
               placeholder="Nombre oficial"
+              [disabled]="!isEditingCompany"
             />
           </div>
         </div>
@@ -182,6 +190,7 @@
               [(ngModel)]="formData.nit"
               class="form-control"
               placeholder="NIT o identificador"
+              [disabled]="!isEditingCompany"
             />
           </div>
           <div class="form-group">
@@ -192,6 +201,7 @@
               [(ngModel)]="formData.telefono"
               class="form-control"
               placeholder="Número de teléfono"
+              [disabled]="!isEditingCompany"
             />
           </div>
         </div>
@@ -205,6 +215,7 @@
               [(ngModel)]="formData.direccion"
               class="form-control"
               placeholder="Dirección legal completa"
+              [disabled]="!isEditingCompany"
             />
           </div>
         </div>
@@ -218,6 +229,7 @@
               [(ngModel)]="formData.email"
               class="form-control"
               placeholder="correo@empresa.com"
+              [disabled]="!isEditingCompany"
             />
           </div>
           <div class="form-group">
@@ -228,6 +240,7 @@
               class="form-control file-input"
               (change)="onLogoSelected($event)"
               accept="image/png, image/jpeg"
+              [disabled]="!isEditingCompany"
             />
           </div>
           <div class="form-group">
@@ -238,6 +251,7 @@
               class="form-control file-input"
               (change)="onDocumentoSelected($event)"
               accept="application/pdf, image/png, image/jpeg"
+              [disabled]="!isEditingCompany"
             />
           </div>
         </div>
@@ -249,26 +263,21 @@
               name="eslogan"
               [(ngModel)]="formData.eslogan"
               class="form-control"
+              placeholder="Ej. 'Soluciones a tu medida'"
               rows="2"
-              placeholder="Texto para pie de documentos"
+              [disabled]="!isEditingCompany"
             ></textarea>
           </div>
         </div>
 
-        <div class="form-actions">
+        <div class="form-actions mt-6" *ngIf="isEditingCompany">
           <button
             type="submit"
-            class="btn-save flex items-center justify-center"
+            class="btn-save full-width"
             [disabled]="isSubmitting"
           >
-            <span *ngIf="!isSubmitting">Guardar Información Empresa</span>
-            <span *ngIf="isSubmitting" class="flex items-center">
-              <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-              </svg>
-              Enviando...
-            </span>
+            <span *ngIf="isSubmitting" class="spinner"></span>
+            {{ isSubmitting ? 'Enviando Solicitud...' : 'Solicitar Cambio de Datos' }}
           </button>
         </div>
       </form>

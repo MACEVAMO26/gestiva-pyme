@@ -205,6 +205,7 @@ class EmpresaController extends Controller
             $gerenteUser = User::create([
                 'empresa_id' => $empresa->id,
                 'rol_id' => $rolGerente->id,
+                'cargo_id' => $cargoGerente->id,
                 'nombres' => 'Gerente',
                 'apellidos' => $empresa->razon_social,
                 'documento' => $empresa->nit,

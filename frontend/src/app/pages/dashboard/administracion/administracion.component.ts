@@ -28,13 +28,16 @@ export class AdministracionComponent implements OnInit {
   logoFile: File | null = null;
   documentoFile: File | null = null;
   misSolicitudes: any[] = [];
+  
+  // Estado de edición para la empresa
+  isEditingCompany = false;
 
   ngOnInit(): void {
     this.user = this.authService.getUser();
     if (this.user && this.user.empresa) {
       this.empresa = this.user.empresa;
       this.formData = {
-        razon_social: this.empresa.razon_social,
+        nombre: this.empresa.razon_social || this.empresa.nombre,
         nit: this.empresa.nit,
         telefono: this.empresa.telefono || '',
         direccion: this.empresa.direccion || '',
@@ -43,6 +46,10 @@ export class AdministracionComponent implements OnInit {
       };
     }
     this.cargarSolicitudes();
+  }
+
+  toggleEditCompany() {
+    this.isEditingCompany = !this.isEditingCompany;
   }
 
   cargarSolicitudes() {

@@ -34,6 +34,8 @@ class User extends Authenticatable
         'password_hash',
         'activo',
         'telegram_chat_id',
+        'perfil_formalizado',
+        'debe_cambiar_clave'
     ];
 
     
