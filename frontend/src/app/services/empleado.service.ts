@@ -75,6 +75,32 @@ export class EmpleadoService {
     return this.roles$;
   }
 
+  // --- CONFIGURACIONES ---
+  getConfiguracion(empresaId: number): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/empresas/${empresaId}/configuracion-rrhh`, this.getHeaders());
+  }
+
+  updateConfiguracion(empresaId: number, data: any): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/empresas/${empresaId}/configuracion-rrhh`, data, this.getHeaders());
+  }
+
+  // --- DOCUMENTOS DE EMPLEADOS ---
+  getDocumentos(empleadoId: number): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/empleados/${empleadoId}/documentos`, this.getHeaders());
+  }
+
+  getMisDocumentos(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/mis-documentos`, this.getHeaders());
+  }
+
+  uploadDocumento(empleadoId: number, formData: FormData): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/empleados/${empleadoId}/documentos`, formData, this.getHeaders());
+  }
+
+  deleteDocumento(documentoId: number): Observable<any> {
+    return this.http.delete<any>(`${this.apiUrl}/documentos/${documentoId}`, this.getHeaders());
+  }
+
   // --- CRUD ÁREAS Y CARGOS ---
   createArea(data: any): Observable<any> {
     return this.http.post(`${this.apiUrl}/areas`, data, this.getHeaders());

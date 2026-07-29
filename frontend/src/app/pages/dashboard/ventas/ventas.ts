@@ -27,20 +27,12 @@ export class Ventas implements OnInit {
   // --- DATOS MOCK POS ---
   carrito: any[] = [];
   clienteSeleccionado = '';
-  productosDisponibles = [
-    { id: 1, codigo: 'PRD-001', nombre: 'Laptop Dell Inspiron', precio: 2500000 },
-    { id: 2, codigo: 'PRD-002', nombre: 'Mouse Inalámbrico Logitech', precio: 85000 },
-    { id: 3, codigo: 'PRD-004', nombre: 'Teclado Mecánico RGB', precio: 220000 }
-  ];
+  productosDisponibles: any[] = [];
   productoActual = '';
   cantidadActual = 1;
 
   // --- DATOS MOCK HISTORIAL ---
-  ventas = [
-    { id: 1, factura: 'FAC-1001', cliente: 'Juan Pérez', fecha: '25/07/2026', total: 2585000, estado: 'Pagada' },
-    { id: 2, factura: 'FAC-1002', cliente: 'Empresa ABC S.A.S', fecha: '24/07/2026', total: 440000, estado: 'Pagada' },
-    { id: 3, factura: 'FAC-1003', cliente: 'María López', fecha: '23/07/2026', total: 85000, estado: 'Anulada' }
-  ];
+  ventas: any[] = [];
 
   ngOnInit(): void {}
 

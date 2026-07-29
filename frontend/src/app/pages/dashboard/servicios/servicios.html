@@ -166,10 +166,15 @@
             @for(tec of tecnicos; track tec.id) {
               <div class="tech-card glass-panel" 
                    style="padding: 1rem; cursor: pointer; transition: 0.3s;"
-                   [style.border-left]="tecnicoDashboard.id === tec.id ? '4px solid #f97316' : '4px solid transparent'"
+                   [style.border-left]="tecnicoDashboard?.id === tec.id ? '4px solid #f97316' : '4px solid transparent'"
                    (click)="seleccionarTecnicoRender(tec)">
                 <strong style="color: white;">{{tec.nombre}}</strong>
                 <div style="font-size: 0.8rem; color: #94a3b8;">Citas Cumplidas: {{tec.rendimiento.cumplidas}}</div>
+              </div>
+            } @empty {
+              <div class="empty-state" style="padding: 2rem 1rem; text-align: center; color: #94a3b8; background: rgba(30, 41, 59, 0.4); border-radius: 8px;">
+                <i class="fas fa-users-slash mb-2" style="font-size: 1.5rem; opacity: 0.5;"></i>
+                <p style="font-size: 0.9rem; margin: 0;">No tienes técnicos asignados. Añádelos en el módulo de Empleados.</p>
               </div>
             }
           </div>
@@ -177,46 +182,53 @@
 
         <!-- Dashboard Gráfico (Flex Bars) -->
         <div style="flex: 3; min-width: 400px;" class="glass-panel">
-          <h2 style="margin-top: 0; color: white;">Rendimiento: <span style="color: #3b82f6;">{{tecnicoDashboard.nombre}}</span></h2>
-          <p style="color: #94a3b8; margin-bottom: 2rem;">Métricas en vivo de cumplimiento de citas, satisfacción de cliente y control de quejas basadas en el Field Service.</p>
-          
-          <div class="chart-container" style="display: flex; flex-direction: column; gap: 1.5rem;">
+          @if(tecnicoDashboard) {
+            <h2 style="margin-top: 0; color: white;">Rendimiento: <span style="color: #3b82f6;">{{tecnicoDashboard.nombre}}</span></h2>
+            <p style="color: #94a3b8; margin-bottom: 2rem;">Métricas en vivo de cumplimiento de citas, satisfacción de cliente y control de quejas basadas en el Field Service.</p>
             
-            <!-- Barra: Citas Cumplidas (Meta 100) -->
-            <div class="bar-row">
-              <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
-                <span style="color: #cbd5e1; font-weight: bold;">Citas Cumplidas (Mensual)</span>
-                <span style="color: #10b981;">{{tecnicoDashboard.rendimiento.cumplidas}} / 100</span>
+            <div class="chart-container" style="display: flex; flex-direction: column; gap: 1.5rem;">
+              
+              <!-- Barra: Citas Cumplidas (Meta 100) -->
+              <div class="bar-row">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                  <span style="color: #cbd5e1; font-weight: bold;">Citas Cumplidas (Mensual)</span>
+                  <span style="color: #10b981;">{{tecnicoDashboard.rendimiento.cumplidas}} / 100</span>
+                </div>
+                <div class="progress-bg" style="width: 100%; height: 12px; background: #27272a; border-radius: 6px; overflow: hidden;">
+                  <div class="progress-fill" [style.width]="getPorcentaje(tecnicoDashboard.rendimiento.cumplidas) + '%'" style="height: 100%; background: #10b981; transition: width 1s ease;"></div>
+                </div>
               </div>
-              <div class="progress-bg" style="width: 100%; height: 12px; background: #27272a; border-radius: 6px; overflow: hidden;">
-                <div class="progress-fill" [style.width]="getPorcentaje(tecnicoDashboard.rendimiento.cumplidas) + '%'" style="height: 100%; background: #10b981; transition: width 1s ease;"></div>
-              </div>
-            </div>
 
-            <!-- Barra: Citas Satisfactorias (Basado en cumplidas) -->
-            <div class="bar-row">
-              <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
-                <span style="color: #cbd5e1; font-weight: bold;">Servicios Satisfactorios (SLA)</span>
-                <span style="color: #3b82f6;">{{tecnicoDashboard.rendimiento.satisfactorias}}</span>
+              <!-- Barra: Citas Satisfactorias (Basado en cumplidas) -->
+              <div class="bar-row">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                  <span style="color: #cbd5e1; font-weight: bold;">Servicios Satisfactorios (SLA)</span>
+                  <span style="color: #3b82f6;">{{tecnicoDashboard.rendimiento.satisfactorias}}</span>
+                </div>
+                <div class="progress-bg" style="width: 100%; height: 12px; background: #27272a; border-radius: 6px; overflow: hidden;">
+                  <div class="progress-fill" [style.width]="getPorcentaje(tecnicoDashboard.rendimiento.satisfactorias, tecnicoDashboard.rendimiento.cumplidas) + '%'" style="height: 100%; background: #3b82f6; transition: width 1s ease;"></div>
+                </div>
               </div>
-              <div class="progress-bg" style="width: 100%; height: 12px; background: #27272a; border-radius: 6px; overflow: hidden;">
-                <div class="progress-fill" [style.width]="getPorcentaje(tecnicoDashboard.rendimiento.satisfactorias, tecnicoDashboard.rendimiento.cumplidas) + '%'" style="height: 100%; background: #3b82f6; transition: width 1s ease;"></div>
-              </div>
-            </div>
 
-            <!-- Barra: Quejas / Garantías (Escala Inversa) -->
-            <div class="bar-row">
-              <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
-                <span style="color: #cbd5e1; font-weight: bold;">Quejas / Devoluciones por Garantía</span>
-                <span style="color: #ef4444;">{{tecnicoDashboard.rendimiento.quejas}}</span>
+              <!-- Barra: Quejas / Garantías (Escala Inversa) -->
+              <div class="bar-row">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                  <span style="color: #cbd5e1; font-weight: bold;">Quejas / Devoluciones por Garantía</span>
+                  <span style="color: #ef4444;">{{tecnicoDashboard.rendimiento.quejas}}</span>
+                </div>
+                <div class="progress-bg" style="width: 100%; height: 12px; background: #27272a; border-radius: 6px; overflow: hidden;">
+                  <div class="progress-fill" [style.width]="getPorcentaje(tecnicoDashboard.rendimiento.quejas, 20) + '%'" style="height: 100%; background: #ef4444; transition: width 1s ease;"></div>
+                </div>
+                <small style="color: #64748b;">La barra roja debe mantenerse lo más baja posible (Límite alerta: 20)</small>
               </div>
-              <div class="progress-bg" style="width: 100%; height: 12px; background: #27272a; border-radius: 6px; overflow: hidden;">
-                <div class="progress-fill" [style.width]="getPorcentaje(tecnicoDashboard.rendimiento.quejas, 20) + '%'" style="height: 100%; background: #ef4444; transition: width 1s ease;"></div>
-              </div>
-              <small style="color: #64748b;">La barra roja debe mantenerse lo más baja posible (Límite alerta: 20)</small>
-            </div>
 
-          </div>
+            </div>
+          } @else {
+            <div class="empty-state" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: #94a3b8; padding: 4rem 0;">
+              <i class="fas fa-chart-line fa-3x mb-4" style="opacity: 0.5;"></i>
+              <p>No hay técnicos registrados o seleccionados.</p>
+            </div>
+          }
         </div>
 
       </div>

@@ -48,12 +48,16 @@ Route::delete('/modulos/{id}', [\App\Http\Controllers\ModulosController::class, 
 
 Route::middleware('auth:sanctum')->group(function () {
     
+    Route::get('/mis-modulos', [\App\Http\Controllers\ModulosController::class, 'getMisModulos']);
+
     // --- SESION ---
     Route::post('/logout', [AuthController::class, 'cerrarSesion']);
     Route::get('/user', function (Request $request) {
-
         return $request->user();
     });
+
+    // --- GESTIVA IA TUTORIAL ---
+    Route::get('/tutorial-status', [\App\Http\Controllers\GestivaTutorialController::class, 'getStatus']);
 
     // --- SEGURIDAD Y ACCESO ---
     Route::put('/profile', [ProfileController::class, 'update']);
@@ -66,6 +70,19 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/roles/{id}', [RoleController::class, 'update']);
     Route::patch('/roles/{id}/status', [RoleController::class, 'changeStatus']);
 
+    // --- PERFIL DE EMPLEADO & AUTOGESTION ---
+    Route::get('/empleados/{id}', [UserController::class, 'getEmpleado']);
+    Route::put('/empleados/{id}', [UserController::class, 'updateEmpleado']);
+    Route::post('/empleados/{id}/baja', [UserController::class, 'bajaEmpleado']);
+    
+    // Documentos del Empleado (RRHH)
+    Route::get('/empleados/{id}/documentos', [\App\Http\Controllers\DocumentoEmpleadoController::class, 'getDocumentos']);
+    Route::post('/empleados/{id}/documentos', [\App\Http\Controllers\DocumentoEmpleadoController::class, 'store']);
+    Route::delete('/documentos/{id}', [\App\Http\Controllers\DocumentoEmpleadoController::class, 'destroy']);
+    
+    // Autogestion Empleado
+    Route::get('/autogestion/stats', [AutogestionController::class, 'getStats']);
+    Route::get('/mis-documentos', [\App\Http\Controllers\DocumentoEmpleadoController::class, 'misDocumentos']);
 
     Route::get('/cargos', [CargoController::class, 'index']);
     Route::post('/cargos', [CargoController::class, 'store']);
@@ -75,6 +92,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
     Route::get('/permisos', [PermisoController::class, 'index']);
+    Route::post('/permisos/batch', [PermisoController::class, 'batchUpdate']);
     Route::post('/permisos', [PermisoController::class, 'store']);
     Route::get('/permisos/{id}', [PermisoController::class, 'show']);
     Route::put('/permisos/{id}', [PermisoController::class, 'update']);

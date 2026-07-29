@@ -32,7 +32,8 @@ export class Seguridad implements OnInit {
   };
 
   // Modulos principales que pueden tener permisos (ahora dinámicos)
-  modulosDisponibles: string[] = [];
+  todosLosModulosDeEmpresa: any[] = [];
+  modulosDisponibles: any[] = [];
   empresaId: string | number = '';
 
   ngOnInit() {
@@ -69,25 +70,28 @@ export class Seguridad implements OnInit {
   }
 
   cargarModulos() {
-    if (!this.empresaId) return;
-    this.http.get<any>(`/api/empresas/${this.empresaId}/modulos`, { headers: this.getHeaders() }).subscribe({
+    this.http.get<any>(`/api/mis-modulos`, { headers: this.getHeaders() }).subscribe({
       next: (res) => {
-        const modulosList: string[] = [];
+        const modulosList: any[] = [];
         const grupos = res.modulos || {};
-        
         for (const paquete in grupos) {
           const modulosDelPaquete = grupos[paquete];
-          for (const mod of modulosDelPaquete) {
-            if (mod.activo && mod.asignado) {
-              modulosList.push(mod.nombre);
+          if (Array.isArray(modulosDelPaquete)) {
+            for (const mod of modulosDelPaquete) {
+              if (mod.asignado) {
+                modulosList.push({ id: mod.id, nombre: mod.nombre });
+              }
             }
           }
         }
-        this.modulosDisponibles = modulosList;
+        this.todosLosModulosDeEmpresa = modulosList;
+        this.modulosDisponibles = [...this.todosLosModulosDeEmpresa];
         this.cdr.detectChanges();
       },
       error: (err) => {
-        console.error('Error cargando modulos', err);
+        console.error('Error cargando módulos', err);
+        this.modulosDisponibles = [{id: 'debug_error', nombre: 'Error cargando módulos'}];
+        this.cdr.detectChanges();
       }
     });
   }
@@ -102,6 +106,7 @@ export class Seguridad implements OnInit {
     this.http.get<any[]>(`/api/roles/${rolId}/permisos`, { headers: this.getHeaders() }).subscribe({
       next: (data) => {
         this.permisos = data;
+        
         this.isLoadingPermisos = false;
         this.cdr.detectChanges();
       },
@@ -166,12 +171,19 @@ export class Seguridad implements OnInit {
     }
   }
 
-  getPermisoParaModulo(modulo: string) {
-    let p = this.permisos.find(p => p.modulo === modulo);
-    if (!p) {
-      p = {
+  getPermisoParaModulo(moduloId: string) {
+    if (!this.permisos || !Array.isArray(this.permisos)) return { puede_ver: false, puede_crear: false, puede_editar: false, puede_inactivar: false, puede_descargar: false, puede_subir: false };
+    const permiso = this.permisos.find(p => p.modulo === moduloId);
+    return permiso || { puede_ver: false, puede_crear: false, puede_editar: false, puede_inactivar: false, puede_descargar: false, puede_subir: false };
+  }
+
+  togglePermiso(moduloId: string, campo: string) {
+    if (!this.permisos) this.permisos = [];
+    let permiso = this.permisos.find(p => p.modulo === moduloId);
+    if (!permiso) {
+      permiso = {
+        modulo: moduloId,
         rol_id: this.selectedRole.id,
-        modulo: modulo,
         puede_ver: false,
         puede_crear: false,
         puede_editar: false,
@@ -179,47 +191,47 @@ export class Seguridad implements OnInit {
         puede_descargar: false,
         puede_subir: false
       };
-      this.permisos.push(p);
+      this.permisos.push(permiso);
     }
-    return p;
-  }
-
-  togglePermiso(modulo: string, accion: 'puede_ver' | 'puede_crear' | 'puede_editar' | 'puede_inactivar' | 'puede_descargar' | 'puede_subir') {
-    let permiso = this.getPermisoParaModulo(modulo);
-    permiso[accion] = !permiso[accion];
-    // No guardamos automáticamente, se guarda con el botón Guardar
+    permiso[campo] = !permiso[campo];
+    this.cdr.detectChanges();
   }
 
   guardarTodosLosPermisos() {
     this.isSavingPermisos = true;
     
-    // Filtrar los permisos que tienen algún valor (aunque Angular los maneja todos si los recorremos)
-    const requests: Observable<any>[] = [];
-    
-    for (let p of this.permisos) {
-      if (p.id) {
-        requests.push(this.http.put(`/api/permisos/${p.id}`, p, { headers: this.getHeaders() }));
-      } else {
-        requests.push(this.http.post('/api/permisos', p, { headers: this.getHeaders() }));
-      }
-    }
-
-    if (requests.length === 0) {
-      this.isSavingPermisos = false;
-      return;
-    }
-
-    forkJoin(requests).subscribe({
-      next: (responses) => {
-        // Actualizamos los IDs de los nuevos permisos si es necesario recargándolos
+    // Batch save for optimization
+    this.http.post('/api/permisos/batch', { permisos: this.permisos }, { headers: this.getHeaders() }).subscribe({
+      next: (response) => {
+        // Recargar los permisos para obtener los IDs generados
         this.cargarPermisos(this.selectedRole.id);
         this.isSavingPermisos = false;
-        alert('Permisos guardados correctamente.');
+        
+        // Show success alert
+        const alertHtml = `
+          <div id="toast-success" style="position: fixed; top: 20px; right: 20px; background: rgba(42, 38, 69, 0.95); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); border-left: 4px solid #10b981; border-radius: 10px; padding: 1rem 1.5rem; display: flex; align-items: center; gap: 1rem; box-shadow: 0 10px 25px rgba(0,0,0,0.5); z-index: 9999; animation: slideIn 0.3s ease-out;">
+            <div style="background: rgba(16, 185, 129, 0.2); border-radius: 50%; padding: 0.5rem; display: flex; align-items: center; justify-content: center;">
+              <svg style="width: 20px; height: 20px; color: #10b981;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+            </div>
+            <div>
+              <h4 style="margin: 0; color: #10b981; font-weight: 600; font-size: 0.95rem;">Permisos Guardados</h4>
+              <p style="margin: 0.2rem 0 0 0; color: #cbd5e1; font-size: 0.8rem;">Todos los accesos han sido actualizados con éxito.</p>
+            </div>
+            <button onclick="this.parentElement.remove()" style="background: none; border: none; color: #94a3b8; cursor: pointer; padding: 0; margin-left: auto;">
+              <svg style="width: 16px; height: 16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+          </div>
+        `;
+        document.body.insertAdjacentHTML('beforeend', alertHtml);
+        setTimeout(() => {
+          const el = document.getElementById('toast-success');
+          if (el) el.remove();
+        }, 3000);
       },
       error: (err) => {
-        console.error('Error guardando permisos:', err);
+        console.error('Error al guardar permisos', err);
         this.isSavingPermisos = false;
-        alert('Hubo un error al guardar los permisos.');
+        alert('Error al guardar los permisos.');
       }
     });
   }

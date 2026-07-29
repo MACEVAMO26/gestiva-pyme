@@ -57,14 +57,30 @@
       </div>
 
       <!-- HTML TARJETA DOCUMENTOS -->
-      <div class="neu-dark-panel docs-card">
-        <h3>Documentos y Certificados</h3>
-        <p>Genera tus documentos al instante.</p>
+      <div class="neu-dark-panel quick-action-card mt-3">
+        <h3>Documentos Compartidos</h3>
+        <p>Documentos institucionales (contratos, anexos, etc.)</p>
         
-        <button class="btn-general full-width">
-          <svg class="icon" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-          Generar Certificado Laboral
-        </button>
+        <div *ngIf="!misDocumentos || misDocumentos.length === 0" style="color: #94a3b8; font-size: 0.9rem; margin-top: 1rem;">
+          No tienes documentos disponibles por el momento.
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 0.75rem; margin-top: 1rem;">
+          <div *ngFor="let doc of misDocumentos" style="background: rgba(30,41,59,0.7); border-radius: 8px; padding: 0.75rem; display: flex; justify-content: space-between; align-items: center;">
+            <div style="display: flex; align-items: center; gap: 0.75rem; overflow: hidden;">
+              <i class="fas fa-file-pdf" *ngIf="doc.tipo_archivo === 'pdf'" style="color: #ef4444; font-size: 1.2rem;"></i>
+              <i class="fas fa-file-powerpoint" *ngIf="doc.tipo_archivo === 'powerpoint'" style="color: #f97316; font-size: 1.2rem;"></i>
+              <div style="overflow: hidden;">
+                <strong style="color: #e2e8f0; font-size: 0.9rem; display: block; white-space: nowrap; text-overflow: ellipsis; overflow: hidden;" [title]="doc.nombre">{{ doc.nombre }}</strong>
+                <span style="color: #64748b; font-size: 0.75rem;">{{ doc.created_at | date:'shortDate' }}</span>
+              </div>
+            </div>
+            <a [href]="doc.cloudinary_url" target="_blank" class="btn-save" style="padding: 0.4rem 0.75rem; font-size: 0.8rem; text-decoration: none;" title="Descargar Documento">
+              Descargar
+            </a>
+          </div>
+        </div>
+
       </div>
 
     </div>
@@ -228,11 +244,11 @@
         
         <div class="times-stats mb-6">
           <div class="time-stat">
-            <h4>15</h4>
+            <h4>{{ diasDisponibles }}</h4>
             <span>Días Disponibles</span>
           </div>
           <div class="time-stat">
-            <h4>{{ misVacaciones.length }}</h4>
+            <h4>{{ misVacaciones?.length || 0 }}</h4>
             <span>Solicitudes Históricas</span>
           </div>
         </div>
@@ -271,7 +287,7 @@
           </button>
         </form>
 
-        @if (misVacaciones.length > 0) {
+        @if (misVacaciones && misVacaciones.length > 0) {
           <h4 class="font-bold text-gray-300 mb-4">Mis Solicitudes</h4>
           <div class="space-y-4">
             @for (vac of misVacaciones; track vac.id) {

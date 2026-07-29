@@ -71,18 +71,8 @@
               @if(ordenesFiltradas.length === 0) {
                 <tr>
                   <td colspan="6" style="padding: 0;">
-                    <div class="empty-state-tutorial fade-in" style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 4rem 2rem; background: rgba(30, 41, 59, 0.4); border-radius: 12px; border: 1px dashed rgba(148, 163, 184, 0.2); margin: 1rem;">
-                      <div class="icon-wrapper" style="width: 80px; height: 80px; background: rgba(59, 130, 246, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 1.5rem; color: #3b82f6;">
-                        <svg class="icon-xl" style="width: 40px; height: 40px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
-                      </div>
-                      <h3 style="color: #f1f5f9; font-size: 1.5rem; margin-bottom: 0.5rem; font-weight: 600;">No hay órdenes de compra</h3>
-                      <p style="color: #94a3b8; text-align: center; max-width: 500px; line-height: 1.6; margin-bottom: 2rem;">
-                        El módulo de Compras te permite generar órdenes a proveedores para reabastecer tu inventario. Controla tus gastos, aprueba presupuestos y recibe mercancía de manera automatizada.
-                      </p>
-                      <button class="btn-primary" (click)="abrirModalOrden()" style="padding: 0.75rem 1.5rem; border-radius: 8px; font-weight: 500; display: flex; align-items: center; gap: 0.5rem;">
-                        <svg class="icon-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-                        Crear tu primera Orden
-                      </button>
+                    <div class="empty-state" style="padding: 2rem; text-align: center; color: #94a3b8;">
+                      No hay órdenes de compra registradas.
                     </div>
                   </td>
                 </tr>

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Permiso;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class PermisoController extends Controller
 {
@@ -23,6 +24,8 @@ class PermisoController extends Controller
             'puede_crear' => 'required|boolean',
             'puede_editar' => 'required|boolean',
             'puede_inactivar' => 'required|boolean',
+            'puede_descargar' => 'boolean',
+            'puede_subir' => 'boolean',
         ]);
         $permiso = Permiso::create($validatedData);
 
@@ -46,6 +49,8 @@ class PermisoController extends Controller
             'puede_crear' => 'required|boolean',
             'puede_editar' => 'required|boolean',
             'puede_inactivar' => 'required|boolean',
+            'puede_descargar' => 'boolean',
+            'puede_subir' => 'boolean',
         ]);
         $permiso->update($validatedData);
 
@@ -59,5 +64,30 @@ class PermisoController extends Controller
         $permiso->delete();
 
         return response()->json(null, 204);
+    }
+
+    // Actualiza o crea multiples permisos en bloque (optimizacion)
+    public function batchUpdate(Request $request)
+    {
+        $permisos = $request->input('permisos', []);
+        
+        DB::beginTransaction();
+        try {
+            foreach ($permisos as $p) {
+                if (isset($p['id']) && $p['id']) {
+                    $permiso = Permiso::find($p['id']);
+                    if ($permiso) {
+                        $permiso->update($p);
+                    }
+                } else {
+                    Permiso::create($p);
+                }
+            }
+            DB::commit();
+            return response()->json(['message' => 'Batch guardado'], 200);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
     }
 }

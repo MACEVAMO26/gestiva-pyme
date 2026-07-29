@@ -1,0 +1,69 @@
+<div class="gestiva-bot-container">
+  
+  <!-- Burbuja de mensaje inicial (Tutorial) -->
+  <div class="bot-bubble slide-in" *ngIf="showBubble && !showChat">
+    <button class="close-bubble" (click)="showBubble = false">&times;</button>
+    <p>{{ bubbleMessage }}</p>
+  </div>
+
+  <!-- Panel de Chat -->
+  <div class="bot-chat-panel slide-up" *ngIf="showChat">
+    <div class="chat-header">
+      <div class="bot-info">
+        <img src="assets/images/Bot/gestiva-bot.png" alt="Gestiva" class="chat-avatar">
+        <div>
+          <h4>Gestiva IA</h4>
+          <span>Asistente Inteligente</span>
+        </div>
+      </div>
+      <button class="close-chat" (click)="closeChat()">&times;</button>
+    </div>
+    
+    <div class="chat-body">
+      <div class="bot-message">
+        <p>¡Hola! Selecciona una de las opciones para obtener ayuda en este módulo:</p>
+      </div>
+
+      <!-- Preguntas precargadas según el módulo -->
+      <div class="chat-options" *ngIf="currentModule === 'empleados'">
+        <button class="suggestion-btn">¿Cómo agrego un nuevo empleado?</button>
+        <button class="suggestion-btn">¿Cómo veo los documentos de un empleado?</button>
+        <button class="suggestion-btn">¿Cómo asigno dotación?</button>
+      </div>
+
+      <div class="chat-options" *ngIf="currentModule === 'inventario'">
+        <button class="suggestion-btn">¿Cómo creo un producto?</button>
+        <button class="suggestion-btn">¿Cómo actualizo el stock?</button>
+        <button class="suggestion-btn">¿Cómo aplico un descuento?</button>
+      </div>
+
+      <div class="chat-options" *ngIf="currentModule === 'clientes'">
+        <button class="suggestion-btn">¿Cómo registro un cliente?</button>
+        <button class="suggestion-btn">¿Cómo veo el historial de compras?</button>
+      </div>
+
+      <div class="chat-options" *ngIf="currentModule === 'ventas'">
+        <button class="suggestion-btn">¿Cómo genero una factura?</button>
+        <button class="suggestion-btn">¿Cómo envío una cotización por correo?</button>
+      </div>
+
+      <div class="chat-options" *ngIf="currentModule === 'general'">
+        <button class="suggestion-btn">¿Qué puedo hacer en GestivaPyme?</button>
+        <button class="suggestion-btn">¿Cómo veo los reportes gráficos?</button>
+        <button class="suggestion-btn">¿Dónde configuro mi perfil?</button>
+      </div>
+    </div>
+
+    <div class="chat-input-area">
+      <input type="text" placeholder="Escribe tu pregunta..." disabled>
+      <button class="send-btn" disabled><i class="fas fa-paper-plane"></i></button>
+    </div>
+  </div>
+
+  <!-- Avatar Flotante -->
+  <div class="bot-avatar-wrapper" (click)="toggleChat()">
+    <img src="assets/images/Bot/gestiva-bot.png" alt="Gestiva" class="bot-avatar bounce">
+    <span class="notification-dot" *ngIf="showBubble"></span>
+  </div>
+
+</div>

@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../../services/auth.service';
 import { TiempoService } from '../../../services/tiempo.service';
+import { EmpleadoService } from '../../../services/empleado.service';
 
 @Component({
   selector: 'app-autogestion',
@@ -36,6 +37,7 @@ export class AutogestionComponent implements OnInit {
 
   // Variables para Vacaciones
   misVacaciones: any[] = [];
+  diasDisponibles: number = 0;
   nuevaVacacion = {
     fecha_inicio: '',
     fecha_fin: '',
@@ -47,6 +49,9 @@ export class AutogestionComponent implements OnInit {
   private authService = inject(AuthService);
   private http = inject(HttpClient);
   private tiempoService = inject(TiempoService);
+  private empleadoService = inject(EmpleadoService);
+
+  misDocumentos: any[] = [];
 
   get isHR(): boolean {
     const rol = this.user?.rol?.nombre?.toLowerCase() || '';
@@ -57,6 +62,14 @@ export class AutogestionComponent implements OnInit {
     this.user = this.authService.getUser() as any;
     this.cargarAfiliaciones();
     this.cargarMisVacaciones();
+    this.cargarMisDocumentos();
+  }
+
+  cargarMisDocumentos() {
+    this.empleadoService.getMisDocumentos().subscribe({
+      next: (data) => this.misDocumentos = data || [],
+      error: (err) => console.error('Error cargando mis documentos', err)
+    });
   }
 
   cargarMisVacaciones() {

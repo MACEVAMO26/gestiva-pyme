@@ -18,11 +18,7 @@ export class Inventario implements OnInit {
   searchTerm = '';
 
   // --- DATOS MOCK (Simulación) ---
-  productos = [
-    { id: 1, codigo: 'PRD-001', nombre: 'Laptop Dell Inspiron', categoria: 'Equipos', precio: 2500000, costo: 2000000, stock: 15, stockMinimo: 5, estado: 'Activo' },
-    { id: 2, codigo: 'PRD-002', nombre: 'Mouse Inalámbrico Logitech', categoria: 'Accesorios', precio: 85000, costo: 50000, stock: 4, stockMinimo: 10, estado: 'Activo' },
-    { id: 3, codigo: 'PRD-003', nombre: 'Monitor LG 24"', categoria: 'Equipos', precio: 650000, costo: 500000, stock: 0, stockMinimo: 2, estado: 'Inactivo' }
-  ];
+  productos: any[] = [];
 
   // --- FORMULARIO NUEVO PRODUCTO ---
   formProducto = {

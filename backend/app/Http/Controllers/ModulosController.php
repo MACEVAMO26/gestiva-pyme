@@ -19,6 +19,25 @@ class ModulosController extends Controller
             return response()->json(['error' => 'Empresa no encontrada'], 404);
         }
 
+        return $this->obtenerModulosParaEmpresa($empresa);
+    }
+
+    public function getMisModulos(Request $request)
+    {
+        $empresaId = $request->user()->empresa_id;
+        if (!$empresaId) {
+            return response()->json(['modulos' => []]);
+        }
+        $empresa = Empresa::find($empresaId);
+        if (!$empresa) {
+            return response()->json(['modulos' => []]);
+        }
+        return $this->obtenerModulosParaEmpresa($empresa);
+    }
+
+    private function obtenerModulosParaEmpresa(Empresa $empresa)
+    {
+
         if ($empresa->modulos()->count() === 0) {
             $this->inicializarModulosEmpresa($empresa);
         }

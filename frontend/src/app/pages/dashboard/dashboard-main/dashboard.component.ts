@@ -7,11 +7,12 @@ import { CommonModule } from '@angular/common';
 
 import { RouterModule } from '@angular/router';
 import { Onboarding } from '../gestiva-ai-assistant/onboarding/onboarding';
+import { GestivaBotComponent } from '../../../shared/components/gestiva-bot/gestiva-bot';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterModule, Onboarding],
+  imports: [CommonModule, RouterModule, Onboarding, GestivaBotComponent],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss'
 })

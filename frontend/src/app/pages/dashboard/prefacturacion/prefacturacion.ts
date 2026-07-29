@@ -25,10 +25,7 @@ export class PrefacturacionComponent implements OnInit {
   conceptoMovimiento = '';
 
   // --- PREFACTURAS PENDIENTES ---
-  prefacturas = [
-    { id: 1, consecutivo: 'REM-2001', cliente: 'Juan Pérez', fecha: '25/07/2026', total: 2585000, estado: 'Pendiente' },
-    { id: 2, consecutivo: 'REM-2002', cliente: 'Restaurante El Sabor', fecha: '25/07/2026', total: 145000, estado: 'Pendiente' }
-  ];
+  prefacturas: any[] = [];
 
   // --- MODALES & TOASTS ---
   showModalApertura = false;

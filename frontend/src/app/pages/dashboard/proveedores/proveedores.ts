@@ -45,19 +45,12 @@ export class ProveedoresComponent implements OnInit {
   proveedorActual: Proveedor = this.getEmptyProveedor();
 
   // --- MOCKS: CUENTAS POR PAGAR ---
-  cuentasPorPagar = [
-    { id: 1, proveedor: 'Distribuidora Tecnológica S.A.', factura: 'FV-10293', fecha_emision: '15/07/2026', fecha_vencimiento: '15/08/2026', monto: 4500000, estado: 'Pendiente' },
-    { id: 2, proveedor: 'Suministros Globales', factura: 'FV-982', fecha_emision: '20/07/2026', fecha_vencimiento: '20/08/2026', monto: 850000, estado: 'Vencida' },
-    { id: 3, proveedor: 'Importaciones ABC', factura: 'FV-104', fecha_emision: '10/06/2026', fecha_vencimiento: '10/07/2026', monto: 1200000, estado: 'Pagada' }
-  ];
+  cuentasPorPagar: any[] = [];
   showModalPago = false;
   cuentaSeleccionada: any = null;
 
   // --- MOCKS: EVALUACIONES ---
-  contratos = [
-    { id: 1, proveedor: 'Distribuidora Tecnológica S.A.', vigencia: '31/12/2026', nrc: 'Excelente', calificacion: 5, comentarios: 'Entrega siempre a tiempo' },
-    { id: 2, proveedor: 'Suministros Globales', vigencia: '30/09/2026', nrc: 'Regular', calificacion: 3, comentarios: 'Retrasos en la última entrega' }
-  ];
+  contratos: any[] = [];
   showModalEvaluacion = false;
   evaluacionSeleccionada: any = null;
   nuevaCalificacion = 5;

@@ -155,9 +155,83 @@ export class EmpleadosComponent implements OnInit {
   }
 
   // --- GESTION ACTIVOS ---
+  empleadoExpandido: any = null;
+  documentosEmpleado: any[] = [];
+  archivoSeleccionado: File | null = null;
+  nombreDocumento: string = '';
+  isUploading = false;
+
   verDetalles(empleado: any) {
-    // Para ver o editar datos de un empleado activo (Fase 4 o utilidades extra)
-    alert('Función de ver/editar empleado en construcción.');
+    if (this.empleadoExpandido?.id === empleado.id) {
+      this.empleadoExpandido = null; // Toggle collapse
+      this.documentosEmpleado = [];
+    } else {
+      this.empleadoExpandido = empleado;
+      this.cargarDocumentos(empleado.id);
+    }
+  }
+
+  cargarDocumentos(empleadoId: number) {
+    this.empleadoService.getDocumentos(empleadoId).subscribe({
+      next: (docs) => this.documentosEmpleado = docs,
+      error: (err) => console.error('Error cargando documentos', err)
+    });
+  }
+
+  onFileSelected(event: any) {
+    const file = event.target.files[0];
+    if (file) {
+      const extension = file.name.split('.').pop()?.toLowerCase();
+      const permitidos = ['pdf', 'ppt', 'pptx'];
+      if (!permitidos.includes(extension || '')) {
+        alert('Formato no permitido. Solo PDF y PowerPoint.');
+        this.archivoSeleccionado = null;
+        event.target.value = ''; // clear input
+        return;
+      }
+      if (file.size > 10 * 1024 * 1024) {
+        alert('El archivo supera el límite de 10MB.');
+        this.archivoSeleccionado = null;
+        event.target.value = '';
+        return;
+      }
+      this.archivoSeleccionado = file;
+    }
+  }
+
+  subirDocumento() {
+    if (!this.archivoSeleccionado || !this.nombreDocumento || !this.empleadoExpandido) return;
+    
+    this.isUploading = true;
+    const formData = new FormData();
+    formData.append('archivo', this.archivoSeleccionado);
+    formData.append('nombre', this.nombreDocumento);
+
+    this.empleadoService.uploadDocumento(this.empleadoExpandido.id, formData).subscribe({
+      next: (res) => {
+        this.isUploading = false;
+        this.archivoSeleccionado = null;
+        this.nombreDocumento = '';
+        // @ts-ignore
+        document.getElementById('fileInputDoc').value = '';
+        this.cargarDocumentos(this.empleadoExpandido.id);
+      },
+      error: (err) => {
+        this.isUploading = false;
+        alert('Error al subir documento.');
+        console.error(err);
+      }
+    });
+  }
+
+  eliminarDocumento(id: number) {
+    if(!confirm('¿Estás seguro de eliminar este documento?')) return;
+    this.empleadoService.deleteDocumento(id).subscribe({
+      next: () => {
+        this.cargarDocumentos(this.empleadoExpandido.id);
+      },
+      error: (err) => console.error('Error eliminando documento', err)
+    });
   }
 
   // --- SOLICITUD DE BAJA ---

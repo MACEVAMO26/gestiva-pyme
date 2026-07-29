@@ -14,32 +14,16 @@ export class Servicios implements OnInit {
   activeTab: string = 'recepcion'; // recepcion | agenda | ejecucion | catalogo | rendimiento
 
   // --- MOCK DB: CATÁLOGO ---
-  catalogo = [
-    { id: 1, codigo: 'SRV-001', nombre: 'Mantenimiento Preventivo', tarifaBase: 50000, duracionEst: '2h' },
-    { id: 2, codigo: 'SRV-002', nombre: 'Instalación de Red / Cableado', tarifaBase: 120000, duracionEst: '4h' },
-    { id: 3, codigo: 'SRV-003', nombre: 'Diagnóstico a Domicilio', tarifaBase: 35000, duracionEst: '1h' }
-  ];
+  catalogo: any[] = [];
 
   // --- MOCK DB: TICKETS / SOLICITUDES ---
-  tickets = [
-    { id: 1, consecutivo: 'TK-1001', cliente: 'María López', servicio: 'Mantenimiento Preventivo', fechaSol: '26/07/2026', horaSol: '09:00', estado: 'Asignado', tecnico: 'Carlos Ruiz', direccion: 'Calle Falsa 123' },
-    { id: 2, consecutivo: 'TK-1002', cliente: 'Empresa ABC', servicio: 'Instalación de Red', fechaSol: '26/07/2026', horaSol: '14:00', estado: 'Pendiente', tecnico: null, direccion: 'Av Central 45' },
-    { id: 3, consecutivo: 'TK-1003', cliente: 'Juan Pérez', servicio: 'Diagnóstico', fechaSol: '25/07/2026', horaSol: '10:00', estado: 'Finalizado', tecnico: 'Ana Gómez', direccion: 'Carrera 8 #9-10' }
-  ];
+  tickets: any[] = [];
 
   // --- MOCK DB: TÉCNICOS Y RENDIMIENTO ---
-  tecnicos = [
-    { id: 1, nombre: 'Carlos Ruiz', rendimiento: { cumplidas: 85, satisfactorias: 80, quejas: 2 } },
-    { id: 2, nombre: 'Ana Gómez', rendimiento: { cumplidas: 95, satisfactorias: 93, quejas: 0 } },
-    { id: 3, nombre: 'Luis Martínez', rendimiento: { cumplidas: 60, satisfactorias: 50, quejas: 5 } }
-  ];
+  tecnicos: any[] = [];
 
   // --- INVENTARIO (SIMULADO PARA DESCUENTO) ---
-  inventario = [
-    { id: 1, nombre: 'Cable UTP (Metros)', stock: 500 },
-    { id: 2, nombre: 'Conector RJ45', stock: 150 },
-    { id: 3, nombre: 'Disco Duro SSD 500GB', stock: 10 }
-  ];
+  inventario: any[] = [];
 
   // --- ESTADOS GLOBALES ---
   guardando = false;
@@ -58,7 +42,7 @@ export class Servicios implements OnInit {
   cantidadMaterial = 1;
   materialesUsados: any[] = [];
   
-  tecnicoDashboard = this.tecnicos[0]; // Por defecto el primero
+  tecnicoDashboard: any = null; // Por defecto el primero
 
   ngOnInit(): void {}
 
