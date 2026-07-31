@@ -30,6 +30,7 @@ export const routes: Routes = [
             { path: 'ventas', loadComponent: () => import('./pages/dashboard/ventas/ventas').then(m => m.Ventas) },
             { path: 'compras', loadComponent: () => import('./pages/dashboard/compras/compras').then(m => m.Compras) },
             { path: 'prefacturacion', loadComponent: () => import('./pages/dashboard/prefacturacion/prefacturacion').then(m => m.PrefacturacionComponent) },
+            { path: 'soporte', loadComponent: () => import('./pages/dashboard/soporte/soporte').then(m => m.SoporteComponent) },
             { path: 'gestiva-ai', loadComponent: () => import('./pages/dashboard/gestiva-ai-assistant/dashboard/dashboard').then(m => m.Dashboard) }
         ]
     },

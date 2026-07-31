@@ -1,7 +1,14 @@
 <div class="module-container fade-in">
-  <div class="module-header">
-    <h1>Ventas</h1>
-    <p>Gestión de Punto de Venta (POS) y registro de facturación de clientes.</p>
+  <div class="module-header" style="display: flex; justify-content: space-between; align-items: center;">
+    <div>
+      <h1>Ventas</h1>
+      <p>Gestión de Punto de Venta (POS) y registro de facturación de clientes.</p>
+    </div>
+    <div>
+      <button class="btn-save" style="background: #10b981;" (click)="exportarExcel()">
+        <i class="fas fa-file-excel" style="margin-right: 5px;"></i> Exportar a Excel
+      </button>
+    </div>
   </div>
 
   <!-- --- PESTAÑAS (TABS) --- -->
@@ -28,15 +35,18 @@
         <!-- PANEL IZQUIERDO: SELECCIÓN -->
         <div style="flex: 2; min-width: 300px; display: flex; flex-direction: column; gap: 1.5rem;">
           <!-- Buscador de Cliente -->
-          <div class="glass-panel" style="padding: 1.5rem;">
-            <h3 style="margin-top: 0; color: #f97316; font-size: 1.2rem; text-transform: uppercase;">Datos del Cliente</h3>
-            <div class="form-group" style="margin-bottom: 0;">
-              <input type="text" 
-                     class="input-neumorphic" 
-                     placeholder="Buscar cliente por nombre o cédula/NIT..." 
-                     [(ngModel)]="clienteSeleccionado">
+            <div class="card-section neon-border" style="margin-bottom: 2rem;">
+              <h3 style="color: var(--primary-light);"><i class="fas fa-user"></i> Datos del Cliente</h3>
+              <div class="form-group" style="margin-top: 1rem;">
+                <label>Cliente (Buscar o Seleccionar)</label>
+                <select class="input-neumorphic" [(ngModel)]="clienteSeleccionado">
+                  <option value="" disabled selected>Seleccione cliente...</option>
+                  @for(cliente of clientesDisponibles; track cliente.id) {
+                    <option [value]="cliente.id">{{cliente.nombre}} {{cliente.apellido}} ({{cliente.identificacion}})</option>
+                  }
+                </select>
+              </div>
             </div>
-          </div>
 
           <!-- Buscador de Producto -->
           <div class="glass-panel" style="padding: 1.5rem;">
@@ -44,12 +54,12 @@
             <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
               <div class="form-group" style="flex: 2; margin-bottom: 0; min-width: 200px;">
                 <label>Producto *</label>
-                <select class="input-neumorphic" [(ngModel)]="productoActual">
-                  <option value="" disabled selected>Seleccione producto del inventario...</option>
-                  @for(prod of productosDisponibles; track prod.id) {
-                    <option [value]="prod.nombre">{{prod.codigo}} - {{prod.nombre}} ({{prod.precio | currency:'COP':'symbol':'1.0-0'}})</option>
-                  }
-                </select>
+                  <select class="input-neumorphic" [(ngModel)]="productoActual">
+                    <option value="" disabled selected>Seleccione producto del inventario...</option>
+                    @for(prod of productosDisponibles; track prod.id) {
+                      <option [value]="prod.id">{{prod.nombre}} ({{prod.precio_venta | currency:'COP':'symbol':'1.0-0'}})</option>
+                    }
+                  </select>
               </div>
               <div class="form-group" style="flex: 1; margin-bottom: 0; min-width: 100px;">
                 <label>Cant.</label>
@@ -70,7 +80,6 @@
               <table class="premium-table data-table">
                 <thead>
                   <tr>
-                    <th>CÓDIGO</th>
                     <th>PRODUCTO</th>
                     <th>PRECIO</th>
                     <th>CANT.</th>
@@ -79,14 +88,13 @@
                   </tr>
                 </thead>
                 <tbody>
-                  @for(item of carrito; track $index) {
-                    <tr>
-                      <td>{{item.codigo}}</td>
-                      <td>{{item.nombre}}</td>
-                      <td>{{item.precio | currency:'COP':'symbol':'1.0-0'}}</td>
-                      <td>{{item.cantidad}}</td>
-                      <td><strong>{{item.subtotal | currency:'COP':'symbol':'1.0-0'}}</strong></td>
-                      <td>
+                    @for(item of carrito; track item.id; let i = $index) {
+                      <tr>
+                        <td style="color: #cbd5e1;">{{item.nombre}}</td>
+                        <td style="color: #94a3b8;">{{item.precio_unitario | currency:'COP':'symbol':'1.0-0'}}</td>
+                        <td style="color: var(--primary-light); font-weight: bold;">{{item.cantidad}}</td>
+                        <td style="color: #10b981; font-weight: bold;">{{item.subtotal | currency:'COP':'symbol':'1.0-0'}}</td>
+                        <td style="text-align: right;">
                         <button class="btn-icon text-danger" (click)="removerDelCarrito($index)"><i class="fas fa-times"></i></button>
                       </td>
                     </tr>
@@ -163,20 +171,30 @@
                 <th>FECHA</th>
                 <th>TOTAL VENTA</th>
                 <th>ESTADO</th>
+                <th>ESTADO PAQUETE</th>
                 <th style="text-align: center;">ACCIONES</th>
               </tr>
             </thead>
             <tbody>
               @for(venta of ventasFiltradas; track venta.id) {
                 <tr>
-                  <td><strong>{{venta.factura}}</strong></td>
-                  <td>{{venta.cliente}}</td>
-                  <td>{{venta.fecha}}</td>
+                  <td><strong>{{venta.numero_factura}}</strong></td>
+                  <td>{{venta.cliente?.nombre}} {{venta.cliente?.apellido}}</td>
+                  <td>{{venta.created_at | date:'shortDate'}}</td>
                   <td>{{venta.total | currency:'COP':'symbol':'1.0-0'}}</td>
                   <td>
                     <span class="badge" [ngClass]="getBadgeClass(venta.estado)">
                       {{venta.estado}}
                     </span>
+                  </td>
+                  <td>
+                    <select class="input-neumorphic" style="min-width: 120px; padding: 0.25rem; font-size: 0.9em;"
+                            [ngModel]="venta.estado_paquete || 'Preparando'"
+                            (ngModelChange)="cambiarEstadoPaquete(venta, $event)">
+                      <option value="Preparando">Preparando</option>
+                      <option value="En camino">En camino</option>
+                      <option value="Entregado">Entregado</option>
+                    </select>
                   </td>
                   <td>
                     <div style="display: flex; gap: 0.5rem; justify-content: center;">

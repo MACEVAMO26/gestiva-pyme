@@ -18,6 +18,7 @@ class Empleado extends Model
         'salario',
         'eps',
         'arl',
+        'estado_afiliacion',
         'fondo_pension',
         'fondo_cesantias',
         'caja_compensacion',

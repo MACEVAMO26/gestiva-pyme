@@ -7,6 +7,8 @@ use App\Models\User;
 use App\Models\Empleado;
 use App\Models\Notificacion;
 use App\Models\Role;
+use Illuminate\Support\Facades\DB;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class EmpleadoController extends Controller
 {
@@ -112,6 +114,31 @@ class EmpleadoController extends Controller
         }
 
         return response()->json(['message' => 'Solicitud de baja enviada al Gerente exitosamente.']);
+    }
+
+    public function generarCertificado($id)
+    {
+        $empleado = Empleado::with(['usuario.empresa', 'cargo'])->findOrFail($id);
+
+        if (!$empleado->usuario) {
+            return response()->json(['message' => 'Empleado sin usuario asociado'], 404);
+        }
+
+        $data = [
+            'nombre' => $empleado->usuario->nombre . ' ' . $empleado->usuario->apellido,
+            'cedula' => $empleado->usuario->identificacion,
+            'cargo' => $empleado->cargo ? $empleado->cargo->nombre : 'Sin cargo especificado',
+            'salario' => $empleado->salario_base ?? 0,
+            'fecha_ingreso' => $empleado->created_at->format('Y-m-d'),
+            'tipo_contrato' => 'Término Indefinido',
+            'empresa' => $empleado->usuario->empresa ? $empleado->usuario->empresa->razon_social : 'GestivaPyme',
+            'nit' => $empleado->usuario->empresa ? $empleado->usuario->empresa->nit : 'N/A',
+            'fecha_actual' => now()->format('Y-m-d'),
+        ];
+
+        $pdf = Pdf::loadView('pdfs.certificado_laboral', $data);
+
+        return $pdf->download('certificado_laboral_' . $empleado->usuario->identificacion . '.pdf');
     }
 
     // Aprueba la baja (Gerente -> Empleado)

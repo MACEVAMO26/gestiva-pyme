@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
+import { inject } from '@angular/core';
 
 @Component({
   selector: 'app-inventario',
@@ -10,6 +12,8 @@ import { FormsModule } from '@angular/forms';
   styleUrl: './inventario.scss',
 })
 export class Inventario implements OnInit {
+  private http = inject(HttpClient);
+
   // --- TABS ---
   activeTab: string = 'catalogo'; // catalogo | movimientos | ajustes | kardex
 
@@ -21,14 +25,17 @@ export class Inventario implements OnInit {
   productos: any[] = [];
 
   // --- FORMULARIO NUEVO PRODUCTO ---
-  formProducto = {
+  formProducto: any = {
     codigo: '',
     nombre: '',
-    categoria: '',
-    precio: 0,
-    costo: 0,
-    stockMinimo: 0
+    categoria_id: '',
+    precio_venta: 0,
+    precio_compra: 0,
+    stock_inicial: 0,
+    unidad_medida: 'Unidad'
   };
+
+  archivoSeleccionado: File | null = null;
 
   // --- TOAST/ALERTAS ---
   toastMessage = '';
@@ -43,9 +50,29 @@ export class Inventario implements OnInit {
     this.activeTab = tab;
   }
 
-  // --- METODOS DE MODAL ---
+  exportarExcel() {
+    this.http.get('/api/export/productos', { responseType: 'blob' }).subscribe({
+      next: (blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `inventario_${new Date().toISOString().split('T')[0]}.xlsx`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+      },
+      error: (err) => {
+        console.error('Error al exportar:', err);
+        alert('Hubo un error al exportar el archivo.');
+      }
+    });
+  }
+
+  // --- METODOS MODAL PRODUCTO ---
   abrirModal() {
-    this.formProducto = { codigo: '', nombre: '', categoria: '', precio: 0, costo: 0, stockMinimo: 0 };
+    this.formProducto = { codigo: '', nombre: '', categoria_id: '', precio_venta: 0, precio_compra: 0, stock_inicial: 0, unidad_medida: 'Unidad' };
+    this.archivoSeleccionado = null;
     this.showModal = true;
   }
 
@@ -54,29 +81,52 @@ export class Inventario implements OnInit {
   }
 
   // --- ACCIONES PRINCIPALES ---
+  cargarDatos() {
+    this.http.get<any[]>('/api/productos').subscribe({
+      next: (data) => this.productos = data,
+      error: (err) => console.error('Error cargando productos', err)
+    });
+  }
+
+  onFileSelected(event: any) {
+    this.archivoSeleccionado = event.target.files[0];
+  }
+
   guardarProducto() {
     // Validaciones básicas
-    if (!this.formProducto.codigo || !this.formProducto.nombre || !this.formProducto.categoria) {
+    if (!this.formProducto.codigo || !this.formProducto.nombre || !this.formProducto.categoria_id) {
       this.mostrarToast('Por favor completa los campos obligatorios.', 'warning');
       return;
     }
 
     this.guardando = true;
 
-    // Simulando retraso de red
-    setTimeout(() => {
-      const nuevo = {
-        id: this.productos.length + 1,
-        ...this.formProducto,
-        stock: 0,
-        estado: 'Activo'
-      };
-      
-      this.productos.push(nuevo);
-      this.cerrarModal();
-      this.guardando = false;
-      this.mostrarToast('Producto guardado con éxito', 'success');
-    }, 800);
+    const formData = new FormData();
+    formData.append('codigo', this.formProducto.codigo);
+    formData.append('nombre', this.formProducto.nombre);
+    formData.append('categoria_id', this.formProducto.categoria_id);
+    formData.append('precio_venta', this.formProducto.precio_venta.toString());
+    formData.append('precio_compra', this.formProducto.precio_compra.toString());
+    formData.append('stock_inicial', this.formProducto.stock_inicial.toString());
+    formData.append('unidad_medida', this.formProducto.unidad_medida);
+
+    if (this.archivoSeleccionado) {
+      formData.append('imagen', this.archivoSeleccionado);
+    }
+
+    this.http.post('/api/productos', formData).subscribe({
+      next: (res) => {
+        this.guardando = false;
+        this.mostrarToast('Producto guardado con éxito', 'success');
+        this.cerrarModal();
+        this.cargarDatos(); // Refresh list
+      },
+      error: (err) => {
+        this.guardando = false;
+        console.error(err);
+        this.mostrarToast('Error al guardar el producto', 'error');
+      }
+    });
   }
 
   mostrarToast(mensaje: string, tipo: string) {

@@ -124,6 +124,28 @@
               <option value="Aliansalud">Aliansalud</option>
             </select>
           </div>
+          
+          <div class="form-group">
+            <label>ARL</label>
+            <select [(ngModel)]="formAfiliacion.arl" name="arl" required
+                    [ngClass]="{'estado-pendiente': formAfiliacion.estado === 'pendiente', 'estado-aprobado': formAfiliacion.estado === 'aprobado'}">
+              <option value="" disabled selected>Seleccione ARL...</option>
+              <option value="Sura">ARL Sura</option>
+              <option value="Positiva">Positiva</option>
+              <option value="Colmena">Colmena</option>
+              <option value="Bolivar">Seguros Bolívar</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label>Estado Afiliación</label>
+            <select [(ngModel)]="formAfiliacion.estado_afiliacion" name="estado_afiliacion" required
+                    [ngClass]="{'estado-pendiente': formAfiliacion.estado === 'pendiente', 'estado-aprobado': formAfiliacion.estado === 'aprobado'}">
+              <option [ngValue]="true">Activa</option>
+              <option [ngValue]="false">Inactiva</option>
+            </select>
+          </div>
+
           <div class="form-group">
             <label>Fondo de Pensión</label>
             <select [(ngModel)]="formAfiliacion.afondo_pension" name="afondo_pension" required
@@ -223,6 +245,9 @@
                     </svg>
                     Guardando...
                   </span>
+                </button>
+                <button type="button" class="btn-save" style="background: #28a745; margin-left: 10px;" (click)="descargarCertificado()">
+                  <i class="fas fa-file-pdf"></i> Certificado Laboral
                 </button>
                 @if (formAfiliacion.estado === 'aprobado' || formAfiliacion.estado === 'rechazado') {
                   <p class="text-sm text-gray-400 mt-2">Nota: Si cambia sus afiliaciones actuales, volverán al estado <strong>Pendiente de Aprobación</strong> por RRHH.</p>

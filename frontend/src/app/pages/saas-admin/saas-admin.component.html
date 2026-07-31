@@ -251,6 +251,26 @@
           <span class="nav-text">Comercial</span>
         </a>
 
+        <a
+          class="nav-item"
+          [class.active]="currentView === 'soporte'"
+          (click)="cambiarVista('soporte')"
+        >
+          <svg
+            class="icon"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+          >
+            <path stroke-linecap="round" stroke-linejoin="round" d="M11.42 15.17L17.25 21A2.652 2.652 0 0021 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655 5.653a2.548 2.548 0 11-3.586-3.586l6.837-5.63m5.108-.233c.55-.164 1.163-.188 1.743-.14a4.5 4.5 0 004.486-6.336l-3.276 3.277a3 3 0 01-4.242 0 3 3 0 010-4.242l3.278-3.278a4.5 4.5 0 00-6.336 4.486c.091 1.076-.071 2.264-.904 2.95l-.102.085m-1.745 1.437L5.909 7.5H4.5L2.25 3.75l1.5-1.5L7.5 4.5v1.409l4.26 4.26m-1.745 1.437l1.745-1.437m6.615 8.206L15.75 15.75M4.867 19.125h.008v.008h-.008v-.008z" />
+          </svg>
+          <span class="nav-text">Soporte Técnico</span>
+          @if (ticketsSoportePendientes > 0) {
+            <span class="notification-bubble">{{ ticketsSoportePendientes }}</span>
+          }
+        </a>
+
         <!-- SEGURIDAD Y PERFIL -->
         <a
           class="nav-item mt-auto border-t border-gray-800 pt-2"
@@ -274,6 +294,22 @@
     <!-- CONTENT ROUTER OUTLET -->
     <main class="content-area content-area-styled">
       @if (currentView === 'dashboard') {
+        @if (ticketsSoportePendientes > 0) {
+          <div class="bg-red-500/20 border border-red-500/50 text-red-100 px-6 py-4 rounded-xl mb-6 flex items-center justify-between cursor-pointer hover:bg-red-500/30 transition-all duration-300" (click)="cambiarVista('soporte')">
+            <div class="flex items-center gap-3">
+              <svg class="w-6 h-6 text-red-400 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+              <div>
+                <h4 class="font-bold text-red-300">¡Atención Urgente!</h4>
+                <p class="text-sm">Hay {{ ticketsSoportePendientes }} ticket(s) de soporte pendiente(s) de atención.</p>
+              </div>
+            </div>
+            <button class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg font-medium shadow-lg transition-colors">
+              Revisar Ahora
+            </button>
+          </div>
+        }
         <app-dashboard-saas
           [empresas]="empresas"
           [empresasEnMora]="empresasEnMora"
@@ -283,6 +319,80 @@
         </app-dashboard-saas>
       }
 
+      @if (currentView === 'soporte') {
+        <!-- BANDEJA DE SOPORTE TÉCNICO -->
+        <div class="glass-panel mt-2rem">
+          <div class="mb-8 flex justify-between items-center">
+            <div>
+              <h2 class="text-3xl font-bold text-white tracking-wide uppercase mb-2">
+                Módulo de Soporte Técnico
+              </h2>
+              <p class="text-gray-400 font-medium">Gestión de tickets de soporte de empresas cliente</p>
+            </div>
+          </div>
+
+          <div class="bg-gray-800/50 rounded-xl overflow-hidden border border-gray-700/50 mt-6 shadow-xl relative backdrop-blur-sm">
+            <div class="overflow-x-auto">
+              <table class="saas-table w-full text-left border-collapse">
+                <thead>
+                  <tr class="bg-gray-900/50 text-gray-300 text-sm tracking-wider uppercase border-b border-gray-700">
+                    <th class="p-4 font-semibold">ID</th>
+                    <th class="p-4 font-semibold">Empresa</th>
+                    <th class="p-4 font-semibold">Asunto</th>
+                    <th class="p-4 font-semibold">Prioridad</th>
+                    <th class="p-4 font-semibold">Estado</th>
+                    <th class="p-4 font-semibold">Fecha</th>
+                    <th class="p-4 font-semibold text-center">Acciones</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-800/50">
+                  @for (ticket of ticketsSoporte; track ticket.id) {
+                    <tr class="hover:bg-gray-700/30 transition-colors duration-200">
+                      <td class="p-4 text-gray-400 text-sm">#{{ ticket.id }}</td>
+                      <td class="p-4 font-medium text-white">{{ ticket.empresa?.razon_social || 'Desconocida' }}</td>
+                      <td class="p-4 text-gray-300">{{ ticket.asunto }}</td>
+                      <td class="p-4">
+                        <span class="px-3 py-1 rounded-full text-xs font-semibold
+                          {{ ticket.prioridad === 'Alta' ? 'bg-red-500/20 text-red-400 border border-red-500/30' : 
+                             ticket.prioridad === 'Media' ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30' : 
+                             'bg-green-500/20 text-green-400 border border-green-500/30' }}">
+                          {{ ticket.prioridad }}
+                        </span>
+                      </td>
+                      <td class="p-4">
+                        <span class="px-3 py-1 rounded-full text-xs font-semibold
+                          {{ ticket.estado === 'Abierto' ? 'bg-orange-500/20 text-orange-400 border border-orange-500/30' : 
+                             ticket.estado === 'En progreso' ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30' : 
+                             'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' }}">
+                          {{ ticket.estado }}
+                        </span>
+                      </td>
+                      <td class="p-4 text-gray-400 text-sm">{{ ticket.created_at | date:'dd/MM/yyyy HH:mm' }}</td>
+                      <td class="p-4 text-center">
+                        <button
+                          (click)="abrirTicket(ticket)"
+                          class="bg-indigo-500/20 hover:bg-indigo-500/40 text-indigo-400 border border-indigo-500/30 px-3 py-1.5 rounded text-sm font-semibold transition-all mr-2"
+                          title="Atender"
+                        >
+                          Atender
+                        </button>
+                      </td>
+                    </tr>
+                  }
+                  @if (ticketsSoporte.length === 0) {
+                    <tr>
+                      <td colspan="7" class="p-8 text-center text-gray-500">
+                        <svg class="w-12 h-12 mx-auto mb-3 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                        No hay tickets de soporte disponibles.
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      }
 
       @if (currentView === 'seguridad') {
         <!-- MÓDULO SEGURIDAD Y PERFIL -->
@@ -1404,6 +1514,32 @@
             class="saas-input"
           />
         </div>
+
+        <!-- Campos del Gerente -->
+        <h3 class="text-emerald-400 font-bold mt-4 mb-2">Cargo: Gerente General</h3>
+        <div class="grid grid-cols-2 gap-4">
+          <div class="saas-form-group">
+            <label class="saas-label">Nombres</label>
+            <input
+              type="text"
+              [(ngModel)]="nuevaEmpresa.nombre_gerente"
+              name="nombre_gerente"
+              class="saas-input"
+              placeholder="Ej: Juan"
+            />
+          </div>
+          <div class="saas-form-group">
+            <label class="saas-label">Apellidos</label>
+            <input
+              type="text"
+              [(ngModel)]="nuevaEmpresa.apellido_gerente"
+              name="apellido_gerente"
+              class="saas-input"
+              placeholder="Ej: Pérez"
+            />
+          </div>
+        </div>
+
         <div class="saas-form-group">
           <label class="saas-label">Periodo Contratado</label>
           <select [(ngModel)]="nuevaEmpresa.periodo" name="periodo" class="saas-select" required>
@@ -1475,6 +1611,71 @@
   </div>
 
   <!-- MODAL DE SOLICITUDES -->
+  @if (isModalTicketOpen && ticketSeleccionado) {
+    <div class="saas-modal-overlay">
+      <div class="saas-modal-content max-w-xl">
+        <div class="flex justify-between items-center mb-6 border-b border-gray-700/50 pb-4">
+          <h2 class="text-2xl font-bold text-white flex items-center gap-2">
+            <svg class="w-6 h-6 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+            </svg>
+            Atender Ticket #{{ ticketSeleccionado.id }}
+          </h2>
+          <button (click)="cerrarModalTicket()" class="text-gray-400 hover:text-white transition-colors">
+            <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+        
+        <div class="mb-4 p-4 bg-gray-800/50 rounded-lg border border-gray-700/50">
+          <p class="text-sm text-gray-400 mb-1">Empresa:</p>
+          <p class="text-white font-medium mb-3">{{ ticketSeleccionado.empresa?.razon_social }}</p>
+          
+          <p class="text-sm text-gray-400 mb-1">Asunto:</p>
+          <p class="text-white font-medium mb-3">{{ ticketSeleccionado.asunto }}</p>
+          
+          <p class="text-sm text-gray-400 mb-1">Descripción del problema:</p>
+          <p class="text-gray-300 bg-gray-900/50 p-3 rounded text-sm">{{ ticketSeleccionado.mensaje }}</p>
+        </div>
+
+        <div class="form-group mb-6">
+          <label class="block text-sm font-medium text-gray-300 mb-2">Respuesta (se enviará al cliente)</label>
+          <textarea
+            [(ngModel)]="respuestaTicket"
+            class="saas-input w-full min-h-[120px]"
+            placeholder="Escribe la respuesta o solución brindada..."
+          ></textarea>
+        </div>
+
+        <div class="flex justify-end gap-3 pt-4 border-t border-gray-700/50">
+          <button
+            (click)="cerrarModalTicket()"
+            class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded font-medium transition-colors"
+            [disabled]="isRespondiendoTicket"
+          >
+            Cancelar
+          </button>
+          <button
+            (click)="responderTicket()"
+            class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded font-medium shadow-[0_0_15px_rgba(16,185,129,0.3)] transition-all flex items-center gap-2"
+            [disabled]="isRespondiendoTicket || !respuestaTicket.trim()"
+          >
+            @if (isRespondiendoTicket) {
+              <svg class="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              Enviando...
+            } @else {
+              Resolver Ticket
+            }
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
   @if (isModalSolicitudOpen && solicitudSeleccionada) {
     <div class="saas-modal-overlay">
       <div class="saas-modal-content max-w-2xl">
@@ -1593,6 +1794,15 @@
                 } @else {
                   <p class="text-gray-500 italic text-sm">La solicitud no contiene datos estructurados.</p>
                 }
+              </div>
+            </div>
+          }
+
+          @if (solicitudSeleccionada.tipo === 'soporte') {
+            <div class="mb-4">
+              <strong class="text-white">Mensaje del Cliente:</strong>
+              <div class="mt-2 bg-[#111827] border border-gray-700 rounded p-4">
+                <p class="text-gray-300 m-0 whitespace-pre-wrap">{{ solicitudSeleccionada.datosPropuestos?.mensaje || 'El usuario no adjuntó un mensaje.' }}</p>
               </div>
             </div>
           }

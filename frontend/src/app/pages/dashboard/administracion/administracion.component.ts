@@ -29,6 +29,10 @@ export class AdministracionComponent implements OnInit {
   documentoFile: File | null = null;
   misSolicitudes: any[] = [];
   
+  // Soporte
+  showSoporteModal = false;
+  soporteMensaje = '';
+
   // Estado de edición para la empresa
   isEditingCompany = false;
 
@@ -94,8 +98,35 @@ export class AdministracionComponent implements OnInit {
     this.enviarSolicitud('cambio_datos', this.formData);
   }
 
-  solicitarSoporte() {
-    this.enviarSolicitud('soporte');
+  abrirModalSoporte() {
+    this.soporteMensaje = '';
+    this.showSoporteModal = true;
+  }
+
+  cerrarModalSoporte() {
+    this.showSoporteModal = false;
+  }
+
+  confirmarSoporte() {
+    if (!this.soporteMensaje.trim()) return;
+    
+    if (this.isSubmitting) return;
+    this.isSubmitting = true;
+
+    this.http.post('/api/soporte', { mensaje: this.soporteMensaje }).subscribe({
+      next: () => {
+        alert('Ticket de soporte creado exitosamente.');
+        this.cerrarModalSoporte();
+        this.isSubmitting = false;
+        // Opcional: Recargar misSolicitudes si aplicara
+        this.cargarMisSolicitudes();
+      },
+      error: (err) => {
+        console.error(err);
+        alert('Error al enviar el ticket de soporte.');
+        this.isSubmitting = false;
+      }
+    });
   }
 
   solicitarMigracion() {

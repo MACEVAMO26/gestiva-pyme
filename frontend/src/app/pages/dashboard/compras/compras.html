@@ -51,9 +51,9 @@
             <tbody>
               @for(orden of ordenesFiltradas; track orden.id) {
                 <tr>
-                  <td><strong>{{orden.numero}}</strong></td>
-                  <td>{{orden.proveedor}}</td>
-                  <td>{{orden.fecha}}</td>
+                  <td><strong>{{orden.numero_orden}}</strong></td>
+                  <td>{{orden.proveedor?.nombre}}</td>
+                  <td>{{orden.created_at | date:'shortDate'}}</td>
                   <td>{{orden.total | currency:'COP':'symbol':'1.0-0'}}</td>
                   <td>
                     <span class="badge" [ngClass]="getBadgeClass(orden.estado)">
@@ -91,9 +91,13 @@
           <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
             <div class="form-group" style="flex: 2; min-width: 200px;">
               <label>Seleccionar Orden Pendiente *</label>
-              <select class="input-neumorphic">
-                <option disabled selected>Buscar orden aprobada...</option>
-                <option>OC-2026-001 - Distribuidora Tecnológica S.A.</option>
+              <select class="input-neumorphic" [(ngModel)]="ordenSeleccionadaRecepcion">
+                <option value="null" disabled selected>Buscar orden...</option>
+                @for(o of ordenes; track o.id) {
+                  @if(o.estado === 'Pendiente') {
+                    <option [value]="o.id">{{o.numero_orden}} - {{o.proveedor?.nombre}}</option>
+                  }
+                }
               </select>
             </div>
             <div class="form-group" style="flex: 1; min-width: 150px;">
@@ -124,8 +128,20 @@
               </tr>
             </thead>
             <tbody>
+              @for(r of ordenes; track r.id) {
+                @if(r.estado === 'Recibido') {
+                  <tr>
+                    <td>{{ r.updated_at | date:'shortDate' }}</td>
+                    <td>{{ r.numero_orden }}</td>
+                    <td>{{ r.proveedor?.nombre }}</td>
+                    <td>
+                      <span class="badge badge-success">Ingresado</span>
+                    </td>
+                  </tr>
+                }
+              }
               <tr>
-                <td colspan="4" style="text-align: center; color: #64748b; padding: 2rem;">No hay recepciones recientes registradas.</td>
+                <td colspan="4" style="text-align: center; color: #64748b; padding: 2rem;">Consulte el historial de órdenes recibidas.</td>
               </tr>
             </tbody>
           </table>
@@ -148,9 +164,9 @@
         <label>Proveedor *</label>
         <select class="input-neumorphic" [(ngModel)]="formOrden.proveedor">
           <option value="" disabled selected>Seleccione un proveedor</option>
-          <option value="Distribuidora Tecnológica S.A.">Distribuidora Tecnológica S.A.</option>
-          <option value="Suministros Globales">Suministros Globales</option>
-          <option value="Importaciones ABC">Importaciones ABC</option>
+          @for(prov of proveedoresDisponibles; track prov.id) {
+            <option [value]="prov.id">{{prov.nombre}} ({{prov.nit}})</option>
+          }
         </select>
       </div>
       <div class="form-group">
@@ -162,11 +178,29 @@
       <div style="background: rgba(0,0,0,0.2); padding: 1rem; border-radius: 8px; margin: 1rem 0;">
         <h4 style="margin: 0 0 0.5rem 0; color: #f97316;">Detalle de Productos</h4>
         <div style="display: flex; gap: 0.5rem;">
-          <input type="text" class="input-neumorphic" placeholder="Buscar producto..." style="flex: 2;">
-          <input type="number" class="input-neumorphic" placeholder="Cant." style="flex: 1;">
-          <button class="btn-general" style="background: #3b82f6;">Agregar</button>
+          <select class="input-neumorphic" style="flex: 2;" [(ngModel)]="productoActualCompra">
+            <option value="" disabled selected>Buscar producto...</option>
+            @for(prod of productosDisponibles; track prod.id) {
+              <option [value]="prod.id">{{prod.nombre}} (Stock: {{prod.stock_inicial}})</option>
+            }
+          </select>
+          <input type="number" class="input-neumorphic" placeholder="Cant." style="flex: 1;" [(ngModel)]="cantidadActualCompra">
+          <input type="number" class="input-neumorphic" placeholder="Costo Unit ($)" style="flex: 1;" [(ngModel)]="precioActualCompra">
+          <button class="btn-general" style="background: #3b82f6;" (click)="agregarAlCarrito()">Agregar</button>
         </div>
-        <p style="font-size: 0.8rem; color: #94a3b8; text-align: center; margin-top: 1rem;">No hay productos agregados.</p>
+        
+        <div style="margin-top: 1rem;">
+          @for(item of carritoCompras; track item.id; let idx = $index) {
+            <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.05); padding: 0.5rem; margin-bottom: 0.25rem; border-radius: 4px;">
+              <span>{{item.nombre}} - {{item.cantidad}} x {{item.precio_compra | currency:'COP':'symbol':'1.0-0'}} = <strong>{{item.subtotal | currency:'COP':'symbol':'1.0-0'}}</strong></span>
+              <button class="btn-icon text-danger" (click)="removerDelCarrito(idx)"><i class="fas fa-times"></i></button>
+            </div>
+          }
+        </div>
+        
+        @if(carritoCompras.length === 0) {
+          <p style="font-size: 0.8rem; color: #94a3b8; text-align: center; margin-top: 1rem;">No hay productos agregados.</p>
+        }
       </div>
 
       <div class="form-group">

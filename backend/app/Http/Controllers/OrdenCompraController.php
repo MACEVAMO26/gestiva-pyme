@@ -13,7 +13,7 @@ class OrdenCompraController extends Controller
     {
         $validatedData = $request->validate([
             'proveedor_id' => 'required|exists:proveedores,id',
-            'usuario_id' => 'required|exists:usuarios,id',
+            'usuario_id' => 'required|exists:users,id',
             'fecha_requerida' => 'required|date',
             'detalles' => 'required|array|min:1',
             'detalles.*.producto_id' => 'required|exists:productos,id',
@@ -45,6 +45,17 @@ class OrdenCompraController extends Controller
 
             return $ordenCompra;
         });
+
+        // Enviar notificación al proveedor
+        $proveedor = \App\Models\Proveedor::find($validatedData['proveedor_id']);
+        if ($proveedor && $proveedor->email) {
+            try {
+                \Illuminate\Support\Facades\Mail::to($proveedor->email)->send(new \App\Mail\OrdenCompraMail($orden, $proveedor));
+            } catch (\Exception $e) {
+                \Log::error('Error enviando email orden compra: ' . $e->getMessage());
+            }
+        }
+
         return response()->json($orden->load('detalles'), 201);
     }
 

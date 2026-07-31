@@ -149,6 +149,8 @@ class EmpresaController extends Controller
             'fecha_inscripcion' => 'nullable|date',
             'descuento' => 'nullable|string|max:255',
             'periodo' => 'nullable|in:Mensual,Anual',
+            'nombre_gerente' => 'nullable|string|max:255',
+            'apellido_gerente' => 'nullable|string|max:255',
         ]);
 
         // Utiliza una transacción para garantizar la creación conjunta de empresa y gerente
@@ -202,12 +204,15 @@ class EmpresaController extends Controller
             ]);
 
             // Registra el usuario gerente con rol de administrador y lo asocia a la empresa
+            $nombreGerente = $request->input('nombre_gerente') ?: 'Gerente';
+            $apellidoGerente = $request->input('apellido_gerente') ?: $empresa->razon_social;
+            
             $gerenteUser = User::create([
                 'empresa_id' => $empresa->id,
                 'rol_id' => $rolGerente->id,
                 'cargo_id' => $cargoGerente->id,
-                'nombres' => 'Gerente',
-                'apellidos' => $empresa->razon_social,
+                'nombres' => $nombreGerente,
+                'apellidos' => $apellidoGerente,
                 'documento' => $empresa->nit,
                 'email' => $adminEmail,
                 'password_hash' => Hash::make('Admin_123'),

@@ -2,8 +2,10 @@ import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
 import { EmpleadoService } from '../../../services/empleado.service';
 import { AuthService } from '../../../services/auth.service';
+import { TiempoService } from '../../../services/tiempo.service';
 import { EstructuraComponent } from './estructura/estructura';
 
 @Component({
@@ -17,6 +19,8 @@ export class EmpleadosComponent implements OnInit {
 
   empleadoService = inject(EmpleadoService);
   authService = inject(AuthService);
+  tiempoService = inject(TiempoService);
+  private http = inject(HttpClient);
   private router = inject(Router);
 
   pendientes: any[] = [];
@@ -67,10 +71,22 @@ export class EmpleadosComponent implements OnInit {
   empleadosInactivos: any[] = [];
   empleadosAusentes: any[] = [];
 
+  // Vacaciones
+  vacacionesPendientes: any[] = [];
+  isVacacionesModalOpen = false;
+  vacacionSeleccionada: any = null;
+  justificacionVacacion = '';
+
   cargarDatosTab() {
     if (this.currentTab === 'pendientes') {
       this.empleadoService.getPendientes().subscribe({
         next: (data) => this.pendientes = data,
+        error: (err) => console.error(err)
+      });
+      this.tiempoService.getVacaciones().subscribe({
+        next: (data) => {
+          this.vacacionesPendientes = data.filter((v: any) => v.estado === 'pendiente');
+        },
         error: (err) => console.error(err)
       });
     } else if (this.currentTab === 'configuracion') {
@@ -278,5 +294,63 @@ export class EmpleadosComponent implements OnInit {
     const user = this.authService.getUser();
     const entorno = user?.empresa?.slug || user?.empresa?.nombre_url || 'demo';
     this.router.navigate(['/', entorno, 'tiempo']);
+  }
+
+  exportarExcel() {
+    this.http.get('/api/export/empleados', { responseType: 'blob' }).subscribe({
+      next: (blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `empleados_${new Date().toISOString().split('T')[0]}.xlsx`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+      },
+      error: (err) => {
+        console.error('Error al exportar:', err);
+        alert('Hubo un error al exportar el archivo.');
+      }
+    });
+  }
+
+  // --- VACACIONES ---
+  abrirModalVacaciones(vacacion: any) {
+    this.vacacionSeleccionada = vacacion;
+    this.justificacionVacacion = '';
+    this.isVacacionesModalOpen = true;
+  }
+
+  cerrarModalVacaciones() {
+    this.isVacacionesModalOpen = false;
+    this.vacacionSeleccionada = null;
+  }
+
+  responderVacacion(estado: string) {
+    if (estado === 'rechazada' && !this.justificacionVacacion.trim()) {
+      alert('Debe justificar el rechazo.');
+      return;
+    }
+    
+    this.isSubmitting = true;
+    const payload = {
+      estado,
+      justificacion_respuesta: this.justificacionVacacion
+    };
+    
+    this.tiempoService.responderVacaciones(this.vacacionSeleccionada.id, payload).subscribe({
+      next: (res) => {
+        this.isSubmitting = false;
+        alert(res.message);
+        this.cerrarModalVacaciones();
+        this.cargarDatosTab();
+      },
+      error: (err) => {
+        this.isSubmitting = false;
+        console.error(err);
+        alert('Error al procesar solicitud de vacaciones.');
+      }
+    });
   }
 }

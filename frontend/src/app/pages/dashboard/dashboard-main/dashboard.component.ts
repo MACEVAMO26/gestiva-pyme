@@ -33,6 +33,11 @@ export class DashboardComponent implements OnInit {
   tipoEmpresaClass = '';
   showGestivaOnboarding = false;
 
+  // Notificaciones
+  isNotificationsOpen = false;
+  notificaciones: any[] = [];
+  notificacionesNoLeidas = 0;
+
   public accessibilityService = inject(AccessibilityService);
   private http = inject(HttpClient);
   private modulosService = inject(ModulosService);
@@ -83,7 +88,36 @@ export class DashboardComponent implements OnInit {
 
       this.cargarModulos(this.user.empresa_id);
       this.checkGestivaTutorial();
+      this.cargarNotificaciones();
     }
+  }
+
+  cargarNotificaciones() {
+    this.http.get<any[]>('/api/notificaciones').subscribe({
+      next: (data) => {
+        this.notificaciones = data;
+        this.notificacionesNoLeidas = this.notificaciones.length;
+      },
+      error: (err) => console.error('Error al cargar notificaciones', err)
+    });
+  }
+
+  toggleNotifications() {
+    this.isNotificationsOpen = !this.isNotificationsOpen;
+    if (this.isNotificationsOpen) {
+      this.isAccessibilityMenuOpen = false; // cerrar el otro menú
+    }
+  }
+
+  marcarLeida(id: number, event: Event) {
+    event.stopPropagation();
+    this.http.delete(`/api/notificaciones/${id}/leida`).subscribe({
+      next: () => {
+        this.notificaciones = this.notificaciones.filter(n => n.id !== id);
+        this.notificacionesNoLeidas = this.notificaciones.length;
+      },
+      error: (err) => console.error('Error al marcar leida', err)
+    });
   }
 
   checkGestivaTutorial() {
@@ -138,6 +172,9 @@ export class DashboardComponent implements OnInit {
 
   toggleAccessibilityMenu() {
     this.isAccessibilityMenuOpen = !this.isAccessibilityMenuOpen;
+    if (this.isAccessibilityMenuOpen) {
+      this.isNotificationsOpen = false;
+    }
   }
 
   toggleSidebar() {

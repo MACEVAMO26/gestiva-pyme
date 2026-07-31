@@ -27,7 +27,8 @@ class Producto extends Model
         'precio_compra', 
         'precio_venta', 
         'stock_inicial', 
-        'unidad_medida', 
+        'unidad_medida',
+        'imagen_url',
         'activo', 
         'fecha_inactivacion'
     ];

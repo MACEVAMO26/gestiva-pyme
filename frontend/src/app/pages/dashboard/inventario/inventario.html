@@ -1,7 +1,14 @@
 <div class="module-container fade-in">
-  <div class="module-header">
-    <h1>Inventario</h1>
-    <p>Control de existencias, catálogo de productos, entradas, salidas y kardex.</p>
+  <div class="module-header" style="display: flex; justify-content: space-between; align-items: center;">
+    <div>
+      <h1>Inventario</h1>
+      <p>Control de existencias, catálogo de productos, entradas, salidas y kardex.</p>
+    </div>
+    <div>
+      <button class="btn-save" style="background: #10b981;" (click)="exportarExcel()">
+        <i class="fas fa-file-excel" style="margin-right: 5px;"></i> Exportar a Excel
+      </button>
+    </div>
   </div>
 
   <!-- --- PESTAÑAS (TABS) --- -->
@@ -304,34 +311,45 @@
         <label>Código SKU *</label>
         <input type="text" class="input-neumorphic" [(ngModel)]="formProducto.codigo" placeholder="Ej. PRD-004">
       </div>
-      <div class="form-group">
-        <label>Nombre del Producto *</label>
-        <input type="text" class="input-neumorphic" [(ngModel)]="formProducto.nombre" placeholder="Ej. Teclado Mecánico">
-      </div>
-      <div class="form-group">
-        <label>Categoría *</label>
-        <select class="input-neumorphic" [(ngModel)]="formProducto.categoria">
-          <option value="" disabled selected>Seleccione una categoría</option>
-          <option value="Equipos">Equipos</option>
-          <option value="Accesorios">Accesorios</option>
-          <option value="Insumos">Insumos</option>
-        </select>
-      </div>
-      <div style="display: flex; gap: 1rem;">
-        <div class="form-group" style="flex: 1;">
-          <label>Precio de Venta</label>
-          <input type="number" class="input-neumorphic" [(ngModel)]="formProducto.precio">
+        <div class="form-group">
+          <label>Nombre del Producto *</label>
+          <input type="text" class="input-neumorphic" [(ngModel)]="formProducto.nombre" placeholder="Ej. Teclado Mecánico">
         </div>
-        <div class="form-group" style="flex: 1;">
-          <label>Costo</label>
-          <input type="number" class="input-neumorphic" [(ngModel)]="formProducto.costo">
+        <div class="form-group">
+          <label>Categoría *</label>
+          <!-- Se asume que categorias se carga de backend. Por ahora mock -->
+          <select class="input-neumorphic" [(ngModel)]="formProducto.categoria_id">
+            <option value="" disabled selected>Seleccione una categoría</option>
+            <option value="1">Equipos (ID:1)</option>
+            <option value="2">Accesorios (ID:2)</option>
+            <option value="3">Insumos (ID:3)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Unidad de Medida *</label>
+          <input type="text" class="input-neumorphic" [(ngModel)]="formProducto.unidad_medida" placeholder="Ej. Unidad, Kg, Caja">
+        </div>
+        <div style="display: flex; gap: 1rem;">
+          <div class="form-group" style="flex: 1;">
+            <label>Precio de Venta</label>
+            <input type="number" class="input-neumorphic" [(ngModel)]="formProducto.precio_venta">
+          </div>
+          <div class="form-group" style="flex: 1;">
+            <label>Costo de Compra</label>
+            <input type="number" class="input-neumorphic" [(ngModel)]="formProducto.precio_compra">
+          </div>
+        </div>
+        <div style="display: flex; gap: 1rem;">
+          <div class="form-group" style="flex: 1;">
+            <label>Stock Inicial</label>
+            <input type="number" class="input-neumorphic" [(ngModel)]="formProducto.stock_inicial" placeholder="Ej. 10">
+          </div>
+          <div class="form-group" style="flex: 1;">
+            <label>Imagen del Producto</label>
+            <input type="file" class="input-neumorphic" (change)="onFileSelected($event)" accept="image/*">
+          </div>
         </div>
       </div>
-      <div class="form-group">
-        <label>Stock Mínimo (Alerta)</label>
-        <input type="number" class="input-neumorphic" [(ngModel)]="formProducto.stockMinimo" placeholder="Ej. 5">
-      </div>
-    </div>
     
     <div class="modal-footer" style="display: flex; justify-content: center; gap: 1rem; margin-top: 1.5rem;">
       <button class="btn-volver" (click)="cerrarModal()">Volver</button>

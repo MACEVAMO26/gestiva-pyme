@@ -4,7 +4,10 @@
       <h1>Gestión Humana</h1>
       <p>Administra la formalización, contratos y perfiles laborales del personal.</p>
     </div>
-    <div class="header-actions">
+    <div class="header-actions" style="display: flex; gap: 10px;">
+      <button class="btn-save" style="background: #10b981;" (click)="exportarExcel()">
+        <i class="fas fa-file-excel" style="margin-right: 5px;"></i> Exportar a Excel
+      </button>
       <button (click)="irATiempos()" class="btn-general" style="display: flex; align-items: center; gap: 0.5rem; border: none; cursor: pointer; background-color: #2563eb; color: white;">
         <svg class="icon" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width: 20px; height: 20px;">
           <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
@@ -72,6 +75,37 @@
         </tr>
       </tbody>
     </table>
+
+    <div class="mt-6">
+      <h3 class="text-xl font-bold mb-3">Solicitudes de Vacaciones Pendientes</h3>
+      <table class="premium-table">
+        <thead>
+          <tr>
+            <th>Empleado</th>
+            <th>Fechas</th>
+            <th>Tipo</th>
+            <th>Observaciones</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let vac of vacacionesPendientes">
+            <td>{{ vac.usuario?.nombres }} {{ vac.usuario?.apellidos }}</td>
+            <td>{{ vac.fecha_inicio | date:'shortDate' }} al {{ vac.fecha_fin | date:'shortDate' }}</td>
+            <td>{{ vac.tipo }}</td>
+            <td>{{ vac.observaciones || 'Ninguna' }}</td>
+            <td>
+              <button class="btn-general btn-sm" (click)="abrirModalVacaciones(vac)">
+                Revisar Solicitud
+              </button>
+            </td>
+          </tr>
+          <tr *ngIf="vacacionesPendientes.length === 0">
+            <td colspan="5" class="empty-state">No hay solicitudes de vacaciones pendientes.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 
   <!-- TABLA ACTIVOS -->
@@ -371,3 +405,40 @@
   </div>
 
 </div>
+
+<!-- MODAL REVISAR VACACIONES -->
+@if (isVacacionesModalOpen && vacacionSeleccionada) {
+<div class="modal-overlay fade-in">
+  <div class="modal-content glass-panel" style="max-width: 500px;">
+    <div class="modal-header border-b border-gray-700 pb-3 mb-4">
+      <h2 class="text-xl font-bold text-white m-0">Revisar Solicitud de Vacaciones</h2>
+      <button class="btn-close text-gray-400 hover:text-white" (click)="cerrarModalVacaciones()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <p><strong>Empleado:</strong> {{ vacacionSeleccionada.usuario?.nombres }} {{ vacacionSeleccionada.usuario?.apellidos }}</p>
+      <p><strong>Fechas:</strong> {{ vacacionSeleccionada.fecha_inicio | date:'mediumDate' }} al {{ vacacionSeleccionada.fecha_fin | date:'mediumDate' }}</p>
+      <p><strong>Tipo:</strong> {{ vacacionSeleccionada.tipo }}</p>
+      <p><strong>Observaciones:</strong> {{ vacacionSeleccionada.observaciones || 'Ninguna' }}</p>
+
+      <div class="form-group mt-4">
+        <label>Justificación de Respuesta (Obligatorio si rechaza)</label>
+        <textarea 
+          class="input-neumorphic w-full" 
+          rows="3" 
+          [(ngModel)]="justificacionVacacion"
+          placeholder="Ej. Fechas se cruzan con cierre de mes..."
+        ></textarea>
+      </div>
+    </div>
+    <div class="modal-footer flex justify-end gap-3 mt-4 pt-3 border-t border-gray-700">
+      <button class="btn-volver" (click)="cerrarModalVacaciones()">Cancelar</button>
+      <button class="btn-save" style="background: #ef4444;" (click)="responderVacacion('rechazada')" [disabled]="isSubmitting || !justificacionVacacion.trim()">
+        @if (isSubmitting) { <i class="fas fa-spinner fa-spin"></i> } @else { Rechazar }
+      </button>
+      <button class="btn-save" (click)="responderVacacion('aprobada')" [disabled]="isSubmitting">
+        @if (isSubmitting) { <i class="fas fa-spinner fa-spin"></i> } @else { Aprobar }
+      </button>
+    </div>
+  </div>
+</div>
+}

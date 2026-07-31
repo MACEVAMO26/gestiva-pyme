@@ -67,7 +67,9 @@ export class SaasAdminComponent implements OnInit {
     color_primario: '#6366f1',
     color_secundario: '#1e293b',
     color_fondo: '#4c808a',
-    color_texto: '#f8fafc'
+    color_texto: '#f8fafc',
+    nombre_gerente: '',
+    apellido_gerente: ''
   };
   listaDescuentosEmpresa: string[] = [];
   currentView = 'dashboard';
@@ -294,6 +296,8 @@ export class SaasAdminComponent implements OnInit {
   }
   solicitudes: any[] = [];
   solicitudesPendientes: number = 0;
+  ticketsSoporte: any[] = [];
+  ticketsSoportePendientes: number = 0;
   paquetesModulos: any[] = [];
   statsSuscripciones = {
     mrr: 0,
@@ -324,6 +328,12 @@ export class SaasAdminComponent implements OnInit {
   isModalSolicitudOpen = false;
   solicitudSeleccionada: any = null;
   mensajeRespuesta: string = '';
+
+  // Soporte tickets variables
+  isModalTicketOpen = false;
+  ticketSeleccionado: any = null;
+  respuestaTicket: string = '';
+  isRespondiendoTicket = false;
 
   public accessibilityService = inject(AccessibilityService);
   public toastService = inject(ToastService);
@@ -386,12 +396,15 @@ export class SaasAdminComponent implements OnInit {
       this.paquetesModulos = catalog;
     });
 
-    this.cargarEmpresas();
-    this.cargarSolicitudes();
-    this.cargarLeads();
-    this.cargarSuscripciones();
-    this.cargarTarifas();
-    this.cargarSystemStats();
+    if (typeof window !== 'undefined') {
+      this.cargarEmpresas();
+      this.cargarSolicitudes();
+      this.cargarTicketsSoporte();
+      this.cargarLeads();
+      this.cargarSuscripciones();
+      this.cargarTarifas();
+      this.cargarSystemStats();
+    }
   }
 
   // Muestra el modal para gestionar las notas del cliente interesado
@@ -695,6 +708,70 @@ export class SaasAdminComponent implements OnInit {
     });
   }
 
+  cargarTicketsSoporte() {
+    const token = sessionStorage.getItem('auth_token');
+    const headers = { Authorization: `Bearer ${token}` };
+    this.http.get<any[]>('/api/saas/soporte', { headers }).subscribe({
+      next: (data) => {
+        this.ticketsSoporte = data;
+        this.ticketsSoportePendientes = data.filter((t: any) => t.estado === 'Abierto' || t.estado === 'En progreso').length;
+        this.cdr.detectChanges();
+      },
+      error: (err) => console.error('Error al cargar tickets de soporte', err)
+    });
+  }
+
+  abrirTicket(ticket: any) {
+    this.ticketSeleccionado = ticket;
+    this.isModalTicketOpen = true;
+    this.respuestaTicket = '';
+  }
+
+  cerrarModalTicket() {
+    this.isModalTicketOpen = false;
+    this.ticketSeleccionado = null;
+    this.respuestaTicket = '';
+  }
+
+  responderTicket() {
+    if (!this.respuestaTicket.trim() || !this.ticketSeleccionado) {
+      this.toastService.warning('La respuesta no puede estar vacía.');
+      return;
+    }
+    
+    this.isRespondiendoTicket = true;
+    const token = sessionStorage.getItem('auth_token');
+    const headers = { Authorization: `Bearer ${token}` };
+    
+    this.http.put(`/api/saas/soporte/${this.ticketSeleccionado.id}`, 
+      { notas_resolucion: this.respuestaTicket, estado: 'Resuelto' }, 
+      { headers }
+    ).subscribe({
+      next: () => {
+        this.toastService.success('Ticket respondido correctamente.');
+        this.isRespondiendoTicket = false;
+        this.cerrarModalTicket();
+        this.cargarTicketsSoporte();
+      },
+      error: (err) => {
+        console.error(err);
+        this.toastService.error('Error al enviar la respuesta.');
+        this.isRespondiendoTicket = false;
+      }
+    });
+  }
+    const token = sessionStorage.getItem('auth_token');
+    const headers = { Authorization: `Bearer ${token}` };
+    this.http.get<any[]>('/api/admin-requests', { headers }).subscribe({
+      next: (data) => {
+        this.solicitudes = data;
+        this.solicitudesPendientes = data.filter((s: any) => s.estado === 'pendiente').length;
+        this.cdr.detectChanges();
+      },
+      error: (err) => console.error('Error al cargar solicitudes', err),
+    });
+  }
+
   abrirSolicitud(req: any) {
     this.solicitudSeleccionada = req;
     
@@ -945,7 +1022,9 @@ export class SaasAdminComponent implements OnInit {
       tipo_empresa: 'Servicios', 
       fecha_inscripcion: '', 
       periodo: 'Mensual', 
-      descuento: 'N/A' 
+      descuento: 'N/A',
+      nombre_gerente: '',
+      apellido_gerente: ''
     };
     this.showModal = true;
   }
@@ -1011,7 +1090,9 @@ export class SaasAdminComponent implements OnInit {
       color_primario: '#6366f1',
       color_secundario: '#1e293b',
       color_fondo: '#4c808a',
-      color_texto: '#f8fafc'
+      color_texto: '#f8fafc',
+      nombre_gerente: '',
+      apellido_gerente: ''
     };
     this.showModal = true;
   }
@@ -1032,7 +1113,9 @@ export class SaasAdminComponent implements OnInit {
       color_primario: empresa.color_primario || '#6366f1',
       color_secundario: empresa.color_secundario || '#1e293b',
       color_fondo: empresa.color_fondo || '#4c808a',
-      color_texto: empresa.color_texto || '#f8fafc'
+      color_texto: empresa.color_texto || '#f8fafc',
+      nombre_gerente: empresa.nombre_gerente || '',
+      apellido_gerente: empresa.apellido_gerente || ''
     };
     this.showModal = true;
   }
@@ -1256,7 +1339,7 @@ export class SaasAdminComponent implements OnInit {
     this.isEditMode = false;
     this.editingId = null;
     this.listaDescuentosEmpresa = [];
-    this.nuevaEmpresa = { razon_social: '', dominio: '', nit: '', email: '', tipo_empresa: 'Servicios', fecha_inscripcion: '', periodo: 'Mensual', descuento: 'N/A' };
+    this.nuevaEmpresa = { razon_social: '', dominio: '', nit: '', email: '', tipo_empresa: 'Servicios', fecha_inscripcion: '', periodo: 'Mensual', descuento: 'N/A', nombre_gerente: '', apellido_gerente: '' };
   }
 
 

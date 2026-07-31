@@ -24,11 +24,13 @@ export class AutogestionComponent implements OnInit {
   
   formAfiliacion = {
     eps: '',
+    arl: '',
     fondo_cesantias: '',
     afondo_pension: '',
     fecha_contratacion: '',
     finalizacion_contrato: '',
     renovacion_contrato: '',
+    estado_afiliacion: true,
     estado: 'nuevo' // Empezamos en nuevo para permitir llenar la primera vez
   };
 
@@ -115,11 +117,13 @@ export class AutogestionComponent implements OnInit {
           this.afiliacion = res.afiliacion;
           this.formAfiliacion = {
             eps: res.afiliacion.eps || '',
+            arl: res.afiliacion.arl || '',
             fondo_cesantias: res.afiliacion.fondo_cesantias || '',
             afondo_pension: res.afiliacion.afondo_pension || '',
             fecha_contratacion: res.afiliacion.fecha_contratacion || '',
             finalizacion_contrato: res.afiliacion.finalizacion_contrato || '',
             renovacion_contrato: res.afiliacion.renovacion_contrato || '',
+            estado_afiliacion: res.afiliacion.estado_afiliacion !== undefined ? res.afiliacion.estado_afiliacion : true,
             estado: res.afiliacion.estado || 'nuevo'
           };
           
@@ -172,6 +176,38 @@ export class AutogestionComponent implements OnInit {
         console.error(err);
       }
     });
+  }
+
+  // Descargar certificado laboral
+  descargarCertificado() {
+    let empleadoId = null;
+    
+    if (this.user && this.user.empleado) {
+      empleadoId = this.user.empleado.id;
+    } else {
+      empleadoId = this.user?.id; // temporal fallback
+    }
+
+    if (empleadoId) {
+      this.http.get(`/api/empleados/${empleadoId}/certificado`, { responseType: 'blob' }).subscribe({
+        next: (blob) => {
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `certificado_laboral.pdf`;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          window.URL.revokeObjectURL(url);
+        },
+        error: (err) => {
+          console.error('Error al descargar el certificado', err);
+          alert('Hubo un error al descargar el certificado. Intenta nuevamente.');
+        }
+      });
+    } else {
+       alert('Tu usuario no está vinculado como empleado aún o falta configurar ID');
+    }
   }
 
   // Permite seleccionar y previsualizar una nueva foto de perfil

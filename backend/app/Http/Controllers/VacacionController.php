@@ -10,8 +10,15 @@ class VacacionController extends Controller
     // Trae la lista de todas las vacaciones registradas
     public function index(Request $request)
     {
+        $user = \Illuminate\Support\Facades\Auth::user();
         $query = Vacacion::with('usuario');
         
+        if ($user && $user->empresa_id) {
+            $query->whereHas('usuario', function($q) use ($user) {
+                $q->where('empresa_id', $user->empresa_id);
+            });
+        }
+
         if ($request->has('usuario_id')) {
             $query->where('usuario_id', $request->usuario_id);
         }
@@ -74,6 +81,14 @@ class VacacionController extends Controller
         $vacacion->estado = $validatedData['estado'];
         $vacacion->justificacion_respuesta = $validatedData['justificacion_respuesta'] ?? null;
         $vacacion->save();
+
+        if ($vacacion->estado === 'aprobada' && $vacacion->usuario) {
+            $empleado = \App\Models\Empleado::where('user_id', $vacacion->usuario_id)->first();
+            if ($empleado) {
+                $empleado->estado = 'en vacaciones';
+                $empleado->save();
+            }
+        }
 
         return response()->json([
             'message' => 'Solicitud ' . $vacacion->estado . ' correctamente.',

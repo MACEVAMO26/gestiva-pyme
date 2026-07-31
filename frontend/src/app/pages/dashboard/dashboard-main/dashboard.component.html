@@ -32,6 +32,48 @@
           <button class="btn-logout" (click)="logout()">Cerrar Sesión</button>
         </div>
         
+        <!-- NOTIFICACIONES -->
+        <div class="accessibility-widget" style="position: relative; margin-right: 1rem;">
+          <button 
+            (click)="toggleNotifications()"
+            class="accessibility-btn relative"
+            title="Notificaciones">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width: 1.5rem; height: 1.5rem;">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
+            </svg>
+            @if(notificacionesNoLeidas > 0) {
+              <span style="position: absolute; top: -5px; right: -5px; background: #ef4444; color: white; border-radius: 50%; width: 20px; height: 20px; font-size: 0.75rem; display: flex; align-items: center; justify-content: center; font-weight: bold;">
+                {{notificacionesNoLeidas}}
+              </span>
+            }
+          </button>
+
+          @if(isNotificationsOpen) {
+            <div class="accessibility-menu" style="width: 320px; right: 0; left: auto; max-height: 400px; overflow-y: auto;">
+              <div class="menu-header" style="border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.5rem; margin-bottom: 0.5rem;">
+                <p style="margin: 0; font-weight: bold;">Notificaciones</p>
+              </div>
+              
+              @if(notificaciones.length === 0) {
+                <div style="padding: 1rem; text-align: center; color: #94a3b8; font-size: 0.9rem;">
+                  No tienes notificaciones recientes.
+                </div>
+              }
+              
+              @for(notif of notificaciones; track notif.id) {
+                <div style="padding: 0.75rem; border-bottom: 1px solid rgba(255,255,255,0.05); cursor: pointer; transition: background 0.2s; position: relative;" class="hover:bg-gray-800/50">
+                  <h4 style="margin: 0 0 0.25rem 0; font-size: 0.9rem; color: #f97316;">{{notif.titulo}}</h4>
+                  <p style="margin: 0 0 0.5rem 0; font-size: 0.8rem; color: #cbd5e1; line-height: 1.4;">{{notif.mensaje}}</p>
+                  <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-size: 0.7rem; color: #64748b;">{{notif.created_at | date:'short'}}</span>
+                    <button (click)="marcarLeida(notif.id, $event)" style="background: none; border: none; color: #3b82f6; font-size: 0.75rem; cursor: pointer; padding: 0.2rem 0.5rem; border-radius: 4px;" class="hover:bg-blue-900/30">Marcar como leída</button>
+                  </div>
+                </div>
+              }
+            </div>
+          }
+        </div>
+
         <!-- ACCESIBILIDAD (OJITO) -->
         <div class="accessibility-widget">
           <!-- Botón -->
@@ -146,6 +188,11 @@
                 </a>
               }
           }
+          <a class="nav-item" [routerLink]="['./soporte']" routerLinkActive="active">
+            <svg class="icon" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M11.42 15.17L17.25 21A2.652 2.652 0 0021 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655 5.653a2.548 2.548 0 11-3.586-3.586l6.837-5.63m5.108-.233c.55-.164 1.163-.188 1.743-.14a4.5 4.5 0 004.486-6.336l-3.276 3.277a3 3 0 01-4.242 0 3 3 0 010-4.242l3.278-3.278a4.5 4.5 0 00-6.336 4.486c.091 1.076-.071 2.264-.904 2.95l-.102.085m-1.745 1.437L5.909 7.5H4.5L2.25 3.75l1.5-1.5L7.5 4.5v1.409l4.26 4.26m-1.745 1.437l1.745-1.437m6.615 8.206L15.75 15.75M4.867 19.125h.008v.008h-.008v-.008z" /></svg>
+            <span class="nav-label">Soporte Técnico</span>
+          </a>
+
           <a class="nav-item" [routerLink]="['./prefacturacion']" routerLinkActive="active">
             <svg class="icon" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>
             <span class="nav-label">Prefacturación</span>

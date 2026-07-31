@@ -50,6 +50,11 @@ Route::middleware('auth:sanctum')->group(function () {
     
     Route::get('/mis-modulos', [\App\Http\Controllers\ModulosController::class, 'getMisModulos']);
 
+    // --- EXPORTS ---
+    Route::get('/export/ventas', [\App\Http\Controllers\ExportController::class, 'exportVentas']);
+    Route::get('/export/empleados', [\App\Http\Controllers\ExportController::class, 'exportEmpleados']);
+    Route::get('/export/productos', [\App\Http\Controllers\ExportController::class, 'exportProductos']);
+
     // --- SESION ---
     Route::post('/logout', [AuthController::class, 'cerrarSesion']);
     Route::get('/user', function (Request $request) {
@@ -111,6 +116,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // --- GESTION HUMANA (Empleados) ---
     Route::get('/empleados/pendientes', [\App\Http\Controllers\EmpleadoController::class, 'pendientes']);
     Route::get('/empleados', [\App\Http\Controllers\EmpleadoController::class, 'index']);
+    Route::get('/empleados/{id}/certificado', [\App\Http\Controllers\EmpleadoController::class, 'generarCertificado']);
     Route::post('/empleados/{usuarioId}/formalizar', [\App\Http\Controllers\EmpleadoController::class, 'formalizar']);
     Route::post('/empleados/{id}/solicitar-baja', [\App\Http\Controllers\EmpleadoController::class, 'solicitarBaja']);
     Route::post('/empleados/{id}/aprobar-baja', [\App\Http\Controllers\EmpleadoController::class, 'aprobarBaja']);
@@ -230,6 +236,17 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/reuniones', [\App\Http\Controllers\ReunionController::class, 'index']);
     Route::post('/reuniones', [\App\Http\Controllers\ReunionController::class, 'store']);
 
+    // Ventas
+    Route::get('/ventas', [\App\Http\Controllers\VentaController::class, 'index']);
+    Route::post('/ventas', [\App\Http\Controllers\VentaController::class, 'store']);
+    Route::patch('/ventas/{id}/estado-paquete', [\App\Http\Controllers\VentaController::class, 'updateEstadoPaquete']);
+
+    // Soporte Tickets
+    Route::get('/soporte', [\App\Http\Controllers\SoporteTicketController::class, 'index']);
+    Route::post('/soporte', [\App\Http\Controllers\SoporteTicketController::class, 'store']);
+    Route::get('/saas/soporte', [\App\Http\Controllers\SoporteTicketController::class, 'saasIndex']);
+    Route::put('/saas/soporte/{id}', [\App\Http\Controllers\SoporteTicketController::class, 'update']);
+    
     }); // Fin del middleware 'formalizado'
 
 });
