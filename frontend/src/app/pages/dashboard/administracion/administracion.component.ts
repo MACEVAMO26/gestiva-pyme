@@ -119,7 +119,7 @@ export class AdministracionComponent implements OnInit {
         this.cerrarModalSoporte();
         this.isSubmitting = false;
         // Opcional: Recargar misSolicitudes si aplicara
-        this.cargarMisSolicitudes();
+        this.cargarSolicitudes();
       },
       error: (err) => {
         console.error(err);

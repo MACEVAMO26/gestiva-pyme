@@ -760,17 +760,7 @@ export class SaasAdminComponent implements OnInit {
       }
     });
   }
-    const token = sessionStorage.getItem('auth_token');
-    const headers = { Authorization: `Bearer ${token}` };
-    this.http.get<any[]>('/api/admin-requests', { headers }).subscribe({
-      next: (data) => {
-        this.solicitudes = data;
-        this.solicitudesPendientes = data.filter((s: any) => s.estado === 'pendiente').length;
-        this.cdr.detectChanges();
-      },
-      error: (err) => console.error('Error al cargar solicitudes', err),
-    });
-  }
+
 
   abrirSolicitud(req: any) {
     this.solicitudSeleccionada = req;
