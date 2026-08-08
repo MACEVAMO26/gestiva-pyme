@@ -174,5 +174,75 @@ export class AdministracionComponent implements OnInit {
         }
       });
   }
-}
 
+  // --- LOGICA DE MIGRACIÓN Y BACKUPS ---
+  archivoMigracion: File | null = null;
+  isUploadingMigracion = false;
+
+  onFileMigracionSelected(event: any) {
+    if (event.target.files.length > 0) {
+      this.archivoMigracion = event.target.files[0];
+    }
+  }
+
+  descargarPlantillaMigracion() {
+    this.http.get('/api/migracion/plantilla', { responseType: 'blob' }).subscribe({
+      next: (blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `Plantilla_Migracion_SaaS.xlsx`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+      },
+      error: (err) => {
+        console.error(err);
+        alert('Error al descargar la plantilla.');
+      }
+    });
+  }
+
+  descargarBackup() {
+    this.http.get('/api/migracion/backup', { responseType: 'blob' }).subscribe({
+      next: (blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `Backup_GestivaPyme_Empresa_${this.empresa?.id}.xlsx`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+      },
+      error: (err) => {
+        console.error(err);
+        alert('Error al descargar el backup de datos.');
+      }
+    });
+  }
+
+  subirMigracion() {
+    if (!this.archivoMigracion) return;
+
+    this.isUploadingMigracion = true;
+    const formData = new FormData();
+    formData.append('archivo', this.archivoMigracion);
+
+    const headers = { 'Authorization': `Bearer ${this.authService.getToken()}` };
+    this.http.post('/api/migracion/subir', formData, { headers }).subscribe({
+      next: (res: any) => {
+        this.isUploadingMigracion = false;
+        this.archivoMigracion = null;
+        alert(res.message || 'Archivo enviado correctamente. Será procesado a la brevedad.');
+        this.goToView('dashboard');
+      },
+      error: (err) => {
+        console.error(err);
+        this.isUploadingMigracion = false;
+        alert('Error al subir el archivo de migración.');
+      }
+    });
+  }
+}

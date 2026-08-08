@@ -154,6 +154,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/admin-requests', [\App\Http\Controllers\AdminRequestController::class, 'index']);
     Route::post('/admin-requests', [\App\Http\Controllers\AdminRequestController::class, 'store']);
     Route::patch('/admin-requests/{id}/process', [\App\Http\Controllers\AdminRequestController::class, 'process']);
+    
+    // --- MIGRACION DE DATOS ---
+    Route::get('/migracion/plantilla', [\App\Http\Controllers\MigracionController::class, 'descargarPlantilla']);
+    Route::get('/migracion/backup', [\App\Http\Controllers\MigracionController::class, 'descargarBackup']);
+    Route::post('/migracion/subir', [\App\Http\Controllers\MigracionController::class, 'subirMigracion']);
 
     Route::get('/leads', [\App\Http\Controllers\LeadController::class, 'index']);
     Route::patch('/leads/{id}', [\App\Http\Controllers\LeadController::class, 'update']);

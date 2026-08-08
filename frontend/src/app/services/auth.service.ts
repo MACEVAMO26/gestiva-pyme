@@ -87,6 +87,10 @@ export class AuthService {
     } catch (e) { return null; }
   }
 
+  setUser(userData: any): void {
+    sessionStorage.setItem('current_user', JSON.stringify(userData));
+  }
+
   // 8. Guardar modulos activos
   private saveModulosActivos(modulos: any): void {
     try {

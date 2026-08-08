@@ -24,4 +24,9 @@ class Empleado extends Model
         'caja_compensacion',
         'estado'
     ];
+
+    public function usuario()
+    {
+        return $this->belongsTo(User::class, 'usuario_id');
+    }
 }
