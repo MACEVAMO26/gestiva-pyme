@@ -89,6 +89,7 @@ export class DashboardComponent implements OnInit {
       this.cargarModulos(this.user.empresa_id);
       this.checkGestivaTutorial();
       this.cargarNotificaciones();
+      this.checkContractStatus();
     }
   }
 
@@ -211,8 +212,75 @@ export class DashboardComponent implements OnInit {
     });
   }
 
+  // --- CONTRATO SAAS ---
+  showContractModal = false;
+  isSigning = false;
+  signaturePad: any = null;
+
   logout(): void {
     this.authService.logout();
+  }
+
+  // --- LÓGICA CONTRATO SAAS ---
+  checkContractStatus() {
+    if (this.user && this.user.empresa && this.user.rol?.nombre?.includes('Gerente')) {
+      // Usar setTimeout para asegurar que el DOM este listo para Angular
+      setTimeout(() => {
+          if (!this.user.empresa.contrato_aceptado) {
+            this.showContractModal = true;
+            // Iniciar canvas después de un pequeño delay para que el modal renderice
+            setTimeout(() => this.initSignaturePad(), 300);
+          }
+      });
+    }
+  }
+
+  initSignaturePad() {
+    const canvas = document.getElementById('signatureCanvas') as HTMLCanvasElement;
+    if (canvas) {
+      // Ajustar tamaño del canvas
+      const ratio = Math.max(window.devicePixelRatio || 1, 1);
+      canvas.width = canvas.offsetWidth * ratio;
+      canvas.height = canvas.offsetHeight * ratio;
+      canvas.getContext("2d")?.scale(ratio, ratio);
+
+      import('signature_pad').then(SignaturePad => {
+        this.signaturePad = new SignaturePad.default(canvas, {
+          backgroundColor: 'rgba(255, 255, 255, 0)',
+          penColor: 'rgb(0, 0, 0)'
+        });
+      }).catch(err => console.error("Falta instalar signature_pad", err));
+    }
+  }
+
+  clearSignature() {
+    if (this.signaturePad) {
+      this.signaturePad.clear();
+    }
+  }
+
+  acceptContract() {
+    if (!this.signaturePad || this.signaturePad.isEmpty()) {
+      alert("Por favor, ingresa tu firma electrónica para continuar.");
+      return;
+    }
+
+    const firmaBase64 = this.signaturePad.toDataURL('image/png');
+    this.isSigning = true;
+
+    this.http.post(`/api/empresas/${this.user.empresa_id}/aceptar-contrato`, { firma_base64: firmaBase64 })
+      .subscribe({
+        next: (res) => {
+          this.isSigning = false;
+          this.showContractModal = false;
+          this.user.empresa.contrato_aceptado = true;
+          this.authService.setUser(this.user); // Actualizar usuario en sesión
+        },
+        error: (err) => {
+          this.isSigning = false;
+          alert("Error al firmar el contrato. Intenta de nuevo.");
+        }
+      });
   }
 }
 

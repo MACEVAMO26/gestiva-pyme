@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class EmpresaController extends Controller
 {
@@ -332,5 +333,86 @@ class EmpresaController extends Controller
 
         $message = $empresa->activo ? 'Empresa activada.' : 'Empresa inactivada.';
         return response()->json(['message' => $message]);
+    }
+
+    // --- MÓDULO CONTRATOS SAAS ---
+    
+    // Acepta el contrato, guarda la firma y registra la IP/Fecha
+    public function aceptarContrato(Request $request, $id)
+    {
+        $empresa = Empresa::findOrFail($id);
+        
+        $request->validate([
+            'firma_base64' => 'required|string'
+        ]);
+
+        $empresa->contrato_aceptado = true;
+        $empresa->contrato_fecha_aceptacion = now();
+        $empresa->contrato_ip_aceptacion = $request->ip();
+        $empresa->contrato_firma_path = $request->firma_base64;
+        $empresa->save();
+
+        return response()->json(['message' => 'Contrato aceptado exitosamente.']);
+    }
+
+    // Genera y descarga el PDF del contrato de la empresa
+    public function descargarContratoPDF($id)
+    {
+        $empresa = Empresa::findOrFail($id);
+        
+        if (!$empresa->contrato_aceptado) {
+            return response()->json(['error' => 'El contrato aún no ha sido firmado.'], 403);
+        }
+
+        // Obtener al gerente de la empresa
+        $gerente = User::where('empresa_id', $empresa->id)
+            ->whereHas('rol', function($q) {
+                $q->where('nombre', 'like', '%Gerente%');
+            })->first();
+            
+        $nombreGerente = $gerente ? ($gerente->nombres . ' ' . $gerente->apellidos) : 'Representante Legal';
+        $documentoGerente = $gerente ? $gerente->documento : 'N/A';
+
+        // Estructura de datos para la vista del PDF
+        $data = [
+            'empresa' => $empresa,
+            'nombreGerente' => $nombreGerente,
+            'documentoGerente' => $documentoGerente,
+            'fecha' => $empresa->contrato_fecha_aceptacion ? \Carbon\Carbon::parse($empresa->contrato_fecha_aceptacion)->format('d \d\e m \d\e Y, h:i A') : date('d/m/Y'),
+            'ip' => $empresa->contrato_ip_aceptacion
+        ];
+
+        // Crear una vista HTML básica para el PDF (se puede mover a un archivo Blade más adelante)
+        $html = '
+        <div style="font-family: Helvetica, sans-serif; padding: 20px;">
+            <div style="text-align: center; margin-bottom: 30px;">
+                <h2>CONTRATO DE LICENCIA Y PRESTACIÓN DE SERVICIOS SAAS</h2>
+                <h3>GESTIVAPYME</h3>
+            </div>
+            
+            <p>Entre los suscritos a saber, de una parte <strong>GestivaPyme S.A.S</strong>, actuando como el PRESTADOR, y de otra parte <strong>' . $empresa->razon_social . '</strong> identificada con NIT <strong>' . $empresa->nit . '</strong>, representada legalmente por <strong>' . $nombreGerente . '</strong> con documento <strong>' . $documentoGerente . '</strong>, quien en adelante se denominará EL CLIENTE, hemos convenido celebrar el presente contrato:</p>
+            
+            <h4>CLÁUSULA PRIMERA: OBJETO</h4>
+            <p>El PRESTADOR otorga al CLIENTE el derecho de uso no exclusivo de la plataforma de gestión empresarial GestivaPyme, en su modalidad SaaS (Software as a Service) bajo el plan de suscripción <strong>' . ($empresa->plan_suscripcion ?: 'Básico') . '</strong>.</p>
+            
+            <h4>CLÁUSULA SEGUNDA: OBLIGACIONES Y USO</h4>
+            <p>El CLIENTE se compromete a hacer un uso lícito de la herramienta, protegiendo sus credenciales de acceso. El PRESTADOR garantizará un uptime del 99.9% y respaldos regulares de la información.</p>
+            
+            <h4>CLÁUSULA TERCERA: PRIVACIDAD DE DATOS</h4>
+            <p>Toda la información ingresada por EL CLIENTE será tratada con estricta confidencialidad y alojada en servidores seguros, cumpliendo con las normativas vigentes de protección de datos (Habeas Data).</p>
+            
+            <hr style="margin-top: 50px; margin-bottom: 30px;">
+            <div style="text-align: center;">
+                <p>Aceptado digitalmente el <strong>' . $data['fecha'] . '</strong> desde la IP <strong>' . $data['ip'] . '</strong>.</p>
+                <div style="margin-top: 20px;">
+                    <img src="' . $empresa->contrato_firma_path . '" style="max-width: 250px; max-height: 150px; border-bottom: 1px solid #000; padding-bottom: 10px;">
+                </div>
+                <p style="margin-top: 10px;"><strong>' . $nombreGerente . '</strong></p>
+                <p>Representante Legal - ' . $empresa->razon_social . '</p>
+            </div>
+        </div>';
+
+        $pdf = Pdf::loadHTML($html);
+        return $pdf->download('Contrato_GestivaPyme_' . $empresa->nit . '.pdf');
     }
 }

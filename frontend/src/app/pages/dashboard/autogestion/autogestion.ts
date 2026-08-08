@@ -210,6 +210,30 @@ export class AutogestionComponent implements OnInit {
     }
   }
 
+  // Descargar contrato SaaS (solo Gerentes)
+  descargarContrato() {
+    if (this.user?.empresa_id) {
+      this.http.get(`/api/empresas/${this.user.empresa_id}/descargar-contrato`, { responseType: 'blob' }).subscribe({
+        next: (blob) => {
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `Contrato_GestivaPyme_${this.user.empresa?.nit || this.user.empresa_id}.pdf`;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          window.URL.revokeObjectURL(url);
+        },
+        error: (err) => {
+          console.error('Error al descargar el contrato SaaS', err);
+          alert('Hubo un error al descargar el contrato. Asegúrate de haberlo firmado o intenta nuevamente.');
+        }
+      });
+    } else {
+      alert('No se pudo encontrar la empresa asociada.');
+    }
+  }
+
   // Permite seleccionar y previsualizar una nueva foto de perfil
   onFileSelected(event: any) {
     const file = event.target.files[0];

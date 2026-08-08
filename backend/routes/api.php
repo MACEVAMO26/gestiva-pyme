@@ -145,6 +145,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::patch('empresas/{id}/status', [EmpresaController::class, 'changeStatus']);
     Route::patch('empresas/{id}/renovar', [EmpresaController::class, 'registrarRenovacion']);
     Route::patch('empresas/{id}/norenovar', [EmpresaController::class, 'noRenovar']);
+    Route::post('empresas/{id}/aceptar-contrato', [EmpresaController::class, 'aceptarContrato']);
+    Route::get('empresas/{id}/descargar-contrato', [EmpresaController::class, 'descargarContratoPDF']);
 
     Route::apiResource('tarifas', \App\Http\Controllers\TarifaController::class);
 
