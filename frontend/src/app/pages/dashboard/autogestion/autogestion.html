@@ -61,21 +61,21 @@
         <h3>Documentos Compartidos</h3>
         <p>Documentos institucionales (contratos, anexos, etc.)</p>
         
-        <div *ngIf="!misDocumentos || misDocumentos.length === 0" style="color: #94a3b8; font-size: 0.9rem; margin-top: 1rem;">
+        <div class="empty-docs-msg" *ngIf="!misDocumentos || misDocumentos.length === 0">
           No tienes documentos disponibles por el momento.
         </div>
 
-        <div style="display: flex; flex-direction: column; gap: 0.75rem; margin-top: 1rem;">
-          <div *ngFor="let doc of misDocumentos" style="background: rgba(30,41,59,0.7); border-radius: 8px; padding: 0.75rem; display: flex; justify-content: space-between; align-items: center;">
-            <div style="display: flex; align-items: center; gap: 0.75rem; overflow: hidden;">
-              <i class="fas fa-file-pdf" *ngIf="doc.tipo_archivo === 'pdf'" style="color: #ef4444; font-size: 1.2rem;"></i>
-              <i class="fas fa-file-powerpoint" *ngIf="doc.tipo_archivo === 'powerpoint'" style="color: #f97316; font-size: 1.2rem;"></i>
-              <div style="overflow: hidden;">
-                <strong style="color: #e2e8f0; font-size: 0.9rem; display: block; white-space: nowrap; text-overflow: ellipsis; overflow: hidden;" [title]="doc.nombre">{{ doc.nombre }}</strong>
-                <span style="color: #64748b; font-size: 0.75rem;">{{ doc.created_at | date:'shortDate' }}</span>
+        <div class="docs-list">
+          <div class="doc-item" *ngFor="let doc of misDocumentos">
+            <div class="doc-info">
+              <i class="fas fa-file-pdf doc-icon-pdf" *ngIf="doc.tipo_archivo === 'pdf'"></i>
+              <i class="fas fa-file-powerpoint doc-icon-ppt" *ngIf="doc.tipo_archivo === 'powerpoint'"></i>
+              <div class="doc-text">
+                <strong class="doc-title" [title]="doc.nombre">{{ doc.nombre }}</strong>
+                <span class="doc-date">{{ doc.created_at | date:'shortDate' }}</span>
               </div>
             </div>
-            <a [href]="doc.cloudinary_url" target="_blank" class="btn-save" style="padding: 0.4rem 0.75rem; font-size: 0.8rem; text-decoration: none;" title="Descargar Documento">
+            <a [href]="doc.cloudinary_url" target="_blank" class="btn-save btn-sm" title="Descargar Documento">
               Descargar
             </a>
           </div>
@@ -170,8 +170,8 @@
             </select>
           </div>
           @if (isHR) {
-            <hr class="my-4 border-gray-600">
-            <h4 class="text-gray-300 font-bold mb-2">Gestión Interna (Exclusivo RRHH)</h4>
+            <hr class="separator-line">
+            <h4 class="section-title">Gestión Interna (Exclusivo RRHH)</h4>
             
             <div class="form-group">
               <label>Fecha de Contratación</label>
@@ -179,7 +179,7 @@
                      [ngClass]="{'estado-aprobado': formAfiliacion.fecha_contratacion}">
             </div>
             <div class="form-group">
-              <label>Finalización de Contrato <span style="color: #ef4444; font-size: 0.8em;">(Oculto al empleado)</span></label>
+              <label>Finalización de Contrato <span class="hint-text-danger">(Oculto al empleado)</span></label>
               <input type="date" [(ngModel)]="formAfiliacion.finalizacion_contrato" name="finalizacion_contrato"
                      [ngClass]="{'estado-aprobado': formAfiliacion.finalizacion_contrato}">
             </div>
@@ -199,7 +199,7 @@
             </div>
           } @else {
             @if (formAfiliacion.fecha_contratacion || formAfiliacion.renovacion_contrato) {
-              <hr class="my-4" style="border-color: rgba(255,255,255,0.1);">
+              <hr class="separator-line">
             }
             @if (formAfiliacion.fecha_contratacion) {
               <div class="form-group">
@@ -214,7 +214,7 @@
                 <input type="date" [value]="formAfiliacion.renovacion_contrato" disabled
                        class="estado-aprobado">
                 @if (cantidadRenovaciones > 0) {
-                  <span style="font-size: 0.85rem; color: #16a34a; margin-top: 0.25rem; font-weight: 700; text-transform: uppercase;">
+                  <span class="renovaciones-msg">
                     ⏳ Usted ha tenido {{ cantidadRenovaciones }} renovaciones de contrato.
                   </span>
                 }
@@ -226,8 +226,8 @@
             @if (isHR) {
               <button type="button" class="btn-save" (click)="gestionarAfiliacionAdmin()" [disabled]="isSavingAdmin">
                 <span *ngIf="!isSavingAdmin">Guardar Gestión (RRHH)</span>
-                <span *ngIf="isSavingAdmin" class="flex items-center">
-                  <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <span *ngIf="isSavingAdmin" class="loading-text">
+                  <svg class="icon-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                   </svg>
@@ -238,27 +238,27 @@
               @if (formAfiliacion.estado !== 'pendiente') {
                 <button type="submit" class="btn-save" [disabled]="isSaving">
                   <span *ngIf="!isSaving">{{ formAfiliacion.estado === 'nuevo' ? 'Guardar Afiliaciones' : 'Actualizar Afiliaciones' }}</span>
-                  <span *ngIf="isSaving" class="flex items-center">
-                    <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <span *ngIf="isSaving" class="loading-text">
+                    <svg class="icon-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                       <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                       <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                     </svg>
                     Guardando...
                   </span>
                 </button>
-                <button type="button" class="btn-save" style="background: #28a745; margin-left: 10px;" (click)="descargarCertificado()">
+                <button type="button" class="btn-save btn-cert" (click)="descargarCertificado()">
                   <i class="fas fa-file-pdf"></i> Certificado Laboral
                 </button>
                 @if (user?.rol?.nombre?.includes('Gerente') && user?.empresa?.contrato_aceptado) {
-                  <button type="button" class="btn-save" style="background: #3b82f6; margin-left: 10px;" (click)="descargarContrato()">
+                  <button type="button" class="btn-save btn-contract" (click)="descargarContrato()">
                     <i class="fas fa-file-contract"></i> Contrato SaaS
                   </button>
                 }
                 @if (formAfiliacion.estado === 'aprobado' || formAfiliacion.estado === 'rechazado') {
-                  <p class="text-sm text-gray-400 mt-2">Nota: Si cambia sus afiliaciones actuales, volverán al estado <strong>Pendiente de Aprobación</strong> por RRHH.</p>
+                  <p class="nota-estado">Nota: Si cambia sus afiliaciones actuales, volverán al estado <strong>Pendiente de Aprobación</strong> por RRHH.</p>
                 }
               } @else {
-                <span style="color: #f59e0b; font-weight: 700; font-size: 1.05rem;">
+                <span class="espera-aprobacion">
                   En espera de aprobación
                 </span>
               }
@@ -278,16 +278,16 @@
             <span>Días Disponibles</span>
           </div>
           <div class="time-stat">
-            <h4>{{ misVacaciones?.length || 0 }}</h4>
+            <h4>{{ misVacaciones.length || 0 }}</h4>
             <span>Solicitudes Históricas</span>
           </div>
         </div>
 
-        <hr class="border-gray-600 mb-6">
+        <hr class="separator-line mb-6">
         
-        <h4 class="font-bold text-gray-300 mb-4">Nueva Solicitud de Vacaciones</h4>
+        <h4 class="section-title mb-4">Nueva Solicitud de Vacaciones</h4>
         <form (ngSubmit)="solicitarVacaciones()" class="grid-form mb-8">
-          <div class="grid grid-cols-2 gap-4">
+          <div class="date-grid">
             <div class="form-group">
               <label>Fecha Inicio</label>
               <input type="date" [(ngModel)]="nuevaVacacion.fecha_inicio" name="vac_inicio" required>
@@ -318,24 +318,24 @@
         </form>
 
         @if (misVacaciones && misVacaciones.length > 0) {
-          <h4 class="font-bold text-gray-300 mb-4">Mis Solicitudes</h4>
-          <div class="space-y-4">
+          <h4 class="section-title mb-4">Mis Solicitudes</h4>
+          <div class="solicitudes-list">
             @for (vac of misVacaciones; track vac.id) {
-              <div class="p-4 border border-gray-700 rounded-lg bg-gray-800/50">
-                <div class="flex justify-between items-center mb-2">
-                  <span class="font-bold text-white">{{ vac.fecha_inicio }} al {{ vac.fecha_fin }}</span>
-                  <span class="px-2 py-1 text-xs rounded-full font-bold uppercase"
+              <div class="solicitud-card">
+                <div class="solicitud-header">
+                  <span class="solicitud-fechas">{{ vac.fecha_inicio }} al {{ vac.fecha_fin }}</span>
+                  <span class="solicitud-badge"
                         [ngClass]="{
-                          'bg-yellow-500/20 text-yellow-500': vac.estado === 'pendiente',
-                          'bg-green-500/20 text-green-500': vac.estado === 'aprobada',
-                          'bg-red-500/20 text-red-500': vac.estado === 'rechazada'
+                          'badge-pendiente': vac.estado === 'pendiente',
+                          'badge-aprobada': vac.estado === 'aprobada',
+                          'badge-rechazada': vac.estado === 'rechazada'
                         }">
                     {{ vac.estado }}
                   </span>
                 </div>
-                <p class="text-sm text-gray-400">Tipo: {{ vac.tipo }}</p>
+                <p class="solicitud-tipo">Tipo: {{ vac.tipo }}</p>
                 @if (vac.justificacion_respuesta) {
-                  <div class="mt-2 text-sm text-gray-300 p-2 bg-gray-900 rounded">
+                  <div class="solicitud-respuesta">
                     <strong>Respuesta RRHH:</strong> {{ vac.justificacion_respuesta }}
                   </div>
                 }

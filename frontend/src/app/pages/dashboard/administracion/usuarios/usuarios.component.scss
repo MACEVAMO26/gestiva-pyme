@@ -407,3 +407,10 @@ $error-color: #ef4444;
   font-size: 1.1rem;
   text-transform: lowercase;
 }
+
+.flex-items-center { display: flex; align-items: center; }
+.flex-justify-center { justify-content: center; }
+.icon-spin-sm { animation: spin 1s linear infinite; margin-left: -0.25rem; margin-right: 0.5rem; height: 1rem; width: 1rem; color: #ffffff; }
+.icon-spin-lg { animation: spin 1s linear infinite; height: 2.5rem; width: 2.5rem; color: #22c55e; }
+.text-center-py-8 { text-align: center; padding-top: 2rem; padding-bottom: 2rem; }
+.error-msg { color: #ef4444; font-weight: 700; }

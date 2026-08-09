@@ -35,6 +35,7 @@ export class EmpleadosComponent implements OnInit {
   isFormalizarModalOpen = false;
   isBajaModalOpen = false;
   isSubmitting = false;
+  showConfirmDialog = false;
 
   empleadoABaja: any = null;
   motivoBaja = '';
@@ -311,6 +312,11 @@ export class EmpleadosComponent implements OnInit {
     const user = this.authService.getUser();
     const entorno = user?.empresa?.slug || user?.empresa?.nombre_url || 'demo';
     this.router.navigate(['/', entorno, 'tiempo']);
+  }
+
+  // Redirige al modulo de tiempo 
+  abrirModuloTiempo() {
+    this.irATiempos();
   }
 
   // Para exportar a Excel
