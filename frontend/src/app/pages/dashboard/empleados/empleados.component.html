@@ -4,12 +4,12 @@
       <h1>Gestión Humana</h1>
       <p>Administra la formalización, contratos y perfiles laborales del personal.</p>
     </div>
-    <div class="header-actions" style="display: flex; gap: 10px;">
-      <button class="btn-save" style="background: #10b981;" (click)="exportarExcel()">
-        <i class="fas fa-file-excel" style="margin-right: 5px;"></i> Exportar a Excel
+    <div class="header-actions header-actions-flex">
+      <button class="btn-primary btn-export" (click)="exportarExcel()">
+        <i class="fas fa-file-excel icon-mr-5"></i> Exportar a Excel
       </button>
-      <button (click)="irATiempos()" class="btn-general" style="display: flex; align-items: center; gap: 0.5rem; border: none; cursor: pointer; background-color: #2563eb; color: white;">
-        <svg class="icon" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width: 20px; height: 20px;">
+      <button class="btn-primary btn-time-module" (click)="abrirModuloTiempo()">
+        <svg class="icon" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
         </svg>
         Módulo de Gestión de Tiempos
@@ -17,6 +17,7 @@
     </div>
   </div>
 
+  <!-- HTML NAVEGACION DE PESTAÑAS -->
   <!-- TABS NAV -->
   <div class="tabs-nav">
     <button class="tab-btn" [class.active]="currentTab === 'pendientes'" (click)="setTab('pendientes')">
@@ -40,6 +41,7 @@
     </button>
   </div>
 
+  <!-- HTML TABLA PENDIENTES -->
   <!-- TABLA PENDIENTES -->
   <div class="table-container glass-panel fade-in" *ngIf="currentTab === 'pendientes'">
     <div class="alert-info m-3">
@@ -108,6 +110,7 @@
     </div>
   </div>
 
+  <!-- HTML TABLA ACTIVOS -->
   <!-- TABLA ACTIVOS -->
   <div class="table-container glass-panel fade-in" *ngIf="currentTab === 'activos'">
     <table class="premium-table">
@@ -147,49 +150,47 @@
           
           <!-- Fila Desplegable: Documentos y Detalles -->
           <tr *ngIf="empleadoExpandido?.id === emp.id">
-            <td colspan="7" style="padding: 0; border: none;">
-              <div class="expandable-panel" style="background: rgba(30, 41, 59, 0.5); padding: 1.5rem; border-bottom: 1px solid #334155;">
-                <h4 style="color: #cbd5e1; margin-top: 0; margin-bottom: 1rem; border-bottom: 1px solid #475569; padding-bottom: 0.5rem;">Gestión de Documentos: {{ emp.usuario?.nombres }}</h4>
+            <td colspan="7" class="expandable-td">
+              <div class="empleado-detalles expandable-panel">
+                <h4 class="panel-title">Documentos del Empleado: {{ emp.usuario?.nombres }}</h4>
                 
                 <!-- Subir Nuevo -->
-                <div style="display: flex; gap: 1rem; align-items: flex-end; margin-bottom: 1.5rem; background: rgba(0,0,0,0.2); padding: 1rem; border-radius: 8px;">
-                  <div style="flex: 1;">
-                    <label style="font-size: 0.85rem; color: #94a3b8; display: block; margin-bottom: 0.25rem;">Nombre del Documento</label>
+                <div class="upload-section">
+                  <div class="form-group flex-1">
+                    <label class="upload-label">Nombre del Documento</label>
                     <input type="text" class="form-control" [(ngModel)]="nombreDocumento" placeholder="Ej. Cédula, Contrato, etc.">
                   </div>
-                  <div style="flex: 1;">
-                    <label style="font-size: 0.85rem; color: #94a3b8; display: block; margin-bottom: 0.25rem;">Archivo (PDF o PPT)</label>
+                  <div class="form-group flex-1">
+                    <label class="upload-label">Archivo (PDF o PPT)</label>
                     <input type="file" id="fileInputDoc" class="form-control" (change)="onFileSelected($event)" accept=".pdf,.ppt,.pptx">
                   </div>
-                  <div>
-                    <button class="btn-save" (click)="subirDocumento()" [disabled]="!archivoSeleccionado || !nombreDocumento || isUploading" style="height: 38px; display: flex; align-items: center; gap: 0.5rem;">
-                      <i class="fas" [ngClass]="isUploading ? 'fa-spinner fa-spin' : 'fa-upload'"></i>
-                      {{ isUploading ? 'Subiendo...' : 'Subir' }}
-                    </button>
-                  </div>
+                  <button class="btn-save" (click)="subirDocumento()" [disabled]="!archivoSeleccionado || !nombreDocumento || isUploading">
+                    <i class="fas" [ngClass]="isUploading ? 'fa-spinner fa-spin' : 'fa-upload'"></i>
+                    {{ isUploading ? 'Subiendo...' : 'Subir' }}
+                  </button>
                 </div>
 
                 <!-- Lista de Documentos -->
                 <div>
-                  <h5 style="color: #94a3b8; margin-bottom: 0.5rem;">Documentos Archivados</h5>
-                  <div *ngIf="documentosEmpleado.length === 0" style="color: #64748b; font-size: 0.9rem; font-style: italic;">
+                  <h5 class="docs-title">Documentos Archivados</h5>
+                  <div *ngIf="documentosEmpleado.length === 0" class="docs-empty">
                     No hay documentos registrados para este empleado.
                   </div>
                   
-                  <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1rem;" *ngIf="documentosEmpleado.length > 0">
-                    <div *ngFor="let doc of documentosEmpleado" style="background: rgba(15, 23, 42, 0.6); border: 1px solid #334155; border-radius: 6px; padding: 0.75rem; display: flex; justify-content: space-between; align-items: center;">
-                      <div style="display: flex; align-items: center; gap: 0.75rem; overflow: hidden;">
-                        <i class="fas fa-file-pdf" *ngIf="doc.tipo_archivo === 'pdf'" style="color: #ef4444; font-size: 1.5rem;"></i>
-                        <i class="fas fa-file-powerpoint" *ngIf="doc.tipo_archivo === 'powerpoint'" style="color: #f97316; font-size: 1.5rem;"></i>
-                        <i class="fas fa-file-alt" *ngIf="doc.tipo_archivo !== 'pdf' && doc.tipo_archivo !== 'powerpoint'" style="color: #94a3b8; font-size: 1.5rem;"></i>
-                        <div style="overflow: hidden;">
-                          <strong style="color: #e2e8f0; font-size: 0.9rem; display: block; white-space: nowrap; text-overflow: ellipsis; overflow: hidden;" [title]="doc.nombre">{{ doc.nombre }}</strong>
-                          <span style="color: #64748b; font-size: 0.75rem;">{{ doc.created_at | date:'short' }}</span>
+                  <div class="documentos-grid docs-grid" *ngIf="documentosEmpleado.length > 0">
+                    <div class="documento-card doc-card" *ngFor="let doc of documentosEmpleado">
+                      <div class="doc-info">
+                        <i class="fas fa-file-pdf icon-pdf" *ngIf="doc.tipo_archivo === 'pdf'"></i>
+                        <i class="fas fa-file-powerpoint icon-ppt" *ngIf="doc.tipo_archivo === 'powerpoint'"></i>
+                        <i class="fas fa-file-alt icon-alt" *ngIf="doc.tipo_archivo !== 'pdf' && doc.tipo_archivo !== 'powerpoint'"></i>
+                        <div class="doc-text">
+                          <strong class="doc-nombre doc-name" [title]="doc.nombre">{{ doc.nombre }}</strong>
+                          <span class="doc-fecha doc-date">{{ doc.created_at | date:'short' }}</span>
                         </div>
                       </div>
-                      <div style="display: flex; gap: 0.5rem;">
-                        <a [href]="doc.cloudinary_url" target="_blank" class="btn-secondary" style="padding: 0.25rem 0.5rem; font-size: 0.8rem;" title="Descargar/Ver"><i class="fas fa-download"></i></a>
-                        <button class="btn-volver" style="padding: 0.25rem 0.5rem; font-size: 0.8rem;" title="Eliminar" (click)="eliminarDocumento(doc.id)"><i class="fas fa-trash"></i></button>
+                      <div class="doc-acciones doc-actions">
+                        <a [href]="doc.cloudinary_url" target="_blank" class="btn-secondary btn-doc-action" title="Descargar/Ver"><i class="fas fa-download"></i></a>
+                        <button class="btn-volver btn-doc-action" title="Eliminar" (click)="eliminarDocumento(doc.id)"><i class="fas fa-trash"></i></button>
                       </div>
                     </div>
                   </div>
@@ -206,6 +207,7 @@
     </table>
   </div>
 
+  <!-- HTML TABLA INACTIVOS -->
   <!-- TABLA INACTIVOS -->
   <div class="table-container glass-panel fade-in" *ngIf="currentTab === 'inactivos'">
     <table class="premium-table">
@@ -226,7 +228,7 @@
           <td>{{ emp.usuario?.nombres }} {{ emp.usuario?.apellidos }}</td>
           <td>{{ emp.area?.nombre || 'Sin Asignar' }}</td>
           <td>{{ emp.cargo?.nombre || 'Sin Asignar' }}</td>
-          <td><span class="status-badge" style="background: #ef4444; color: white;">INACTIVO</span></td>
+          <td><span class="status-badge status-inactive">INACTIVO</span></td>
         </tr>
         <tr *ngIf="empleadosInactivos.length === 0">
           <td colspan="6" class="empty-state">No hay empleados inactivos.</td>
@@ -235,6 +237,7 @@
     </table>
   </div>
 
+  <!-- HTML TABLA AUSENTES -->
   <!-- TABLA AUSENTES -->
   <div class="table-container glass-panel fade-in" *ngIf="currentTab === 'ausentes'">
     <table class="premium-table">
@@ -255,7 +258,7 @@
           <td>{{ emp.usuario?.nombres }} {{ emp.usuario?.apellidos }}</td>
           <td>{{ emp.area?.nombre || 'Sin Asignar' }}</td>
           <td>{{ emp.cargo?.nombre || 'Sin Asignar' }}</td>
-          <td><span class="status-badge status-pending" style="text-transform: uppercase;">{{ emp.estado }}</span></td>
+          <td><span class="status-badge status-pending">{{ emp.estado }}</span></td>
         </tr>
         <tr *ngIf="empleadosAusentes.length === 0">
           <td colspan="6" class="empty-state">No hay empleados ausentes (vacaciones, permiso, incapacidad).</td>
@@ -264,6 +267,7 @@
     </table>
   </div>
 
+  <!-- HTML CONFIGURACION GLOBAL -->
   <!-- CONFIGURACIÓN GLOBAL TAB -->
   <div class="glass-panel p-4 fade-in" *ngIf="currentTab === 'configuracion'">
     <div class="mb-4">
@@ -271,7 +275,7 @@
       <p class="text-muted">Establezca la Administradora de Riesgos Laborales y la Caja de Compensación para toda la empresa.</p>
     </div>
     <form (ngSubmit)="guardarConfiguracionRRHH()">
-      <div class="form-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+      <div class="form-row split form-grid-2">
         <div class="form-group mb-3">
           <label>ARL (Administradora de Riesgos Laborales)</label>
           <input type="text" class="form-control" name="arl" [(ngModel)]="configuracionRRHH.arl" placeholder="Ej. SURA" required>
@@ -281,17 +285,19 @@
           <input type="text" class="form-control" name="caja_compensacion" [(ngModel)]="configuracionRRHH.caja_compensacion" placeholder="Ej. Comfama" required>
         </div>
       </div>
-      <div class="form-actions" style="margin-top: 20px; text-align: right;">
+      <div class="form-actions form-actions-right">
         <button type="submit" class="btn-save" [disabled]="isConfigSubmitting">Guardar Configuración</button>
       </div>
     </form>
   </div>
 
+  <!-- HTML PESTAÑA ESTRUCTURA -->
   <!-- ESTRUCTURA TAB -->
   <div class="fade-in" *ngIf="currentTab === 'estructura'">
     <app-estructura></app-estructura>
   </div>
 
+  <!-- HTML MODAL FORMALIZAR -->
   <!-- MODAL FORMALIZAR -->
   <div class="modal-overlay fade-in" *ngIf="isFormalizarModalOpen">
     <div class="modal-content glass-panel form-modal">
@@ -369,15 +375,16 @@
     </div>
   </div>
 
+  <!-- HTML MODAL SOLICITAR BAJA -->
   <!-- MODAL SOLICITAR BAJA -->
   <div class="modal-overlay fade-in" *ngIf="isBajaModalOpen">
-    <div class="modal-content glass-panel" style="max-width: 500px; width: 100%;">
+    <div class="modal-content form-modal modal-md">
       <div class="modal-header">
         <h3>Solicitar Baja de Empleado</h3>
         <button class="btn-close" (click)="cerrarModalBaja()">✕</button>
       </div>
       
-      <div class="alert-info" style="background: rgba(239, 68, 68, 0.1); border-left-color: #ef4444;">
+      <div class="alert-info alert-danger" *ngIf="showConfirmDialog">
         <p>Estás a punto de solicitar la inactivación de <strong>{{empleadoABaja?.usuario?.nombres}} {{empleadoABaja?.usuario?.apellidos}}</strong>. Esta acción debe ser aprobada por Gerencia.</p>
       </div>
 
@@ -406,6 +413,7 @@
 
 </div>
 
+<!-- HTML MODAL REVISAR VACACIONES -->
 <!-- MODAL REVISAR VACACIONES -->
 @if (isVacacionesModalOpen && vacacionSeleccionada) {
 <div class="modal-overlay fade-in">
@@ -432,7 +440,7 @@
     </div>
     <div class="modal-footer flex justify-end gap-3 mt-4 pt-3 border-t border-gray-700">
       <button class="btn-volver" (click)="cerrarModalVacaciones()">Cancelar</button>
-      <button class="btn-save" style="background: #ef4444;" (click)="responderVacacion('rechazada')" [disabled]="isSubmitting || !justificacionVacacion.trim()">
+      <button class="btn-save btn-danger" (click)="responderVacacion('rechazada')" [disabled]="isSubmitting || !justificacionVacacion.trim()">
         @if (isSubmitting) { <i class="fas fa-spinner fa-spin"></i> } @else { Rechazar }
       </button>
       <button class="btn-save" (click)="responderVacacion('aprobada')" [disabled]="isSubmitting">

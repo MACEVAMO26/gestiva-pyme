@@ -1,3 +1,4 @@
+/* --- 1. LAYOUT PRINCIPAL DEL DASHBOARD --- */
 .dashboard-layout {
   display: flex;
   gap: 2rem;
@@ -21,6 +22,7 @@
   }
 }
 
+/* --- 2. GRID DE METRICAS --- */
 .metrics-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -55,6 +57,8 @@
       &.green { background: rgba(34, 197, 94, 0.1); color: #22c55e; }
       &.purple { background: rgba(168, 85, 247, 0.1); color: #a855f7; }
       &.orange { background: rgba(249, 115, 22, 0.1); color: #f97316; }
+      &.pink { background: rgba(236, 72, 153, 0.1); color: #ec4899; }
+      &.teal { background: rgba(20, 184, 166, 0.1); color: #14b8a6; }
     }
 
     .metric-info {
@@ -75,6 +79,7 @@
   }
 }
 
+/* --- 3. TARJETAS DE TAREAS KANBAN --- */
 .tareas-card {
   margin-bottom: 2rem;
   padding: 1.5rem;
@@ -297,6 +302,7 @@
   }
 }
 
+/* --- 4. BOTONES GENERICOS --- */
 .btn-primary {
   background: #f97316;
   color: #fff;
@@ -353,7 +359,7 @@
   font-size: 0.8rem;
 }
 
-/* AGENDA UI (Basada en el mockup) */
+/* --- 5. INTERFAZ DE AGENDA (BASADO EN MOCKUP) --- */
 .agenda-card {
   background: #1e212d; /* Color de fondo oscuro como en el mockup */
   border-radius: 20px;
@@ -466,10 +472,16 @@
     }
   }
 
-  /* Timeline de Eventos */
+  /* --- 3. TIMELINE DE EVENTOS (AGENDA) --- */
   .timeline {
     position: relative;
     padding-left: 50px; /* Espacio para las horas y la línea */
+    
+    .empty-agenda {
+      padding: 1rem;
+      color: #9ca3af;
+      text-align: center;
+    }
 
     &::before {
       content: '';
@@ -564,7 +576,7 @@
   }
 }
 
-// Modal Styles
+/* --- 6. ESTILOS DE MODALES --- */
 .modal-overlay {
   position: fixed;
   top: 0; left: 0; width: 100%; height: 100%;

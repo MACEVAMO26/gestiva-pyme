@@ -15,6 +15,7 @@ export class Seguridad implements OnInit {
   http = inject(HttpClient);
   cdr = inject(ChangeDetectorRef);
 
+  // --- VARIABLES DE ESTADO ---
   roles: any[] = [];
   permisos: any[] = [];
   selectedRole: any = null;
@@ -36,6 +37,7 @@ export class Seguridad implements OnInit {
   modulosDisponibles: any[] = [];
   empresaId: string | number = '';
 
+  // Inicializa cargando modulos y roles
   ngOnInit() {
     const userDataStr = sessionStorage.getItem('user_data');
     if (userDataStr) {
@@ -46,6 +48,7 @@ export class Seguridad implements OnInit {
     this.cargarRoles();
   }
 
+  // Obtiene los headers con el token
   getHeaders() {
     return {
       'Authorization': `Bearer ${sessionStorage.getItem('auth_token')}`,
@@ -53,6 +56,7 @@ export class Seguridad implements OnInit {
     };
   }
 
+  // Carga los roles del servidor
   cargarRoles() {
     this.isLoading = true;
     this.http.get<any[]>('/api/roles', { headers: this.getHeaders() }).subscribe({
@@ -69,6 +73,7 @@ export class Seguridad implements OnInit {
     });
   }
 
+  // Carga los modulos disponibles para la empresa
   cargarModulos() {
     this.http.get<any>(`/api/mis-modulos`, { headers: this.getHeaders() }).subscribe({
       next: (res) => {
@@ -96,11 +101,13 @@ export class Seguridad implements OnInit {
     });
   }
 
+  // Selecciona un rol para ver sus permisos
   seleccionarRol(rol: any) {
     this.selectedRole = rol;
     this.cargarPermisos(rol.id);
   }
 
+  // Carga los permisos asociados a un rol
   cargarPermisos(rolId: number) {
     this.isLoadingPermisos = true;
     this.http.get<any[]>(`/api/roles/${rolId}/permisos`, { headers: this.getHeaders() }).subscribe({
@@ -118,11 +125,13 @@ export class Seguridad implements OnInit {
     });
   }
 
+  // Abre el modal para nuevo rol
   abrirModalNuevoRol() {
     this.formData = { id: null, nombre: '', descripcion: '', es_base: false };
     this.showModal = true;
   }
 
+  // Abre el modal en modo edicion
   editarRol(rol: any, event: Event) {
     event.stopPropagation();
     this.formData = { 
@@ -134,10 +143,12 @@ export class Seguridad implements OnInit {
     this.showModal = true;
   }
 
+  // Cierra el modal activo
   cerrarModal() {
     this.showModal = false;
   }
 
+  // Guarda el rol creado o modificado
   guardarRol() {
     if (!this.formData.nombre && !this.formData.es_base) return;
     this.isSubmitting = true;
@@ -171,12 +182,14 @@ export class Seguridad implements OnInit {
     }
   }
 
+  // Obtiene los permisos para un modulo especifico
   getPermisoParaModulo(moduloId: string) {
     if (!this.permisos || !Array.isArray(this.permisos)) return { puede_ver: false, puede_crear: false, puede_editar: false, puede_inactivar: false, puede_descargar: false, puede_subir: false };
     const permiso = this.permisos.find(p => p.modulo === moduloId);
     return permiso || { puede_ver: false, puede_crear: false, puede_editar: false, puede_inactivar: false, puede_descargar: false, puede_subir: false };
   }
 
+  // Alterna un permiso especifico
   togglePermiso(moduloId: string, campo: string) {
     if (!this.permisos) this.permisos = [];
     let permiso = this.permisos.find(p => p.modulo === moduloId);
@@ -197,6 +210,7 @@ export class Seguridad implements OnInit {
     this.cdr.detectChanges();
   }
 
+  // Guarda todos los permisos configurados
   guardarTodosLosPermisos() {
     this.isSavingPermisos = true;
     

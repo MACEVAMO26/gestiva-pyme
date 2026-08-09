@@ -46,11 +46,13 @@ export class DashboardComponent implements OnInit {
     this.checkScreenSize();
   }
 
+  // Para manejar el redimensionamiento
   @HostListener('window:resize')
   onResize() {
     this.checkScreenSize();
   }
 
+  // Para comprobar tamaño de pantalla
   private checkScreenSize() {
     if (typeof window !== 'undefined') {
       // Auto-colapsa la barra en pantallas divididas o tablets pequeñas,
@@ -59,6 +61,7 @@ export class DashboardComponent implements OnInit {
     }
   }
 
+  // Al iniciar el componente
   ngOnInit(): void {
     this.user = this.authService.getUser();
     
@@ -93,6 +96,7 @@ export class DashboardComponent implements OnInit {
     }
   }
 
+  // Para cargar las notificaciones del usuario
   cargarNotificaciones() {
     this.http.get<any[]>('/api/notificaciones').subscribe({
       next: (data) => {
@@ -103,6 +107,7 @@ export class DashboardComponent implements OnInit {
     });
   }
 
+  // Para abrir/cerrar notificaciones
   toggleNotifications() {
     this.isNotificationsOpen = !this.isNotificationsOpen;
     if (this.isNotificationsOpen) {
@@ -110,6 +115,7 @@ export class DashboardComponent implements OnInit {
     }
   }
 
+  // Para marcar notificación como leída
   marcarLeida(id: number, event: Event) {
     event.stopPropagation();
     this.http.delete(`/api/notificaciones/${id}/leida`).subscribe({
@@ -121,6 +127,7 @@ export class DashboardComponent implements OnInit {
     });
   }
 
+  // Para ver si vio el tutorial
   checkGestivaTutorial() {
     if (this.user && typeof window !== 'undefined') {
       const userKey = this.user.email || this.user.id || 'default';
@@ -131,6 +138,7 @@ export class DashboardComponent implements OnInit {
     }
   }
 
+  // Para cerrar el tutorial
   cerrarGestivaOnboarding() {
     this.showGestivaOnboarding = false;
     if (this.user && typeof window !== 'undefined') {
@@ -139,6 +147,7 @@ export class DashboardComponent implements OnInit {
     }
   }
 
+  // Para obtener logo de empresa
   getLogoUrl(): string {
     if (this.user?.empresa?.logo_url) {
       const url = this.user.empresa.logo_url;
@@ -147,6 +156,7 @@ export class DashboardComponent implements OnInit {
     return 'assets/images/Logos/GESTIVAPYME(7).png';
   }
 
+  // Para cargar módulos activos
   cargarModulos(empresaId: number) {
     const modulosGuardados = this.authService.getModulosActivos();
     if (modulosGuardados) {
@@ -171,6 +181,7 @@ export class DashboardComponent implements OnInit {
     });
   }
 
+  // Para el menú de accesibilidad
   toggleAccessibilityMenu() {
     this.isAccessibilityMenuOpen = !this.isAccessibilityMenuOpen;
     if (this.isAccessibilityMenuOpen) {
@@ -178,23 +189,28 @@ export class DashboardComponent implements OnInit {
     }
   }
 
+  // Para colapsar sidebar
   toggleSidebar() {
     this.isSidebarCollapsed = !this.isSidebarCollapsed;
   }
 
+  // Para menú móvil
   toggleMobileMenu() {
     this.isMobileMenuOpen = !this.isMobileMenuOpen;
   }
 
+  // Para aplicar modo daltonismo
   setDaltonismMode(mode: DaltonismMode) {
     this.accessibilityService.setMode(mode);
     this.isAccessibilityMenuOpen = false;
   }
 
+  // Para cambiar de módulo
   switchModule(moduleName: string) {
     this.currentModule = moduleName;
   }
 
+  // Para cambiar el avatar
   changeAvatar() {
     const seed = Math.random().toString(36).substring(7);
     const newAvatarUrl = `https://api.dicebear.com/8.x/adventurer/svg?seed=${seed}`;
@@ -217,11 +233,13 @@ export class DashboardComponent implements OnInit {
   isSigning = false;
   signaturePad: any = null;
 
+  // Para cerrar sesión
   logout(): void {
     this.authService.logout();
   }
 
   // --- LÓGICA CONTRATO SAAS ---
+  // Para comprobar el contrato
   checkContractStatus() {
     if (this.user && this.user.empresa && this.user.rol?.nombre?.includes('Gerente')) {
       // Usar setTimeout para asegurar que el DOM este listo para Angular
@@ -235,6 +253,7 @@ export class DashboardComponent implements OnInit {
     }
   }
 
+  // Para inicializar firma
   initSignaturePad() {
     const canvas = document.getElementById('signatureCanvas') as HTMLCanvasElement;
     if (canvas) {
@@ -253,12 +272,14 @@ export class DashboardComponent implements OnInit {
     }
   }
 
+  // Para limpiar firma
   clearSignature() {
     if (this.signaturePad) {
       this.signaturePad.clear();
     }
   }
 
+  // Para aceptar el contrato
   acceptContract() {
     if (!this.signaturePad || this.signaturePad.isEmpty()) {
       alert("Por favor, ingresa tu firma electrónica para continuar.");

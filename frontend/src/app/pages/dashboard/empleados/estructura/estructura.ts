@@ -14,6 +14,7 @@ export class EstructuraComponent implements OnInit {
   
   empleadoService = inject(EmpleadoService);
 
+  // --- VARIABLES DE ESTADO ---
   // Tabs internas: 'areas' o 'cargos'
   currentTab = 'areas';
 
@@ -29,10 +30,12 @@ export class EstructuraComponent implements OnInit {
   areaForm = { id: null, nombre: '', descripcion: '' };
   cargoForm = { id: null, nombre: '', descripcion: '', rol_id: '' };
 
+  // Al iniciar el componente
   ngOnInit() {
     this.cargarDatos();
   }
 
+  // Para cargar los datos iniciales
   cargarDatos() {
     this.empleadoService.getAreas().subscribe({
       next: (data) => this.areas = data
@@ -45,11 +48,13 @@ export class EstructuraComponent implements OnInit {
     });
   }
 
+  // Para cambiar de pestaña
   setTab(tab: string) {
     this.currentTab = tab;
   }
 
   // --- ÁREAS ---
+  // Para abrir modal de área
   abrirModalArea(area: any = null) {
     if (area) {
       this.areaForm = { ...area };
@@ -59,10 +64,12 @@ export class EstructuraComponent implements OnInit {
     this.isAreaModalOpen = true;
   }
 
+  // Para cerrar modal de área
   cerrarModalArea() {
     this.isAreaModalOpen = false;
   }
 
+  // Para guardar área
   guardarArea() {
     this.isSubmitting = true;
     const request = this.areaForm.id 
@@ -85,6 +92,7 @@ export class EstructuraComponent implements OnInit {
   }
 
   // --- CARGOS ---
+  // Para abrir modal de cargo
   abrirModalCargo(cargo: any = null) {
     if (cargo) {
       this.cargoForm = { ...cargo };
@@ -94,10 +102,12 @@ export class EstructuraComponent implements OnInit {
     this.isCargoModalOpen = true;
   }
 
+  // Para cerrar modal de cargo
   cerrarModalCargo() {
     this.isCargoModalOpen = false;
   }
 
+  // Para guardar cargo
   guardarCargo() {
     this.isSubmitting = true;
     const request = this.cargoForm.id

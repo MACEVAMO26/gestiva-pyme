@@ -1,6 +1,6 @@
-/* compras.scss */
+/* --- 1. GLOBALS --- */
 
-/* Badges de compras */
+/* --- 2. BADGES DE COMPRAS --- */
 .badge {
   padding: 0.3rem 0.6rem;
   border-radius: 12px;
@@ -13,7 +13,7 @@
 .badge-danger { background: #dc2626; } /* Red 600 */
 .badge-secondary { background: #64748b; } /* Slate 500 */
 
-/* Action bar */
+/* --- 3. ACTION BAR --- */
 .action-bar {
   display: flex;
   align-items: center;

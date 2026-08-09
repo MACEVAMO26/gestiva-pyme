@@ -16,10 +16,8 @@ export class TiempoComponent implements OnInit {
   private tiempoService = inject(TiempoService);
   private empleadoService = inject(EmpleadoService);
 
-  // Navegación
+  // --- VARIABLES DE ESTADO ---
   currentTab = 'turnos';
-
-  // Datos
   turnos: any[] = [];
   empleados: any[] = [];
   vacaciones: any[] = [];
@@ -52,15 +50,18 @@ export class TiempoComponent implements OnInit {
     justificacion_respuesta: ''
   };
 
+  // Inicializar componente
   ngOnInit() {
     this.cargarDatosTab();
   }
 
+  // Cambiar pestaña activa
   setTab(tab: string) {
     this.currentTab = tab;
     this.cargarDatosTab();
   }
 
+  // Cargar datos según la pestaña activa
   cargarDatosTab() {
     if (this.currentTab === 'turnos') {
       this.cargarTurnos();
@@ -73,6 +74,7 @@ export class TiempoComponent implements OnInit {
   }
 
   // --- MÉTODOS TURNOS ---
+  // Obtener lista de turnos
   cargarTurnos() {
     this.tiempoService.getTurnos().subscribe({
       next: (data) => this.turnos = data,
@@ -80,6 +82,7 @@ export class TiempoComponent implements OnInit {
     });
   }
 
+  // Crear un nuevo turno
   crearTurno() {
     if (!this.nuevoTurno.nombre_turno || !this.nuevoTurno.hora_entrada || !this.nuevoTurno.hora_salida) {
       alert('Por favor completa todos los campos del turno.');
@@ -102,6 +105,7 @@ export class TiempoComponent implements OnInit {
     });
   }
 
+  // Cambiar estado activo/inactivo del turno
   toggleTurnoEstado(turno: any) {
     const nuevoEstado = !turno.activo;
     this.tiempoService.cambiarEstadoTurno(turno.id, nuevoEstado).subscribe({
@@ -116,6 +120,7 @@ export class TiempoComponent implements OnInit {
   }
 
   // --- MÉTODOS ASIGNACIÓN ---
+  // Obtener lista de empleados activos
   cargarEmpleados() {
     this.empleadoService.getEmpleados().subscribe({
       next: (data) => {
@@ -126,6 +131,7 @@ export class TiempoComponent implements OnInit {
     });
   }
 
+  // Asignar turno a un empleado
   asignarTurno() {
     if (!this.asignacion.usuario_id || !this.asignacion.turno_id || !this.asignacion.fecha_desde || !this.asignacion.fecha_hasta) {
       alert('Por favor completa todos los campos de asignación.');
@@ -152,6 +158,7 @@ export class TiempoComponent implements OnInit {
   }
 
   // --- MÉTODOS VACACIONES (RRHH) ---
+  // Cargar solicitudes de vacaciones
   cargarVacaciones() {
     this.tiempoService.getVacaciones().subscribe({
       next: (data) => this.vacaciones = data,
@@ -159,6 +166,7 @@ export class TiempoComponent implements OnInit {
     });
   }
 
+  // Abrir modal de gestión de vacaciones
   abrirModalVacaciones(vacacion: any) {
     this.vacacionSeleccionada = vacacion;
     this.respuestaVacacion = {
@@ -168,11 +176,13 @@ export class TiempoComponent implements OnInit {
     this.showModalVacaciones = true;
   }
 
+  // Cerrar modal de vacaciones
   cerrarModalVacaciones() {
     this.showModalVacaciones = false;
     this.vacacionSeleccionada = null;
   }
 
+  // Enviar respuesta a solicitud de vacaciones
   responderVacaciones() {
     if (this.respuestaVacacion.estado === 'rechazada' && !this.respuestaVacacion.justificacion_respuesta) {
       alert('Debe justificar el rechazo de la solicitud.');

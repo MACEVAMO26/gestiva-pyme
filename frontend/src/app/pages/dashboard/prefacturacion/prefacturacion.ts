@@ -13,7 +13,7 @@ export class PrefacturacionComponent implements OnInit {
   // --- TABS ---
   activeTab: string = 'caja'; // caja | prefacturas
 
-  // --- ESTADO DE CAJA ---
+  // --- VARIABLES DE ESTADO ---
   cajaAbierta = false;
   montoApertura = 0;
   guardando = false;
@@ -34,22 +34,27 @@ export class PrefacturacionComponent implements OnInit {
   toastMessage = '';
   toastType = '';
 
+  // Inicializar componente
   ngOnInit(): void {}
 
+  // Cambiar de pestaña
   switchTab(tab: string) {
     this.activeTab = tab;
   }
 
   // --- LÓGICA DE CAJA ---
+  // Abrir modal de caja
   abrirCajaModal() {
     this.montoApertura = 0;
     this.showModalApertura = true;
   }
 
+  // Cerrar modal de apertura
   cerrarCajaModal() {
     this.showModalApertura = false;
   }
 
+  // Confirmar la apertura de la caja
   confirmarApertura() {
     if (this.montoApertura < 0) {
       this.mostrarToast('El monto no puede ser negativo', 'error');
@@ -70,6 +75,7 @@ export class PrefacturacionComponent implements OnInit {
     }, 800);
   }
 
+  // Registrar nuevo movimiento
   registrarMovimiento() {
     if (this.montoMovimiento <= 0 || !this.conceptoMovimiento) {
       this.mostrarToast('Debe ingresar un monto válido y un concepto.', 'warning');
@@ -88,30 +94,36 @@ export class PrefacturacionComponent implements OnInit {
     this.conceptoMovimiento = '';
   }
 
+  // Obtener el total de ingresos
   get totalIngresos() {
     return this.movimientos
       .filter(m => m.tipo === 'ingreso' || m.tipo === 'apertura')
       .reduce((acc, m) => acc + m.monto, 0);
   }
 
+  // Obtener el total de egresos
   get totalEgresos() {
     return this.movimientos
       .filter(m => m.tipo === 'egreso')
       .reduce((acc, m) => acc + m.monto, 0);
   }
 
+  // Obtener el saldo actual
   get saldoActual() {
     return this.totalIngresos - this.totalEgresos;
   }
 
+  // Abrir modal de cierre
   abrirCierreModal() {
     this.showModalCierre = true;
   }
 
+  // Cerrar modal de cierre
   cerrarCierreModal() {
     this.showModalCierre = false;
   }
 
+  // Confirmar el cierre de caja
   confirmarCierre() {
     this.guardando = true;
     setTimeout(() => {
@@ -124,6 +136,7 @@ export class PrefacturacionComponent implements OnInit {
   }
 
   // --- LÓGICA PREFACTURAS ---
+  // Generar documento a partir de prefactura
   generarDocumento(id: number) {
     const idx = this.prefacturas.findIndex(p => p.id === id);
     if (idx !== -1) {
@@ -136,10 +149,12 @@ export class PrefacturacionComponent implements OnInit {
     }
   }
 
+  // Obtener clase de estado
   getBadgeClass(estado: string) {
     return estado === 'Facturada' ? 'badge-success' : 'badge-warning';
   }
 
+  // Mostrar notificación toast
   mostrarToast(mensaje: string, tipo: string) {
     this.toastMessage = mensaje;
     this.toastType = tipo;

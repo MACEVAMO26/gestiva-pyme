@@ -10,7 +10,7 @@ import { FormsModule } from '@angular/forms';
   styleUrl: './servicios.scss',
 })
 export class Servicios implements OnInit {
-  // --- TABS ---
+  // --- VARIABLES DE ESTADO ---
   activeTab: string = 'recepcion'; // recepcion | agenda | ejecucion | catalogo | rendimiento
 
   // --- MOCK DB: CATÁLOGO ---
@@ -44,13 +44,16 @@ export class Servicios implements OnInit {
   
   tecnicoDashboard: any = null; // Por defecto el primero
 
+  // Inicializar componente
   ngOnInit(): void {}
 
+  // Cambiar pestaña activa
   switchTab(tab: string) {
     this.activeTab = tab;
   }
 
   // --- TAB: RECEPCIÓN (TICKETS) ---
+  // Crear nuevo ticket de servicio
   crearTicket() {
     if(!this.formTicket.cliente || !this.formTicket.servicio) {
       this.mostrarToast('Cliente y Servicio son obligatorios', 'warning');
@@ -76,21 +79,25 @@ export class Servicios implements OnInit {
   }
 
   // --- TAB: AGENDA Y DESPACHO ---
+  // Obtener tickets pendientes
   get ticketsPendientes() {
     return this.tickets.filter(t => t.estado === 'Pendiente' || t.estado === 'Asignado');
   }
 
+  // Abrir modal de asignación de técnico
   abrirAsignacion(ticket: any) {
     this.ticketSeleccionado = ticket;
     this.tecnicoSeleccionado = ticket.tecnico || '';
     this.modalAsignacion = true;
   }
 
+  // Cerrar modal de asignación
   cerrarAsignacion() {
     this.modalAsignacion = false;
     this.ticketSeleccionado = null;
   }
 
+  // Guardar asignación de técnico
   guardarAsignacion() {
     if(!this.tecnicoSeleccionado) return;
     this.guardando = true;
@@ -104,17 +111,20 @@ export class Servicios implements OnInit {
   }
 
   // --- TAB: EJECUCIÓN Y MATERIALES ---
+  // Abrir modal de ejecución
   abrirEjecucion(ticket: any) {
     this.ticketSeleccionado = ticket;
     this.materialesUsados = [];
     this.modalEjecucion = true;
   }
 
+  // Cerrar modal de ejecución
   cerrarEjecucion() {
     this.modalEjecucion = false;
     this.ticketSeleccionado = null;
   }
 
+  // Agregar material al servicio
   agregarMaterial() {
     if(!this.materialSeleccionado || this.cantidadMaterial < 1) return;
     const inv = this.inventario.find(i => i.nombre === this.materialSeleccionado);
@@ -129,6 +139,7 @@ export class Servicios implements OnInit {
     }
   }
 
+  // Finalizar servicio en sitio
   finalizarServicio() {
     this.guardando = true;
     setTimeout(() => {
@@ -146,15 +157,18 @@ export class Servicios implements OnInit {
   }
 
   // --- TAB: RENDIMIENTO ---
+  // Seleccionar técnico para ver su rendimiento
   seleccionarTecnicoRender(tec: any) {
     this.tecnicoDashboard = tec;
   }
 
+  // Calcular porcentaje
   getPorcentaje(valor: number, max: number = 100) {
     return (valor / max) * 100;
   }
 
   // --- UTILIDADES ---
+  // Obtener clase para el estado
   getBadgeEstado(estado: string) {
     switch(estado) {
       case 'Pendiente': return 'badge-warning';
@@ -166,6 +180,7 @@ export class Servicios implements OnInit {
     }
   }
 
+  // Mostrar notificación
   mostrarToast(mensaje: string, tipo: string) {
     this.toastMessage = mensaje;
     this.toastType = tipo;

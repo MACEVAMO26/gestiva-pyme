@@ -43,13 +43,16 @@ export class Inventario implements OnInit {
   showToast = false;
   guardando = false;
 
+  // Al iniciar el componente
   ngOnInit(): void {}
 
   // --- METODOS DE NAVEGACION ---
+  // Para cambiar de pestaña
   switchTab(tab: string) {
     this.activeTab = tab;
   }
 
+  // Para exportar a Excel
   exportarExcel() {
     this.http.get('/api/export/productos', { responseType: 'blob' }).subscribe({
       next: (blob) => {
@@ -70,17 +73,20 @@ export class Inventario implements OnInit {
   }
 
   // --- METODOS MODAL PRODUCTO ---
+  // Para abrir modal de producto
   abrirModal() {
     this.formProducto = { codigo: '', nombre: '', categoria_id: '', precio_venta: 0, precio_compra: 0, stock_inicial: 0, unidad_medida: 'Unidad' };
     this.archivoSeleccionado = null;
     this.showModal = true;
   }
 
+  // Para cerrar modal de producto
   cerrarModal() {
     this.showModal = false;
   }
 
   // --- ACCIONES PRINCIPALES ---
+  // Para cargar los datos del inventario
   cargarDatos() {
     this.http.get<any[]>('/api/productos').subscribe({
       next: (data) => this.productos = data,
@@ -88,10 +94,12 @@ export class Inventario implements OnInit {
     });
   }
 
+  // Para manejar la selección de archivos
   onFileSelected(event: any) {
     this.archivoSeleccionado = event.target.files[0];
   }
 
+  // Para guardar un nuevo producto
   guardarProducto() {
     // Validaciones básicas
     if (!this.formProducto.codigo || !this.formProducto.nombre || !this.formProducto.categoria_id) {
@@ -129,6 +137,7 @@ export class Inventario implements OnInit {
     });
   }
 
+  // Para mostrar notificaciones
   mostrarToast(mensaje: string, tipo: string) {
     this.toastMessage = mensaje;
     this.toastType = tipo;
@@ -140,6 +149,7 @@ export class Inventario implements OnInit {
   }
 
   // --- FILTROS ---
+  // Para obtener productos filtrados
   get productosFiltrados() {
     if (!this.searchTerm) return this.productos;
     const term = this.searchTerm.toLowerCase();
@@ -150,6 +160,7 @@ export class Inventario implements OnInit {
     );
   }
 
+  // Para obtener la clase del badge
   getBadgeClass(stock: number, minimo: number) {
     if (stock === 0) return 'badge-danger';
     if (stock <= minimo) return 'badge-warning';

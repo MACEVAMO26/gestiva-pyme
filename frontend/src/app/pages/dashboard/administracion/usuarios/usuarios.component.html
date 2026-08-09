@@ -1,4 +1,5 @@
 <div class="usuarios-module fade-in">
+  <!-- HTML ENCABEZADO -->
   <div class="module-header with-back">
     <button class="btn-back" (click)="cerrarModal()" *ngIf="false"> <!-- handled by parent --> </button>
     <!-- Wait, parent handles navigation. But we can still have our header here! -->
@@ -46,7 +47,7 @@
             </span>
           </td>
           <td>
-            <button class="btn-save btn-sm" style="background: #ef4444;" *ngIf="u.empleado?.baja_solicitada" (click)="aprobarBaja(u)" [disabled]="isApprovingBaja">
+            <button class="btn-save btn-sm btn-reject" *ngIf="u.empleado?.baja_solicitada" (click)="aprobarBaja(u)" [disabled]="isApprovingBaja">
               <span *ngIf="!isApprovingBaja">Aprobar Inactivar</span>
               <span *ngIf="isApprovingBaja" class="flex items-center">
                 <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -63,12 +64,12 @@
         </tr>
         <tr *ngIf="isLoading">
           <td colspan="7" class="text-center py-8">
-            <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 3rem 0; gap: 1rem;">
+            <div class="loading-container">
               <svg class="animate-spin h-10 w-10 text-green-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
               </svg>
-              <span style="color: #4ade80; font-weight: 500;">Cargando usuarios...</span>
+              <span class="loading-text">Cargando usuarios...</span>
             </div>
           </td>
         </tr>
@@ -167,7 +168,7 @@
       
       <div class="password-box mt-3 mb-3">
         <label>USUARIO (CORREO CORPORATIVO)</label>
-        <div class="password-display text-blue" style="font-size: 1.1rem; text-transform: lowercase;">
+        <div class="password-display text-blue password-lowercase">
           {{ emailGenerado }}
         </div>
         <label class="mt-3">CONTRASEÑA TEMPORAL</label>

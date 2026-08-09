@@ -1,4 +1,5 @@
 <div class="usuarios-module fade-in">
+  <!-- HTML ENCABEZADO -->
   <div class="module-header">
     <h1>Configuraciones de Seguridad</h1>
     <p>Administra los roles y los permisos de acceso de cada módulo del sistema.</p>
@@ -11,77 +12,76 @@
     </button>
   </div>
 
-  <div class="split-layout" style="display: grid; grid-template-columns: 300px 1fr; gap: 1.5rem; align-items: start;">
+  <div class="split-layout seguridad-layout">
     
-    <!-- Lista de Roles -->
-    <div class="glass-panel" style="padding: 1rem; border-radius: 12px;">
-      <h3 style="margin-top: 0; color: #f8fafc; font-size: 1.1rem; margin-bottom: 1rem;">Roles del Sistema</h3>
+    <!-- HTML LISTA DE ROLES -->
+    <div class="glass-panel panel-roles">
+      <h3 class="roles-title">Roles del Sistema</h3>
       
-      <div *ngIf="isLoading" class="loading-state" style="padding: 2rem; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1rem;">
-        <svg style="width: 40px; height: 40px; color: #10b981; animation: spin 1s linear infinite;" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" style="opacity: 0.25;"></circle>
-          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" style="opacity: 0.75;"></path>
+      <div *ngIf="isLoading" class="loading-state loading-roles">
+        <svg class="spinner-green spinner-md" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
         </svg>
-        <span style="color: #94a3b8; font-size: 0.9rem;">Cargando roles...</span>
+        <span class="loading-text-sm">Cargando roles...</span>
       </div>
 
       <div *ngIf="!isLoading && roles.length === 0" class="empty-state">
         No hay roles creados.
       </div>
 
-      <div class="roles-list" style="display: flex; flex-direction: column; gap: 0.5rem; max-height: 65vh; overflow-y: auto; padding-right: 0.5rem;">
-        <div class="role-item" *ngFor="let rol of roles" 
+      <div class="roles-list">
+        <div class="role-item rol-item" *ngFor="let rol of roles" 
              (click)="seleccionarRol(rol)"
-             [ngClass]="{'active': selectedRole?.id === rol.id}"
-             style="padding: 0.75rem 1rem; border-radius: 8px; cursor: pointer; transition: all 0.2s; border: 1px solid transparent; background: rgba(255,255,255,0.02); display: flex; justify-content: space-between; align-items: center;">
+             [ngClass]="{'active': selectedRole?.id === rol.id}">
           
           <div>
-            <div style="font-weight: 600; color: #f8fafc; display: flex; align-items: center; gap: 0.5rem;">
+            <div class="rol-name">
               {{ rol.nombre }}
-              <span *ngIf="rol.es_base" style="font-size: 0.65rem; background: rgba(59, 130, 246, 0.2); color: #60a5fa; padding: 2px 6px; border-radius: 4px; font-weight: normal;">Base</span>
+              <span *ngIf="rol.es_base" class="badge-base">Base</span>
             </div>
-            <div style="font-size: 0.8rem; color: #94a3b8; margin-top: 0.25rem;">{{ rol.descripcion || 'Sin descripción' }}</div>
+            <div class="rol-desc">{{ rol.descripcion || 'Sin descripción' }}</div>
           </div>
           
-          <button class="btn-icon" (click)="editarRol(rol, $event)" title="Editar Rol" style="background: none; border: none; color: #94a3b8; cursor: pointer; padding: 0.25rem;">
+          <button class="btn-icon" (click)="editarRol(rol, $event)" title="Editar Rol">
             <svg class="icon-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
           </button>
         </div>
       </div>
     </div>
 
-    <!-- Panel de Permisos -->
-    <div class="glass-panel" style="padding: 1.5rem; border-radius: 12px; min-height: 400px;">
-      <div *ngIf="!selectedRole" class="empty-state" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: #94a3b8;">
-        <svg class="icon-xl" style="margin-bottom: 1rem; opacity: 0.5;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" /></svg>
+    <!-- HTML PANEL DE PERMISOS -->
+    <div class="glass-panel panel-permisos">
+      <div *ngIf="!selectedRole" class="empty-state empty-permisos">
+        <svg class="icon-xl empty-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" /></svg>
         Selecciona un rol a la izquierda para configurar sus permisos.
       </div>
 
       <div *ngIf="selectedRole" class="fade-in">
-        <h3 style="margin-top: 0; color: #3b82f6; font-size: 1.25rem; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+        <h3 class="permisos-title">
           <svg class="icon-md" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
           Permisos para: {{ selectedRole.nombre }}
         </h3>
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-          <p style="color: #94a3b8; font-size: 0.9rem; margin: 0;">Selecciona los accesos y presiona Guardar.</p>
-          <button class="btn-guardar-verde" (click)="guardarTodosLosPermisos()" [disabled]="isSavingPermisos || !selectedRole" style="display: flex; align-items: center; gap: 0.5rem; background: #10b981; color: white; border: none; padding: 0.7rem 1.2rem; border-radius: 8px; font-weight: 500; cursor: pointer; transition: opacity 0.2s;">
-            <svg *ngIf="isSavingPermisos" style="width: 16px; height: 16px; color: white; animation: spin 1s linear infinite;" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-              <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" style="opacity: 0.25;"></circle>
-              <path fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" style="opacity: 0.75;"></path>
+        <div class="permisos-header">
+          <p class="permisos-subtitle">Selecciona los accesos y presiona Guardar.</p>
+          <button class="btn-guardar-verde" (click)="guardarTodosLosPermisos()" [disabled]="isSavingPermisos || !selectedRole">
+            <svg *ngIf="isSavingPermisos" class="spinner-white spinner-sm" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
             </svg>
             {{ isSavingPermisos ? 'Guardando...' : 'Guardar Permisos' }}
           </button>
         </div>
 
-        <div *ngIf="isLoadingPermisos" class="loading-state" style="padding: 4rem; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1rem;">
-          <svg style="width: 50px; height: 50px; color: #10b981; animation: spin 1s linear infinite;" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" style="opacity: 0.25;"></circle>
-            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" style="opacity: 0.75;"></path>
+        <div *ngIf="isLoadingPermisos" class="loading-state loading-permisos">
+          <svg class="spinner-green spinner-lg" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
           </svg>
-          <span style="color: #94a3b8; font-size: 1rem;">Cargando permisos de esta área...</span>
+          <span class="loading-text-md">Cargando permisos de esta área...</span>
         </div>
 
-        <div class="table-container" style="max-height: 55vh; overflow-y: auto; margin-bottom: 1rem; padding-right: 0.5rem;">
+        <div class="table-container permisos-table-container">
           <table class="premium-table" *ngIf="!isLoadingPermisos">
           <thead>
             <tr>
@@ -96,34 +96,34 @@
           </thead>
           <tbody>
             <tr *ngFor="let mod of modulosDisponibles">
-              <td style="font-weight: 500;">{{ mod.nombre }}</td>
+              <td class="modulo-name">{{ mod.nombre }}</td>
               <td class="text-center">
-                <input type="checkbox" style="width: 18px; height: 18px; accent-color: #3b82f6; cursor: pointer;"
+                <input type="checkbox" class="checkbox-permiso"
                        [checked]="getPermisoParaModulo(mod.id).puede_ver"
                        (change)="togglePermiso(mod.id, 'puede_ver')">
               </td>
               <td class="text-center">
-                <input type="checkbox" style="width: 18px; height: 18px; accent-color: #3b82f6; cursor: pointer;"
+                <input type="checkbox" class="checkbox-permiso"
                        [checked]="getPermisoParaModulo(mod.id).puede_crear"
                        (change)="togglePermiso(mod.id, 'puede_crear')">
               </td>
               <td class="text-center">
-                <input type="checkbox" style="width: 18px; height: 18px; accent-color: #3b82f6; cursor: pointer;"
+                <input type="checkbox" class="checkbox-permiso"
                        [checked]="getPermisoParaModulo(mod.id).puede_editar"
                        (change)="togglePermiso(mod.id, 'puede_editar')">
               </td>
               <td class="text-center">
-                <input type="checkbox" style="width: 18px; height: 18px; accent-color: #3b82f6; cursor: pointer;"
+                <input type="checkbox" class="checkbox-permiso"
                        [checked]="getPermisoParaModulo(mod.id).puede_inactivar"
                        (change)="togglePermiso(mod.id, 'puede_inactivar')">
               </td>
               <td class="text-center">
-                <input type="checkbox" style="width: 18px; height: 18px; accent-color: #3b82f6; cursor: pointer;"
+                <input type="checkbox" class="checkbox-permiso"
                        [checked]="getPermisoParaModulo(mod.id).puede_descargar"
                        (change)="togglePermiso(mod.id, 'puede_descargar')">
               </td>
               <td class="text-center">
-                <input type="checkbox" style="width: 18px; height: 18px; accent-color: #3b82f6; cursor: pointer;"
+                <input type="checkbox" class="checkbox-permiso"
                        [checked]="getPermisoParaModulo(mod.id).puede_subir"
                        (change)="togglePermiso(mod.id, 'puede_subir')">
               </td>
@@ -136,7 +136,7 @@
     </div>
   </div>
 
-  <!-- Modal Nuevo Rol -->
+  <!-- HTML MODAL NUEVO ROL -->
   <div class="modal-overlay" *ngIf="showModal">
     <div class="modal-content form-modal glass-panel">
       <div class="modal-header">
@@ -149,7 +149,7 @@
       <form (ngSubmit)="guardarRol()">
         <div class="form-row">
           <div class="form-group">
-            <label>Nombre del Rol <span style="color: #ef4444">*</span></label>
+            <label>Nombre del Rol <span class="required-asterisk">*</span></label>
             <input type="text" class="form-control" name="nombre" [(ngModel)]="formData.nombre" [readonly]="formData.es_base" required placeholder="Ej. Gerente Comercial" [title]="formData.es_base ? 'El nombre de un rol base no puede ser modificado' : ''">
           </div>
         </div>

@@ -9,6 +9,7 @@ import { CommonModule } from '@angular/common';
   styleUrl: './dashboard.scss'
 })
 export class Dashboard {
+  // --- VARIABLES DE ESTADO ---
   // Simulación de métricas para darle vida a la IA
   recomendacionMensaje = "He notado un aumento del 15% en los registros de clientes esta semana. Te sugiero revisar el módulo de inventario para asegurar que tienes suficiente stock para cubrir posibles ventas.";
   

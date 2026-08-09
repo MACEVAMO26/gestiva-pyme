@@ -89,7 +89,7 @@ import { ToastService } from '../../../services/toast.service';
       </div>
     </div>
 
-    <!-- MODAL CREAR TICKET -->
+    <!-- HTML MODAL CREAR TICKET -->
     @if (showModalCrear) {
       <div class="modal-overlay">
         <div class="modal-content">
@@ -136,7 +136,7 @@ import { ToastService } from '../../../services/toast.service';
       </div>
     }
 
-    <!-- MODAL VER RESPUESTA -->
+    <!-- HTML MODAL VER RESPUESTA -->
     @if (ticketSeleccionadoParaRespuesta) {
       <div class="modal-overlay">
         <div class="modal-content max-w-lg">
@@ -162,6 +162,7 @@ import { ToastService } from '../../../services/toast.service';
     }
   `,
   styles: [`
+    /* --- 1. BADGES --- */
     .badge {
       display: inline-block;
       padding: 0.25rem 0.75rem;
@@ -179,6 +180,7 @@ import { ToastService } from '../../../services/toast.service';
   `]
 })
 export class SoporteComponent implements OnInit {
+  // --- VARIABLES DE ESTADO ---
   tickets: any[] = [];
   showModalCrear = false;
   isGuardando = false;
@@ -194,10 +196,12 @@ export class SoporteComponent implements OnInit {
   private http = inject(HttpClient);
   private toastService = inject(ToastService);
 
+  // Inicializar componente
   ngOnInit() {
     this.cargarTickets();
   }
 
+  // Cargar tickets de soporte
   cargarTickets() {
     const token = sessionStorage.getItem('auth_token');
     const headers = { Authorization: `Bearer ${token}` };
@@ -212,15 +216,18 @@ export class SoporteComponent implements OnInit {
     });
   }
 
+  // Abrir modal de creación
   abrirModalCrear() {
     this.nuevoTicket = { asunto: '', mensaje: '', prioridad: 'Media' };
     this.showModalCrear = true;
   }
 
+  // Cerrar modal de creación
   cerrarModalCrear() {
     this.showModalCrear = false;
   }
 
+  // Crear nuevo ticket
   crearTicket() {
     if (!this.nuevoTicket.asunto || !this.nuevoTicket.mensaje) {
       this.toastService.warning('Completa todos los campos obligatorios');
@@ -246,6 +253,7 @@ export class SoporteComponent implements OnInit {
     });
   }
 
+  // Ver la respuesta del ticket
   verRespuesta(ticket: any) {
     this.ticketSeleccionadoParaRespuesta = ticket;
   }

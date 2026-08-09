@@ -29,6 +29,7 @@ export class LandingComponent implements OnInit {
   http = inject(HttpClient);
   cdr = inject(ChangeDetectorRef);
 
+  // Inicializa el componente y despierta al servidor
   ngOnInit(): void {
     // Ping "Ninja" para despertar a Render de su inactividad gratuita
     this.http.get('/api/ping').subscribe({
@@ -37,6 +38,7 @@ export class LandingComponent implements OnInit {
     });
   }
 
+  // Alterna la visibilidad del chatbot
   toggleChatbot() {
     this.isChatbotOpen = !this.isChatbotOpen;
     if (!this.isChatbotOpen) {
@@ -45,19 +47,23 @@ export class LandingComponent implements OnInit {
     }
   }
 
+  // Muestra la vista de contacto telefonico
   showPhone() {
     this.botView = 'phone';
   }
 
+  // Muestra la vista de formulario de contacto
   showForm() {
     this.botView = 'form';
   }
 
+  // Vuelve al menu principal del chatbot
   backToMenu() {
     this.botView = 'menu';
     this.errorMessage = '';
   }
 
+  // Envia el formulario para registro de lead
   submitLead() {
     this.errorMessage = '';
     if (!this.leadForm.nombre || !this.leadForm.telefono || !this.leadForm.correo || !this.leadForm.horario_llamada) {

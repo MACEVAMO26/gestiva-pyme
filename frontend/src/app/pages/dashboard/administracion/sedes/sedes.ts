@@ -14,6 +14,7 @@ export class Sedes implements OnInit {
   http = inject(HttpClient);
   cdr = inject(ChangeDetectorRef);
 
+  // --- VARIABLES DE ESTADO ---
   sedes: any[] = [];
   isLoading = true;
   showModal = false;
@@ -27,10 +28,12 @@ export class Sedes implements OnInit {
     estado: 'activa'
   };
 
+  // Inicializa cargando las sedes
   ngOnInit() {
     this.cargarSedes();
   }
 
+  // Obtiene los headers requeridos para la API
   getHeaders() {
     return {
       'Authorization': `Bearer ${sessionStorage.getItem('auth_token')}`,
@@ -38,6 +41,7 @@ export class Sedes implements OnInit {
     };
   }
 
+  // Obtiene las sedes del sistema
   cargarSedes() {
     this.isLoading = true;
     this.http.get<any[]>('/api/sedes', { headers: this.getHeaders() }).subscribe({
@@ -54,6 +58,7 @@ export class Sedes implements OnInit {
     });
   }
 
+  // Abre el modal para crear nueva sede
   abrirModalNuevo() {
     this.isEditMode = false;
     this.formData = {
@@ -65,16 +70,19 @@ export class Sedes implements OnInit {
     this.showModal = true;
   }
 
+  // Abre el modal en modo edicion
   abrirModalEditar(sede: any) {
     this.isEditMode = true;
     this.formData = { ...sede };
     this.showModal = true;
   }
 
+  // Cierra el modal activo
   cerrarModal() {
     this.showModal = false;
   }
 
+  // Guarda o actualiza la sede
   guardarSede() {
     if (!this.formData.nombre) return;
     this.isSubmitting = true;
@@ -108,6 +116,7 @@ export class Sedes implements OnInit {
     }
   }
 
+  // Alterna el estado activo/inactivo de una sede
   cambiarEstado(sede: any) {
     const nuevoEstado = sede.estado === 'activa' ? 'inactiva' : 'activa';
     this.http.put(`/api/sedes/${sede.id}`, { ...sede, estado: nuevoEstado }, { headers: this.getHeaders() }).subscribe({

@@ -11,7 +11,7 @@
     </div>
   </div>
 
-  <!-- --- PESTAÑAS (TABS) --- -->
+  <!-- HTML PESTAÑAS -->
   <div class="tabs-nav">
     <button class="tab-btn" 
             [class.active]="activeTab === 'pos'" 
@@ -25,16 +25,16 @@
     </button>
   </div>
 
-  <!-- --- CONTENIDO DE TABS --- -->
+  <!-- HTML CONTENIDO DE TABS -->
   <div class="tab-content glass-panel p-4">
     
-    <!-- TOMA: PUNTO DE VENTA (POS) -->
+    <!-- HTML PUNTO DE VENTA POS -->
     @if(activeTab === 'pos') {
       <div class="fade-in" style="display: flex; gap: 1.5rem; flex-wrap: wrap;">
         
-        <!-- PANEL IZQUIERDO: SELECCIÓN -->
+        <!-- HTML PANEL IZQUIERDO SELECCION -->
         <div style="flex: 2; min-width: 300px; display: flex; flex-direction: column; gap: 1.5rem;">
-          <!-- Buscador de Cliente -->
+          <!-- HTML BUSCADOR DE CLIENTE -->
             <div class="card-section neon-border" style="margin-bottom: 2rem;">
               <h3 style="color: var(--primary-light);"><i class="fas fa-user"></i> Datos del Cliente</h3>
               <div class="form-group" style="margin-top: 1rem;">
@@ -48,7 +48,7 @@
               </div>
             </div>
 
-          <!-- Buscador de Producto -->
+          <!-- HTML BUSCADOR DE PRODUCTO -->
           <div class="glass-panel" style="padding: 1.5rem;">
             <h3 style="margin-top: 0; color: #f97316; font-size: 1.2rem; text-transform: uppercase;">Agregar Producto</h3>
             <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
@@ -73,7 +73,7 @@
             </div>
           </div>
           
-          <!-- Carrito de Compras -->
+          <!-- HTML CARRITO DE COMPRAS -->
           <div class="glass-panel" style="padding: 1.5rem; flex: 1;">
             <h3 style="margin-top: 0; color: #cbd5e1; font-size: 1.2rem; text-transform: uppercase;">Detalle de la Venta</h3>
             <div class="table-responsive" style="margin-top: 0;">
@@ -110,7 +110,7 @@
           </div>
         </div>
 
-        <!-- PANEL DERECHO: TOTALES -->
+        <!-- HTML PANEL DERECHO TOTALES -->
         <div style="flex: 1; min-width: 250px;">
           <div class="glass-panel" style="padding: 1.5rem; position: sticky; top: 1rem;">
             <h3 style="margin-top: 0; color: #f97316; font-size: 1.2rem; text-transform: uppercase;">Resumen</h3>
@@ -151,7 +151,7 @@
       </div>
     }
 
-    <!-- TOMA: HISTORIAL DE VENTAS -->
+    <!-- HTML HISTORIAL DE VENTAS -->
     @if(activeTab === 'historial') {
       <div class="fade-in">
         <div class="action-bar" style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
@@ -225,7 +225,7 @@
   </div>
 </div>
 
-<!-- --- MODAL CONFIRMAR ANULACIÓN --- -->
+<!-- HTML MODAL CONFIRMAR ANULACION -->
 @if(showModalAnular && ventaSeleccionada) {
 <div class="modal-overlay fade-in">
   <div class="modal-content glass-panel" style="max-width: 450px; text-align: center;">
@@ -255,7 +255,7 @@
 </div>
 }
 
-<!-- --- TOAST NOTIFICATION --- -->
+<!-- HTML TOAST NOTIFICATION -->
 @if(showToast) {
 <div class="toast-container fade-in">
   <div class="toast-card" [ngClass]="'toast-' + toastType">

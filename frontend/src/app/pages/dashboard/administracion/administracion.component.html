@@ -1,4 +1,5 @@
 <div class="admin-module fade-in">
+<!-- HTML ENCABEZADO Y DASHBOARD -->
   @if (currentView === 'dashboard') {
     <div class="module-header">
       <h1>ADMINISTRACIÓN</h1>
@@ -101,7 +102,7 @@
       <!-- HTML TARJETA MIGRACION DE DATOS -->
       <div class="admin-card dark-card" (click)="goToView('migracion-datos')">
         <div class="card-icon">
-          <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="icon-lg text-emerald-500">
+          <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="icon-lg icon-emerald">
             <path stroke-linecap="round" stroke-linejoin="round" d="M12 16.5V9.75m0 0l3 3m-3-3l-3 3M6.75 19.5a4.5 4.5 0 01-1.41-8.775 5.25 5.25 0 0110.233-2.33 3 3 0 013.758 3.848A3.752 3.752 0 0118 19.5H6.75z" />
           </svg>
         </div>
@@ -113,6 +114,7 @@
     </div>
   }
 
+<!-- HTML VISTA INFO EMPRESA -->
   @if (currentView === 'info-empresa') {
     <div class="module-header with-back">
       <button class="btn-volver" (click)="goToView('dashboard')">
@@ -172,13 +174,14 @@
         </p>
       </div>
 
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-        <h3 style="margin: 0;">Datos de la Empresa</h3>
-        <button type="button" class="btn-primary" (click)="toggleEditCompany()" style="display: flex; align-items: center; gap: 0.5rem; background: #3b82f6; border-radius: 8px;">
+      <div class="company-data-header">
+        <h3 class="company-data-title">Datos de la Empresa</h3>
+        <button type="button" class="btn-primary edit-company-btn" (click)="toggleEditCompany()">
           <i class="fas fa-edit"></i> {{ isEditingCompany ? 'Cancelar Edición' : 'Editar Datos' }}
         </button>
       </div>
 
+      <!-- HTML FORMULARIO DE EMPRESA -->
       <form class="company-form" (ngSubmit)="solicitarCambioDatos()">
         <div class="form-row">
           <div class="form-group">
@@ -283,7 +286,7 @@
           </div>
         </div>
 
-        <div class="form-actions mt-6" *ngIf="isEditingCompany">
+        <div class="form-actions form-actions-mt" *ngIf="isEditingCompany">
           <button
             type="submit"
             class="btn-save full-width"
@@ -305,13 +308,13 @@
           <!-- COLUMNA IZQUIERDA: BOTONES -->
           <div class="actions-buttons-col">
             <button class="btn-outline-action" (click)="abrirModalSoporte()" [disabled]="isSubmitting">
-              <span *ngIf="!isSubmitting" style="display: flex; align-items: center; justify-content: center;">
+              <span *ngIf="!isSubmitting" class="action-btn-content">
                 <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="icon-action">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M11.42 15.17L17.25 21A2.652 2.652 0 0021 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655 5.653a2.548 2.548 0 11-3.586-3.586l6.837-5.63m5.108-.233c.55-.164 1.163-.188 1.743-.015a5.223 5.223 0 00-3.236-9.683c-1.641 0-3.119.713-4.114 1.838m7.532 4.786l-4.69 4.69m-5.64-1.533a1.5 1.5 0 11-2.121-2.121 1.5 1.5 0 012.121 2.121z" />
                 </svg>
               </span>
-              <span *ngIf="isSubmitting" class="flex items-center justify-center">
-                <svg class="animate-spin mr-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <span *ngIf="isSubmitting" class="loading-submitting">
+                <svg class="spinner-submitting" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                   <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                   <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
@@ -319,14 +322,14 @@
               </span>
             </button>
             <button class="btn-outline-action" (click)="solicitarMigracion()" [disabled]="isSubmitting">
-              <span *ngIf="!isSubmitting" style="display: flex; align-items: center; justify-content: center;">
+              <span *ngIf="!isSubmitting" class="action-btn-content">
                 <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="icon-action">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
                 </svg>
                 Solicitar Migración de Datos
               </span>
-              <span *ngIf="isSubmitting" class="flex items-center justify-center">
-                <svg class="animate-spin mr-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <span *ngIf="isSubmitting" class="loading-submitting">
+                <svg class="spinner-submitting" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                   <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                   <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
@@ -341,30 +344,30 @@
             <div class="table-responsive">
               <table class="premium-table">
                 <thead>
-                  <tr style="border-bottom: 1px solid rgba(255,255,255,0.1); color: #64748b;">
-                    <th style="padding: 0.8rem; text-align: center; font-size: 0.85rem; border-right: 1px solid rgba(255,255,255,0.1);">Fecha</th>
-                    <th style="padding: 0.8rem; text-align: center; font-size: 0.85rem; border-right: 1px solid rgba(255,255,255,0.1);">Tipo</th>
-                    <th style="padding: 0.8rem; text-align: center; font-size: 0.85rem; border-right: 1px solid rgba(255,255,255,0.1);">Estado</th>
-                    <th style="padding: 0.8rem; text-align: center; font-size: 0.85rem;">Mensaje / Notas SAAS</th>
+                  <tr class="table-header-row">
+                    <th class="table-header-cell">Fecha</th>
+                    <th class="table-header-cell">Tipo</th>
+                    <th class="table-header-cell">Estado</th>
+                    <th class="table-header-cell no-border">Mensaje / Notas SAAS</th>
                   </tr>
                 </thead>
                 <tbody>
                   @for (req of misSolicitudes; track req.id) {
-                    <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
-                      <td style="padding: 0.75rem 0.5rem; color: #94a3b8; font-size: 0.9rem; text-align: center; border-right: 1px solid rgba(255,255,255,0.1);">{{ req.created_at | date: 'shortDate' }}</td>
-                      <td style="padding: 0.75rem 0.5rem; color: #94a3b8; font-size: 0.9rem; text-align: center; border-right: 1px solid rgba(255,255,255,0.1);">{{ req.tipo }}</td>
-                      <td style="padding: 0.75rem 0.5rem; font-size: 0.8rem; text-align: center; border-right: 1px solid rgba(255,255,255,0.1);">
-                        <span class="status-badge" [ngClass]="{'status-active': req.estado === 'aprobado', 'status-inactive': req.estado === 'rechazado', 'status-pending': req.estado === 'pendiente'}" style="padding: 0.2rem 0.6rem; border-radius: 4px;">
+                    <tr class="table-body-row">
+                      <td class="table-body-cell">{{ req.created_at | date: 'shortDate' }}</td>
+                      <td class="table-body-cell">{{ req.tipo }}</td>
+                      <td class="table-body-cell">
+                        <span class="status-badge" [ngClass]="{'status-active': req.estado === 'aprobado', 'status-inactive': req.estado === 'rechazado', 'status-pending': req.estado === 'pendiente'}">
                           {{ req.estado | uppercase }}
                         </span>
                       </td>
-                      <td style="padding: 0.75rem 0.5rem; color: #d4d4d8; font-size: 0.9rem; text-align: center;">
+                      <td class="table-body-cell last-cell">
                         {{ req.notas_propietaria || 'Sin comentarios' }}
                       </td>
                     </tr>
                   } @empty {
                     <tr>
-                      <td colspan="4" class="empty-state" style="padding: 1.5rem; text-align: center; color: #64748b; font-size: 0.95rem;">No tienes solicitudes recientes.</td>
+                      <td colspan="4" class="empty-state empty-state-cell">No tienes solicitudes recientes.</td>
                     </tr>
                   }
                 </tbody>
@@ -376,6 +379,7 @@
       </div>
     </div>
   }
+<!-- HTML VISTA USUARIOS -->
   @if (currentView === 'usuarios') {
     <div class="module-header with-back">
       <button class="btn-volver" (click)="goToView('dashboard')">
@@ -387,6 +391,7 @@
     </div>
     <app-usuarios></app-usuarios>
   }
+<!-- HTML VISTA SEDES -->
   @if (currentView === 'sedes') {
     <div class="module-header with-back">
       <button class="btn-volver" (click)="goToView('dashboard')">
@@ -398,6 +403,7 @@
     </div>
     <app-sedes></app-sedes>
   }
+<!-- HTML VISTA SEGURIDAD -->
   @if (currentView === 'seguridad') {
     <div class="module-header with-back">
       <button class="btn-volver" (click)="goToView('dashboard')">
@@ -414,28 +420,28 @@
 <!-- MODAL SOPORTE TÉCNICO -->
 @if (showSoporteModal) {
 <div class="modal-overlay fade-in">
-  <div class="modal-content glass-panel" style="max-width: 500px;">
-    <div class="modal-header border-b border-gray-700 pb-3 mb-4">
-      <h2 class="text-xl font-bold text-white m-0">Solicitar Soporte Técnico</h2>
-      <button class="btn-close text-gray-400 hover:text-white" (click)="cerrarModalSoporte()">&times;</button>
+  <div class="modal-content glass-panel modal-soporte">
+    <div class="modal-header header-soporte">
+      <h2 class="soporte-title">Solicitar Soporte Técnico</h2>
+      <button class="btn-close close-soporte" (click)="cerrarModalSoporte()">&times;</button>
     </div>
     <div class="modal-body">
-      <p class="text-sm text-gray-400 mb-4">Describe detalladamente el problema o requerimiento. Nuestro equipo de soporte te contactará lo más pronto posible.</p>
+      <p class="soporte-desc">Describe detalladamente el problema o requerimiento. Nuestro equipo de soporte te contactará lo más pronto posible.</p>
       <div class="form-group">
         <label>Mensaje / Descripción del Problema *</label>
         <textarea 
-          class="input-neumorphic w-full" 
+          class="input-neumorphic input-full" 
           rows="5" 
           [(ngModel)]="soporteMensaje" 
           placeholder="Ej. Tengo problemas con la facturación de un cliente..."
         ></textarea>
       </div>
     </div>
-    <div class="modal-footer flex justify-end gap-3 mt-4 pt-3 border-t border-gray-700">
+    <div class="modal-footer footer-soporte">
       <button class="btn-volver" (click)="cerrarModalSoporte()">Cancelar</button>
       <button class="btn-save" (click)="confirmarSoporte()" [disabled]="!soporteMensaje.trim() || isSubmitting">
         @if (isSubmitting) {
-          <i class="fas fa-spinner fa-spin mr-2"></i> Enviando...
+          <i class="fas fa-spinner fa-spin spinner-margin"></i> Enviando...
         } @else {
           Enviar Solicitud
         }
@@ -445,48 +451,48 @@
 </div>
 }
 
-<!-- VISTA MIGRACIÓN DE DATOS -->
+<!-- HTML VISTA MIGRACIÓN DE DATOS -->
 @if (currentView === 'migracion-datos') {
-  <div class="view-header flex justify-between items-center mb-6 border-b border-gray-700 pb-4">
+  <div class="view-header header-migracion">
     <div>
-      <h2 class="text-2xl font-bold text-white m-0">Migración de Datos y Backups</h2>
-      <p class="text-gray-400 mt-1">Importa o exporta la información de tu empresa de forma masiva mediante Excel.</p>
+      <h2 class="migracion-title">Migración de Datos y Backups</h2>
+      <p class="migracion-desc">Importa o exporta la información de tu empresa de forma masiva mediante Excel.</p>
     </div>
     <button class="btn-volver" (click)="goToView('dashboard')">
       Volver
     </button>
   </div>
 
-  <div class="migracion-container" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;">
+  <div class="migracion-container migracion-grid">
     <!-- CARD IMPORTAR -->
-    <div class="glass-panel p-6 rounded-lg text-center border border-gray-700">
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-16 h-16 mx-auto text-emerald-500 mb-4">
+    <div class="glass-panel card-importar">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="icon-importar">
         <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m3.75 9v6m3-3H9m1.5-12H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
       </svg>
-      <h3 class="text-xl font-semibold text-white mb-2">Importar Datos</h3>
-      <p class="text-gray-400 text-sm mb-4">Descarga nuestra plantilla oficial, complétala y súbela para registrar masivamente empleados, clientes, productos, etc.</p>
+      <h3 class="card-title">Importar Datos</h3>
+      <p class="card-desc">Descarga nuestra plantilla oficial, complétala y súbela para registrar masivamente empleados, clientes, productos, etc.</p>
       
-      <div class="flex flex-col gap-3">
-        <button class="btn-primary w-full" (click)="descargarPlantillaMigracion()">
+      <div class="importar-actions">
+        <button class="btn-primary full-width" (click)="descargarPlantillaMigracion()">
           1. Descargar Plantilla Vacía
         </button>
         
-        <div class="upload-area border-2 border-dashed border-gray-600 rounded-lg p-4 cursor-pointer hover:border-emerald-500 transition-colors" (click)="fileInputMigracion.click()">
-          <input type="file" #fileInputMigracion class="hidden" (change)="onFileMigracionSelected($event)" accept=".xlsx,.xls,.csv" />
-          <p class="text-sm text-gray-400 m-0">2. Clic para seleccionar el archivo lleno</p>
+        <div class="upload-area upload-migracion" (click)="fileInputMigracion.click()">
+          <input type="file" #fileInputMigracion class="input-hidden" (change)="onFileMigracionSelected($event)" accept=".xlsx,.xls,.csv" />
+          <p class="upload-text">2. Clic para seleccionar el archivo lleno</p>
         </div>
         
         @if (archivoMigracion) {
-          <div class="flex items-center justify-between bg-gray-800 p-2 rounded">
-            <span class="text-sm text-white truncate max-w-[200px]">{{ archivoMigracion.name }}</span>
-            <button class="text-red-500 hover:text-red-400" (click)="archivoMigracion = null">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+          <div class="file-item-migracion">
+            <span class="file-name-migracion">{{ archivoMigracion.name }}</span>
+            <button class="btn-remove-file" (click)="archivoMigracion = null">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="icon-remove"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
             </button>
           </div>
           
-          <button class="btn-save w-full" (click)="subirMigracion()" [disabled]="isUploadingMigracion">
+          <button class="btn-save full-width" (click)="subirMigracion()" [disabled]="isUploadingMigracion">
             @if (isUploadingMigracion) {
-              <i class="fas fa-spinner fa-spin mr-2"></i> Subiendo...
+              <i class="fas fa-spinner fa-spin spinner-margin"></i> Subiendo...
             } @else {
               3. Enviar para Importación
             }
@@ -496,16 +502,16 @@
     </div>
 
     <!-- CARD EXPORTAR -->
-    <div class="glass-panel p-6 rounded-lg text-center border border-gray-700 flex flex-col justify-between">
+    <div class="glass-panel card-exportar">
       <div>
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-16 h-16 mx-auto text-blue-500 mb-4">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="icon-exportar">
           <path stroke-linecap="round" stroke-linejoin="round" d="M12 9.75v6.75m0 0l-3-3m3 3l3-3m-8.25 6a4.5 4.5 0 01-1.41-8.775 5.25 5.25 0 0110.233-2.33 3 3 0 013.758 3.848A3.752 3.752 0 0118 19.5H6.75z" />
         </svg>
-        <h3 class="text-xl font-semibold text-white mb-2">Exportar Backup Completo</h3>
-        <p class="text-gray-400 text-sm mb-4">Descarga en un solo Excel (Múltiples pestañas) toda la información registrada de tu empresa en el sistema. Puedes usarlo como copia de seguridad.</p>
+        <h3 class="card-title">Exportar Backup Completo</h3>
+        <p class="card-desc">Descarga en un solo Excel (Múltiples pestañas) toda la información registrada de tu empresa en el sistema. Puedes usarlo como copia de seguridad.</p>
       </div>
       
-      <button class="btn-save w-full" style="background: #3b82f6" (click)="descargarBackup()">
+      <button class="btn-save full-width btn-backup" (click)="descargarBackup()">
         Descargar Backup (.xlsx)
       </button>
     </div>

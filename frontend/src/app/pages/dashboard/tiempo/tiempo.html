@@ -5,7 +5,7 @@
     <p class="text-gray-400 mt-2 text-sm">Administra los turnos de trabajo y revisa las solicitudes de vacaciones de los empleados.</p>
   </div>
 
-  <!-- Tabs Navigation -->
+  <!-- HTML TABS NAVIGATION -->
   <div class="tabs-nav mt-6">
     <button class="tab-btn" [class.active]="currentTab === 'turnos'" (click)="setTab('turnos')">Creación de Turnos</button>
     <button class="tab-btn" [class.active]="currentTab === 'asignacion'" (click)="setTab('asignacion')">Asignar Turnos</button>
@@ -14,11 +14,11 @@
 
   <div class="tab-content mt-6">
 
-    <!-- TAB 1: CREACIÓN DE TURNOS -->
+    <!-- HTML TAB 1 CREACION DE TURNOS -->
     @if (currentTab === 'turnos') {
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
-        <!-- Formulario Crear Turno -->
+        <!-- HTML FORMULARIO CREAR TURNO -->
         <div class="lg:col-span-1">
           <div class="glass-panel" style="padding: 1.5rem; border-radius: 12px;">
             <h3 class="panel-title mb-4" style="color: #f8fafc; font-size: 1.1rem; border-bottom: 1px solid #374151; padding-bottom: 0.5rem;">Nuevo Turno</h3>
@@ -48,7 +48,7 @@
           </div>
         </div>
 
-        <!-- Lista de Turnos -->
+        <!-- HTML LISTA DE TURNOS -->
         <div class="lg:col-span-2">
           <div class="glass-panel" style="padding: 1.5rem; border-radius: 12px; height: 100%;">
             <h3 class="panel-title mb-4" style="color: #f8fafc; font-size: 1.1rem; border-bottom: 1px solid #374151; padding-bottom: 0.5rem;">Turnos Existentes</h3>
@@ -93,7 +93,7 @@
       </div>
     }
 
-    <!-- TAB 2: ASIGNACIÓN DE TURNOS -->
+    <!-- HTML TAB 2 ASIGNACION DE TURNOS -->
     @if (currentTab === 'asignacion') {
       <div class="glass-panel mx-auto" style="padding: 2rem; border-radius: 12px;">
         <h3 class="panel-title mb-4" style="color: #f8fafc; font-size: 1.2rem; border-bottom: 1px solid #374151; padding-bottom: 0.5rem;">Asignar Turno a Empleado</h3>
@@ -143,7 +143,7 @@
       </div>
     }
 
-    <!-- TAB 3: VACACIONES (RRHH) -->
+    <!-- HTML TAB 3 VACACIONES RRHH -->
     @if (currentTab === 'vacaciones') {
       <div class="glass-panel" style="padding: 2rem; border-radius: 12px;">
         <h3 class="panel-title mb-4" style="color: #f8fafc; font-size: 1.2rem; border-bottom: 1px solid #374151; padding-bottom: 0.5rem;">Bandeja de Solicitudes de Vacaciones</h3>
@@ -201,7 +201,7 @@
   </div>
 </div>
 
-<!-- Modal para Gestionar Vacaciones -->
+<!-- HTML MODAL GESTIONAR VACACIONES -->
 @if (showModalVacaciones && vacacionSeleccionada) {
   <div class="modal-backdrop" (click)="cerrarModalVacaciones()"></div>
   <div class="modal-content">

@@ -11,8 +11,10 @@ import { CommonModule } from '@angular/common';
 export class Onboarding {
   @Output() close = new EventEmitter<void>();
   
+  // --- VARIABLES DE ESTADO ---
   step = 1;
 
+  // Para ir al siguiente paso
   nextStep() {
     if (this.step < 3) {
       this.step++;
@@ -21,6 +23,7 @@ export class Onboarding {
     }
   }
 
+  // Para cerrar el tutorial
   closeTutorial() {
     this.close.emit();
   }

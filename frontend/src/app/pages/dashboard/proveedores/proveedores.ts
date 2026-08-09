@@ -34,7 +34,7 @@ export class ProveedoresComponent implements OnInit {
   // --- TABS ---
   activeTab: string = 'directorio'; // directorio | cuentas | evaluaciones
 
-  // --- VARIABLES DIRECTORIO ---
+  // --- VARIABLES DE ESTADO ---
   proveedores: Proveedor[] = [];
   proveedoresFiltrados: Proveedor[] = [];
   searchTerm = '';
@@ -56,14 +56,17 @@ export class ProveedoresComponent implements OnInit {
   nuevaCalificacion = 5;
   nuevoComentario = '';
 
+  // Inicializar componente
   ngOnInit() {
     this.cargarProveedores();
   }
 
+  // Cambiar pestaña activa
   switchTab(tab: string) {
     this.activeTab = tab;
   }
 
+  // Retornar proveedor vacío
   getEmptyProveedor(): Proveedor {
     return {
       razon_social: '',
@@ -79,11 +82,13 @@ export class ProveedoresComponent implements OnInit {
     };
   }
 
+  // Formatear ID de proveedor
   formatearId(id: number | undefined): string {
     if (!id) return 'PROV-000';
     return 'PROV' + id.toString().padStart(5, '0');
   }
 
+  // Cargar lista de proveedores
   cargarProveedores() {
     const user = this.authService.getUser();
     const empresaId = user?.empresa_id || user?.empresa?.id || '';
@@ -102,6 +107,7 @@ export class ProveedoresComponent implements OnInit {
     });
   }
 
+  // Filtrar proveedores por término de búsqueda
   filtrarProveedores() {
     if (!this.searchTerm) {
       this.proveedoresFiltrados = [...this.proveedores];
@@ -116,6 +122,7 @@ export class ProveedoresComponent implements OnInit {
   }
 
   // --- LÓGICA DIRECTORIO ---
+  // Abrir modal de proveedor
   abrirModal(proveedor?: Proveedor) {
     if (proveedor) {
       this.isEditMode = true;
@@ -127,11 +134,13 @@ export class ProveedoresComponent implements OnInit {
     this.showModal = true;
   }
 
+  // Cerrar modal de proveedor
   cerrarModal() {
     this.showModal = false;
     this.proveedorActual = this.getEmptyProveedor();
   }
 
+  // Guardar datos del proveedor
   guardarProveedor() {
     if (!this.proveedorActual.razon_social || !this.proveedorActual.nit) {
       this.toastService.show('Razón social y NIT son obligatorios', 'warning');
@@ -148,6 +157,7 @@ export class ProveedoresComponent implements OnInit {
     }, 800);
   }
 
+  // Eliminar proveedor por ID
   eliminarProveedor(id: number | undefined) {
     if (!id) return;
     this.deletingId = id;
@@ -160,12 +170,14 @@ export class ProveedoresComponent implements OnInit {
   }
 
   // --- LÓGICA CUENTAS POR PAGAR ---
+  // Obtener total de la deuda
   get totalDeuda() {
     return this.cuentasPorPagar
       .filter(c => c.estado !== 'Pagada')
       .reduce((acc, curr) => acc + curr.monto, 0);
   }
 
+  // Obtener clase para el estado de la cuenta
   getBadgeCuentas(estado: string) {
     switch(estado) {
       case 'Pagada': return 'badge-success';
@@ -175,16 +187,19 @@ export class ProveedoresComponent implements OnInit {
     }
   }
 
+  // Abrir modal de pago
   abrirPago(cuenta: any) {
     this.cuentaSeleccionada = cuenta;
     this.showModalPago = true;
   }
 
+  // Cerrar modal de pago
   cerrarPago() {
     this.showModalPago = false;
     this.cuentaSeleccionada = null;
   }
 
+  // Confirmar registro del pago
   confirmarPago() {
     this.isSaving = true;
     setTimeout(() => {
@@ -198,6 +213,7 @@ export class ProveedoresComponent implements OnInit {
   }
 
   // --- LÓGICA EVALUACIONES ---
+  // Obtener clase para la evaluación
   getBadgeEval(nrc: string) {
     switch(nrc) {
       case 'Excelente': return 'badge-success';
@@ -207,6 +223,7 @@ export class ProveedoresComponent implements OnInit {
     }
   }
 
+  // Abrir modal de evaluación
   abrirEvaluar(cont: any) {
     this.evaluacionSeleccionada = cont;
     this.nuevaCalificacion = cont.calificacion;
@@ -214,11 +231,13 @@ export class ProveedoresComponent implements OnInit {
     this.showModalEvaluacion = true;
   }
 
+  // Cerrar modal de evaluación
   cerrarEvaluar() {
     this.showModalEvaluacion = false;
     this.evaluacionSeleccionada = null;
   }
 
+  // Guardar evaluación del proveedor
   guardarEvaluacion() {
     this.isSaving = true;
     setTimeout(() => {

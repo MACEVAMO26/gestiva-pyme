@@ -383,3 +383,13 @@ $error-color: #ef4444;
   border: 1px dashed $glass-border;
   user-select: all;
 }
+
+/* --- 9. COMPONENTES EXTRAIDOS DE HTML --- */
+.sede-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.required-asterisk {
+  color: #ef4444;
+}

@@ -1,4 +1,4 @@
-/* --- VARIABLES GLOBALES (DARK NEUMORPHISM) --- */
+/* --- 1. VARIABLES GLOBALES --- */
 $bg-color: #09090b;
 $text-dark: #fafafa;
 $text-muted: #a1a1aa;
@@ -68,7 +68,7 @@ $radius: 12px;
   }
 }
 
-/* Tablas */
+/* --- 2. TABLAS --- */
 .table-responsive {
   width: 100%;
   overflow-x: auto;
@@ -108,7 +108,7 @@ $radius: 12px;
 .text-muted { color: $text-muted; }
 .text-center { text-align: center; }
 
-/* Badges */
+/* --- 3. BADGES --- */
 .badge {
   display: inline-block;
   padding: 0.25rem 0.6rem;
@@ -124,7 +124,7 @@ $radius: 12px;
   &.badge-outline { border: 1px solid rgba(255,255,255,0.1); background: transparent; }
 }
 
-/* Botones */
+/* --- 4. BOTONES --- */
 .btn-primary {
   background-color: $primary-color;
   color: #fff;
@@ -178,7 +178,7 @@ $radius: 12px;
   }
 }
 
-/* Modales */
+/* --- 5. MODALES --- */
 .modal-overlay {
   position: fixed;
   top: 0; left: 0; width: 100%; height: 100%;
@@ -243,7 +243,7 @@ $radius: 12px;
   }
 }
 
-/* --- KANBAN BOARD LEADS --- */
+/* --- 6. KANBAN BOARD LEADS --- */
 .kanban-board {
   display: grid;
   grid-template-columns: repeat(1, 1fr);

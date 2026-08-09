@@ -1,6 +1,6 @@
 /* servicios.scss */
 
-/* Badges Locales */
+/* --- 1. BADGES --- */
 .badge {
   padding: 0.3rem 0.6rem;
   border-radius: 12px;
@@ -14,12 +14,14 @@
 .badge-secondary { background: #64748b; } /* Slate 500 */
 .badge-info { background: #0284c7; } /* Light Blue */
 
+/* --- 2. TECH CARD --- */
 .tech-card {
   &:hover {
     background: rgba(255, 255, 255, 0.05);
   }
 }
 
+/* --- 3. CHART CONTAINER --- */
 .chart-container {
   .bar-row {
     padding-bottom: 1rem;

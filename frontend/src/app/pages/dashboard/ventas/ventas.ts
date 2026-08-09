@@ -15,10 +15,9 @@ export class Ventas implements OnInit {
   private http = inject(HttpClient);
   private authService = inject(AuthService);
 
-  // --- TABS ---
+  // --- VARIABLES DE ESTADO ---
   activeTab: string = 'pos'; // pos | historial
 
-  // --- ESTADOS ---
   searchTerm = '';
   showModalAnular = false;
   ventaSeleccionada: any = null;
@@ -41,10 +40,12 @@ export class Ventas implements OnInit {
   // --- DATOS HISTORIAL ---
   ventas: any[] = [];
 
+  // Inicializar componente
   ngOnInit(): void {
     this.cargarDatos();
   }
 
+  // Cargar datos de la API
   cargarDatos() {
     // Cargar productos
     this.http.get<any[]>('/api/productos').subscribe({
@@ -65,6 +66,7 @@ export class Ventas implements OnInit {
     });
   }
 
+  // Cambiar pestaña activa
   switchTab(tab: string) {
     this.activeTab = tab;
     if (tab === 'historial') {
@@ -72,6 +74,7 @@ export class Ventas implements OnInit {
     }
   }
 
+  // Exportar ventas a Excel
   exportarExcel() {
     this.http.get('/api/export/ventas', { responseType: 'blob' }).subscribe({
       next: (blob) => {
@@ -92,6 +95,7 @@ export class Ventas implements OnInit {
   }
 
   // --- LOGICA POS (NUEVA VENTA) ---
+  // Agregar producto al carrito
   agregarAlCarrito() {
     if (!this.productoActual || this.cantidadActual < 1) return;
     
@@ -110,14 +114,17 @@ export class Ventas implements OnInit {
     }
   }
 
+  // Remover producto del carrito
   removerDelCarrito(index: number) {
     this.carrito.splice(index, 1);
   }
 
+  // Obtener el total del carrito
   get totalCarrito() {
     return this.carrito.reduce((acc, item) => acc + item.subtotal, 0);
   }
 
+  // Registrar nueva venta
   registrarVenta() {
     if (!this.clienteSeleccionado) {
       this.mostrarToast('Por favor, selecciona un cliente.', 'warning');
@@ -159,6 +166,7 @@ export class Ventas implements OnInit {
   }
 
   // --- LOGICA HISTORIAL ---
+  // Cambiar estado del paquete
   cambiarEstadoPaquete(venta: any, nuevoEstado: string) {
     this.guardando = true;
     const payload = {
@@ -180,16 +188,19 @@ export class Ventas implements OnInit {
     });
   }
 
+  // Abrir modal para anular venta
   abrirModalAnular(venta: any) {
     this.ventaSeleccionada = venta;
     this.showModalAnular = true;
   }
 
+  // Cerrar modal de anulación
   cerrarModalAnular() {
     this.showModalAnular = false;
     this.ventaSeleccionada = null;
   }
 
+  // Confirmar anulación de venta
   confirmarAnulacion() {
     if (this.ventaSeleccionada) {
       this.guardando = true;
@@ -204,6 +215,7 @@ export class Ventas implements OnInit {
     }
   }
 
+  // Obtener ventas filtradas
   get ventasFiltradas() {
     if (!this.searchTerm) return this.ventas;
     const term = this.searchTerm.toLowerCase();
@@ -214,6 +226,7 @@ export class Ventas implements OnInit {
     );
   }
 
+  // Obtener clase para el estado
   getBadgeClass(estado: string) {
     switch(estado) {
       case 'Pagada': return 'badge-success';
@@ -223,6 +236,7 @@ export class Ventas implements OnInit {
     }
   }
 
+  // Mostrar notificación
   mostrarToast(mensaje: string, tipo: string) {
     this.toastMessage = mensaje;
     this.toastType = tipo;

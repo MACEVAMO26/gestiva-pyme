@@ -55,11 +55,13 @@ export class AutogestionComponent implements OnInit {
 
   misDocumentos: any[] = [];
 
+  // Verifica si el usuario actual es de Recursos Humanos
   get isHR(): boolean {
     const rol = this.user?.rol?.nombre?.toLowerCase() || '';
     return rol.includes('recursos humanos');
   }
 
+  // Inicializa el componente y carga datos
   ngOnInit(): void {
     this.user = this.authService.getUser() as any;
     this.cargarAfiliaciones();
@@ -67,6 +69,7 @@ export class AutogestionComponent implements OnInit {
     this.cargarMisDocumentos();
   }
 
+  // Carga los documentos asociados al usuario
   cargarMisDocumentos() {
     this.empleadoService.getMisDocumentos().subscribe({
       next: (data) => this.misDocumentos = data || [],
@@ -74,6 +77,7 @@ export class AutogestionComponent implements OnInit {
     });
   }
 
+  // Carga el historial de vacaciones
   cargarMisVacaciones() {
     if (this.user) {
       this.tiempoService.getMisVacaciones(this.user.id).subscribe({
@@ -83,6 +87,7 @@ export class AutogestionComponent implements OnInit {
     }
   }
 
+  // Envia la solicitud de vacaciones
   solicitarVacaciones() {
     if (!this.nuevaVacacion.fecha_inicio || !this.nuevaVacacion.fecha_fin) {
       alert('Debes ingresar la fecha de inicio y fin.');
@@ -110,6 +115,7 @@ export class AutogestionComponent implements OnInit {
     });
   }
 
+  // Carga los datos de afiliacion a seguridad social
   cargarAfiliaciones() {
     this.http.get('/api/autogestion/afiliaciones').subscribe({
       next: (res: any) => {
@@ -135,6 +141,7 @@ export class AutogestionComponent implements OnInit {
     });
   }
 
+  // Guarda los datos de afiliacion
   guardarAfiliaciones() {
     // Si era nuevo o desbloqueado, al guardar pasa a revisión (pendiente)
     if (this.formAfiliacion.estado === 'nuevo') {
@@ -155,6 +162,7 @@ export class AutogestionComponent implements OnInit {
     });
   }
 
+  // Solicita desbloqueo del formulario a RRHH
   solicitarCambio() {
     // En una app real esto dispararía una notificación al backend para RRHH
     this.solicitudEnviada = true;

@@ -1,6 +1,6 @@
 /* prefacturacion.scss */
 
-/* Badges locales para prefacturación */
+/* --- 1. BADGES --- */
 .badge {
   padding: 0.3rem 0.6rem;
   border-radius: 12px;
@@ -12,6 +12,7 @@
 .badge-warning { background: #d97706; } /* Amber 600 */
 .badge-danger { background: #dc2626; } /* Red 600 */
 
+/* --- 2. ACTION BAR --- */
 .action-bar {
   display: flex;
   align-items: center;

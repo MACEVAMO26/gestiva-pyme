@@ -36,6 +36,7 @@ export class AdministracionComponent implements OnInit {
   // Estado de edición para la empresa
   isEditingCompany = false;
 
+  // Inicializa el componente y carga datos del usuario
   ngOnInit(): void {
     this.user = this.authService.getUser();
     if (this.user && this.user.empresa) {
@@ -52,10 +53,12 @@ export class AdministracionComponent implements OnInit {
     this.cargarSolicitudes();
   }
 
+  // Alterna el modo de edicion de la empresa
   toggleEditCompany() {
     this.isEditingCompany = !this.isEditingCompany;
   }
 
+  // Obtiene la lista de solicitudes desde el servidor
   cargarSolicitudes() {
     const token = sessionStorage.getItem('auth_token');
     const headers = { 'Authorization': `Bearer ${token}` };
@@ -66,47 +69,57 @@ export class AdministracionComponent implements OnInit {
       });
   }
 
+  // Procesa la seleccion del archivo de logo
   onLogoSelected(event: any) {
     if (event.target.files.length > 0) {
       this.logoFile = event.target.files[0];
     }
   }
 
+  // Procesa la seleccion del documento
   onDocumentoSelected(event: any) {
     if (event.target.files.length > 0) {
       this.documentoFile = event.target.files[0];
     }
   }
 
+  // Navega a una vista especifica
   goToView(view: string) {
     this.currentView = view;
   }
 
+  // Navega a la vista de usuarios
   goToUsuarios() {
     this.currentView = 'usuarios';
   }
 
+  // Navega a la vista de sedes
   goToSedes() {
     this.currentView = 'sedes';
   }
 
+  // Navega a la vista de seguridad
   goToSeguridad() {
     this.currentView = 'seguridad';
   }
 
+  // Envia solicitud para cambio de datos
   solicitarCambioDatos() {
     this.enviarSolicitud('cambio_datos', this.formData);
   }
 
+  // Abre el modal de soporte
   abrirModalSoporte() {
     this.soporteMensaje = '';
     this.showSoporteModal = true;
   }
 
+  // Cierra el modal de soporte
   cerrarModalSoporte() {
     this.showSoporteModal = false;
   }
 
+  // Envia el ticket de soporte
   confirmarSoporte() {
     if (!this.soporteMensaje.trim()) return;
     
@@ -129,10 +142,12 @@ export class AdministracionComponent implements OnInit {
     });
   }
 
+  // Inicia la solicitud de migracion
   solicitarMigracion() {
     this.enviarSolicitud('migracion');
   }
 
+  // Envia solicitudes genericas al API
   private enviarSolicitud(tipo: string, datosNuevos?: any) {
     if (this.isSubmitting) return;
     this.isSubmitting = true;
@@ -179,12 +194,14 @@ export class AdministracionComponent implements OnInit {
   archivoMigracion: File | null = null;
   isUploadingMigracion = false;
 
+  // Captura el archivo de migracion
   onFileMigracionSelected(event: any) {
     if (event.target.files.length > 0) {
       this.archivoMigracion = event.target.files[0];
     }
   }
 
+  // Descarga la plantilla excel para migracion
   descargarPlantillaMigracion() {
     this.http.get('/api/migracion/plantilla', { responseType: 'blob' }).subscribe({
       next: (blob) => {
@@ -204,6 +221,7 @@ export class AdministracionComponent implements OnInit {
     });
   }
 
+  // Descarga un backup de los datos de la empresa
   descargarBackup() {
     this.http.get('/api/migracion/backup', { responseType: 'blob' }).subscribe({
       next: (blob) => {
@@ -223,6 +241,7 @@ export class AdministracionComponent implements OnInit {
     });
   }
 
+  // Envia el archivo de migracion al servidor
   subirMigracion() {
     if (!this.archivoMigracion) return;
 

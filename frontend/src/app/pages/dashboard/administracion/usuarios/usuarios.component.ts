@@ -16,7 +16,7 @@ export class UsuariosComponent implements OnInit {
   toast = inject(ToastService);
   cdr = inject(ChangeDetectorRef);
 
-  // --- ESTADOS ---
+  // --- VARIABLES DE ESTADO ---
   isApprovingBaja = false;
   usuarios: any[] = [];
   isLoading = false;
@@ -40,6 +40,7 @@ export class UsuariosComponent implements OnInit {
   emailGenerado = '';
   nuevoUsuarioNombre = '';
 
+  // Inicializa cargando los usuarios
   ngOnInit() {
     this.cargarUsuarios();
   }
@@ -67,16 +68,19 @@ export class UsuariosComponent implements OnInit {
     });
   }
 
+  // Abre el modal para crear usuario
   abrirModal() {
     this.resetForm();
     this.showModal = true;
   }
 
+  // Cierra el modal activo
   cerrarModal() {
     this.showModal = false;
     this.tempPasswordGenerated = '';
   }
 
+  // Restablece el formulario a su estado original
   resetForm() {
     this.formData = {
       nombres: '', primer_apellido: '', segundo_apellido: '', documento: '',

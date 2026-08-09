@@ -61,11 +61,13 @@ export class ClientesComponent implements OnInit {
   private leadService = inject(LeadService);
   leadActual: Lead = this.getEmptyLead();
 
+  // Inicializa cargando clientes y leads
   ngOnInit() {
     this.cargarClientes();
     this.cargarLeads();
   }
 
+  // Obtiene un objeto lead vacio
   getEmptyLead(): Lead {
     return {
       nombre: '',
@@ -77,6 +79,7 @@ export class ClientesComponent implements OnInit {
     };
   }
 
+  // Obtiene un objeto cliente vacio
   getEmptyCliente(): Cliente {
     return {
       nombres: '',
@@ -95,17 +98,20 @@ export class ClientesComponent implements OnInit {
     };
   }
 
+  // Formatea el ID del cliente para mostrar
   formatearId(id: number | undefined): string {
     if (!id) return 'CLI-000';
     return 'CLI' + id.toString().padStart(9, '0');
   }
 
+  // Obtiene las iniciales del cliente
   obtenerIniciales(nombres: string, apellidos?: string): string {
     const n = nombres ? nombres.charAt(0).toUpperCase() : '';
     const a = apellidos ? apellidos.charAt(0).toUpperCase() : '';
     return n + a || 'CL';
   }
 
+  // Carga los clientes del servidor
   cargarClientes() {
     const user = this.authService.getUser();
     const empresaId = user?.empresa_id || user?.empresa?.id || '';
@@ -124,6 +130,7 @@ export class ClientesComponent implements OnInit {
     });
   }
 
+  // Filtra los clientes segun terminos de busqueda
   filtrarClientes() {
     let filtrados = this.clientes;
     
@@ -144,22 +151,26 @@ export class ClientesComponent implements OnInit {
     this.clientesFiltrados = filtrados;
   }
 
+  // Abre modal para crear cliente
   abrirModalNuevo() {
     this.isEditMode = false;
     this.clienteActual = this.getEmptyCliente();
     this.mostrarModal = true;
   }
 
+  // Abre modal para editar cliente
   editarCliente(cliente: Cliente) {
     this.isEditMode = true;
     this.clienteActual = { ...cliente }; // Copia para no editar en vivo la tabla
     this.mostrarModal = true;
   }
 
+  // Cierra el modal de clientes
   cerrarModal() {
     this.mostrarModal = false;
   }
 
+  // Guarda o actualiza la informacion del cliente
   guardarCliente() {
     this.isSaving = true;
     const user = this.authService.getUser();
@@ -208,6 +219,7 @@ export class ClientesComponent implements OnInit {
     }
   }
 
+  // Elimina un cliente por su ID
   eliminarCliente(id?: number) {
     if (!id) return;
     if (confirm('¿Estás seguro de eliminar este cliente?')) {
@@ -234,6 +246,7 @@ export class ClientesComponent implements OnInit {
 
   // --- LOGICA DE LEADS ---
   
+  // Carga los leads y los organiza
   cargarLeads() {
     this.leadService.getLeads().subscribe({
       next: (data) => {
@@ -248,6 +261,7 @@ export class ClientesComponent implements OnInit {
     });
   }
 
+  // Actualiza el estado de un lead
   cambiarEstadoLead(lead: Lead, estado: string) {
     this.leadService.actualizarLead(lead.id!, { estado }).subscribe({
       next: () => {
@@ -260,22 +274,26 @@ export class ClientesComponent implements OnInit {
     });
   }
 
+  // Abre modal para nuevo lead
   abrirModalNuevoLead() {
     this.isEditMode = false;
     this.leadActual = this.getEmptyLead();
     this.mostrarModalLead = true;
   }
 
+  // Abre modal para editar lead
   editarLead(lead: Lead) {
     this.isEditMode = true;
     this.leadActual = { ...lead };
     this.mostrarModalLead = true;
   }
 
+  // Cierra modal de lead
   cerrarModalLead() {
     this.mostrarModalLead = false;
   }
 
+  // Guarda la informacion del lead
   guardarLead() {
     this.isSaving = true;
     if (this.isEditMode && this.leadActual.id) {
@@ -307,6 +325,7 @@ export class ClientesComponent implements OnInit {
     }
   }
 
+  // Convierte un lead en cliente
   convertirLeadACliente(lead: Lead) {
     this.tabActiva = 'directorio';
     this.isEditMode = false;

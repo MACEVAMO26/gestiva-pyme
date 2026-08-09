@@ -23,6 +23,7 @@ export class EmpleadosComponent implements OnInit {
   private http = inject(HttpClient);
   private router = inject(Router);
 
+  // --- VARIABLES DE ESTADO ---
   pendientes: any[] = [];
   empleados: any[] = [];
   cargos: any[] = [];
@@ -60,6 +61,7 @@ export class EmpleadosComponent implements OnInit {
     this.cargarDatosTab();
   }
 
+  // Para cargar listas de datos
   loadListas() {
     this.empleadoService.getCargos().subscribe({ next: (data) => this.cargos = data });
     this.empleadoService.getAreas().subscribe({ next: (data) => this.areas = data });
@@ -77,6 +79,7 @@ export class EmpleadosComponent implements OnInit {
   vacacionSeleccionada: any = null;
   justificacionVacacion = '';
 
+  // Para cargar datos según la pestaña activa
   cargarDatosTab() {
     if (this.currentTab === 'pendientes') {
       this.empleadoService.getPendientes().subscribe({
@@ -108,11 +111,13 @@ export class EmpleadosComponent implements OnInit {
     }
   }
 
+  // Para cambiar de pestaña
   setTab(tab: string) {
     this.currentTab = tab;
     this.cargarDatosTab();
   }
 
+  // Para guardar configuración de RRHH
   guardarConfiguracionRRHH() {
     this.isConfigSubmitting = true;
     this.empleadoService.updateRRHHSettings(this.configuracionRRHH).subscribe({
@@ -135,6 +140,7 @@ export class EmpleadosComponent implements OnInit {
   }
 
   // --- FORMALIZAR USUARIO ---
+  // Para abrir modal de formalizar
   abrirModalFormalizar(usuario: any) {
     this.usuarioAFormalizar = usuario;
     this.formalizarForm = {
@@ -147,11 +153,13 @@ export class EmpleadosComponent implements OnInit {
     this.isFormalizarModalOpen = true;
   }
 
+  // Para cerrar modal de formalizar
   cerrarModalFormalizar() {
     this.isFormalizarModalOpen = false;
     this.usuarioAFormalizar = null;
   }
 
+  // Para formalizar empleado
   submitFormalizar() {
     this.isSubmitting = true;
     this.empleadoService.formalizarEmpleado(this.usuarioAFormalizar.id, this.formalizarForm)
@@ -177,6 +185,7 @@ export class EmpleadosComponent implements OnInit {
   nombreDocumento: string = '';
   isUploading = false;
 
+  // Para ver detalles de un empleado
   verDetalles(empleado: any) {
     if (this.empleadoExpandido?.id === empleado.id) {
       this.empleadoExpandido = null; // Toggle collapse
@@ -187,6 +196,7 @@ export class EmpleadosComponent implements OnInit {
     }
   }
 
+  // Para cargar documentos del empleado
   cargarDocumentos(empleadoId: number) {
     this.empleadoService.getDocumentos(empleadoId).subscribe({
       next: (docs) => this.documentosEmpleado = docs,
@@ -194,6 +204,7 @@ export class EmpleadosComponent implements OnInit {
     });
   }
 
+  // Para manejar la selección de archivos
   onFileSelected(event: any) {
     const file = event.target.files[0];
     if (file) {
@@ -215,6 +226,7 @@ export class EmpleadosComponent implements OnInit {
     }
   }
 
+  // Para subir documento
   subirDocumento() {
     if (!this.archivoSeleccionado || !this.nombreDocumento || !this.empleadoExpandido) return;
     
@@ -240,6 +252,7 @@ export class EmpleadosComponent implements OnInit {
     });
   }
 
+  // Para eliminar documento
   eliminarDocumento(id: number) {
     if(!confirm('¿Estás seguro de eliminar este documento?')) return;
     this.empleadoService.deleteDocumento(id).subscribe({
@@ -251,6 +264,7 @@ export class EmpleadosComponent implements OnInit {
   }
 
   // --- SOLICITUD DE BAJA ---
+  // Para abrir modal de baja
   abrirModalBaja(empleado: any) {
     if (empleado.baja_solicitada) {
       alert('Ya existe una solicitud de baja en proceso para este empleado.');
@@ -261,12 +275,14 @@ export class EmpleadosComponent implements OnInit {
     this.isBajaModalOpen = true;
   }
 
+  // Para cerrar modal de baja
   cerrarModalBaja() {
     this.isBajaModalOpen = false;
     this.empleadoABaja = null;
     this.motivoBaja = '';
   }
 
+  // Para solicitar baja
   submitBaja() {
     if (!this.motivoBaja.trim()) {
       alert('Debe ingresar un motivo para la baja.');
@@ -290,12 +306,14 @@ export class EmpleadosComponent implements OnInit {
       });
   }
 
+  // Para ir a módulo de tiempos
   irATiempos() {
     const user = this.authService.getUser();
     const entorno = user?.empresa?.slug || user?.empresa?.nombre_url || 'demo';
     this.router.navigate(['/', entorno, 'tiempo']);
   }
 
+  // Para exportar a Excel
   exportarExcel() {
     this.http.get('/api/export/empleados', { responseType: 'blob' }).subscribe({
       next: (blob) => {
@@ -316,17 +334,20 @@ export class EmpleadosComponent implements OnInit {
   }
 
   // --- VACACIONES ---
+  // Para abrir modal de vacaciones
   abrirModalVacaciones(vacacion: any) {
     this.vacacionSeleccionada = vacacion;
     this.justificacionVacacion = '';
     this.isVacacionesModalOpen = true;
   }
 
+  // Para cerrar modal de vacaciones
   cerrarModalVacaciones() {
     this.isVacacionesModalOpen = false;
     this.vacacionSeleccionada = null;
   }
 
+  // Para responder solicitud de vacaciones
   responderVacacion(estado: string) {
     if (estado === 'rechazada' && !this.justificacionVacacion.trim()) {
       alert('Debe justificar el rechazo.');

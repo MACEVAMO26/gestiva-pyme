@@ -48,10 +48,12 @@ export class Compras implements OnInit {
   showToast = false;
   guardando = false;
 
+  // Inicializa el componente y carga los datos base
   ngOnInit(): void {
     this.cargarDatos();
   }
 
+  // Carga los datos necesarios del servidor
   cargarDatos() {
     this.http.get<any[]>('/api/compras/ordenes').subscribe({
       next: (data) => this.ordenes = data,
@@ -70,29 +72,35 @@ export class Compras implements OnInit {
   }
 
   // --- NAVEGACION ---
+  // Cambia la pestaña actual
   switchTab(tab: string) {
     this.activeTab = tab;
   }
 
   // --- MODALES ---
+  // Abre el modal para nueva orden
   abrirModalOrden() {
     this.formOrden = { proveedor: '', fechaEsperada: '', observaciones: '', total: 0 };
     this.showModalOrden = true;
   }
 
+  // Cierra el modal de orden
   cerrarModalOrden() {
     this.showModalOrden = false;
   }
   
+  // Abre el modal para confirmar recepcion
   abrirModalRecepcion() {
     this.showModalRecepcion = true;
   }
 
+  // Cierra el modal de recepcion
   cerrarModalRecepcion() {
     this.showModalRecepcion = false;
   }
 
   // --- ACCIONES PRINCIPALES ---
+  // Agrega un producto al carrito temporal
   agregarAlCarrito() {
     if (!this.productoActualCompra || this.cantidadActualCompra < 1) return;
     const prod = this.productosDisponibles.find(p => p.id == this.productoActualCompra);
@@ -112,11 +120,13 @@ export class Compras implements OnInit {
     }
   }
 
+  // Remueve un producto del carrito temporal
   removerDelCarrito(index: number) {
     this.carritoCompras.splice(index, 1);
     this.formOrden.total = this.carritoCompras.reduce((acc, item) => acc + item.subtotal, 0);
   }
 
+  // Guarda la nueva orden de compra
   guardarOrden() {
     if (!this.formOrden.proveedor) {
       this.mostrarToast('Debe seleccionar un proveedor.', 'warning');
@@ -151,6 +161,7 @@ export class Compras implements OnInit {
     });
   }
 
+  // Cambia el estado de una orden a recibido
   recibirOrden() {
     if (!this.ordenSeleccionadaRecepcion) return;
 
@@ -171,6 +182,7 @@ export class Compras implements OnInit {
     });
   }
 
+  // Muestra un mensaje temporal tipo toast
   mostrarToast(mensaje: string, tipo: string) {
     this.toastMessage = mensaje;
     this.toastType = tipo;
@@ -182,6 +194,7 @@ export class Compras implements OnInit {
   }
 
   // --- FILTROS ---
+  // Filtra las ordenes por el termino de busqueda
   get ordenesFiltradas() {
     if (!this.searchTerm) return this.ordenes;
     const term = this.searchTerm.toLowerCase();
@@ -192,6 +205,7 @@ export class Compras implements OnInit {
     );
   }
 
+  // Obtiene la clase CSS segun el estado
   getBadgeClass(estado: string) {
     switch(estado) {
       case 'Recibido': return 'badge-success';

@@ -24,7 +24,7 @@ $transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
   font-family: 'Montserrat', sans-serif;
 }
 
-/* --- 3. LAYOUT --- */
+/* --- 1. LAYOUT --- */
 .dashboard-layout {
   display: flex;
   flex-direction: column;
@@ -34,7 +34,7 @@ $transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
   overflow: hidden;
 }
 
-/* --- 4. HEADER GLOBAL --- */
+/* --- 2. HEADER GLOBAL --- */
 .global-header {
   height: 70px;
   background-color: #09090b; /* Zinc 900 (0% azul) */
@@ -223,14 +223,14 @@ $transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
   }
 }
 
-/* --- 5. CUERPO PRINCIPAL --- */
+/* --- 3. CUERPO PRINCIPAL --- */
 .main-body {
   display: flex;
   flex: 1;
   overflow: hidden;
 }
 
-/* --- 6. SIDEBAR --- */
+/* --- 4. SIDEBAR --- */
 .sidebar {
   width: 205px;
   background-color: $sidebar-bg;
@@ -348,7 +348,7 @@ $transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
   }
 }
 
-/* --- 7. CONTENIDO PRINCIPAL --- */
+/* --- 5. CONTENIDO PRINCIPAL --- */
 .main-content {
   flex: 1;
   display: flex;
@@ -369,7 +369,7 @@ $transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
   }
 }
 
-/* --- 8. AREA CONTENIDO --- */
+/* --- 6. AREA CONTENIDO --- */
 .content-area {
   padding: 3rem;
   flex: 1;
@@ -463,7 +463,7 @@ $transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
     }
   }
 
-  /* --- 9. FOOTER --- */
+  /* --- 7. FOOTER --- */
   .app-footer {
     margin-top: 2rem;
     padding: 1rem 0;
@@ -496,7 +496,7 @@ $transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
   }
 }
 
-/* --- 10. ESTILOS DE PLANES --- */
+/* --- 8. ESTILOS DE PLANES --- */
 .badge-plan {
   font-family: 'Montserrat', sans-serif;
   
@@ -523,7 +523,7 @@ $transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
   &.badge-plan { background: #FCE7F3; color: #9d174d; border: none; }
 }
 
-/* --- 11. ACCESIBILIDAD --- */
+/* --- 9. ACCESIBILIDAD --- */
 .accessibility-widget {
     position: relative;
     z-index: 9999;
@@ -611,7 +611,7 @@ $transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
   }
 }
 
-/* --- RESPONSIVE DASHBOARD LAYOUT --- */
+/* --- 10. RESPONSIVE DASHBOARD LAYOUT --- */
 .mobile-menu-toggle {
   display: none;
   background: transparent;
@@ -687,7 +687,7 @@ $transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
   }
 }
 
-/* --- WAITING SCREEN (FASE 3) --- */
+/* --- 11. WAITING SCREEN (FASE 3) --- */
 .waiting-area {
   display: flex;
   justify-content: center;
@@ -728,7 +728,7 @@ $transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
   }
 }
 
-/* --- MODAL DE CONTRATO --- */
+/* --- 12. MODAL DE CONTRATO --- */
 .contract-modal-overlay {
   position: fixed;
   inset: 0;
@@ -877,3 +877,95 @@ $transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
   to { transform: rotate(360deg); }
 }
 
+/* --- 13. NOTIFICACIONES --- */
+.notif-container {
+  position: relative;
+  margin-right: 1rem;
+}
+.notif-icon {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+.notif-badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background: #ef4444;
+  color: white;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  font-size: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+.notif-menu-dropdown {
+  width: 320px;
+  right: 0;
+  left: auto;
+  max-height: 400px;
+  overflow-y: auto;
+}
+.notif-header {
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  padding-bottom: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+.notif-title {
+  margin: 0;
+  font-weight: bold;
+}
+.notif-empty {
+  padding: 1rem;
+  text-align: center;
+  color: #94a3b8;
+  font-size: 0.9rem;
+}
+.notif-item {
+  padding: 0.75rem;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  cursor: pointer;
+  transition: background 0.2s;
+  position: relative;
+}
+.notif-item-title {
+  margin: 0 0 0.25rem 0;
+  font-size: 0.9rem;
+  color: #f97316;
+}
+.notif-item-msg {
+  margin: 0 0 0.5rem 0;
+  font-size: 0.8rem;
+  color: #cbd5e1;
+  line-height: 1.4;
+}
+.notif-item-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.notif-date {
+  font-size: 0.7rem;
+  color: #64748b;
+}
+.notif-read-btn {
+  background: none;
+  border: none;
+  color: #3b82f6;
+  font-size: 0.75rem;
+  cursor: pointer;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+}
+
+/* --- 14. GESTIVA AI NAV --- */
+.gestiva-ai-nav {
+  border: 1px solid #10b981;
+  background: rgba(16, 185, 129, 0.05);
+}
+.gestiva-ai-label {
+  color: #10b981;
+  font-weight: bold;
+}

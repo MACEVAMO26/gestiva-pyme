@@ -1,4 +1,5 @@
 <div class="module-container">
+    <!-- HTML ENCABEZADO -->
     <header class="module-header">
         <div class="header-title">
             <h1>Gestión de Clientes y Leads</h1>
@@ -18,7 +19,7 @@
         </div>
     </header>
 
-    <!-- TABS NAV -->
+    <!-- HTML NAVEGACION TABS -->
     <div class="tabs-nav">
         <button class="tab-btn" [class.active]="tabActiva === 'directorio'" (click)="tabActiva = 'directorio'">
             Directorio de Clientes
@@ -41,6 +42,7 @@
         </div>
     </div>
 
+    <!-- HTML TABLA PRINCIPAL DE CLIENTES -->
     <div class="glass-panel table-panel">
         <div class="table-responsive">
             <table class="premium-table">
@@ -123,6 +125,7 @@
     } <!-- End if Directorio -->
 
     @if(tabActiva === 'leads') {
+    <!-- HTML BANDEJA DE LEADS KANBAN -->
     <div class="kanban-board mt-4">
         <!-- COLUMNA: NUEVOS / PENDIENTES -->
         <div class="kanban-column">
@@ -211,7 +214,7 @@
     </div>
     } <!-- End if Leads -->
 
-    <!-- Modal (Oculto por defecto) -->
+    <!-- HTML MODAL DE CREACION DE CLIENTE -->
     @if(mostrarModal) {
     <div class="modal-overlay">
         <div class="glass-panel modal-content">
@@ -282,7 +285,7 @@
     </div>
     }
 
-    <!-- Modal Lead (Oculto por defecto) -->
+    <!-- HTML MODAL DE CREACION DE LEAD -->
     @if(mostrarModalLead) {
     <div class="modal-overlay" (click)="cerrarModalLead()">
         <div class="glass-panel modal-content" (click)="$event.stopPropagation()">

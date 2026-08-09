@@ -4,7 +4,7 @@
     <p>Control de cuadre diario de caja, ingresos, egresos y documentos pendientes de pago.</p>
   </div>
 
-  <!-- --- PESTAÑAS (TABS) --- -->
+  <!-- HTML PESTAÑAS -->
   <div class="tabs-nav">
     <button class="tab-btn" 
             [class.active]="activeTab === 'caja'" 
@@ -18,10 +18,10 @@
     </button>
   </div>
 
-  <!-- --- CONTENIDO DE TABS --- -->
+  <!-- HTML CONTENIDO DE TABS -->
   <div class="tab-content glass-panel p-4">
     
-    <!-- TOMA: GESTIÓN DE CAJA -->
+    <!-- HTML GESTIÓN DE CAJA -->
     @if(activeTab === 'caja') {
       <div class="fade-in">
         
@@ -128,7 +128,7 @@
       </div>
     }
 
-    <!-- TOMA: PREFACTURAS PENDIENTES -->
+    <!-- HTML PREFACTURAS PENDIENTES -->
     @if(activeTab === 'prefacturas') {
       <div class="fade-in">
         <p style="color: #94a3b8; margin-bottom: 1.5rem;">Documentos pendientes de confirmación de pago o emisión de factura final.</p>
@@ -176,7 +176,7 @@
   </div>
 </div>
 
-<!-- --- MODAL APERTURA --- -->
+<!-- HTML MODAL APERTURA -->
 @if(showModalApertura) {
 <div class="modal-overlay fade-in">
   <div class="modal-content glass-panel" style="max-width: 400px; text-align: center;">
@@ -207,7 +207,7 @@
 </div>
 }
 
-<!-- --- MODAL CIERRE --- -->
+<!-- HTML MODAL CIERRE -->
 @if(showModalCierre) {
 <div class="modal-overlay fade-in">
   <div class="modal-content glass-panel" style="max-width: 400px; text-align: center;">
@@ -234,7 +234,7 @@
 </div>
 }
 
-<!-- --- TOAST NOTIFICATION --- -->
+<!-- HTML TOAST NOTIFICATION -->
 @if(showToast) {
 <div class="toast-container fade-in">
   <div class="toast-card" [ngClass]="'toast-' + toastType">

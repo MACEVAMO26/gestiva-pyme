@@ -1,4 +1,6 @@
-<!-- HTML ENCABEZADO -->
+<div class="dashboard-layout" [attr.data-daltonism]="accessibilityService.currentMode()">
+  
+  <!-- GLOBAL HEADER -->
   <header class="global-header">
     <div class="header-left">
       <!-- BOTON HAMBURGER PARA MOVILES -->
@@ -31,40 +33,40 @@
         </div>
         
         <!-- NOTIFICACIONES -->
-        <div class="accessibility-widget notif-container">
+        <div class="accessibility-widget" style="position: relative; margin-right: 1rem;">
           <button 
             (click)="toggleNotifications()"
             class="accessibility-btn relative"
             title="Notificaciones">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="notif-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width: 1.5rem; height: 1.5rem;">
               <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
             </svg>
             @if(notificacionesNoLeidas > 0) {
-              <span class="notif-badge">
+              <span style="position: absolute; top: -5px; right: -5px; background: #ef4444; color: white; border-radius: 50%; width: 20px; height: 20px; font-size: 0.75rem; display: flex; align-items: center; justify-content: center; font-weight: bold;">
                 {{notificacionesNoLeidas}}
               </span>
             }
           </button>
 
           @if(isNotificationsOpen) {
-            <div class="accessibility-menu notif-menu-dropdown">
-              <div class="menu-header notif-header">
-                <p class="notif-title">Notificaciones</p>
+            <div class="accessibility-menu" style="width: 320px; right: 0; left: auto; max-height: 400px; overflow-y: auto;">
+              <div class="menu-header" style="border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.5rem; margin-bottom: 0.5rem;">
+                <p style="margin: 0; font-weight: bold;">Notificaciones</p>
               </div>
               
               @if(notificaciones.length === 0) {
-                <div class="notif-empty">
+                <div style="padding: 1rem; text-align: center; color: #94a3b8; font-size: 0.9rem;">
                   No tienes notificaciones recientes.
                 </div>
               }
               
               @for(notif of notificaciones; track notif.id) {
-                <div class="notif-item hover:bg-gray-800/50">
-                  <h4 class="notif-item-title">{{notif.titulo}}</h4>
-                  <p class="notif-item-msg">{{notif.mensaje}}</p>
-                  <div class="notif-item-footer">
-                    <span class="notif-date">{{notif.created_at | date:'short'}}</span>
-                    <button (click)="marcarLeida(notif.id, $event)" class="notif-read-btn hover:bg-blue-900/30">Marcar como leída</button>
+                <div style="padding: 0.75rem; border-bottom: 1px solid rgba(255,255,255,0.05); cursor: pointer; transition: background 0.2s; position: relative;" class="hover:bg-gray-800/50">
+                  <h4 style="margin: 0 0 0.25rem 0; font-size: 0.9rem; color: #f97316;">{{notif.titulo}}</h4>
+                  <p style="margin: 0 0 0.5rem 0; font-size: 0.8rem; color: #cbd5e1; line-height: 1.4;">{{notif.mensaje}}</p>
+                  <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-size: 0.7rem; color: #64748b;">{{notif.created_at | date:'short'}}</span>
+                    <button (click)="marcarLeida(notif.id, $event)" style="background: none; border: none; color: #3b82f6; font-size: 0.75rem; cursor: pointer; padding: 0.2rem 0.5rem; border-radius: 4px;" class="hover:bg-blue-900/30">Marcar como leída</button>
                   </div>
                 </div>
               }
@@ -196,11 +198,11 @@
             <span class="nav-label">Prefacturación</span>
           </a>
 
-          <a class="nav-item gestiva-ai-nav" [routerLink]="['./gestiva-ai']" routerLinkActive="active">
+          <a class="nav-item" [routerLink]="['./gestiva-ai']" routerLinkActive="active" style="border: 1px solid #10b981; background: rgba(16, 185, 129, 0.05);">
             <svg class="icon text-emerald-500" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456ZM16.894 20.567 16.5 21.75l-.394-1.183a2.25 2.25 0 0 0-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 0 0 1.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 0 0 1.423 1.423l1.183.394-1.183.394a2.25 2.25 0 0 0-1.423 1.423Z" />
             </svg>
-            <span class="nav-label gestiva-ai-label">✨ Gestiva AI</span>
+            <span class="nav-label" style="color: #10b981; font-weight: bold;">✨ Gestiva AI</span>
           </a>
       </nav>
     </aside>
