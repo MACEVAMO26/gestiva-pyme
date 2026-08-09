@@ -246,8 +246,8 @@ export class DashboardComponent implements OnInit {
       setTimeout(() => {
           if (!this.user.empresa.contrato_aceptado) {
             this.showContractModal = true;
-            // Iniciar canvas después de un pequeño delay para que el modal renderice
-            setTimeout(() => this.initSignaturePad(), 300);
+            // Iniciar canvas después de un delay un poco mayor para asegurar render
+            setTimeout(() => this.initSignaturePad(), 500);
           }
       });
     }
@@ -257,17 +257,44 @@ export class DashboardComponent implements OnInit {
   initSignaturePad() {
     const canvas = document.getElementById('signatureCanvas') as HTMLCanvasElement;
     if (canvas) {
-      // Ajustar tamaño del canvas
+      // Validar si el DOM ya renderizó el ancho
+      if (canvas.offsetWidth === 0) {
+        setTimeout(() => this.initSignaturePad(), 100); // Reintentar si está en ancho 0 (fade-in)
+        return;
+      }
+
+      // Evitar distorsión de coordenadas de ratón igualando tamaño interno y externo
       const ratio = Math.max(window.devicePixelRatio || 1, 1);
       canvas.width = canvas.offsetWidth * ratio;
       canvas.height = canvas.offsetHeight * ratio;
       canvas.getContext("2d")?.scale(ratio, ratio);
 
-      import('signature_pad').then(SignaturePad => {
-        this.signaturePad = new SignaturePad.default(canvas, {
-          backgroundColor: 'rgba(255, 255, 255, 0)',
-          penColor: 'rgb(0, 0, 0)'
+      import('signature_pad').then(module => {
+        const SignaturePadClass = module.default || module;
+        
+        // Si ya existe instancia anterior, la borramos para evitar leaks o doble binding
+        if (this.signaturePad) {
+          this.signaturePad.off();
+        }
+
+        this.signaturePad = new SignaturePadClass(canvas, {
+          backgroundColor: 'rgb(248, 250, 252)', // Igual al color de fondo de la clase canvas-wrapper en scss
+          penColor: 'rgb(0, 0, 0)',
+          minWidth: 1,
+          maxWidth: 3
         });
+        
+        // Un resize listener para la ventana (opcional pero bueno para firmas perdidas en responsive)
+        window.addEventListener('resize', () => {
+          if (canvas.offsetWidth === 0) return; // Oculto
+          const data = this.signaturePad.toData();
+          canvas.width = canvas.offsetWidth * ratio;
+          canvas.height = canvas.offsetHeight * ratio;
+          canvas.getContext("2d")?.scale(ratio, ratio);
+          this.signaturePad.clear();
+          this.signaturePad.fromData(data);
+        });
+
       }).catch(err => console.error("Falta instalar signature_pad", err));
     }
   }

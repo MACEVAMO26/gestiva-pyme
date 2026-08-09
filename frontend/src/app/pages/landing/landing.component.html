@@ -255,11 +255,11 @@
           ¡Hola! Soy Gestiva 👋 ¿Cómo puedo ayudarte a impulsar tu Pyme hoy?
         </p>
         <div class="chatbot-options">
-          <button (click)="showPhone()" class="chat-option group/btn shadow-sm hover:border-blue-500">
+          <button (click)="showPhone()" class="chat-option hover-blue">
             <span class="option-text"><span class="mr-3 text-lg">📞</span> Llámanos</span>
             <span class="option-arrow text-blue-500">→</span>
           </button>
-          <button (click)="showForm()" class="chat-option group/btn shadow-sm hover:border-amber-500">
+          <button (click)="showForm()" class="chat-option hover-amber">
             <span class="option-text"><span class="mr-3 text-lg">📅</span> Déjanos llamarte</span>
             <span class="option-arrow text-amber-500">→</span>
           </button>
@@ -267,42 +267,42 @@
       }
 
       @if (botView === 'phone') {
-        <div class="chatbot-phone-view text-center p-4">
-          <p class="text-sm text-gray-400 mb-2">Línea de atención nacional:</p>
-          <h3 class="text-xl font-bold text-white mb-4 select-all">
+        <div class="cb-phone-view">
+          <p class="cb-phone-label">Línea de atención nacional:</p>
+          <h3 class="cb-phone-number">
             +57 300 000 00000
           </h3>
-          <p class="text-xs text-gray-500 mb-4">Puedes copiar el número y llamarnos cuando quieras.</p>
-          <button (click)="backToMenu()" class="text-sm text-blue-400 hover:text-blue-300">
+          <p class="cb-phone-hint">Puedes copiar el número y llamarnos cuando quieras.</p>
+          <button (click)="backToMenu()" class="cb-back-btn">
             ← Volver al menú
           </button>
         </div>
       }
 
       @if (botView === 'form') {
-        <div class="chatbot-form-view p-2">
-          <p class="text-sm text-gray-300 mb-3">Déjanos tus datos y te contactaremos en breve:</p>
+        <div class="cb-form-view">
+          <p class="cb-form-title">Déjanos tus datos y te contactaremos en breve:</p>
           <form (ngSubmit)="submitLead()">
-            <input type="text" [(ngModel)]="leadForm.nombre" name="nombre" placeholder="Tu nombre" class="w-full bg-[#1e293b] border border-gray-600 rounded p-2 text-sm text-white mb-2" required>
-            <input type="tel" [(ngModel)]="leadForm.telefono" name="telefono" placeholder="Teléfono" class="w-full bg-[#1e293b] border border-gray-600 rounded p-2 text-sm text-white mb-2" required>
-            <input type="email" [(ngModel)]="leadForm.correo" name="correo" placeholder="Correo" class="w-full bg-[#1e293b] border border-gray-600 rounded p-2 text-sm text-white mb-2" required>
+            <input type="text" [(ngModel)]="leadForm.nombre" name="nombre" placeholder="Tu nombre" class="cb-input" required>
+            <input type="tel" [(ngModel)]="leadForm.telefono" name="telefono" placeholder="Teléfono" class="cb-input" required>
+            <input type="email" [(ngModel)]="leadForm.correo" name="correo" placeholder="Correo" class="cb-input" required>
             
-            <select [(ngModel)]="leadForm.horario_llamada" name="horario_llamada" class="w-full bg-[#1e293b] border border-gray-600 rounded p-2 text-sm text-white mb-2" required>
+            <select [(ngModel)]="leadForm.horario_llamada" name="horario_llamada" class="cb-input" required>
               <option value="" disabled selected>¿A qué hora prefieres?</option>
               <option value="Mañana (8am - 12pm)">Mañana (8am - 12pm)</option>
               <option value="Tarde (12pm - 4pm)">Tarde (12pm - 4pm)</option>
               <option value="Final de tarde (4pm - 8pm)">Final de tarde (4pm - 8pm)</option>
             </select>
-            <p class="text-[10px] text-gray-400 mb-2 mt-[-4px] ml-1">* De 8pm a 8am no se atiende</p>
+            <p class="cb-input-hint">* De 8pm a 8am no se atiende</p>
 
-            <textarea [(ngModel)]="leadForm.mensaje" name="mensaje" placeholder="Mensaje (opcional)" class="w-full bg-[#1e293b] border border-gray-600 rounded p-2 text-sm text-white mb-3" rows="2"></textarea>
+            <textarea [(ngModel)]="leadForm.mensaje" name="mensaje" placeholder="Mensaje (opcional)" class="cb-input" rows="2"></textarea>
             
-            <div class="flex justify-between items-center">
-              <button type="button" (click)="backToMenu()" class="text-xs text-gray-400 hover:text-white">Cancelar</button>
-              <button type="submit" [disabled]="isSubmitting" class="bg-blue-600 hover:bg-blue-700 text-white text-sm px-4 py-1.5 rounded-full transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center">
+            <div class="cb-form-actions">
+              <button type="button" (click)="backToMenu()" class="cb-btn-cancel">Cancelar</button>
+              <button type="submit" [disabled]="isSubmitting" class="cb-btn-submit">
                 <span *ngIf="!isSubmitting">Enviar</span>
-                <span *ngIf="isSubmitting" class="flex items-center">
-                  <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <span *ngIf="isSubmitting" class="flex-center-all">
+                  <svg class="icon-spin-sm-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                   </svg>
@@ -312,7 +312,7 @@
             </div>
           </form>
           @if (errorMessage) {
-            <div class="mt-2 text-xs text-red-400 bg-red-900/50 p-2 rounded border border-red-500/30">
+            <div class="cb-error">
               {{ errorMessage }}
             </div>
           }
@@ -320,10 +320,10 @@
       }
 
       @if (botView === 'success') {
-        <div class="chatbot-success-view text-center p-4">
-          <div class="text-green-400 text-3xl mb-2">✓</div>
-          <p class="text-sm text-white">¡Datos enviados!</p>
-          <p class="text-xs text-gray-400 mt-1">Nos pondremos en contacto contigo pronto.</p>
+        <div class="cb-success-view">
+          <div class="cb-success-icon">✓</div>
+          <p class="cb-success-title">¡Datos enviados!</p>
+          <p class="cb-success-desc">Nos pondremos en contacto contigo pronto.</p>
         </div>
       }
     </div>
