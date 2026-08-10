@@ -142,5 +142,10 @@ export class LoginComponent {
       }
     });
   }
+
+  // Ingresa al entorno demo directamente sin validaciones
+  enterDemo(): void {
+    this.router.navigate(['/demo-mixto']);
+  }
 }
 

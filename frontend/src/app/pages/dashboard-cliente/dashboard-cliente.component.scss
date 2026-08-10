@@ -1,0 +1,173 @@
+/* --- 0. BACKGROUND PRINCIPAL DEL MÓDULO CLIENTE --- */
+// Importamos nuestro sistema de diseño centralizado
+@use './shared-styles/tema-cliente' as tema;
+
+.dashboard-cliente-container {
+  display: flex;
+  min-height: 100vh;
+  background-color: tema.$bg-base; // Fondo global #f5f5dc
+  color: tema.$text-main;
+}
+
+/* --- 1. SIDEBAR (MENÚ INTOCABLE) --- */
+.sidebar {
+  width: 250px;
+  background-color: tema.$bg-base;
+  display: flex;
+  flex-direction: column;
+  transition: width 0.3s ease;
+  z-index: 10;
+  // Neumorfismo claro para separar el menú del fondo sin bloques oscuros
+  box-shadow: 4px 0 10px rgba(0, 0, 0, 0.05);
+
+  &.collapsed {
+    width: 70px;
+    
+    .logo-placeholder {
+      font-size: 14px;
+    }
+  }
+}
+
+.sidebar-header {
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo-placeholder {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  font-size: 20px;
+}
+
+.toggle-btn {
+  background: transparent;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: tema.$text-main;
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  gap: 10px;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  padding: 12px 15px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: tema.$text-main;
+  @include tema.text-normal;
+
+  // Estado inactivo: sin fondo sólido, solo texto
+  background-color: transparent;
+
+  .icon {
+    margin-right: 15px;
+    font-size: 18px;
+  }
+
+  // Hover sutil
+  &:hover {
+    @include tema.shadow-elevated;
+  }
+
+  // Estado activo: Sombra hundida
+  &.active {
+    @include tema.shadow-sunk;
+    font-weight: 600;
+  }
+}
+
+/* --- 2. LAYOUT PRINCIPAL Y HEADER --- */
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+}
+
+.global-header {
+  display: flex;
+  justify-content: flex-end; // Alineamos a la derecha
+  align-items: center;
+  padding: 15px 30px;
+  background-color: tema.$bg-header; // Variante oscura #efefd3
+  @include tema.shadow-elevated;
+  z-index: 5;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.icon-btn {
+  background: transparent;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+// El botón de accesibilidad usa los estilos globales de styles.scss
+
+.user-profile {
+  .avatar {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    background-color: #d1d1b3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    @include tema.shadow-elevated;
+  }
+}
+
+/* --- 3. ÁREA DE CONTENIDO (MÓDULOS) --- */
+.content-area {
+  flex: 1;
+  padding: 30px;
+  overflow-y: auto;
+}
+
+// Estilos temporales para los placeholders
+.module-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 40px;
+  border-radius: 20px;
+  @include tema.shadow-sunk; // Contenedor principal hundido
+}
+
+.page-title {
+  @include tema.text-title-main;
+  margin-bottom: 10px;
+}
+
+.module-subtitle {
+  @include tema.text-subtitle;
+  text-transform: none;
+}
+
+/* --- 4. FOOTER --- */
+.global-footer {
+  padding: 15px;
+  text-align: center;
+  @include tema.text-description;
+  // Footer sticky al final del flujo
+  margin-top: auto; 
+}

@@ -5,34 +5,17 @@ export const routes: Routes = [
     { path: '', loadComponent: () => import('./pages/landing/landing.component').then(m => m.LandingComponent) },
     { path: 'login', loadComponent: () => import('./pages/auth/login/login.component').then(m => m.LoginComponent) },
     { path: 'login/:empresa', loadComponent: () => import('./pages/auth/login/login.component').then(m => m.LoginComponent) },
-    { path: 'demo-ventas', loadComponent: () => import('./pages/dashboard-demo/dashboard-demo').then(m => m.DashboardDemoComponent), canActivate: [authGuard] },
-    { path: 'demo-servicios', loadComponent: () => import('./pages/dashboard-demo/dashboard-demo').then(m => m.DashboardDemoComponent), canActivate: [authGuard] },
-    { path: 'demo-mixto', loadComponent: () => import('./pages/dashboard-demo/dashboard-demo').then(m => m.DashboardDemoComponent), canActivate: [authGuard] },
+    { path: 'demo-ventas', loadComponent: () => import('./pages/dashboard-demo/dashboard-demo').then(m => m.DashboardDemoComponent) },
+    { path: 'demo-servicios', loadComponent: () => import('./pages/dashboard-demo/dashboard-demo').then(m => m.DashboardDemoComponent) },
+    { path: 'demo-mixto', loadComponent: () => import('./pages/dashboard-demo/dashboard-demo').then(m => m.DashboardDemoComponent) },
     { path: 'saas-admin', redirectTo: 'saas-admin/dashboard', pathMatch: 'full' },
     { path: 'saas-admin/:vista', loadComponent: () => import('./pages/saas-admin/saas-admin.component').then(m => m.SaasAdminComponent), canActivate: [authGuard] },
     
-    // Dynamic Environment Routing
+    // Módulo Cliente Unificado (SPA Pura - Regla 11)
     { 
         path: ':entorno', 
-        loadComponent: () => import('./pages/dashboard/dashboard-main/dashboard.component').then(m => m.DashboardComponent), 
-        canActivate: [authGuard],
-        children: [
-            { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
-            { path: 'dashboard', loadComponent: () => import('./pages/dashboard-home/dashboard-home').then(m => m.DashboardHome) },
-            { path: 'administracion', loadComponent: () => import('./pages/dashboard/administracion/administracion.component').then(m => m.AdministracionComponent) },
-            { path: 'empleados', loadComponent: () => import('./pages/dashboard/empleados/empleados.component').then(m => m.EmpleadosComponent) },
-            { path: 'tiempo', loadComponent: () => import('./pages/dashboard/tiempo/tiempo').then(m => m.TiempoComponent) },
-            { path: 'autogestion', loadComponent: () => import('./pages/dashboard/autogestion/autogestion').then(m => m.AutogestionComponent) },
-            { path: 'clientes', loadComponent: () => import('./pages/dashboard/clientes/clientes').then(m => m.ClientesComponent) },
-            { path: 'proveedores', loadComponent: () => import('./pages/dashboard/proveedores/proveedores').then(m => m.ProveedoresComponent) },
-            { path: 'servicios', loadComponent: () => import('./pages/dashboard/servicios/servicios').then(m => m.Servicios) },
-            { path: 'inventario', loadComponent: () => import('./pages/dashboard/inventario/inventario').then(m => m.Inventario) },
-            { path: 'ventas', loadComponent: () => import('./pages/dashboard/ventas/ventas').then(m => m.Ventas) },
-            { path: 'compras', loadComponent: () => import('./pages/dashboard/compras/compras').then(m => m.Compras) },
-            { path: 'prefacturacion', loadComponent: () => import('./pages/dashboard/prefacturacion/prefacturacion').then(m => m.PrefacturacionComponent) },
-            { path: 'soporte', loadComponent: () => import('./pages/dashboard/soporte/soporte').then(m => m.SoporteComponent) },
-            { path: 'gestiva-ai', loadComponent: () => import('./pages/dashboard/gestiva-ai-assistant/dashboard/dashboard').then(m => m.Dashboard) }
-        ]
+        loadComponent: () => import('./pages/dashboard-cliente/dashboard-cliente.component').then(m => m.DashboardClienteComponent), 
+        canActivate: [authGuard]
     },
     { path: '**', redirectTo: '' }
 ];

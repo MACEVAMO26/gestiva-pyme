@@ -1,0 +1,103 @@
+<div class="dashboard-cliente-container">
+  
+  <!-- HTML SIDEBAR (MENU INTOCABLE) -->
+  <aside class="sidebar" [class.collapsed]="isSidebarCollapsed">
+    <div class="sidebar-header">
+      <div class="logo-placeholder">GP</div>
+      <button class="toggle-btn" (click)="toggleSidebar()">☰</button>
+    </div>
+    
+    <nav class="sidebar-nav">
+      @if (modulosActivos['home']) {
+        <a class="nav-item" [class.active]="currentModule === 'home'" (click)="switchModule('home')">
+          <span class="icon">🏠</span>
+          @if (!isSidebarCollapsed) { <span class="label">Inicio</span> }
+        </a>
+      }
+      
+      @if (modulosActivos['v_inv']) {
+        <a class="nav-item" [class.active]="currentModule === 'inventario'" (click)="switchModule('inventario')">
+          <span class="icon">📦</span>
+          @if (!isSidebarCollapsed) { <span class="label">Inventario</span> }
+        </a>
+      }
+
+      @if (modulosActivos['s_crm']) {
+        <a class="nav-item" [class.active]="currentModule === 'clientes'" (click)="switchModule('clientes')">
+          <span class="icon">👥</span>
+          @if (!isSidebarCollapsed) { <span class="label">Clientes</span> }
+        </a>
+      }
+      
+      @if (modulosActivos['soporte']) {
+        <a class="nav-item" [class.active]="currentModule === 'soporte'" (click)="switchModule('soporte')">
+          <span class="icon">🎧</span>
+          @if (!isSidebarCollapsed) { <span class="label">Soporte</span> }
+        </a>
+      }
+    </nav>
+  </aside>
+
+  <!-- HTML AREA CONTENIDO -->
+  <div class="main-content">
+    
+    <!-- HTML ENCABEZADO -->
+    <header class="global-header">
+      <div class="header-right">
+        <!-- Notificaciones -> Accesibilidad -> Perfil -->
+        <button class="icon-btn">🔔</button>
+        <button class="accessibility-btn" title="Accesibilidad">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor"/>
+            <circle cx="12" cy="12" r="3" stroke="currentColor"/>
+          </svg>
+        </button>
+        <div class="user-profile">
+          <div class="avatar">U</div>
+        </div>
+      </div>
+    </header>
+
+    <!-- ZONA DINÁMICA DE SUBMÓDULOS -->
+    <main class="content-area">
+      
+      <!-- Espacio reservado para el Botón Volver (Debajo del header, Regla 19) -->
+      <div class="action-bar-top"></div>
+      
+      @if (currentModule === 'home') {
+        <div class="module-placeholder">
+          <h1 class="page-title">Bienvenido a GestivaPyme</h1>
+          <p class="module-subtitle">Selecciona un módulo en el menú lateral</p>
+        </div>
+      }
+      
+      @if (currentModule === 'inventario' && modulosActivos['v_inv']) {
+        <div class="module-placeholder">
+          <h1 class="page-title">Módulo de Inventario</h1>
+          <p class="module-subtitle">El componente de inventario se cargará aquí</p>
+        </div>
+      }
+
+      @if (currentModule === 'clientes' && modulosActivos['s_crm']) {
+        <div class="module-placeholder">
+          <h1 class="page-title">Módulo de Clientes (CRM)</h1>
+          <p class="module-subtitle">El componente de clientes se cargará aquí</p>
+        </div>
+      }
+      
+      @if (currentModule === 'soporte' && modulosActivos['soporte']) {
+        <div class="module-placeholder">
+          <h1 class="page-title">Módulo de Soporte</h1>
+          <p class="module-subtitle">El componente de soporte se cargará aquí</p>
+        </div>
+      }
+      
+    </main>
+    
+    <!-- HTML FOOTER -->
+    <footer class="global-footer">
+      <p>GestivaPyme © 2026</p>
+    </footer>
+
+  </div>
+</div>
