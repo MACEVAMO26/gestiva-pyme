@@ -1,5 +1,6 @@
 import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { Router, NavigationEnd } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { filter, Subscription } from 'rxjs';
@@ -7,7 +8,7 @@ import { filter, Subscription } from 'rxjs';
 @Component({
   selector: 'app-gestiva-bot',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './gestiva-bot.html',
   styleUrls: ['./gestiva-bot.scss']
 })
@@ -20,6 +21,14 @@ export class GestivaBotComponent implements OnInit, OnDestroy {
   showBubble = false;
   showChat = false;
   bubbleMessage = '';
+  
+  // Chat IA
+  userMessage = '';
+  isAdvancedMode = false;
+  isLoading = false;
+  chatHistory: {role: string, content: string}[] = [
+    { role: 'assistant', content: '¡Hola! Soy Gestiva AI. Selecciona una opción o escribe tu pregunta:' }
+  ];
   
   // Status de tutorial
   tutorialCounts: any = {
@@ -61,30 +70,28 @@ export class GestivaBotComponent implements OnInit, OnDestroy {
   }
 
   evaluateRoute(url: string) {
-    // Esconder siempre al cambiar de ruta antes de evaluar
     this.showBubble = false;
     this.showChat = false;
 
-    // Determinar en qué módulo estamos basados en la URL
     if (url.includes('/dashboard/empleados')) {
       this.currentModule = 'empleados';
       if (this.tutorialCounts.empleados < 2) {
-        this.triggerBubble('¡Hola! Estás en el módulo de Empleados. Veo que aún tienes pocos registros. ¡Haz clic en "Agregar Empleado" para registrar a tu equipo!');
+        this.triggerBubble('¡Hola! Estás en el módulo de Empleados. ¡Haz clic en "Agregar Empleado"!');
       }
     } else if (url.includes('/dashboard/inventario')) {
       this.currentModule = 'inventario';
       if (this.tutorialCounts.inventario < 2) {
-        this.triggerBubble('¡Hola! Bienvenido al Inventario. Aquí podrás registrar tus productos o servicios. ¡Comienza creando nuevos ítems!');
+        this.triggerBubble('¡Hola! Bienvenido al Inventario. ¡Comienza creando nuevos ítems!');
       }
     } else if (url.includes('/dashboard/clientes')) {
       this.currentModule = 'clientes';
       if (this.tutorialCounts.clientes < 2) {
-        this.triggerBubble('¡Hola! En la sección de Clientes puedes registrar a tus compradores frecuentes. ¡Intenta agregar uno nuevo!');
+        this.triggerBubble('¡Hola! En la sección de Clientes puedes registrar a tus compradores. ¡Intenta agregar uno nuevo!');
       }
     } else if (url.includes('/dashboard/ventas')) {
       this.currentModule = 'ventas';
       if (this.tutorialCounts.ventas < 2) {
-        this.triggerBubble('¡Hola! El módulo de Ventas te permite registrar cotizaciones y facturas. ¡Anímate a crear tu primera venta!');
+        this.triggerBubble('¡Hola! El módulo de Ventas te permite registrar cotizaciones. ¡Crea tu primera venta!');
       }
     } else {
       this.currentModule = 'general';
@@ -92,11 +99,9 @@ export class GestivaBotComponent implements OnInit, OnDestroy {
   }
 
   triggerBubble(msg: string) {
-    // Pequeño delay para que no aparezca bruscamente
     setTimeout(() => {
       this.bubbleMessage = msg;
       this.showBubble = true;
-      // Auto-ocultar después de 15 segundos si el usuario no interactúa
       setTimeout(() => {
         this.showBubble = false;
       }, 15000);
@@ -106,11 +111,48 @@ export class GestivaBotComponent implements OnInit, OnDestroy {
   toggleChat() {
     this.showChat = !this.showChat;
     if (this.showChat) {
-      this.showBubble = false; // Ocultar burbuja si se abre el chat
+      this.showBubble = false;
     }
   }
 
   closeChat() {
     this.showChat = false;
+  }
+
+  sendSuggestion(suggestion: string) {
+    this.userMessage = suggestion;
+    this.sendMessage();
+  }
+
+  sendMessage() {
+    if (!this.userMessage.trim()) return;
+
+    const prompt = this.userMessage;
+    this.chatHistory.push({ role: 'user', content: prompt });
+    this.userMessage = '';
+    this.isLoading = true;
+
+    // Aquí se asume que empresa_id = 1 para pruebas (en producción viene del Auth/JWT backend)
+    const payload = {
+      prompt: prompt,
+      modo: this.isAdvancedMode ? 'avanzado' : 'basico',
+      empresa_id: 1 
+    };
+
+    this.http.post('/api/ia/procesar-tarea', payload).subscribe({
+      next: (res: any) => {
+        this.isLoading = false;
+        if (res.success && res.data?.respuesta) {
+          this.chatHistory.push({ role: 'assistant', content: res.data.respuesta });
+        } else {
+          this.chatHistory.push({ role: 'assistant', content: 'Lo siento, no pude procesar tu solicitud.' });
+        }
+      },
+      error: (err) => {
+        this.isLoading = false;
+        console.error('Error IA:', err);
+        this.chatHistory.push({ role: 'assistant', content: 'Error de conexión con el servicio de Inteligencia Artificial.' });
+      }
+    });
   }
 }

@@ -253,6 +253,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/soporte', [\App\Http\Controllers\SoporteTicketController::class, 'store']);
     Route::get('/saas/soporte', [\App\Http\Controllers\SoporteTicketController::class, 'saasIndex']);
     Route::put('/saas/soporte/{id}', [\App\Http\Controllers\SoporteTicketController::class, 'update']);
+
+    // --- MÓDULO IA (SaaS Admin y Gestiva AI) ---
+    Route::get('/saas/ia-config', [\App\Http\Controllers\IaConfigController::class, 'index']);
+    Route::post('/saas/ia-config', [\App\Http\Controllers\IaConfigController::class, 'store']);
+    Route::post('/ia/procesar-tarea', [\App\Http\Controllers\GestivaIaController::class, 'procesarTarea']);
     
     }); // Fin del middleware 'formalizado'
 

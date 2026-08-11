@@ -16,47 +16,53 @@
           <span>Asistente Inteligente</span>
         </div>
       </div>
-      <button class="close-chat" (click)="closeChat()">&times;</button>
+      <div class="header-actions" style="display: flex; align-items: center; gap: 10px;">
+        <label class="toggle-mode" style="font-size: 10px; color: #aaa; display: flex; align-items: center; cursor: pointer;">
+          <input type="checkbox" [(ngModel)]="isAdvancedMode" style="margin-right: 4px;">
+          Modo Avanzado
+        </label>
+        <button class="close-chat" (click)="closeChat()">&times;</button>
+      </div>
     </div>
     
-    <div class="chat-body">
-      <div class="bot-message">
-        <p>¡Hola! Selecciona una de las opciones para obtener ayuda en este módulo:</p>
+    <div class="chat-body" style="overflow-y: auto; max-height: 300px;">
+      
+      <!-- Historial de Conversación -->
+      <div *ngFor="let msg of chatHistory" [ngClass]="msg.role === 'user' ? 'user-message' : 'bot-message'" style="margin-bottom: 10px; padding: 8px; border-radius: 8px; background: rgba(255,255,255,0.05);">
+        <strong *ngIf="msg.role === 'user'" style="color: #45a1ae;">Tú:</strong>
+        <strong *ngIf="msg.role === 'assistant'" style="color: #10b981;">Gestiva AI:</strong>
+        <p style="margin: 0; font-size: 12px; color: #ddd;">{{ msg.content }}</p>
       </div>
 
-      <!-- Preguntas precargadas según el módulo -->
-      <div class="chat-options" *ngIf="currentModule === 'empleados'">
-        <button class="suggestion-btn">¿Cómo agrego un nuevo empleado?</button>
-        <button class="suggestion-btn">¿Cómo veo los documentos de un empleado?</button>
-        <button class="suggestion-btn">¿Cómo asigno dotación?</button>
+      <!-- Preguntas precargadas según el módulo (solo se muestran si no hay chat avanzado) -->
+      <div class="chat-options" *ngIf="chatHistory.length <= 1">
+        <div *ngIf="currentModule === 'empleados'">
+          <button class="suggestion-btn" (click)="sendSuggestion('¿Cómo agrego un nuevo empleado?')">¿Cómo agrego un nuevo empleado?</button>
+          <button class="suggestion-btn" (click)="sendSuggestion('¿Cómo veo los documentos de un empleado?')">¿Cómo veo los documentos de un empleado?</button>
+        </div>
+        <div *ngIf="currentModule === 'inventario'">
+          <button class="suggestion-btn" (click)="sendSuggestion('¿Cómo creo un producto?')">¿Cómo creo un producto?</button>
+          <button class="suggestion-btn" (click)="sendSuggestion('¿Cómo actualizo el stock?')">¿Cómo actualizo el stock?</button>
+        </div>
+        <div *ngIf="currentModule === 'clientes'">
+          <button class="suggestion-btn" (click)="sendSuggestion('¿Cómo registro un cliente?')">¿Cómo registro un cliente?</button>
+        </div>
+        <div *ngIf="currentModule === 'ventas'">
+          <button class="suggestion-btn" (click)="sendSuggestion('¿Cómo genero una factura?')">¿Cómo genero una factura?</button>
+        </div>
+        <div *ngIf="currentModule === 'general'">
+          <button class="suggestion-btn" (click)="sendSuggestion('¿Qué puedo hacer en GestivaPyme?')">¿Qué puedo hacer en GestivaPyme?</button>
+        </div>
       </div>
 
-      <div class="chat-options" *ngIf="currentModule === 'inventario'">
-        <button class="suggestion-btn">¿Cómo creo un producto?</button>
-        <button class="suggestion-btn">¿Cómo actualizo el stock?</button>
-        <button class="suggestion-btn">¿Cómo aplico un descuento?</button>
-      </div>
-
-      <div class="chat-options" *ngIf="currentModule === 'clientes'">
-        <button class="suggestion-btn">¿Cómo registro un cliente?</button>
-        <button class="suggestion-btn">¿Cómo veo el historial de compras?</button>
-      </div>
-
-      <div class="chat-options" *ngIf="currentModule === 'ventas'">
-        <button class="suggestion-btn">¿Cómo genero una factura?</button>
-        <button class="suggestion-btn">¿Cómo envío una cotización por correo?</button>
-      </div>
-
-      <div class="chat-options" *ngIf="currentModule === 'general'">
-        <button class="suggestion-btn">¿Qué puedo hacer en GestivaPyme?</button>
-        <button class="suggestion-btn">¿Cómo veo los reportes gráficos?</button>
-        <button class="suggestion-btn">¿Dónde configuro mi perfil?</button>
+      <div *ngIf="isLoading" style="text-align: center; color: #aaa; font-size: 11px; font-style: italic;">
+        Gestiva AI está escribiendo...
       </div>
     </div>
 
     <div class="chat-input-area">
-      <input type="text" placeholder="Escribe tu pregunta..." disabled>
-      <button class="send-btn" disabled><i class="fas fa-paper-plane"></i></button>
+      <input type="text" placeholder="Escribe tu pregunta..." [(ngModel)]="userMessage" (keyup.enter)="sendMessage()">
+      <button class="send-btn" (click)="sendMessage()" [disabled]="isLoading || !userMessage"><i class="fas fa-paper-plane"></i></button>
     </div>
   </div>
 

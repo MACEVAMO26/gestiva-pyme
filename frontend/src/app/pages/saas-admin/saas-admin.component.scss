@@ -68,10 +68,6 @@ $sidebar-text-muted: #0f172a;
     font-family: 'Product Sans', sans-serif !important;
   }
   
-  h1 { font-size: 1.5rem !important; text-transform: none !important; }
-  h2 { font-size: 1.75rem !important; font-weight: bold !important; text-transform: none !important; }
-  h3 { font-size: 1.1rem !important; font-weight: normal !important; text-transform: none !important; }
-  
   overflow: hidden;
 }
 
@@ -535,23 +531,7 @@ $sidebar-text-muted: #0f172a;
         
         font-weight: 600;
       }
-      .btn-new {
-        background: #10b981;
-        color: white;
-        border: none;
-        padding: 0.6rem 1.5rem;
-        border-radius: 50px;
-        cursor: pointer;
-        
-        font-weight: 600;
-        box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.4);
-        transition: all 0.3s ease;
-        &:hover {
-          background: #059669;
-          transform: translateY(-2px);
-          box-shadow: 0 6px 8px -1px rgba(16, 185, 129, 0.5);
-        }
-      }
+
     }
 
     .data-table {
@@ -1802,3 +1782,55 @@ $sidebar-text-muted: #0f172a;
   background: #e11d48;
   &:hover { background: #be123c; }
 }
+
+
+.nav-text {
+  font-size: 12px !important;
+}
+
+.nav-text { font-size: 12px !important; }
+
+
+:host { font-family: 'Montserrat', sans-serif !important; }
+
+
+:host {
+  font-family: 'Montserrat', sans-serif !important;
+
+  /* JERARQUIA ESTRICTA */
+  h2 { font-size: 16px !important; line-height: 1.4 !important; text-transform: uppercase !important; font-weight: 600 !important; letter-spacing: 0.5px !important; }
+  h3, h4 { font-size: 13px !important; line-height: 1.4 !important; text-transform: uppercase !important; font-weight: 600 !important; letter-spacing: 0.5px !important; }
+  p, label, td, th { font-size: 12px !important; }
+  .text-xs, small { font-size: 10px !important; }
+
+  /* MENU COLAPSABLE */
+  .nav-item {
+    font-family: 'Montserrat', sans-serif !important;
+  }
+  .nav-text {
+    font-size: 12px !important;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+/* --- BOTÓN NUEVO (ESTILO SAAS ADMIN) --- */
+.btn-new {
+  background: #10b981;
+  color: white;
+  border: none;
+  padding: 0.6rem 1.5rem;
+  border-radius: 50px;
+  cursor: pointer;
+  font-weight: 600;
+  box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.4);
+  transition: all 0.3s ease;
+  
+  &:hover {
+    background: #059669;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 8px -1px rgba(16, 185, 129, 0.5);
+  }
+}
+

@@ -15,7 +15,11 @@ export const routes: Routes = [
     { 
         path: ':entorno', 
         loadComponent: () => import('./pages/dashboard-cliente/dashboard-cliente.component').then(m => m.DashboardClienteComponent), 
-        canActivate: [authGuard]
+        canActivate: [authGuard],
+        children: [
+            { path: '', redirectTo: 'inicio', pathMatch: 'full' },
+            { path: ':modulo', loadComponent: () => import('./pages/shared/en-construccion/en-construccion').then(m => m.EnConstruccion) }
+        ]
     },
     { path: '**', redirectTo: '' }
 ];

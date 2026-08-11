@@ -42,6 +42,20 @@ export class SaasAdminComponent implements OnInit {
   isAccessibilityMenuOpen = false;
   empresas: any[] = [];
   isLoadingEmpresas: boolean = true;
+
+  // --- VARIABLES PARA EL CONTROL DE IA ---
+  iaConfigSeleccionada = {
+    empresaId: null as number | null,
+    proveedor: 'gemini', // gemini, openai, claude, personalizada
+    apiKey: '',
+    modo: 'apagado', // apagado, simple, avanzado
+    tareas: {
+      resumir: false,
+      redactar: false,
+      analizar: false,
+      automatizar: false
+    }
+  };
   empresasEnMora: number = 0;
   empresaDestacadaId: number | null = null;
   camposAprobados: { [key: string]: boolean } = {};
@@ -463,6 +477,36 @@ export class SaasAdminComponent implements OnInit {
 
   cambiarVista(vista: string) {
     this.router.navigate(['/saas-admin', vista]);
+  }
+
+  // --- MÉTODOS PARA CONTROL DE IA ---
+  guardarConfiguracionIA() {
+    if (!this.iaConfigSeleccionada.empresaId) {
+      alert('Por favor, selecciona una empresa primero.');
+      return;
+    }
+    if (this.iaConfigSeleccionada.modo !== 'apagado' && !this.iaConfigSeleccionada.apiKey) {
+      alert('Debes ingresar una API Key para habilitar la IA.');
+      return;
+    }
+
+    const payload = {
+      proveedor: this.iaConfigSeleccionada.proveedor,
+      api_key: this.iaConfigSeleccionada.apiKey,
+      empresa_id: this.iaConfigSeleccionada.empresaId, // Enviado por si a futuro se hace por empresa
+      modo: this.iaConfigSeleccionada.modo
+    };
+
+    // Llamada HTTP al backend para guardar la configuración
+    this.http.post('/api/saas/ia-config', payload).subscribe({
+      next: (res: any) => {
+        alert(res.message || 'Configuración de Inteligencia Artificial guardada con éxito.');
+      },
+      error: (err) => {
+        console.error('Error guardando IA', err);
+        alert('Error al guardar la configuración de IA. Verifica la conexión.');
+      }
+    });
   }
 
   setComercialTab(tab: 'interesados' | 'correos') {

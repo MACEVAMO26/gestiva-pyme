@@ -47,7 +47,6 @@
     <div class="header-container">
       <h2 class="welcome-text">BIENVENIDO A</h2>
       <img src="assets/images/Logos/GESTIVAPYME(5).png" alt="GestivaPyme Logo" class="brand-logo">
-      <p class="subtitle-text">Ingresa tus credenciales para continuar</p>
     </div>
 
     <!-- HTML FORMULARIO ACTIVO -->
@@ -55,7 +54,7 @@
       <form class="login-form" (ngSubmit)="onSubmit()">
         
         <div class="form-group">
-          <label class="form-label">Correo Electrónico</label>
+          <label class="form-label">Usuario</label>
           <input 
             type="email" 
             name="email"
@@ -110,8 +109,7 @@
           </span>
         </button>
 
-        <div class="demo-section" style="margin-top: 25px; padding-top: 20px; border-top: 1px solid #e0e0e0; text-align: center;">
-          <p class="subtitle-text" style="margin-bottom: 10px; font-size: 11px;">¿Exploración visual técnica?</p>
+        <div class="demo-section" style="margin-top: 5px; padding-top: 5px; border-top: 1px solid #e0e0e0; text-align: center;">
           <button type="button" class="submit-btn" style="background-color: #6B8F71; border-color: #55725a;" (click)="enterDemo()">
             ACCESO MODO DEMO
           </button>

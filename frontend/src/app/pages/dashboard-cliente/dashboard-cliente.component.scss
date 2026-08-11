@@ -1,173 +1,217 @@
-/* --- 0. BACKGROUND PRINCIPAL DEL MÓDULO CLIENTE --- */
-// Importamos nuestro sistema de diseño centralizado
-@use './shared-styles/tema-cliente' as tema;
+/* --- 1. VARIABLES GLOBALES --- */
+$bg-color: #f5f5dc;
+$text-color: #333333;
+$shadow-light: #ffffff;
+$shadow-dark: #d1d1bc;
+$primary-color: #45a1ae;
 
-.dashboard-cliente-container {
-  display: flex;
-  min-height: 100vh;
-  background-color: tema.$bg-base; // Fondo global #f5f5dc
-  color: tema.$text-main;
-}
-
-/* --- 1. SIDEBAR (MENÚ INTOCABLE) --- */
-.sidebar {
-  width: 250px;
-  background-color: tema.$bg-base;
+/* --- 2. LAYOUT PRINCIPAL --- */
+.dashboard-container {
   display: flex;
   flex-direction: column;
-  transition: width 0.3s ease;
-  z-index: 10;
-  // Neumorfismo claro para separar el menú del fondo sin bloques oscuros
-  box-shadow: 4px 0 10px rgba(0, 0, 0, 0.05);
+  height: 100vh;
+  background-color: $bg-color;
+  color: $text-color;
+  font-family: 'Montserrat', sans-serif;
+  overflow: hidden;
+}
 
-  &.collapsed {
-    width: 70px;
+/* --- 3. HEADER NEUMÓRFICO --- */
+.global-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  background-color: #efefd3; /* Variante levemente más oscura por regla 18 */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05); /* Sombra suave para separar del cuerpo */
+  z-index: 10;
+
+  .header-left {
+    display: flex;
+    align-items: center;
     
-    .logo-placeholder {
-      font-size: 14px;
+    .logo-container {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+
+      .main-logo-img {
+        height: 35px;
+      }
+
+      .badge-plan {
+        background-color: $bg-color;
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+        box-shadow: 3px 3px 6px $shadow-dark, -3px -3px 6px $shadow-light;
+      }
+    }
+  }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+
+    /* Perfil Neumórfico */
+    .user-profile {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 6px 15px;
+      border-radius: 25px;
+      background-color: $bg-color;
+      box-shadow: 3px 3px 6px $shadow-dark, -3px -3px 6px $shadow-light;
+
+      .avatar, .avatar-img {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        background-color: #efefd3;
+        box-shadow: inset 2px 2px 5px $shadow-dark, inset -2px -2px 5px $shadow-light;
+      }
+
+      .user-info {
+        display: flex;
+        flex-direction: column;
+
+        .user-name {
+          font-size: 12px;
+          font-weight: 600;
+        }
+
+        .user-role {
+          font-size: 10px;
+          opacity: 0.7;
+        }
+      }
+
+      .btn-logout {
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        color: #de3737;
+        padding: 5px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        transition: all 0.2s;
+
+        &:hover {
+          background-color: #de3737;
+          color: white;
+          box-shadow: 2px 2px 5px $shadow-dark, -2px -2px 5px $shadow-light;
+        }
+      }
     }
   }
 }
 
-.sidebar-header {
-  padding: 20px;
+/* --- 4. CUERPO PRINCIPAL --- */
+.main-body {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.logo-placeholder {
-  font-family: 'Montserrat', sans-serif;
-  font-weight: 700;
-  font-size: 20px;
-}
-
-.toggle-btn {
-  background: transparent;
-  border: none;
-  font-size: 20px;
-  cursor: pointer;
-  color: tema.$text-main;
-}
-
-.sidebar-nav {
-  display: flex;
-  flex-direction: column;
-  padding: 10px;
-  gap: 10px;
-}
-
-.nav-item {
-  display: flex;
-  align-items: center;
-  padding: 12px 15px;
-  border-radius: 12px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  color: tema.$text-main;
-  @include tema.text-normal;
-
-  // Estado inactivo: sin fondo sólido, solo texto
-  background-color: transparent;
-
-  .icon {
-    margin-right: 15px;
-    font-size: 18px;
-  }
-
-  // Hover sutil
-  &:hover {
-    @include tema.shadow-elevated;
-  }
-
-  // Estado activo: Sombra hundida
-  &.active {
-    @include tema.shadow-sunk;
-    font-weight: 600;
-  }
-}
-
-/* --- 2. LAYOUT PRINCIPAL Y HEADER --- */
-.main-content {
   flex: 1;
+  overflow: hidden;
+}
+
+/* --- 5. SIDEBAR NEUMÓRFICO --- */
+.sidebar {
+  width: 250px;
+  background-color: $bg-color;
+  transition: width 0.3s ease;
   display: flex;
   flex-direction: column;
-  overflow-x: hidden;
-}
+  border-right: 1px solid rgba(0,0,0,0.02);
+  box-shadow: 4px 0 10px rgba(0,0,0,0.02); /* Sutil separación neumórfica */
 
-.global-header {
-  display: flex;
-  justify-content: flex-end; // Alineamos a la derecha
-  align-items: center;
-  padding: 15px 30px;
-  background-color: tema.$bg-header; // Variante oscura #efefd3
-  @include tema.shadow-elevated;
-  z-index: 5;
-}
+  &.collapsed {
+    width: 70px;
 
-.header-right {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-}
+    .nav-label {
+      display: none;
+    }
+    .toggle-btn svg {
+      transform: rotate(180deg);
+    }
+  }
 
-.icon-btn {
-  background: transparent;
-  border: none;
-  font-size: 20px;
-  cursor: pointer;
-}
-
-// El botón de accesibilidad usa los estilos globales de styles.scss
-
-.user-profile {
-  .avatar {
-    width: 35px;
-    height: 35px;
+  .toggle-btn {
+    align-self: flex-end;
+    margin: 15px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: $text-color;
+    padding: 8px;
     border-radius: 50%;
-    background-color: #d1d1b3;
+    box-shadow: 3px 3px 6px $shadow-dark, -3px -3px 6px $shadow-light;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-weight: 700;
-    @include tema.shadow-elevated;
+    transition: all 0.3s ease;
+
+    &:hover {
+      box-shadow: inset 3px 3px 6px $shadow-dark, inset -3px -3px 6px $shadow-light;
+    }
+  }
+
+  .nav-menu {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 0 15px;
+    margin-top: 10px;
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 15px;
+      border-radius: 12px;
+      text-decoration: none;
+      color: $text-color;
+      font-size: 13px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      box-shadow: 3px 3px 6px $shadow-dark, -3px -3px 6px $shadow-light; /* Estado inactivo: Elevado */
+
+      .nav-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        
+        ::ng-deep svg {
+          width: 18px;
+          height: 18px;
+        }
+      }
+
+      &:hover {
+        color: $primary-color;
+      }
+
+      &.active {
+        box-shadow: inset 3px 3px 6px $shadow-dark, inset -3px -3px 6px $shadow-light; /* Estado activo: Hundido */
+        color: $primary-color;
+        font-weight: 600;
+      }
+    }
   }
 }
 
-/* --- 3. ÁREA DE CONTENIDO (MÓDULOS) --- */
+/* --- 6. ÁREA DE CONTENIDO (ROUTER OUTLET) --- */
 .content-area {
   flex: 1;
-  padding: 30px;
+  padding: 20px;
   overflow-y: auto;
-}
-
-// Estilos temporales para los placeholders
-.module-placeholder {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-  padding: 40px;
-  border-radius: 20px;
-  @include tema.shadow-sunk; // Contenedor principal hundido
-}
-
-.page-title {
-  @include tema.text-title-main;
-  margin-bottom: 10px;
-}
-
-.module-subtitle {
-  @include tema.text-subtitle;
-  text-transform: none;
-}
-
-/* --- 4. FOOTER --- */
-.global-footer {
-  padding: 15px;
-  text-align: center;
-  @include tema.text-description;
-  // Footer sticky al final del flujo
-  margin-top: auto; 
+  background-color: $bg-color;
 }
