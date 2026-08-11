@@ -80,15 +80,7 @@ export class LoginComponent {
           });
         } else {
           let ruta = '/dashboard';
-          if (user && user.empresa) {
-            if (user.empresa.dominio) {
-              ruta = '/' + user.empresa.dominio + '/dashboard';
-            } else if (user.empresa.razon_social) {
-              // Fallback para empresas creadas antes del cambio
-              const slug = user.empresa.razon_social.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]/g, '');
-              ruta = '/' + slug + '/dashboard';
-            }
-          }
+          // Se eliminó la concatenación del dominio en la URL para usar un enrutamiento SPA puro y unificado.
           console.log("NAVIGATING TO", ruta);
           this.router.navigate([ruta]).then(success => {
             console.log("Navigation success:", success);

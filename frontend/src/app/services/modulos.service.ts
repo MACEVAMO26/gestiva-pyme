@@ -47,6 +47,21 @@ export class ModulosService {
     // Simula una respuesta de API con el catálogo de módulos
     const mockCatalogo = [
       {
+        id: 'default',
+        nombre: 'Módulos Por Defecto',
+        descripcion: 'Módulos esenciales que siempre están activos.',
+        icono: 'fas fa-home',
+        color: 'gray',
+        activo: true,
+        submodulos: [
+          { id: 'd_ini', nombre: 'Inicio', activo: true, icono: 'fas fa-home' },
+          { id: 'd_adm', nombre: 'Administración', activo: true, icono: 'fas fa-cog' },
+          { id: 'd_tar', nombre: 'Gestión de Tareas', activo: true, icono: 'fas fa-tasks' },
+          { id: 'd_gia', nombre: 'Gestiva IA', activo: true, icono: 'fas fa-robot' },
+          { id: 'd_aut', nombre: 'Autogestión', activo: true, icono: 'fas fa-user-circle' },
+        ],
+      },
+      {
         id: 'ventas',
         nombre: 'Paquete VENTAS',
         descripcion: 'Para comercios y tiendas de productos físicos.',
@@ -54,11 +69,11 @@ export class ModulosService {
         color: 'blue',
         activo: false,
         submodulos: [
-          { id: 'v_pos', nombre: 'Ventas', activo: false },
-          { id: 'v_inv', nombre: 'Inventario', activo: false },
-          { id: 'v_cxc', nombre: 'Clientes', activo: false },
-          { id: 'v_rep', nombre: 'Compras', activo: false },
-          { id: 'v_prov', nombre: 'Proveedores', activo: false },
+          { id: 'v_pos', nombre: 'Ventas', activo: false, icono: 'fas fa-store' },
+          { id: 'v_inv', nombre: 'Inventario', activo: false, icono: 'fas fa-boxes' },
+          { id: 'v_cxc', nombre: 'Clientes', activo: false, icono: 'fas fa-address-book' },
+          { id: 'v_rep', nombre: 'Compras', activo: false, icono: 'fas fa-shopping-basket' },
+          { id: 'v_prov', nombre: 'Proveedores', activo: false, icono: 'fas fa-truck' },
         ],
       },
       {
@@ -69,44 +84,44 @@ export class ModulosService {
         color: 'purple',
         activo: false,
         submodulos: [
-          { id: 's_age', nombre: 'Agenda y Calendario', activo: false },
-          { id: 's_crm', nombre: 'CRM (Gestión de Clientes)', activo: false },
-          { id: 's_cat', nombre: 'Catálogo de Servicios', activo: false },
-          { id: 's_ope', nombre: 'Gestión de Operarios', activo: false },
-          { id: 's_rep', nombre: 'Reportes de Servicios', activo: false },
+          { id: 's_age', nombre: 'Agenda', activo: false, icono: 'fas fa-calendar-check' },
+          { id: 's_crm', nombre: 'Gestión de Clientes', activo: false, icono: 'fas fa-handshake' },
+          { id: 's_cat', nombre: 'Servicios', activo: false, icono: 'fas fa-list' },
+          { id: 's_ope', nombre: 'Gestión de Operarios', activo: false, icono: 'fas fa-user-cog' },
+          { id: 's_rep', nombre: 'Reportes', activo: false, icono: 'fas fa-chart-line' },
         ],
       },
       {
         id: 'finanzas',
-        nombre: 'Transversal: Caja y Facturación',
+        nombre: 'FINANZAS',
         descripcion: 'Registro de pagos y cobro por servicios o productos.',
         icono: 'fas fa-cash-register',
         color: 'yellow',
         activo: false,
-        submodulos: [{ id: 'f_caja', nombre: 'Caja y Pre-facturación', activo: false }],
+        submodulos: [{ id: 'f_caja', nombre: 'Caja y Pre-facturación', activo: false, icono: 'fas fa-cash-register' }],
       },
       {
         id: 'rrhh',
-        nombre: 'Transversal: RRHH (Personal)',
+        nombre: 'GESTIÓN HUMANA',
         descripcion: 'Gestión de empleados, turnos y vacaciones. Disponible para todos.',
         icono: 'fas fa-users',
         color: 'indigo',
         activo: false,
         submodulos: [
-          { id: 'r_tur', nombre: 'Horarios y Turnos', activo: false },
-          { id: 'r_aus', nombre: 'Control de Horas Extras y Ausencias', activo: false },
-          { id: 'r_vac', nombre: 'Gestión de Vacaciones', activo: false }
+          { id: 'r_tur', nombre: 'Horarios y Turnos', activo: false, icono: 'fas fa-clock' },
+          { id: 'r_aus', nombre: 'Horas Extras y Ausencias', activo: false, icono: 'fas fa-user-clock' },
+          { id: 'r_vac', nombre: 'Gestión de Vacaciones', activo: false, icono: 'fas fa-umbrella-beach' }
         ],
       },
       {
         id: 'addons',
-        nombre: 'Módulos Adicionales (Add-ons)',
+        nombre: 'Addons+',
         descripcion: 'Conectores y herramientas extra que se cobran por separado.',
         icono: 'fas fa-plug',
         color: 'green',
         activo: false,
         submodulos: [
-          { id: 'a_contable', nombre: 'Conector Contable', activo: false },
+          { id: 'a_contable', nombre: 'Conector Contable', activo: false, icono: 'fas fa-file-invoice-dollar' },
         ],
       },
     ];

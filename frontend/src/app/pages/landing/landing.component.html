@@ -10,7 +10,7 @@
         <a href="#servicios" class="nav-link">Qué Ofrecemos</a>
         <a href="#compromiso" class="nav-link">Compromiso Social</a>
         <a href="#precios" class="nav-link">Precios</a>
-        <a routerLink="/login" class="nav-btn-login">Iniciar Sesión</a>
+        <a routerLink="/login" (click)="goToLogin(); $event.preventDefault()" class="nav-btn-login">Iniciar Sesión</a>
       </div>
     </div>
   </div>
@@ -36,8 +36,8 @@
           para solucionar las necesidades reales de los emprendedores 
           <span class="text-flag">colombianos</span>.
         </p>
-        <div class="hero-actions">
-          <a routerLink="/login" class="btn-start">
+        <div class="hero-actions" style="position: relative; z-index: 20;">
+          <a routerLink="/login" class="btn-start" style="cursor: pointer;">
             Empieza Ahora
           </a>
         </div>
@@ -329,7 +329,7 @@
     </div>
   </div>
 
-  <button class="chatbot-trigger" (click)="toggleChatbot()">
+  <button class="chatbot-trigger" [class.active-bot]="isChatbotOpen" (click)="toggleChatbot()">
     <img src="assets/images/Bot/gestiva-bot.png" alt="Gestiva Botón">
     <span class="chatbot-notification"></span>
   </button>

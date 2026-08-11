@@ -4,12 +4,21 @@
   <header class="global-header">
     <div class="header-left">
       <div class="logo-container">
-        <img src="assets/images/Logos/GESTIVAPYME(7).png" alt="GestivaPyme" class="main-logo-img">
+        <a routerLink="/dashboard/inicio" style="display: flex; align-items: center; text-decoration: none;">
+          <img src="assets/images/Logos/GESTIVAPYME(7).png" alt="GestivaPyme" class="main-logo-img">
+        </a>
         <span class="badge-plan">{{ planActual }}</span>
       </div>
     </div>
     
     <div class="header-right">
+      <!-- Módulo de Notificaciones -->
+      <button class="notification-btn" [class.has-notification]="hasNotification" (click)="toggleNotification()" title="Notificaciones">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" />
+        </svg>
+      </button>
+
       <!-- Módulo de Accesibilidad -->
       <button class="accessibility-btn" (click)="toggleDaltonism()" title="Modo Accesibilidad (Daltonismo)">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -27,7 +36,6 @@
         }
         <div class="user-info">
           <span class="user-name">{{ user?.nombres || 'Usuario' }}</span>
-          <span class="user-role">{{ user?.rol?.nombre || 'Cliente' }}</span>
         </div>
         <button class="btn-logout" (click)="logout()" title="Cerrar Sesión">
           <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -51,9 +59,9 @@
   
       <nav class="nav-menu">
         <!-- Ítems dinámicos según módulos contratados -->
-        @for (modulo of modulosActivos; track modulo.id) {
+        @for (modulo of modulosSidebar; track modulo.id) {
           <a class="nav-item" [routerLink]="modulo.ruta" routerLinkActive="active">
-            <span class="nav-icon" [innerHTML]="modulo.icono"></span>
+            <span class="nav-icon"><i [class]="modulo.icono"></i></span>
             <span class="nav-label">{{ modulo.nombre }}</span>
           </a>
         }

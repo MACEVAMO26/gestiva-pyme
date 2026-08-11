@@ -11,18 +11,23 @@ $bg-header: #efefd3; // Variante más oscura para header
 $text-main: #1a1a1a;
 $text-muted: #4a4a4a;
 
-// Colores Base Botones
-$btn-agregar-bg: #45a1ae;
-$btn-agregar-border: #35828d;
-$btn-agregar-text: #000000;
+// Colores Base Botones según Regla 19 de AGENTS.md
+$btn-agregar-bg: #45a1ae; // Botón "+ Agregar/Nuevo" (siempre azul claro)
+$btn-agregar-text: #000000; // Letra negra
 
-$btn-volver-bg: #de3737;
-$btn-volver-border: #570606;
-$btn-volver-text: #ffffff;
+$btn-volver-bg: #de3737; // Botón "Volver" (siempre rojo)
+$btn-volver-text: #ffffff; // Letras blancas
 
-$btn-guardar-bg: #066835;
-$btn-guardar-border: #012a06;
-$btn-guardar-text: #ffffff;
+$btn-guardar-bg: #066810; // Botones de guardado/carga (verde exclusivo)
+$btn-guardar-text: #ffffff; // Letra blanca
+
+// Colores permitidos para botones generales
+$color-gen-1: #6B8F71;
+$color-gen-2: #7C6FA6;
+$color-gen-3: #C9A227;
+$color-gen-4: #8E5B75;
+$color-gen-5: #B5654A;
+$color-gen-6: #A38B6D;
 
 
 /* --- 2. MIXINS NEUMÓRFICOS (Relieves y Hundimientos) --- */

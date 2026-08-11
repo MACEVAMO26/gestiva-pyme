@@ -1,17 +1,14 @@
-/* --- 1. VARIABLES GLOBALES --- */
-$bg-color: #f5f5dc;
-$text-color: #333333;
-$shadow-light: #ffffff;
+@use './shared-styles/tema-cliente' as *;
 $shadow-dark: #d1d1bc;
+$shadow-light: #ffffff;
 $primary-color: #45a1ae;
-
 /* --- 2. LAYOUT PRINCIPAL --- */
 .dashboard-container {
   display: flex;
   flex-direction: column;
   height: 100vh;
-  background-color: $bg-color;
-  color: $text-color;
+  background-color: $bg-base;
+  color: $text-main;
   font-family: 'Montserrat', sans-serif;
   overflow: hidden;
 }
@@ -21,7 +18,7 @@ $primary-color: #45a1ae;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 20px;
+  padding: 6px 15px; /* Más angosto verticalmente para aprovechar espacio */
   background-color: #efefd3; /* Variante levemente más oscura por regla 18 */
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05); /* Sombra suave para separar del cuerpo */
   z-index: 10;
@@ -36,11 +33,11 @@ $primary-color: #45a1ae;
       gap: 15px;
 
       .main-logo-img {
-        height: 35px;
+        height: 28px; /* Reducido un poco para ajustar al nuevo header */
       }
 
       .badge-plan {
-        background-color: $bg-color;
+        background-color: $bg-base;
         padding: 5px 12px;
         border-radius: 20px;
         font-size: 11px;
@@ -54,7 +51,72 @@ $primary-color: #45a1ae;
   .header-right {
     display: flex;
     align-items: center;
-    gap: 20px;
+    gap: 15px;
+
+    /* Botón Accesibilidad */
+    .accessibility-btn {
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      color: $text-main;
+      padding: 6px;
+      border-radius: 50%;
+      box-shadow: 3px 3px 6px $shadow-dark, -3px -3px 6px $shadow-light;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+
+      &:hover {
+        box-shadow: inset 3px 3px 6px $shadow-dark, inset -3px -3px 6px $shadow-light;
+      }
+
+      svg {
+        width: 18px;
+        height: 18px;
+      }
+    }
+
+    /* Botón de Notificación - Diseño igual al Toggle pero funcional en otra ubicación */
+    .notification-btn {
+      background: #dbdb9b; /* Mismo fondo que el toggle */
+      border: 1px solid #eca06e; /* Mismo borde que el toggle */
+      cursor: pointer;
+      color: #1a1a1a;
+      width: 32px; /* Un poquito más grande que el toggle porque va en el header */
+      height: 32px;
+      border-radius: 50%;
+      box-shadow: 2px 2px 5px $shadow-dark, -2px -2px 5px $shadow-light;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+
+      svg {
+        width: 16px;
+        height: 16px;
+        stroke: #1a1a1a;
+        stroke-width: 2.5; /* Más grueso, pero no tanto como el toggle */
+        transition: all 0.3s ease;
+      }
+
+      &:hover {
+        color: #45a1ae; /* Color primario azul */
+        box-shadow: inset 3px 3px 6px $shadow-dark, inset -3px -3px 6px $shadow-light;
+        
+        svg {
+          stroke: #45a1ae; /* Hover del ícono */
+        }
+      }
+
+      /* Estado cuando hay notificación (rotación y color rojo) */
+      &.has-notification {
+        svg {
+          stroke: #de3737; /* Rojo */
+          transform: rotate(-15deg); /* Girado hacia la izquierda */
+        }
+      }
+    }
 
     /* Perfil Neumórfico */
     .user-profile {
@@ -63,7 +125,7 @@ $primary-color: #45a1ae;
       gap: 12px;
       padding: 6px 15px;
       border-radius: 25px;
-      background-color: $bg-color;
+      background-color: $bg-base;
       box-shadow: 3px 3px 6px $shadow-dark, -3px -3px 6px $shadow-light;
 
       .avatar, .avatar-img {
@@ -83,13 +145,12 @@ $primary-color: #45a1ae;
         flex-direction: column;
 
         .user-name {
-          font-size: 12px;
+          font-size: 11px;
           font-weight: 600;
         }
 
         .user-role {
-          font-size: 10px;
-          opacity: 0.7;
+          display: none; /* Ocultado por solicitud */
         }
       }
 
@@ -124,16 +185,17 @@ $primary-color: #45a1ae;
 
 /* --- 5. SIDEBAR NEUMÓRFICO --- */
 .sidebar {
-  width: 250px;
-  background-color: $bg-color;
-  transition: width 0.3s ease;
+  width: 175px; /* Súper angosto por petición del usuario */
+  background: $bg-base;
+  transition: all 0.3s ease;
   display: flex;
   flex-direction: column;
   border-right: 1px solid rgba(0,0,0,0.02);
   box-shadow: 4px 0 10px rgba(0,0,0,0.02); /* Sutil separación neumórfica */
+  position: relative; /* Para el botón flotante */
 
   &.collapsed {
-    width: 70px;
+    width: 55px; /* Súper angosto para modo compacto */
 
     .nav-label {
       display: none;
@@ -141,57 +203,99 @@ $primary-color: #45a1ae;
     .toggle-btn svg {
       transform: rotate(180deg);
     }
+    .nav-menu {
+      padding: 0 8px;
+    }
+    .nav-item {
+      padding: 0;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      justify-content: center;
+    }
   }
 
   .toggle-btn {
-    align-self: flex-end;
-    margin: 15px;
-    background: transparent;
-    border: none;
+    position: absolute;
+    right: -24px; /* Empujado hacia afuera ajustado al nuevo tamaño */
+    top: 20px;
+    z-index: 100;
+    background: #dbdb9b; /* Mismo fondo que los botones del menú */
+    border: 1px solid #eca06e; /* Mismo borde que los botones del menú */
     cursor: pointer;
-    color: $text-color;
-    padding: 8px;
+    color: #1a1a1a; /* Mismo color de texto/ícono que los botones del menú */
+    width: 24px; /* Tamaño más pequeño */
+    height: 24px;
+    padding: 0; /* Quitamos padding para controlar con width/height */
     border-radius: 50%;
-    box-shadow: 3px 3px 6px $shadow-dark, -3px -3px 6px $shadow-light;
+    box-shadow: 2px 2px 5px #d1d1bc, -2px -2px 5px #ffffff; /* Misma sombra que los botones del menú */
     display: flex;
     align-items: center;
     justify-content: center;
     transition: all 0.3s ease;
 
+    svg {
+      width: 12px;
+      height: 12px;
+      stroke: #1a1a1a; /* Mismo color de ícono */
+      stroke-width: 3; /* Poner el símbolo < en negrita (más grueso) */
+    }
+
     &:hover {
-      box-shadow: inset 3px 3px 6px $shadow-dark, inset -3px -3px 6px $shadow-light;
+      color: #45a1ae; /* Hover como los botones del menú */
+      box-shadow: inset 3px 3px 6px #d1d1bc, inset -3px -3px 6px #ffffff;
+      
+      svg {
+        stroke: #45a1ae; /* Hover del ícono */
+      }
     }
   }
 
-  .nav-menu {
+    .nav-menu {
     display: flex;
     flex-direction: column;
-    gap: 10px;
-    padding: 0 15px;
-    margin-top: 10px;
+    gap: 10px; /* Separación aumentada para que no se vean apiñuscados */
+    padding: 0 6px; /* Reducido */
+    margin-top: 20px; /* Restaurado para que empiece arriba */
+    overflow-y: auto;
+    flex: 1;
 
-    .nav-item {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 12px 15px;
-      border-radius: 12px;
-      text-decoration: none;
-      color: $text-color;
-      font-size: 13px;
-      font-weight: 500;
-      transition: all 0.3s ease;
+      /* Ocultar barra de scroll para estética limpia */
+      &::-webkit-scrollbar {
+        width: 0;
+        background: transparent;
+      }
+
+      .nav-item {
+        display: flex;
+        align-items: center;
+        width: 100%; /* Estirar para no desperdiciar espacio a la derecha */
+        box-sizing: border-box;
+        background: #dbdb9b; /* Beige exacto solicitado */
+        border: 1px solid #eca06e; /* Borde exacto solicitado */
+        gap: 8px; /* Menos gap */
+        padding: 4px 10px; /* Más angosto verticalmente, mismo ancho */
+        border-radius: 50px; /* Forma de píldora */
+        text-decoration: none;
+        color: #1a1a1a;
+        font-size: 8.5px; /* Letra minimizada a petición del usuario */
+      font-weight: 600;
+      transition: all 0.2s ease;
       cursor: pointer;
-      box-shadow: 3px 3px 6px $shadow-dark, -3px -3px 6px $shadow-light; /* Estado inactivo: Elevado */
+      box-shadow: 2px 2px 5px $shadow-dark, -2px -2px 5px $shadow-light; /* Estado inactivo: Elevado */
 
       .nav-icon {
         display: flex;
         align-items: center;
         justify-content: center;
+        width: 14px;
         
         ::ng-deep svg {
-          width: 18px;
-          height: 18px;
+          width: 14px;
+          height: 14px;
+        }
+        ::ng-deep i {
+          font-size: 14px;
         }
       }
 
@@ -213,5 +317,5 @@ $primary-color: #45a1ae;
   flex: 1;
   padding: 20px;
   overflow-y: auto;
-  background-color: $bg-color;
+  background-color: $bg-base;
 }

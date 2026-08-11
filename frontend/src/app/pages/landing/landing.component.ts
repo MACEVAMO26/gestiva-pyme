@@ -1,5 +1,5 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { RouterLink, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
@@ -28,6 +28,11 @@ export class LandingComponent implements OnInit {
 
   http = inject(HttpClient);
   cdr = inject(ChangeDetectorRef);
+  private router = inject(Router);
+
+  goToLogin() {
+    this.router.navigate(['/login']);
+  }
 
   // Inicializa el componente y despierta al servidor
   ngOnInit(): void {
