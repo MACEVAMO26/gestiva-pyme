@@ -1,29 +1,18 @@
-<!-- HTML MÓDULO RECORDATORIOS -->
-<div class="panel-contenido">
-  <div class="panel-header">
-    <h2 class="panel-title">Recordatorios</h2>
-  </div>
+<div>
+  <h3>Mis Recordatorios</h3>
+  <form (ngSubmit)="agregar()" style="margin-bottom: 10px;">
+    <input type="text" name="titulo" [(ngModel)]="nuevoTitulo" placeholder="Título" required style="width: 100%; margin-bottom: 5px;">
+    <input type="text" name="descripcion" [(ngModel)]="nuevaDescripcion" placeholder="Descripción (Opcional)" style="width: 100%; margin-bottom: 5px;">
+    <button type="submit" [disabled]="guardando">+ Agregar</button>
+  </form>
 
-  <div class="add-recordatorio">
-    <input type="text" class="neu-input" placeholder="Escribe un nuevo recordatorio...">
-    <button class="btn-primary btn-pill">+</button>
-  </div>
-
-  <div class="panel-body">
-    <div class="recordatorio-item">
-      <label class="neu-checkbox-container">
-        <input type="checkbox">
-        <span class="neu-checkmark"></span>
-      </label>
-      <span class="recordatorio-text">Enviar factura a Cliente X</span>
-    </div>
-
-    <div class="recordatorio-item">
-      <label class="neu-checkbox-container">
-        <input type="checkbox">
-        <span class="neu-checkmark"></span>
-      </label>
-      <span class="recordatorio-text">Llamar al proveedor de papelería</span>
-    </div>
-  </div>
+  <ul style="list-style: none; padding: 0;">
+    <li *ngFor="let r of recordatorios" style="margin-bottom: 5px; border-bottom: 1px solid #ccc; padding-bottom: 5px;">
+      <input type="checkbox" [checked]="r.completado" (change)="marcar(r.id, !r.completado)">
+      <strong [style.text-decoration]="r.completado ? 'line-through' : 'none'">{{ r.titulo }}</strong>
+      <div style="font-size: 12px; color: #666;" *ngIf="r.descripcion">{{ r.descripcion }}</div>
+      <button (click)="eliminar(r.id)" style="font-size: 10px; color: red;">Eliminar</button>
+    </li>
+    <li *ngIf="recordatorios.length === 0">No tienes recordatorios.</li>
+  </ul>
 </div>

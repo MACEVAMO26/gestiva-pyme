@@ -1,6 +1,7 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { timeout } from 'rxjs';
 import { EmpresaService } from '../../../../../../services/empresa.service';
 import { AuthService } from '../../../../../../services/auth.service';
 
@@ -14,6 +15,7 @@ import { AuthService } from '../../../../../../services/auth.service';
 export class AdminEmpresa implements OnInit {
   private empresaService = inject(EmpresaService);
   private authService = inject(AuthService);
+  private cdr = inject(ChangeDetectorRef);
 
   empresaData: any = {
     nombre: '',
@@ -38,14 +40,25 @@ export class AdminEmpresa implements OnInit {
     this.isLoading = true;
     const currentUser = this.authService.getUser();
     if (currentUser && currentUser.empresa_id) {
-      this.empresaService.getEmpresa(currentUser.empresa_id).subscribe({
+      this.empresaService.getEmpresa(currentUser.empresa_id).pipe(timeout(10000)).subscribe({
         next: (data) => {
-          this.empresaData = data;
+          // Aseguramos que data sea un objeto válido
+          this.empresaData = data || {};
+          
+          // Mapeos de base de datos a frontend para que no falten propiedades
+          this.empresaData.nombre = data?.razon_social || '';
+          this.empresaData.nit = data?.nit || '';
+          this.empresaData.direccion = data?.direccion || '';
+          this.empresaData.telefono = data?.telefono || '';
+          
           this.isLoading = false;
+          this.cdr.detectChanges(); // Forzar actualización de la vista
         },
         error: (err) => {
+          console.error('[AdminEmpresa] Error al cargar empresa:', err);
           this.mostrarToast('Error al cargar datos', 'error', 'No se pudo conectar con el servidor.');
           this.isLoading = false;
+          this.cdr.detectChanges(); // Forzar actualización de la vista
         }
       });
     } else {
@@ -62,7 +75,13 @@ export class AdminEmpresa implements OnInit {
     this.isSaving = true;
     const currentUser = this.authService.getUser();
     
-    this.empresaService.updateEmpresa(currentUser.empresa_id, this.empresaData).subscribe({
+    const payload = {
+      ...this.empresaData,
+      razon_social: this.empresaData.nombre,
+      tipo_empresa: this.empresaData.tipo_empresa || 'Servicios' // Fallback si no está
+    };
+    
+    this.empresaService.updateEmpresa(currentUser.empresa_id, payload).subscribe({
       next: (res) => {
         this.isSaving = false;
         this.mostrarToast('Actualizado', 'success', 'Los datos de la empresa se guardaron correctamente.');

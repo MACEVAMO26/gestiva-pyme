@@ -1,3 +1,98 @@
-<div class="agenda-y-calendario-container">
-  <h2>agenda-y-calendario (En Construccin)</h2>
+<div class="modulo-container">
+  <h2>Agenda y Calendario</h2>
+  <p>Programa y administra las reuniones, eventos o encuentros de la empresa.</p>
+
+  <!-- FORMULARIO CRUDO -->
+  <fieldset style="margin-bottom: 20px; padding: 10px;">
+    <legend>Agendar Nuevo Evento / Reunión</legend>
+    <form (ngSubmit)="crearReunion()">
+      
+      <div style="margin-bottom: 10px;">
+        <label>Título del evento: *</label>
+        <br>
+        <input type="text" name="titulo" [(ngModel)]="nuevaReunion.titulo" required style="width: 100%;">
+      </div>
+
+      <div style="margin-bottom: 10px;">
+        <label>Descripción:</label>
+        <br>
+        <textarea name="descripcion" [(ngModel)]="nuevaReunion.descripcion" rows="3" style="width: 100%;"></textarea>
+      </div>
+
+      <div style="margin-bottom: 10px;">
+        <label>Fecha y Hora: *</label>
+        <br>
+        <input type="datetime-local" name="fecha_hora" [(ngModel)]="nuevaReunion.fecha_hora" required>
+      </div>
+
+      <div style="margin-bottom: 10px;">
+        <label>Tipo de Encuentro:</label>
+        <br>
+        <select name="tipo_encuentro" [(ngModel)]="nuevaReunion.tipo_encuentro">
+          <option value="virtual">Virtual</option>
+          <option value="presencial">Presencial</option>
+        </select>
+      </div>
+
+      <div style="margin-bottom: 10px;">
+        <label>Audiencia:</label>
+        <br>
+        <select name="audiencia" [(ngModel)]="nuevaReunion.audiencia">
+          <option value="todos">Toda la empresa</option>
+          <option value="area">Por Área</option>
+          <option value="gerencia">Solo Gerencia</option>
+        </select>
+      </div>
+
+      <div style="margin-bottom: 10px;">
+        <label>Enlace o Lugar (Dirección):</label>
+        <br>
+        <input type="text" name="enlace_lugar" [(ngModel)]="nuevaReunion.enlace_lugar" style="width: 100%;">
+      </div>
+
+      <button type="submit" [disabled]="guardando">
+        {{ guardando ? 'Guardando...' : '+ Agendar' }}
+      </button>
+
+    </form>
+  </fieldset>
+
+  <!-- TABLA DE EVENTOS -->
+  <fieldset style="padding: 10px;">
+    <legend>Eventos Programados</legend>
+
+    <div *ngIf="cargando">Cargando agenda...</div>
+
+    <table *ngIf="!cargando" border="1" width="100%" cellpadding="5" cellspacing="0">
+      <thead>
+        <tr style="background: #eee;">
+          <th>ID</th>
+          <th>Fecha / Hora</th>
+          <th>Título</th>
+          <th>Descripción</th>
+          <th>Modalidad</th>
+          <th>Lugar/Enlace</th>
+          <th>Organizador</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let r of reuniones">
+          <td>{{ r.id }}</td>
+          <td>{{ r.fecha_hora | date:'medium' }}</td>
+          <td><strong>{{ r.titulo }}</strong></td>
+          <td>{{ r.descripcion }}</td>
+          <td>{{ r.tipo_encuentro | uppercase }}</td>
+          <td>
+            <a *ngIf="r.tipo_encuentro === 'virtual' && r.enlace_lugar" [href]="r.enlace_lugar" target="_blank">Enlace</a>
+            <span *ngIf="r.tipo_encuentro === 'presencial'">{{ r.enlace_lugar }}</span>
+          </td>
+          <td>{{ r.organizador?.nombres }} {{ r.organizador?.apellidos }}</td>
+        </tr>
+        <tr *ngIf="reuniones.length === 0">
+          <td colspan="7" style="text-align: center;">No hay eventos en la agenda.</td>
+        </tr>
+      </tbody>
+    </table>
+  </fieldset>
+
 </div>

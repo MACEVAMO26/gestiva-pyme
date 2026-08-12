@@ -1,3 +1,175 @@
-<div class="autogestion-container">
-  <h2>autogestion (En Construccin)</h2>
+<div class="modulo-container">
+  <h2>Portal de Autogestión</h2>
+  <p>Gestiona tus solicitudes de permisos, consulta tu horario y administra tus documentos laborales.</p>
+
+  <!-- NAVEGACIÓN DE PESTAÑAS -->
+  <div style="margin-bottom: 20px;">
+    <button (click)="cambiarPestana('vacaciones')" [style.background]="pestanaActual === 'vacaciones' ? '#ddd' : ''">Ausencias / Vacaciones</button>
+    <button (click)="cambiarPestana('turnos')" [style.background]="pestanaActual === 'turnos' ? '#ddd' : ''">Mis Turnos</button>
+    <button (click)="cambiarPestana('documentos')" [style.background]="pestanaActual === 'documentos' ? '#ddd' : ''">Mis Documentos</button>
+  </div>
+
+  <div *ngIf="cargando">Cargando datos...</div>
+
+  <!-- SECCIÓN: VACACIONES Y AUSENCIAS -->
+  <div *ngIf="pestanaActual === 'vacaciones'">
+    
+    <fieldset style="margin-bottom: 20px; padding: 10px;">
+      <legend>Solicitar Permiso / Vacaciones</legend>
+      <form (ngSubmit)="solicitarVacaciones()">
+        
+        <div style="margin-bottom: 10px;">
+          <label>Tipo de solicitud:</label>
+          <br>
+          <select name="tipo" [(ngModel)]="nuevaVacacion.tipo" required>
+            <option value="vacaciones">Vacaciones</option>
+            <option value="permiso_medico">Permiso Médico</option>
+            <option value="permiso_personal">Permiso Personal</option>
+            <option value="licencia">Licencia</option>
+          </select>
+        </div>
+
+        <div style="margin-bottom: 10px;">
+          <label>Desde:</label>
+          <br>
+          <input type="date" name="fecha_inicio" [(ngModel)]="nuevaVacacion.fecha_inicio" required>
+        </div>
+
+        <div style="margin-bottom: 10px;">
+          <label>Hasta:</label>
+          <br>
+          <input type="date" name="fecha_fin" [(ngModel)]="nuevaVacacion.fecha_fin" required>
+        </div>
+
+        <div style="margin-bottom: 10px;">
+          <label>Observaciones (Opcional):</label>
+          <br>
+          <textarea name="observaciones" [(ngModel)]="nuevaVacacion.observaciones" rows="3" style="width: 100%;"></textarea>
+        </div>
+
+        <button type="submit" [disabled]="guardando">
+          {{ guardando ? 'Enviando...' : '+ Enviar Solicitud' }}
+        </button>
+      </form>
+    </fieldset>
+
+    <fieldset style="padding: 10px;">
+      <legend>Historial de Solicitudes</legend>
+      <table *ngIf="!cargando" border="1" width="100%" cellpadding="5" cellspacing="0">
+        <thead>
+          <tr style="background: #eee;">
+            <th>ID</th>
+            <th>Tipo</th>
+            <th>Desde</th>
+            <th>Hasta</th>
+            <th>Estado</th>
+            <th>Respuesta de Jefatura</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let v of misVacaciones">
+            <td>{{ v.id }}</td>
+            <td>{{ v.tipo }}</td>
+            <td>{{ v.fecha_inicio }}</td>
+            <td>{{ v.fecha_fin }}</td>
+            <td><strong>{{ v.estado }}</strong></td>
+            <td>{{ v.justificacion_respuesta || 'Sin respuesta' }}</td>
+          </tr>
+          <tr *ngIf="misVacaciones.length === 0">
+            <td colspan="6" style="text-align: center;">No has realizado ninguna solicitud.</td>
+          </tr>
+        </tbody>
+      </table>
+    </fieldset>
+
+  </div>
+
+
+  <!-- SECCIÓN: MIS TURNOS -->
+  <div *ngIf="pestanaActual === 'turnos'">
+    <fieldset style="padding: 10px;">
+      <legend>Mi Horario Asignado</legend>
+      <table *ngIf="!cargando" border="1" width="100%" cellpadding="5" cellspacing="0">
+        <thead>
+          <tr style="background: #eee;">
+            <th>Nombre del Turno</th>
+            <th>Hora Entrada</th>
+            <th>Hora Salida</th>
+            <th>Días de la semana</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let t of misTurnos">
+            <td>{{ t.nombre_turno }}</td>
+            <td>{{ t.hora_entrada }}</td>
+            <td>{{ t.hora_salida }}</td>
+            <td>{{ t.dias_semana }}</td>
+          </tr>
+          <tr *ngIf="misTurnos.length === 0">
+            <td colspan="4" style="text-align: center;">No tienes turnos asignados.</td>
+          </tr>
+        </tbody>
+      </table>
+    </fieldset>
+  </div>
+
+
+  <!-- SECCIÓN: MIS DOCUMENTOS -->
+  <div *ngIf="pestanaActual === 'documentos'">
+    
+    <fieldset style="margin-bottom: 20px; padding: 10px;">
+      <legend>Subir Nuevo Documento</legend>
+      <form (ngSubmit)="subirDocumento()">
+        
+        <div style="margin-bottom: 10px;">
+          <label>Nombre del Documento: *</label>
+          <br>
+          <input type="text" name="nombreArchivo" [(ngModel)]="nombreArchivo" placeholder="Ej: Cédula, Contrato Firmado..." required style="width: 100%;">
+        </div>
+
+        <div style="margin-bottom: 10px;">
+          <label>Archivo: *</label>
+          <br>
+          <input type="file" (change)="onFileSelected($event)" required>
+        </div>
+
+        <button type="submit" [disabled]="guardando">
+          {{ guardando ? 'Subiendo...' : '+ Subir Archivo' }}
+        </button>
+      </form>
+    </fieldset>
+
+    <fieldset style="padding: 10px;">
+      <legend>Mis Documentos Adjuntos</legend>
+      <table *ngIf="!cargando" border="1" width="100%" cellpadding="5" cellspacing="0">
+        <thead>
+          <tr style="background: #eee;">
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Tipo</th>
+            <th>Enlace</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let doc of misDocumentos">
+            <td>{{ doc.id }}</td>
+            <td>{{ doc.nombre }}</td>
+            <td>{{ doc.tipo_archivo }}</td>
+            <td>
+              <a *ngIf="doc.cloudinary_url" [href]="doc.cloudinary_url" target="_blank">Ver Archivo</a>
+            </td>
+            <td>
+              <button (click)="eliminarDocumento(doc.id)" style="color: red;">Eliminar</button>
+            </td>
+          </tr>
+          <tr *ngIf="misDocumentos.length === 0">
+            <td colspan="5" style="text-align: center;">No tienes documentos guardados.</td>
+          </tr>
+        </tbody>
+      </table>
+    </fieldset>
+
+  </div>
+
 </div>

@@ -1,9 +1,9 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 export interface Recordatorio {
-  id: number;
+  id?: number;
   titulo: string;
   descripcion: string;
   completado: boolean;
@@ -15,28 +15,22 @@ export interface Recordatorio {
   providedIn: 'root'
 })
 export class RecordatoriosService {
+  private http = inject(HttpClient);
   private apiUrl = '/api/recordatorios';
 
-  constructor(private http: HttpClient) { }
-
-  private getHeaders() {
-    const token = sessionStorage.getItem('auth_token');
-    return { headers: { Authorization: `Bearer ${token}` } };
-  }
-
   getRecordatorios(): Observable<Recordatorio[]> {
-    return this.http.get<Recordatorio[]>(this.apiUrl, this.getHeaders());
+    return this.http.get<Recordatorio[]>(this.apiUrl);
   }
 
-  agregarRecordatorio(descripcion: string): Observable<Recordatorio> {
-    const payload = {
-      titulo: 'Recordatorio',
-      descripcion: descripcion
-    };
-    return this.http.post<Recordatorio>(this.apiUrl, payload, this.getHeaders());
+  agregarRecordatorio(recordatorio: any): Observable<Recordatorio> {
+    return this.http.post<Recordatorio>(this.apiUrl, recordatorio);
   }
 
   eliminarRecordatorio(id: number): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/${id}`, this.getHeaders());
+    return this.http.delete(`${this.apiUrl}/${id}`);
+  }
+
+  marcarCompletado(id: number, completado: boolean): Observable<any> {
+    return this.http.put(`${this.apiUrl}/${id}/completado`, { completado });
   }
 }

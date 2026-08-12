@@ -1,6 +1,7 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { timeout } from 'rxjs';
 import { UsuariosService } from '../../../../../../services/usuarios.service';
 import { ToastService } from '../../../../../../services/toast.service';
 
@@ -14,6 +15,7 @@ import { ToastService } from '../../../../../../services/toast.service';
 export class AdminUsuarios implements OnInit {
   private usuariosService = inject(UsuariosService);
   private toast = inject(ToastService);
+  private cdr = inject(ChangeDetectorRef);
 
   usuarios: any[] = [];
   isLoading = true;
@@ -38,14 +40,16 @@ export class AdminUsuarios implements OnInit {
 
   cargarUsuarios() {
     this.isLoading = true;
-    this.usuariosService.getUsuarios().subscribe({
+    this.usuariosService.getUsuarios().pipe(timeout(10000)).subscribe({
       next: (data) => {
         this.usuarios = data;
         this.isLoading = false;
+        this.cdr.detectChanges();
       },
       error: (err) => {
         this.toast.error('No se pudieron cargar los usuarios');
         this.isLoading = false;
+        this.cdr.detectChanges(); // Forzar actualización de la vista
       }
     });
   }

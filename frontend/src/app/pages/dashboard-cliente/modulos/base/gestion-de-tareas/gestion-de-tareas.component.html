@@ -1,3 +1,85 @@
-<div class="gestion-de-tareas-container">
-  <h2>gestion-de-tareas (En Construccin)</h2>
+<div class="modulo-container">
+  <h2>Gestión de Tareas</h2>
+  
+  <p>Crea, asigna y da seguimiento a las tareas del equipo.</p>
+
+  <!-- FORMULARIO CRUDO -->
+  <fieldset style="margin-bottom: 20px; padding: 10px;">
+    <legend>Asignar Nueva Tarea</legend>
+    <form (ngSubmit)="crearTarea()">
+      
+      <div style="margin-bottom: 10px;">
+        <label>Título de la tarea: *</label>
+        <br>
+        <input type="text" name="titulo" [(ngModel)]="nuevaTarea.titulo" required style="width: 100%;">
+      </div>
+
+      <div style="margin-bottom: 10px;">
+        <label>Descripción detallada:</label>
+        <br>
+        <textarea name="descripcion" [(ngModel)]="nuevaTarea.descripcion" rows="3" style="width: 100%;"></textarea>
+      </div>
+
+      <div style="margin-bottom: 10px;">
+        <label>Asignar a: *</label>
+        <br>
+        <select name="asignado_id" [(ngModel)]="nuevaTarea.asignado_id" required>
+          <option [ngValue]="0">-- Seleccione Empleado --</option>
+          <option *ngFor="let emp of empleados" [ngValue]="emp.id">
+            {{ emp.nombres }} {{ emp.apellidos }} ({{ emp.cargo?.nombre }})
+          </option>
+        </select>
+      </div>
+
+      <button type="submit" [disabled]="guardando">
+        {{ guardando ? 'Guardando...' : '+ Asignar Tarea' }}
+      </button>
+
+    </form>
+  </fieldset>
+
+  <!-- TABLA DE DATOS -->
+  <fieldset style="padding: 10px;">
+    <legend>Tareas Actuales</legend>
+
+    <div *ngIf="cargando">Cargando tareas...</div>
+
+    <table *ngIf="!cargando" border="1" width="100%" cellpadding="5" cellspacing="0">
+      <thead>
+        <tr style="background: #eee;">
+          <th>ID</th>
+          <th>Título</th>
+          <th>Descripción</th>
+          <th>Asignado Por</th>
+          <th>Asignado A</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let t of tareas">
+          <td>{{ t.id }}</td>
+          <td>{{ t.titulo }}</td>
+          <td>{{ t.descripcion }}</td>
+          <td>{{ t.asignador?.nombres }} {{ t.asignador?.apellidos }}</td>
+          <td>{{ t.asignado?.nombres }} {{ t.asignado?.apellidos }}</td>
+          <td>
+            <strong>{{ t.estado }}</strong>
+          </td>
+          <td>
+            <select #estadoSelect (change)="actualizarEstado(t.id, estadoSelect.value)">
+              <option value="">Cambiar...</option>
+              <option value="notificada">Notificada</option>
+              <option value="en_proceso">En Proceso</option>
+              <option value="terminada">Terminada</option>
+            </select>
+          </td>
+        </tr>
+        <tr *ngIf="tareas.length === 0">
+          <td colspan="7" style="text-align: center;">No hay tareas registradas.</td>
+        </tr>
+      </tbody>
+    </table>
+  </fieldset>
+
 </div>

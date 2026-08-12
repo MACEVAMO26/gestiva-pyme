@@ -32,10 +32,10 @@
         @if (user?.avatar_url) {
           <img [src]="user.avatar_url" alt="Avatar" class="avatar-img">
         } @else {
-          <div class="avatar">{{ user?.nombres?.charAt(0) || 'U' }}</div>
+          <div class="avatar">{{ user?.rol?.nombre ? user.rol.nombre.charAt(0) : 'U' }}</div>
         }
         <div class="user-info">
-          <span class="user-name">{{ user?.nombres || 'Usuario' }}</span>
+          <span class="user-name">{{ user?.rol?.nombre || 'Gerente General' }}</span>
         </div>
         <button class="btn-logout" (click)="logout()" title="Cerrar Sesión">
           <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">

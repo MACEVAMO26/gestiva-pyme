@@ -5,21 +5,25 @@ import { Observable } from 'rxjs';
 @Injectable({
   providedIn: 'root'
 })
-export class UsuariosService {
+export class RolesService {
   private http = inject(HttpClient);
-  private apiUrl = '/api/usuarios';
+  private apiUrl = '/api/roles';
 
   // Los headers de autenticación los inyecta automáticamente el authInterceptor
 
-  getUsuarios(): Observable<any[]> {
+  getRoles(): Observable<any[]> {
     return this.http.get<any[]>(this.apiUrl);
   }
 
-  createUsuario(data: any): Observable<any> {
+  getRole(id: number): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/${id}`);
+  }
+
+  createRole(data: any): Observable<any> {
     return this.http.post<any>(this.apiUrl, data);
   }
 
-  updateUsuario(id: number, data: any): Observable<any> {
+  updateRole(id: number, data: any): Observable<any> {
     return this.http.put<any>(`${this.apiUrl}/${id}`, data);
   }
 

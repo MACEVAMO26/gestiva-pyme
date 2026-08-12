@@ -1,10 +1,44 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { NotificacionesService, Notificacion } from '../../../../../../services/notificaciones.service';
+import { ToastService } from '../../../../../../services/toast.service';
 
 @Component({
   selector: 'app-inicio-notificaciones',
   standalone: true,
-  imports: [],
+  imports: [CommonModule],
   templateUrl: './inicio-notificaciones.component.html',
   styleUrl: './inicio-notificaciones.component.scss'
 })
-export class InicioNotificacionesComponent {}
+export class InicioNotificacionesComponent implements OnInit {
+  private notifService = inject(NotificacionesService);
+  private toast = inject(ToastService);
+
+  notificaciones: Notificacion[] = [];
+  cargando = false;
+
+  ngOnInit() {
+    this.cargarNotificaciones();
+  }
+
+  cargarNotificaciones() {
+    this.cargando = true;
+    this.notifService.getNotificaciones().subscribe({
+      next: (res) => {
+        this.notificaciones = res;
+        this.cargando = false;
+      },
+      error: () => {
+        this.cargando = false;
+      }
+    });
+  }
+
+  marcarLeida(id: number | undefined) {
+    if (!id) return;
+    this.notifService.marcarLeida(id).subscribe({
+      next: () => this.cargarNotificaciones(),
+      error: () => this.toast.error('Error al actualizar notificación')
+    });
+  }
+}

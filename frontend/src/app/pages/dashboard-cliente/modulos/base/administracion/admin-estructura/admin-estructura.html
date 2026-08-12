@@ -1,57 +1,273 @@
-<!-- HTML GESTIÓN DE ESTRUCTURA ORGANIZACIONAL -->
 <div class="panel-contenido">
   <div class="panel-header">
     <h2 class="panel-title">Estructura Organizacional</h2>
+    
+    @if (activeTab === 'sedes') {
+      <button class="btn-primary btn-pill" (click)="abrirModalSede()">+ Nueva Sede</button>
+    } @else if (activeTab === 'areas') {
+      <button class="btn-primary btn-pill" (click)="abrirModalArea()">+ Nueva Área</button>
+    } @else if (activeTab === 'cargos') {
+      <button class="btn-primary btn-pill" (click)="abrirModalCargo()">+ Nuevo Cargo</button>
+    }
   </div>
 
-  <div class="estructura-grid">
-    <!-- Sedes -->
-    <div class="est-card neu-inset">
-      <div class="est-header">
-        <h3>📍 Sedes</h3>
-        <button class="btn-icon-add">+</button>
-      </div>
-      <ul class="est-list">
-        <li>Sede Principal - Bogotá</li>
-        <li>Sede Norte - Medellín</li>
-      </ul>
-    </div>
+  <div class="tabs-container">
+    <button class="tab-btn" [class.active]="activeTab === 'sedes'" (click)="setTab('sedes')">Sedes</button>
+    <button class="tab-btn" [class.active]="activeTab === 'areas'" (click)="setTab('areas')">Áreas</button>
+    <button class="tab-btn" [class.active]="activeTab === 'cargos'" (click)="setTab('cargos')">Cargos</button>
+  </div>
 
-    <!-- Áreas (Departamentos) -->
-    <div class="est-card neu-inset">
-      <div class="est-header">
-        <h3>🏢 Áreas (Departamentos)</h3>
-        <button class="btn-icon-add">+</button>
-      </div>
-      <ul class="est-list">
-        <li>Recursos Humanos</li>
-        <li>Ventas Corporativas</li>
-        <li>Contabilidad</li>
-      </ul>
+  <div class="panel-body">
+    @if (isLoading) {
+    <div class="loading-overlay neu-inset">
+      <div class="spinner"></div>
+      <p>Cargando datos...</p>
     </div>
+    } @else {
+      <!-- TAB SEDES -->
+      @if (activeTab === 'sedes') {
+        <div class="neu-table-container">
+          <table class="neu-table">
+            <thead>
+              <tr>
+                <th>Nombre de la Sede</th>
+                <th>Dirección</th>
+                <th>Teléfono</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              @if (sedes.length === 0) {
+                <tr><td colspan="5" class="empty-state">No hay sedes registradas.</td></tr>
+              }
+              @for (sede of sedes; track sede.id) {
+                <tr>
+                  <td><div class="user-info"><span class="user-name">{{ sede.nombre }}</span></div></td>
+                  <td>{{ sede.direccion || 'N/A' }}</td>
+                  <td>{{ sede.telefono || 'N/A' }}</td>
+                  <td>
+                    @if (sede.estado === 'activa') {
+                      <span class="badge badge-active">Activa</span>
+                    } @else {
+                      <span class="badge badge-inactive">Inactiva</span>
+                    }
+                  </td>
+                  <td>
+                    <button class="btn-icon" (click)="abrirEdicionSede(sede)" title="Editar">✏️</button>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
 
-    <!-- Cargos -->
-    <div class="est-card neu-inset">
-      <div class="est-header">
-        <h3>👔 Cargos</h3>
-        <button class="btn-icon-add">+</button>
-      </div>
-      <ul class="est-list">
-        <li>Gerente General</li>
-        <li>Asesor Comercial</li>
-      </ul>
+      <!-- TAB ÁREAS -->
+      @if (activeTab === 'areas') {
+        <div class="neu-table-container">
+          <table class="neu-table">
+            <thead>
+              <tr>
+                <th>Nombre del Área</th>
+                <th>Descripción</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              @if (areas.length === 0) {
+                <tr><td colspan="4" class="empty-state">No hay áreas registradas.</td></tr>
+              }
+              @for (area of areas; track area.id) {
+                <tr>
+                  <td><div class="user-info"><span class="user-name">{{ area.nombre }}</span></div></td>
+                  <td>{{ area.descripcion || 'Sin descripción' }}</td>
+                  <td>
+                    @if (area.activo) {
+                      <span class="badge badge-active">Activa</span>
+                    } @else {
+                      <span class="badge badge-inactive">Inactiva</span>
+                    }
+                  </td>
+                  <td>
+                    <button class="btn-icon" (click)="cambiarEstadoArea(area)" title="Activar/Desactivar">
+                      @if (area.activo) { 🚫 } @else { ✅ }
+                    </button>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+
+      <!-- TAB CARGOS -->
+      @if (activeTab === 'cargos') {
+        <div class="neu-table-container">
+          <table class="neu-table">
+            <thead>
+              <tr>
+                <th>Nombre del Cargo</th>
+                <th>Descripción</th>
+                <th>Rol de Sistema</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              @if (cargos.length === 0) {
+                <tr><td colspan="5" class="empty-state">No hay cargos registrados.</td></tr>
+              }
+              @for (cargo of cargos; track cargo.id) {
+                <tr>
+                  <td><div class="user-info"><span class="user-name">{{ cargo.nombre }}</span></div></td>
+                  <td>{{ cargo.descripcion || 'Sin descripción' }}</td>
+                  <td>
+                    @if (cargo.rol_id) {
+                      <span class="role-badge">{{ getRoleName(cargo.rol_id) }}</span>
+                    } @else {
+                      <span class="role-badge" style="background-color: var(--secondary-color); color: white;">Recursos Humanos</span>
+                    }
+                  </td>
+                  <td>
+                    @if (cargo.activo) {
+                      <span class="badge badge-active">Activo</span>
+                    } @else {
+                      <span class="badge badge-inactive">Inactivo</span>
+                    }
+                  </td>
+                  <td>
+                    <!-- No permitir desactivar el primer cargo de RRHH, asumimos ID 1 o rol null para este caso -->
+                    <button class="btn-icon" (click)="cambiarEstadoCargo(cargo)" title="Activar/Desactivar" [disabled]="cargo.nombre === 'Jefe de Recursos Humanos'">
+                      @if (cargo.nombre === 'Jefe de Recursos Humanos') { 🔒 } @else { @if (cargo.activo) { 🚫 } @else { ✅ } }
+                    </button>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    }
+  </div>
+</div>
+
+<!-- MODAL SEDE -->
+@if (isModalSedeOpen) {
+<div class="modal-overlay">
+  <div class="modal-card neu-card">
+    <div class="modal-header">
+      <h2 class="panel-title">{{ editandoSedeId ? 'Editar Sede' : 'Crear Sede' }}</h2>
+      <button class="btn-close" (click)="cerrarModales()" [disabled]="isSaving">×</button>
     </div>
-
-    <!-- Jerarquías -->
-    <div class="est-card neu-inset">
-      <div class="est-header">
-        <h3>📈 Jerarquías</h3>
-        <button class="btn-icon-add">+</button>
-      </div>
-      <ul class="est-list">
-        <li>Nivel 1 (Directivo)</li>
-        <li>Nivel 2 (Operativo)</li>
-      </ul>
+    <div class="modal-body">
+      <form>
+        <div class="form-grid">
+          <div class="form-group full-width">
+            <label>Nombre de la Sede <span class="text-danger">*</span></label>
+            <input type="text" class="neu-input" name="nombre" [(ngModel)]="nuevaSede.nombre" required>
+          </div>
+          <div class="form-group full-width">
+            <label>Dirección</label>
+            <input type="text" class="neu-input" name="direccion" [(ngModel)]="nuevaSede.direccion">
+          </div>
+          <div class="form-group full-width">
+            <label>Teléfono</label>
+            <input type="text" class="neu-input" name="telefono" [(ngModel)]="nuevaSede.telefono">
+          </div>
+          @if (editandoSedeId) {
+            <div class="form-group full-width">
+              <label>Estado</label>
+              <select class="neu-input" name="estado" [(ngModel)]="nuevaSede.estado">
+                <option value="activa">Activa</option>
+                <option value="inactiva">Inactiva</option>
+              </select>
+            </div>
+          }
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn-save btn-pill" (click)="guardarSede()" [disabled]="isSaving">
+            @if (isSaving) { <span class="spinner-small"></span> Guardando... } @else { Guardar }
+          </button>
+        </div>
+      </form>
     </div>
   </div>
 </div>
+}
+
+<!-- MODAL ÁREA -->
+@if (isModalAreaOpen) {
+<div class="modal-overlay">
+  <div class="modal-card neu-card">
+    <div class="modal-header">
+      <h2 class="panel-title">Crear Nueva Área</h2>
+      <button class="btn-close" (click)="cerrarModales()" [disabled]="isSaving">×</button>
+    </div>
+    <div class="modal-body">
+      <form>
+        <div class="form-grid">
+          <div class="form-group full-width">
+            <label>Nombre del Área <span class="text-danger">*</span></label>
+            <input type="text" class="neu-input" name="nombre" [(ngModel)]="nuevaArea.nombre" required>
+          </div>
+          <div class="form-group full-width">
+            <label>Descripción</label>
+            <textarea class="neu-input" name="descripcion" [(ngModel)]="nuevaArea.descripcion" rows="3"></textarea>
+          </div>
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn-save btn-pill" (click)="guardarArea()" [disabled]="isSaving">
+            @if (isSaving) { <span class="spinner-small"></span> Guardando... } @else { Guardar }
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+}
+
+<!-- MODAL CARGO -->
+@if (isModalCargoOpen) {
+<div class="modal-overlay">
+  <div class="modal-card neu-card">
+    <div class="modal-header">
+      <h2 class="panel-title">Crear Nuevo Cargo</h2>
+      <button class="btn-close" (click)="cerrarModales()" [disabled]="isSaving">×</button>
+    </div>
+    <div class="modal-body">
+      <form>
+        <div class="form-grid">
+          <div class="form-group full-width">
+            <label>Nombre del Cargo <span class="text-danger">*</span></label>
+            <input type="text" class="neu-input" name="nombre" [(ngModel)]="nuevoCargo.nombre" required>
+          </div>
+          <div class="form-group full-width">
+            <label>Rol de Sistema Asociado <span class="text-danger">*</span></label>
+            <select class="neu-input" name="rol_id" [(ngModel)]="nuevoCargo.rol_id" required>
+              <option value="">Selecciona un Rol</option>
+              @for (rol of roles; track rol.id) {
+                <option [value]="rol.id">{{ rol.nombre }}</option>
+              }
+            </select>
+          </div>
+          <div class="form-group full-width">
+            <label>Descripción</label>
+            <textarea class="neu-input" name="descripcion" [(ngModel)]="nuevoCargo.descripcion" rows="2"></textarea>
+          </div>
+          <div class="form-group full-width">
+            <label>Funciones</label>
+            <textarea class="neu-input" name="funciones" [(ngModel)]="nuevoCargo.funciones" rows="2"></textarea>
+          </div>
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn-save btn-pill" (click)="guardarCargo()" [disabled]="isSaving">
+            @if (isSaving) { <span class="spinner-small"></span> Guardando... } @else { Guardar }
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+}
