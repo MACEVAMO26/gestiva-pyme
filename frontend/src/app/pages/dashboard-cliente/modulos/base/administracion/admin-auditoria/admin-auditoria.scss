@@ -1,0 +1,15 @@
+/* --- VARIABLES --- */
+$bg-color: #f5f5dc; $text-dark: #333333; $text-muted: #666666; $border-color: rgba(0,0,0,0.05);
+
+.panel-contenido { display: flex; flex-direction: column; height: 100%; }
+.panel-header { border-bottom: 2px solid $border-color; padding-bottom: 1rem; margin-bottom: 1rem; }
+.panel-title { font-family: 'Montserrat', sans-serif; font-size: 16px; font-weight: bold; text-transform: uppercase; color: $text-dark; margin: 0; }
+
+.neu-table-container { background: $bg-color; border-radius: 12px; padding: 1rem; box-shadow: 6px 6px 12px #d6d6c0, -6px -6px 12px #ffffff; overflow-x: auto; }
+.neu-table { width: 100%; border-collapse: collapse; font-family: 'Montserrat', sans-serif; font-size: 12px; }
+.neu-table th { text-align: left; padding: 12px; color: $text-muted; font-size: 10px; text-transform: uppercase; border-bottom: 2px solid $border-color; }
+.neu-table td { padding: 12px; color: $text-dark; border-bottom: 1px solid $border-color; }
+
+.badge { padding: 4px 8px; border-radius: 50px; font-size: 10px; font-weight: bold; }
+.badge-create { background: #d4edda; color: #155724; }
+.badge-update { background: #fff3cd; color: #856404; }

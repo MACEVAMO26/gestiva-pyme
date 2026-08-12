@@ -205,7 +205,7 @@
               d="M13.5 16.875h3.375m0 0h3.375m-3.375 0V13.5m0 3.375v3.375M6 10.5h2.25a2.25 2.25 0 0 0 2.25-2.25V6a2.25 2.25 0 0 0-2.25-2.25H6A2.25 2.25 0 0 0 3.75 6v2.25A2.25 2.25 0 0 0 6 10.5Zm0 9.75h2.25A2.25 2.25 0 0 0 10.5 18v-2.25a2.25 2.25 0 0 0-2.25-2.25H6a2.25 2.25 0 0 0-2.25 2.25V18A2.25 2.25 0 0 0 6 20.25Zm9.75-9.75H18a2.25 2.25 0 0 0 2.25-2.25V6A2.25 2.25 0 0 0 18 3.75h-2.25A2.25 2.25 0 0 0 13.5 6v2.25a2.25 2.25 0 0 0 2.25 2.25Z"
             />
           </svg>
-          <span class="nav-text">Módulos</span>
+          <span class="nav-text">Áreas</span>
         </a>
         <a
           class="nav-item"
@@ -533,7 +533,7 @@
                   <th class="p-4 font-semibold uppercase tracking-wider text-center">Razón Social</th>
                   <th class="p-4 font-semibold uppercase tracking-wider text-center min-w-[150px] whitespace-nowrap">NIT</th>
                   <th class="p-4 font-semibold uppercase tracking-wider text-center">Fecha Inscripción</th>
-                  <th class="p-4 font-semibold uppercase tracking-wider text-center max-w-[120px]">Módulos Asignados</th>
+                  <th class="p-4 font-semibold uppercase tracking-wider text-center max-w-[120px]">Áreas Asignadas</th>
                   <th class="p-4 font-semibold uppercase tracking-wider text-center">Meses Pagados</th>
                   <th class="p-4 font-semibold uppercase tracking-wider text-center">Ganancia Histórica</th>
                   <th class="p-4 font-semibold uppercase tracking-wider text-center min-w-[130px]">Estado</th>
@@ -1690,23 +1690,56 @@
         <h3 class="text-emerald-400 font-bold mt-4 mb-2">Cargo: Gerente General</h3>
         <div class="grid grid-cols-2 gap-4">
           <div class="saas-form-group">
-            <label class="saas-label">Nombres</label>
+            <label class="saas-label">Tipo de Documento</label>
+            <select [(ngModel)]="nuevaEmpresa.tipo_documento_gerente" name="tipo_documento_gerente" class="saas-select" required>
+              <option value="CC">Cédula de Ciudadanía (CC)</option>
+              <option value="CE">Cédula de Extranjería (CE)</option>
+              <option value="Pasaporte">Pasaporte</option>
+              <option value="PEP">Permiso Especial de Permanencia (PEP)</option>
+              <option value="PPT">Permiso de Protección Temporal (PPT)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div class="saas-form-group">
+            <label class="saas-label">Primer Nombre</label>
             <input
               type="text"
-              [(ngModel)]="nuevaEmpresa.nombre_gerente"
-              name="nombre_gerente"
+              [(ngModel)]="nuevaEmpresa.primer_nombre_gerente"
+              name="primer_nombre_gerente"
               class="saas-input"
               placeholder="Ej: Juan"
             />
           </div>
           <div class="saas-form-group">
-            <label class="saas-label">Apellidos</label>
+            <label class="saas-label">Segundo Nombre</label>
             <input
               type="text"
-              [(ngModel)]="nuevaEmpresa.apellido_gerente"
-              name="apellido_gerente"
+              [(ngModel)]="nuevaEmpresa.segundo_nombre_gerente"
+              name="segundo_nombre_gerente"
+              class="saas-input"
+              placeholder="Ej: Carlos"
+            />
+          </div>
+          <div class="saas-form-group">
+            <label class="saas-label">Primer Apellido</label>
+            <input
+              type="text"
+              [(ngModel)]="nuevaEmpresa.primer_apellido_gerente"
+              name="primer_apellido_gerente"
               class="saas-input"
               placeholder="Ej: Pérez"
+            />
+          </div>
+          <div class="saas-form-group">
+            <label class="saas-label">Segundo Apellido</label>
+            <input
+              type="text"
+              [(ngModel)]="nuevaEmpresa.segundo_apellido_gerente"
+              name="segundo_apellido_gerente"
+              class="saas-input"
+              placeholder="Ej: López"
             />
           </div>
         </div>
@@ -1750,7 +1783,7 @@
           />
         </div>
         <div class="saas-form-group">
-          <label class="saas-label">Plan / Módulos</label>
+          <label class="saas-label">Plan / Áreas</label>
           <select
             [(ngModel)]="nuevaEmpresa.tipo_empresa"
             name="tipo_empresa"
@@ -2297,14 +2330,14 @@
 
           <div class="space-y-4">
             <div>
-              <label class="block text-gray-300 text-sm font-semibold mb-1">Plan Básico (Cualquier Módulo Base)</label>
+              <label class="block text-gray-300 text-sm font-semibold mb-1">Plan Básico (Cualquier Área Base)</label>
               <div class="relative">
                 <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-bold">$</span>
                 <input type="number" [(ngModel)]="tarifaConfig.plan_mensual" class="neu-dark-input w-full pl-8 font-bold text-lg text-emerald-300" />
               </div>
             </div>
             <div>
-              <label class="block text-gray-300 text-sm font-semibold mb-1">Costo por Módulo Transversal Adicional</label>
+              <label class="block text-gray-300 text-sm font-semibold mb-1">Costo por Área Transversal Adicional</label>
               <div class="relative">
                 <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-bold">$</span>
                 <input type="number" [(ngModel)]="tarifaConfig.modulo_extra" class="neu-dark-input w-full pl-8 font-bold text-lg text-indigo-300" />

@@ -82,8 +82,11 @@ export class SaasAdminComponent implements OnInit {
     color_secundario: '#1e293b',
     color_fondo: '#4c808a',
     color_texto: '#f8fafc',
-    nombre_gerente: '',
-    apellido_gerente: ''
+    primer_nombre_gerente: '',
+    segundo_nombre_gerente: '',
+    primer_apellido_gerente: '',
+    segundo_apellido_gerente: '',
+    tipo_documento_gerente: 'CC'
   };
   listaDescuentosEmpresa: string[] = [];
   currentView = 'dashboard';

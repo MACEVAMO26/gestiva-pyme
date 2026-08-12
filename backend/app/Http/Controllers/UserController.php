@@ -19,9 +19,11 @@ class UserController extends Controller
     public function store(Request $request)
     {
         $validatedData = $request->validate([
-            'nombres' => 'required|string|max:255',
+            'primer_nombre' => 'required|string|max:255',
+            'segundo_nombre' => 'nullable|string|max:255',
             'primer_apellido' => 'required|string|max:255',
-            'segundo_apellido' => 'required|string|max:255',
+            'segundo_apellido' => 'nullable|string|max:255',
+            'tipo_documento' => 'required|string|max:50',
             'documento' => 'required|string|max:255|unique:usuarios',
             'email_personal' => 'required|string|email|max:255',
             'telefono' => 'nullable|string|max:255',
@@ -35,9 +37,9 @@ class UserController extends Controller
             return preg_replace('/[^a-z0-9]/', '', $string);
         };
 
-        $n = $cleanString($validatedData['nombres']);
+        $n = $cleanString($validatedData['primer_nombre']);
         $p = $cleanString($validatedData['primer_apellido']);
-        $s = $cleanString($validatedData['segundo_apellido']);
+        $s = $cleanString($validatedData['segundo_apellido'] ?? '');
 
         $prefixBase = substr($n, 0, 4) . substr($p, 0, 3) . substr($s, 0, 2);
         
@@ -77,8 +79,11 @@ class UserController extends Controller
 
         $user = \Illuminate\Support\Facades\DB::transaction(function () use ($validatedData, $apellidosCompletos, $finalEmail, $tempPassword) {
             $user = User::create([
-                'nombres' => $validatedData['nombres'],
-                'apellidos' => $apellidosCompletos,
+                'primer_nombre' => $validatedData['primer_nombre'],
+                'segundo_nombre' => $validatedData['segundo_nombre'],
+                'primer_apellido' => $validatedData['primer_apellido'],
+                'segundo_apellido' => $validatedData['segundo_apellido'],
+                'tipo_documento' => $validatedData['tipo_documento'],
                 'documento' => $validatedData['documento'],
                 'email' => $finalEmail,
                 'email_personal' => $validatedData['email_personal'],
@@ -114,6 +119,20 @@ class UserController extends Controller
                 $user->cargo_id = $cargoRRHH->id;
                 $user->perfil_formalizado = true; // No requiere formalización adicional
                 $user->save();
+
+                // Asegurar que el Jefe de RRHH tenga acceso a sus módulos de gestión
+                $modulosRRHH = ['r_tur', 'r_aus', 'r_vac']; // Módulos de Recursos Humanos
+                foreach ($modulosRRHH as $modRRHH) {
+                    \App\Models\Permiso::firstOrCreate([
+                        'rol_id' => $roleJefe->id,
+                        'area' => $modRRHH
+                    ], [
+                        'puede_ver' => 1,
+                        'puede_crear' => 1,
+                        'puede_editar' => 1,
+                        'puede_inactivar' => 1
+                    ]);
+                }
 
                 // Formalizar su registro como Empleado
                 \App\Models\Empleado::create([
@@ -157,8 +176,11 @@ class UserController extends Controller
         $user = User::findOrFail($id);
 
         $validatedData = $request->validate([
-            'nombres' => 'required|string|max:255',
-            'apellidos' => 'required|string|max:255',
+            'primer_nombre' => 'required|string|max:255',
+            'segundo_nombre' => 'nullable|string|max:255',
+            'primer_apellido' => 'required|string|max:255',
+            'segundo_apellido' => 'nullable|string|max:255',
+            'tipo_documento' => 'required|string|max:50',
             'documento' => ['required', 'string', 'max:255', Rule::unique('usuarios')->ignore($user->id)],
             'email' => ['required', 'string', 'email', 'max:255', Rule::unique('usuarios')->ignore($user->id)],
             'cargo_id' => 'required|integer|exists:cargos,id',

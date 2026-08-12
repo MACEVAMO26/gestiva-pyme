@@ -1,0 +1,94 @@
+/* --- 1. VARIABLES GLOBALES DE NOTIFICACIONES --- */
+$bg-color: #f5f5dc;
+$text-dark: #333333;
+$text-muted: #666666;
+
+/* Colores permitidos en el AGENTS.md para toques visuales (Acentos) */
+$color-warning: #C9A227;
+$color-info: #7C6FA6;
+$color-success: #6B8F71;
+
+.panel-contenido {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.panel-header {
+  border-bottom: 2px solid rgba(0,0,0,0.05);
+  padding-bottom: 1rem;
+  margin-bottom: 1rem;
+}
+
+.panel-title {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 16px;
+  font-weight: bold;
+  text-transform: uppercase;
+  color: $text-dark;
+  margin: 0;
+  text-align: center;
+}
+
+/* --- 2. TARJETAS DE NOTIFICACIONES (PEQUEÑAS Y VISUALES) --- */
+.panel-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow-y: auto;
+}
+
+.notificacion-item {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  background: $bg-color;
+  border-radius: 8px;
+  box-shadow: inset 3px 3px 6px #d6d6c0, inset -3px -3px 6px #ffffff;
+  gap: 12px;
+  border-left: 4px solid transparent;
+}
+
+/* Bordes decorativos */
+.notificacion-item.border-warning { border-left-color: $color-warning; }
+.notificacion-item.border-info { border-left-color: $color-info; }
+.notificacion-item.border-success { border-left-color: $color-success; }
+
+/* Icono circular */
+.noti-icon {
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 12px;
+  font-weight: bold;
+  color: #fff;
+  box-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+}
+
+.bg-warning { background-color: $color-warning; }
+.bg-info { background-color: $color-info; }
+.bg-success { background-color: $color-success; }
+
+/* Contenido de texto */
+.noti-content {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.noti-text {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 11px;
+  color: $text-dark;
+  margin: 0 0 2px 0;
+}
+
+.noti-time {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 9px;
+  color: $text-muted;
+}

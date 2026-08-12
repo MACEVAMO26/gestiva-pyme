@@ -1,0 +1,63 @@
+/* --- 1. VARIABLES GLOBALES DE ADMINISTRACIÓN --- */
+$bg-color: #f5f5dc;
+$text-dark: #333333;
+$text-muted: #666666;
+$accent-color: #45a1ae; /* Color activo por defecto */
+
+/* --- 2. LAYOUT PRINCIPAL --- */
+.admin-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 1rem;
+  gap: 1.5rem;
+}
+
+/* --- 3. NAVEGACIÓN NEUMÓRFICA (TABS SUPERIORES) --- */
+.neu-nav {
+  display: flex;
+  gap: 1rem;
+  background: $bg-color;
+  padding: 10px;
+  border-radius: 16px;
+  box-shadow: 6px 6px 12px #d6d6c0, -6px -6px 12px #ffffff; /* Relieve principal */
+  overflow-x: auto;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: 12px;
+  text-decoration: none;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: $text-dark;
+  background: $bg-color;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+/* Estado normal (ligero relieve o plano) */
+.nav-item:hover {
+  box-shadow: 2px 2px 5px #d6d6c0, -2px -2px 5px #ffffff;
+}
+
+/* Estado Activo (Hundido neumórfico) */
+.nav-item.active {
+  box-shadow: inset 4px 4px 8px #d6d6c0, inset -4px -4px 8px #ffffff;
+  color: $accent-color;
+  font-weight: bold;
+}
+
+/* --- 4. CONTENIDO (OUTLET) --- */
+.admin-content {
+  flex: 1;
+  background: $bg-color;
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: inset 6px 6px 12px #d6d6c0, inset -6px -6px 12px #ffffff; /* Contenedor general hundido */
+  overflow-y: auto;
+}

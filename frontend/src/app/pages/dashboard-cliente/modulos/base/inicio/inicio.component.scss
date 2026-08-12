@@ -1,1 +1,75 @@
-.inicio-container { padding: 20px; }
+$bg-color: #f5f5dc;
+$text-dark: #333333;
+$text-muted: #666666;
+
+.inicio-dashboard {
+  background: $bg-color;
+  min-height: calc(100vh - 80px); /* Ajuste según altura del header */
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  font-family: 'Montserrat', sans-serif;
+  color: $text-dark;
+}
+
+/* --- CLASE REUTILIZABLE PARA TARJETAS NEUMÓRFICAS --- */
+.neu-card {
+  background: $bg-color;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 6px 6px 12px #d6d6c0, -6px -6px 12px #ffffff;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* --- ESTRUCTURA GRID (BENTO BOX) --- */
+.inicio-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-auto-rows: minmax(250px, auto);
+  gap: 2rem;
+}
+
+/* Asignación de tamaños a las columnas */
+.section-reuniones {
+  grid-column: span 1;
+}
+
+.section-calendario {
+  grid-column: span 2;
+}
+
+.section-recordatorios {
+  grid-column: span 1;
+}
+
+.section-notificaciones {
+  grid-column: span 2;
+}
+
+/* Responsividad básica */
+@media (max-width: 1024px) {
+  .inicio-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .section-calendario, .section-notificaciones {
+    grid-column: span 2;
+  }
+  
+  .section-reuniones, .section-recordatorios {
+    grid-column: span 1;
+  }
+}
+
+@media (max-width: 768px) {
+  .inicio-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .section-reuniones, .section-calendario, .section-recordatorios, .section-notificaciones {
+    grid-column: span 1;
+  }
+}

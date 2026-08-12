@@ -17,6 +17,11 @@ export class EmpresaService {
     return this.http.get<any[]>(this.apiUrl, { headers: this.getHeaders() });
   }
 
+  // Obtener una empresa específica
+  getEmpresa(id: number): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/${id}`, { headers: this.getHeaders() });
+  }
+
   getSuscripcionesStats(): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}/stats/suscripciones`, { headers: this.getHeaders() });
   }

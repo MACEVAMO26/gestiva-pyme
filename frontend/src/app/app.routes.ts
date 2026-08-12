@@ -20,7 +20,18 @@ export const routes: Routes = [
             { path: '', redirectTo: 'inicio', pathMatch: 'full' },
             // Módulos Base
             { path: 'inicio', loadComponent: () => import('./pages/dashboard-cliente/modulos/base/inicio/inicio.component').then(m => m.InicioComponent) },
-            { path: 'administracion', loadComponent: () => import('./pages/dashboard-cliente/modulos/base/administracion/administracion.component').then(m => m.AdministracionComponent) },
+            { 
+                path: 'administracion', 
+                loadComponent: () => import('./pages/dashboard-cliente/modulos/base/administracion/administracion/administracion').then(m => m.AdministracionComponent),
+                children: [
+                    { path: '', redirectTo: 'empresa', pathMatch: 'full' },
+                    { path: 'empresa', loadComponent: () => import('./pages/dashboard-cliente/modulos/base/administracion/admin-empresa/admin-empresa').then(m => m.AdminEmpresa) },
+                    { path: 'usuarios', loadComponent: () => import('./pages/dashboard-cliente/modulos/base/administracion/admin-usuarios/admin-usuarios').then(m => m.AdminUsuarios) },
+                    { path: 'roles', loadComponent: () => import('./pages/dashboard-cliente/modulos/base/administracion/admin-roles/admin-roles').then(m => m.AdminRoles) },
+                    { path: 'estructura', loadComponent: () => import('./pages/dashboard-cliente/modulos/base/administracion/admin-estructura/admin-estructura').then(m => m.AdminEstructura) },
+                    { path: 'auditoria', loadComponent: () => import('./pages/dashboard-cliente/modulos/base/administracion/admin-auditoria/admin-auditoria').then(m => m.AdminAuditoria) }
+                ]
+            },
             { path: 'gestion-de-tareas', loadComponent: () => import('./pages/dashboard-cliente/modulos/base/gestion-de-tareas/gestion-de-tareas.component').then(m => m.GestionDeTareasComponent) },
             { path: 'gestiva-ia', loadComponent: () => import('./pages/dashboard-cliente/modulos/base/gestiva-ia/gestiva-ia.component').then(m => m.GestivaIaComponent) },
             { path: 'autogestion', loadComponent: () => import('./pages/dashboard-cliente/modulos/base/autogestion/autogestion.component').then(m => m.AutogestionComponent) },

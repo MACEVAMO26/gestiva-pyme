@@ -1,0 +1,28 @@
+<!-- HTML MÓDULO ADMINISTRACIÓN (LAYOUT PRINCIPAL) -->
+<div class="admin-container">
+  
+  <!-- BARRA SUPERIOR DE NAVEGACIÓN INTERNA -->
+  <nav class="admin-nav neu-nav">
+    <a routerLink="./empresa" routerLinkActive="active" class="nav-item">
+      <span class="icon">🏢</span> Empresa
+    </a>
+    <a routerLink="./usuarios" routerLinkActive="active" class="nav-item">
+      <span class="icon">👥</span> Usuarios
+    </a>
+    <a routerLink="./roles" routerLinkActive="active" class="nav-item">
+      <span class="icon">🔑</span> Roles y Accesos
+    </a>
+    <a routerLink="./estructura" routerLinkActive="active" class="nav-item">
+      <span class="icon">📊</span> Estructura
+    </a>
+    <a routerLink="./auditoria" routerLinkActive="active" class="nav-item">
+      <span class="icon">📝</span> Auditoría
+    </a>
+  </nav>
+
+  <!-- ÁREA DE CONTENIDO (Donde cargan los subcomponentes) -->
+  <div class="admin-content">
+    <router-outlet></router-outlet>
+  </div>
+
+</div>

@@ -1,0 +1,120 @@
+/* --- 1. VARIABLES GLOBALES DE RECORDATORIOS --- */
+$bg-color: #f5f5dc;
+$text-dark: #333333;
+$text-muted: #666666;
+$btn-primary: #45a1ae;
+$btn-border: #2c7a85;
+
+.panel-contenido {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.panel-header {
+  border-bottom: 2px solid rgba(0,0,0,0.05);
+  padding-bottom: 1rem;
+  margin-bottom: 1rem;
+}
+
+.panel-title {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 16px;
+  font-weight: bold;
+  text-transform: uppercase;
+  color: $text-dark;
+  margin: 0;
+  text-align: center;
+}
+
+/* --- 2. INPUT DE NUEVO RECORDATORIO --- */
+.add-recordatorio {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 1.5rem;
+}
+
+.neu-input {
+  flex: 1;
+  background: $bg-color;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 50px;
+  box-shadow: inset 3px 3px 6px #d6d6c0, inset -3px -3px 6px #ffffff;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 12px;
+  outline: none;
+  color: $text-dark;
+}
+
+.btn-pill {
+  border-radius: 50%;
+  width: 35px;
+  height: 35px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  outline: none;
+}
+
+.btn-primary {
+  background: $btn-primary;
+  color: #000000;
+  border: 2px solid $btn-border;
+  box-shadow: 4px 4px 8px #d6d6c0, -4px -4px 8px #ffffff;
+}
+
+/* --- 3. LISTA DE RECORDATORIOS Y CHECKBOXES NEUMÓRFICOS --- */
+.panel-body {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.recordatorio-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.recordatorio-text {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 12px;
+  color: $text-dark;
+}
+
+/* Ocultar el checkbox por defecto */
+.neu-checkbox-container {
+  position: relative;
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+}
+.neu-checkbox-container input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+}
+
+/* Checkbox personalizado en relieve */
+.neu-checkmark {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 20px;
+  width: 20px;
+  background-color: $bg-color;
+  border-radius: 5px;
+  box-shadow: 3px 3px 6px #d6d6c0, -3px -3px 6px #ffffff;
+}
+
+/* Checkbox activado se hunde y cambia de color */
+.neu-checkbox-container input:checked ~ .neu-checkmark {
+  box-shadow: inset 2px 2px 5px #d6d6c0, inset -2px -2px 5px #ffffff;
+  background-color: $btn-primary;
+}

@@ -1,0 +1,115 @@
+/* --- 1. VARIABLES GLOBALES DE REUNIONES --- */
+$bg-color: #f5f5dc;
+$text-dark: #333333;
+$text-muted: #666666;
+$btn-primary: #45a1ae; /* Color para botón de agregar */
+$btn-border: #2c7a85; /* Tono más oscuro para el borde del botón */
+
+/* --- 2. LAYOUT PRINCIPAL DEL PANEL --- */
+.panel-contenido {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+/* Encabezado con título centrado y botón a la derecha */
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid rgba(0,0,0,0.05);
+  padding-bottom: 1rem;
+  margin-bottom: 1rem;
+}
+
+/* Título principal (Jerarquía estricta) */
+.panel-title {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 16px;
+  font-weight: bold;
+  text-transform: uppercase;
+  color: $text-dark;
+  margin: 0;
+}
+
+/* --- 3. BOTONES NEUMÓRFICOS --- */
+.btn-pill {
+  border-radius: 50px;
+  padding: 8px 16px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  outline: none;
+}
+
+.btn-primary {
+  background: $btn-primary;
+  color: #000000;
+  border: 2px solid $btn-border;
+  box-shadow: 4px 4px 8px #d6d6c0, -4px -4px 8px #ffffff;
+}
+.btn-primary:active {
+  box-shadow: inset 4px 4px 8px #3a8a95, inset -4px -4px 8px #50bccb;
+}
+
+/* --- 4. TARJETAS DE REUNIONES --- */
+.panel-body {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  overflow-y: auto;
+}
+
+.reunion-card {
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  background: $bg-color;
+  border-radius: 12px;
+  box-shadow: inset 4px 4px 8px #d6d6c0, inset -4px -4px 8px #ffffff; /* Sombra hundida para elementos internos */
+  gap: 1.5rem;
+}
+
+.reunion-date {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: $bg-color;
+  padding: 0.8rem;
+  border-radius: 8px;
+  box-shadow: 3px 3px 6px #d6d6c0, -3px -3px 6px #ffffff; /* Relieve */
+  color: $btn-primary;
+}
+
+.reunion-date .day {
+  font-size: 16px;
+  font-weight: bold;
+}
+.reunion-date .month {
+  font-size: 10px;
+  text-transform: uppercase;
+}
+
+.reunion-info {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Subtítulo alineado a la izquierda */
+.reunion-motive {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 13px;
+  text-transform: uppercase;
+  color: $text-dark;
+  margin: 0 0 4px 0;
+}
+
+.reunion-detail {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 10px;
+  color: $text-muted;
+  margin: 0;
+}

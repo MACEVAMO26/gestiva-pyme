@@ -1,0 +1,180 @@
+/* --- 1. VARIABLES GLOBALES DE CALENDARIO --- */
+$bg-color: #f5f5dc;
+$text-dark: #333333;
+$text-muted: #666666;
+$accent-color: #7C6FA6; /* Color general permitido para calendario */
+$save-btn-color: #066810; /* Verde exclusivo de guardado */
+
+.panel-contenido {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid rgba(0,0,0,0.05);
+  padding-bottom: 1rem;
+  margin-bottom: 1rem;
+}
+
+.panel-title {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 16px;
+  font-weight: bold;
+  text-transform: uppercase;
+  color: $text-dark;
+  margin: 0;
+}
+
+.month-selector {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 12px;
+  font-weight: bold;
+  color: $accent-color;
+}
+
+/* --- 2. GRILLA DEL CALENDARIO --- */
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+}
+
+.weekday {
+  text-align: center;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 10px;
+  font-weight: bold;
+  color: $text-muted;
+  margin-bottom: 4px;
+}
+
+.day-cell {
+  background: $bg-color;
+  border-radius: 8px;
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 12px;
+  color: $text-dark;
+  cursor: pointer;
+  box-shadow: 3px 3px 6px #d6d6c0, -3px -3px 6px #ffffff;
+  transition: all 0.2s ease;
+}
+
+.day-cell:hover:not(.empty) {
+  box-shadow: inset 3px 3px 6px #d6d6c0, inset -3px -3px 6px #ffffff;
+}
+
+.day-cell.empty {
+  box-shadow: none;
+  background: transparent;
+  cursor: default;
+}
+
+.day-cell.today {
+  border: 2px solid $accent-color;
+  color: $accent-color;
+  font-weight: bold;
+}
+
+.day-cell.has-event {
+  position: relative;
+}
+.day-cell.has-event::after {
+  content: '';
+  position: absolute;
+  bottom: 4px;
+  width: 6px;
+  height: 6px;
+  background: $accent-color;
+  border-radius: 50%;
+}
+
+/* --- 3. MODAL NEUMÓRFICO PARA GUARDAR EVENTO --- */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0,0,0,0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-card {
+  background: $bg-color;
+  border-radius: 12px;
+  padding: 2rem;
+  width: 400px;
+  max-width: 90%;
+  box-shadow: 6px 6px 12px #d6d6c0, -6px -6px 12px #ffffff;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.btn-close {
+  background: transparent;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: $text-dark;
+}
+
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-group label {
+  display: block;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 10px;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+  color: $text-muted;
+}
+
+/* Campos de entrada con relieve interno */
+.neu-input {
+  width: 100%;
+  background: $bg-color;
+  border: none;
+  padding: 10px;
+  border-radius: 8px;
+  box-shadow: inset 3px 3px 6px #d6d6c0, inset -3px -3px 6px #ffffff;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 12px;
+  outline: none;
+  color: $text-dark;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: center;
+  margin-top: 1.5rem;
+}
+
+/* Botón de guardado (Verde flat según regla 19) */
+.btn-save {
+  background: $save-btn-color;
+  color: #ffffff;
+  border: none;
+  border-radius: 50px;
+  padding: 10px 20px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 12px;
+  cursor: pointer;
+}
