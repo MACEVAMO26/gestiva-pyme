@@ -5,12 +5,13 @@ RUN apt-get update && apt-get install -y \
     libpng-dev \
     libjpeg-dev \
     libfreetype6-dev \
+    libzip-dev \
     zip \
     unzip \
     git \
     libpq-dev \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install pdo pdo_pgsql pgsql gd
+    && docker-php-ext-install pdo pdo_pgsql pgsql gd zip
 
 # Configurar el directorio de trabajo
 WORKDIR /var/www/html

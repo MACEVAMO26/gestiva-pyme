@@ -1,5 +1,5 @@
 /* ESTILOS NEUMÓRFICOS LOCALES PARA ADMIN EMPRESA */
-@use '../../../../../../styles' as *; // Asumiendo que hay variables, si no, se usa var() o locales
+@use '../../../../../../../styles' as *; // Asumiendo que hay variables, si no, se usa var() o locales
 
 .panel-contenido {
   display: flex;
