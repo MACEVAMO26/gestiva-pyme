@@ -221,6 +221,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/notificaciones', [\App\Http\Controllers\NotificacionController::class, 'store']);
     Route::delete('/notificaciones/{id}/leida', [\App\Http\Controllers\NotificacionController::class, 'marcarLeida']);
 
+    Route::post('/usuarios/tutorial-visto', [\App\Http\Controllers\UserController::class, 'marcarTutorialVisto']);
+    Route::get('/ia/sugerencias', [\App\Http\Controllers\IaController::class, 'getSugerencias']);
+    Route::apiResource('ia/directrices', \App\Http\Controllers\IaSugerenciaPersonalizadaController::class);
+
     // --- LOGS DE AUDITORIA ---
     
 

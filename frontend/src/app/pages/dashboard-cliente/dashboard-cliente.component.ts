@@ -4,6 +4,8 @@ import { RouterModule, Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { AccessibilityService } from '../../services/accessibility/accessibility.service';
 import { ModulosService } from '../../services/modulos.service';
+import { GestivaIaTutorialComponent } from '../../shared/components/gestiva-ia-tutorial/gestiva-ia-tutorial.component';
+import { GestivaIaAssistantComponent } from '../../shared/components/gestiva-ia-assistant/gestiva-ia-assistant.component';
 
 interface ModuloSidebar {
   id: string;
@@ -15,7 +17,7 @@ interface ModuloSidebar {
 @Component({
   selector: 'app-dashboard-cliente',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, GestivaIaTutorialComponent, GestivaIaAssistantComponent],
   templateUrl: './dashboard-cliente.component.html',
   styleUrl: './dashboard-cliente.component.scss'
 })
@@ -100,7 +102,14 @@ export class DashboardClienteComponent implements OnInit {
         ];
 
         let itemsOrdenados: ModuloSidebar[] = [];
+        
+        const esGerente = this.user?.rol?.nombre === 'Gerente General' || this.user?.rol?.nombre === 'Gerente';
+
         ordenDeseado.forEach(id => {
+          if (id === 'd_gia' && !esGerente) {
+              // Ocultar Gestiva IA (directrices) a los empleados
+              return;
+          }
           if (botones[id]) {
             itemsOrdenados.push(botones[id]);
           }

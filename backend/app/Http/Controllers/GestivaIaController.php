@@ -11,7 +11,7 @@ class GestivaIaController extends Controller
 
     public function __construct(IaService $iaService)
     {
-        $this.iaService = $iaService;
+        $this->iaService = $iaService;
     }
 
     /**

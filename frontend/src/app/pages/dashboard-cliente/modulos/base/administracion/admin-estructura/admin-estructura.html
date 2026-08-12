@@ -28,9 +28,8 @@
 
   <div class="neumorphic-panel">
     @if (isLoading) {
-      <div class="text-center fade-in">
-        <div class="spinner-small" style="border-color: rgba(0,0,0,0.1); border-top-color: #45a1ae; width: 24px; height: 24px;"></div>
-        <p class="texto-normal mt-2">Cargando datos...</p>
+      <div class="fade-in">
+        <app-loading-spinner message="Cargando datos..."></app-loading-spinner>
       </div>
     } @else {
       <!-- TAB SEDES -->

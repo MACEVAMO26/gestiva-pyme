@@ -1,69 +1,117 @@
-  <!-- Botón Volver Inyectado -->
-  <div style="margin-bottom: 1.5rem; display: flex; justify-content: flex-start;">
-    <button class="btn-volver" onclick="window.history.back()">
-      <i class="fas fa-arrow-left"></i> Volver
-    </button>
+<div class="module-container fade-in">
+  <div class="module-header" style="margin-bottom: 2rem;">
+    <h1 style="text-align: center; font-size: 16px; font-weight: bold; text-transform: uppercase; margin: 0 0 0.5rem 0;">DIRECTRICES IA</h1>
+    <p style="text-align: center; color: #666666; font-size: 10px; margin: 0;">Configura los recordatorios y sugerencias silenciosas que la IA le dará a tu equipo.</p>
   </div>
 
-<!-- HTML OVERLAY ONBOARDING -->
-<div class="onboarding-overlay">
-  <div class="onboarding-modal glass-panel">
+  <div class="neumorphic-panel-inner" style="padding: 2rem;">
     
-    <div class="avatar-container">
-      <img src="assets/images/GestivaIA/IA_Gestiva.png" alt="Gestiva AI" class="gestiva-avatar" />
-      <div class="glow-effect"></div>
+    <!-- Botón Volver Inyectado (Si estamos navegando de una lista a un form) -->
+    <div style="margin-bottom: 2rem;" *ngIf="showForm">
+      <button class="btn-volver" (click)="cerrarFormulario()">
+        <i class="fas fa-arrow-left"></i> VOLVER
+      </button>
     </div>
 
-    <!-- HTML CONTENIDO ONBOARDING -->
-    <div class="content-container">
-      @if (step === 1) {
-        <h1 class="title">¡Hola! Soy Gestiva</h1>
-        <p class="description">
-          Tu inteligencia artificial personal. Estoy aquí para ayudarte a configurar y sacar el máximo provecho de tu nueva plataforma.
-        </p>
-        <p class="description mt-2">
-          Vamos a preparar todo para que tu empresa empiece a volar. Son solo un par de pasos.
-        </p>
-      }
-
-      @if (step === 2) {
-        <h1 class="title">El primer paso es clave</h1>
-        <p class="description highlight-text">
-          Lo primero que debes hacer es ir al módulo de <strong>Gestión Humana</strong> y agregar a tu <strong>Jefe de Recursos Humanos</strong>.
-        </p>
-        <p class="description mt-2">
-          Esta persona será la encargada de gestionar a todos tus empleados, así que es vital darle acceso cuanto antes.
-        </p>
-      }
-
-      @if (step === 3) {
-        <h1 class="title">¡Todo listo para empezar!</h1>
-        <p class="description">
-          A medida que uses la plataforma, estaré analizando tus métricas en segundo plano. Puedes consultarme cuando quieras desde el menú lateral en la sección <strong>"✨ Gestiva AI"</strong>.
-        </p>
-        <p class="description mt-2">
-          ¡Mucho éxito con tu empresa!
-        </p>
-      }
-
-      <div class="actions">
-        @if (step < 3) {
-          <button class="btn-add" (click)="nextStep()">Siguiente</button>
-        } @else {
-          <button class="btn-add success" (click)="closeTutorial()">¡Empezar a trabajar!</button>
-        }
-      </div>
-      
-      <div class="dots-indicator">
-        <span class="dot" [class.tab-neu-active]="step === 1"></span>
-        <span class="dot" [class.tab-neu-active]="step === 2"></span>
-        <span class="dot" [class.tab-neu-active]="step === 3"></span>
+    <!-- LISTADO DE DIRECTRICES -->
+    <div *ngIf="!showForm" class="fade-in">
+      <div style="display: flex; justify-content: flex-end; margin-bottom: 15px;">
+        <button class="btn-add btn-pill" (click)="abrirFormulario()">+ Nueva Directriz</button>
       </div>
 
+      <div class="neumorphic-panel">
+        <h2 class="subtitulo">Directrices Activas</h2>
+
+        <div *ngIf="cargando" class="text-center-py-8">
+          <app-loading-spinner message="Cargando directrices..."></app-loading-spinner>
+        </div>
+
+        <div *ngIf="!cargando" class="table-container">
+          <table class="data-table neumorphic-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Mensaje</th>
+                <th>Audiencia</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let dir of directrices">
+                <td>{{ dir.id }}</td>
+                <td>{{ dir.mensaje }}</td>
+                <td>{{ dir.audiencia }}</td>
+                <td>
+                  <button class="btn-pill" 
+                          style="font-size: 10px; padding: 5px 10px; border: 2px solid transparent;"
+                          [ngStyle]="{'background-color': dir.activo ? '#45a1ae' : '#999', 'color': '#fff'}"
+                          (click)="toggleActivo(dir)">
+                    {{ dir.activo ? 'ACTIVA' : 'INACTIVA' }}
+                  </button>
+                </td>
+                <td>
+                  <button class="btn-icon" (click)="abrirFormulario(dir)" title="Editar">
+                    <i class="fas fa-edit"></i>
+                  </button>
+                  <button class="btn-icon text-danger" (click)="eliminarDirectriz(dir.id)" title="Eliminar">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </td>
+              </tr>
+              <tr *ngIf="directrices.length === 0">
+                <td colspan="5" class="text-center" style="padding: 20px;">No hay directrices configuradas. ¡Crea la primera!</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
+
+    <!-- FORMULARIO DE CREACIÓN/EDICIÓN -->
+    <div *ngIf="showForm" class="fade-in">
+      <div class="neumorphic-panel">
+        <h2 class="subtitulo">{{ modoEdicion ? 'Editar Directriz' : 'Nueva Directriz' }}</h2>
+        
+        <form (ngSubmit)="guardarDirectriz()">
+          <div class="form-grid">
+            
+            <div class="form-group full-width">
+              <label class="form-label">Mensaje del Asistente: *</label>
+              <textarea class="input-neumorphic" name="mensaje" [(ngModel)]="form.mensaje" rows="3" required
+                        placeholder="Ej: Recuerden cargar sus soportes de ventas antes del mediodía."></textarea>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Audiencia (¿A quién va dirigido?): *</label>
+              <select class="input-neumorphic" name="audiencia" [(ngModel)]="form.audiencia" required>
+                <option value="Todos">Toda la Empresa</option>
+                <option value="Gerencia">Solo Jefes y Gerencia</option>
+                <option value="RRHH">Recursos Humanos</option>
+                <option value="Ventas">Área de Ventas</option>
+                <option value="Operativos">Empleados Operativos (Generales)</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Estado:</label>
+              <select class="input-neumorphic" name="activo" [(ngModel)]="form.activo">
+                <option [ngValue]="true">Activa</option>
+                <option [ngValue]="false">Inactiva (Oculta temporalmente)</option>
+              </select>
+            </div>
+
+          </div>
+
+          <div class="form-actions" style="margin-top: 1.5rem;">
+            <button type="submit" class="btn-guardar btn-pill" [disabled]="guardando">
+              <span *ngIf="guardando" class="spinner-small"></span> 
+              {{ guardando ? 'Guardando...' : (modoEdicion ? 'Actualizar Directriz' : '+ Guardar Directriz') }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
   </div>
 </div>
-
-
-
-

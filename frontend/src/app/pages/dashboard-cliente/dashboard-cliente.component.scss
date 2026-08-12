@@ -53,67 +53,45 @@ $primary-color: #45a1ae;
     align-items: center;
     gap: 15px;
 
-    /* Botón Accesibilidad */
+            /* Botón Accesibilidad - SOLO LOCAL (el global manda) */
     .accessibility-btn {
-      background: transparent;
-      border: none;
-      cursor: pointer;
-      color: $text-main;
-      padding: 6px;
-      border-radius: 50%;
-      box-shadow: 3px 3px 6px $shadow-dark, -3px -3px 6px $shadow-light;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.3s ease;
-
-      &:hover {
-        box-shadow: inset 3px 3px 6px $shadow-dark, inset -3px -3px 6px $shadow-light;
-      }
-
-      svg {
-        width: 18px;
-        height: 18px;
-      }
+      /* Se deja vacío porque el estilo viene de styles.scss */
     }
 
-    /* Botón de Notificación - Diseño igual al Toggle pero funcional en otra ubicación */
+    /* Botón de Notificación - Clon estricto del botón de Accesibilidad global */
     .notification-btn {
-      background: #dbdb9b; /* Mismo fondo que el toggle */
-      border: 1px solid #eca06e; /* Mismo borde que el toggle */
-      cursor: pointer;
-      color: #1a1a1a;
-      width: 32px; /* Un poquito más grande que el toggle porque va en el header */
-      height: 32px;
-      border-radius: 50%;
-      box-shadow: 2px 2px 5px $shadow-dark, -2px -2px 5px $shadow-light;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.3s ease;
-
+      background-color: #DBDB9B !important; 
+      border: none !important; 
+      width: 28px !important; 
+      height: 28px !important; 
+      min-width: 28px !important;
+      min-height: 28px !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      border-radius: 50% !important;
+      padding: 0 !important;
+      cursor: pointer !important;
+      transition: all 0.3s ease !important;
+      box-shadow: 2px 2px 5px #030303, -2px -2px 5px rgba(255,255,255,0.02) !important;
+      
       svg {
-        width: 16px;
-        height: 16px;
-        stroke: #1a1a1a;
-        stroke-width: 2.5; /* Más grueso, pero no tanto como el toggle */
+        width: 16px !important; 
+        height: 16px !important;
+        stroke: #000000 !important; 
+        stroke-width: 2 !important;
         transition: all 0.3s ease;
       }
 
       &:hover {
-        color: #45a1ae; /* Color primario azul */
-        box-shadow: inset 3px 3px 6px $shadow-dark, inset -3px -3px 6px $shadow-light;
-        
-        svg {
-          stroke: #45a1ae; /* Hover del ícono */
-        }
+        background-color: #a16207 !important; 
+        box-shadow: inset 2px 2px 5px rgba(0,0,0,0.5) !important;
       }
 
-      /* Estado cuando hay notificación (rotación y color rojo) */
       &.has-notification {
         svg {
-          stroke: #de3737; /* Rojo */
-          transform: rotate(-15deg); /* Girado hacia la izquierda */
+          stroke: #de3737 !important; /* Rojo */
+          transform: rotate(-15deg);
         }
       }
     }

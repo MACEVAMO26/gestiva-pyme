@@ -90,9 +90,8 @@
         <h2 class="subtitulo">Tareas Actuales</h2>
 
         @if (cargando) {
-          <div class="loading-overlay neumorphic-panel">
-            <div class="spinner"></div>
-            <p>Cargando tareas...</p>
+          <div class="text-center-py-8">
+            <app-loading-spinner message="Cargando tareas..."></app-loading-spinner>
           </div>
         }
 
@@ -154,9 +153,8 @@
         <h2 class="subtitulo">Tareas Entregadas</h2>
 
         @if (cargando) {
-          <div class="loading-overlay neumorphic-panel">
-            <div class="spinner"></div>
-            <p>Cargando tareas...</p>
+          <div class="text-center-py-8">
+            <app-loading-spinner message="Cargando tareas..."></app-loading-spinner>
           </div>
         }
 

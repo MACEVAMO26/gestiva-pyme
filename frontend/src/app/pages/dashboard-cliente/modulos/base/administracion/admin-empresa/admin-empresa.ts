@@ -1,5 +1,6 @@
 import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { LoadingSpinnerComponent } from '../../../../../../shared/components/loading-spinner/loading-spinner';
 import { FormsModule } from '@angular/forms';
 import { timeout } from 'rxjs';
 import { EmpresaService } from '../../../../../../services/empresa.service';
@@ -8,7 +9,7 @@ import { AuthService } from '../../../../../../services/auth.service';
 @Component({
   selector: 'app-admin-empresa',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, LoadingSpinnerComponent],
   templateUrl: './admin-empresa.html',
   styleUrl: './admin-empresa.scss',
 })

@@ -1,5 +1,6 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { LoadingSpinnerComponent } from '../../../../../shared/components/loading-spinner/loading-spinner';
 import { FormsModule } from '@angular/forms';
 import { TareaService, Tarea } from '../../../../../services/tarea.service';
 import { EmpleadoService } from '../../../../../services/empleado.service';
@@ -9,7 +10,7 @@ import { timeout } from 'rxjs';
 @Component({
   selector: 'app-gestion-de-tareas',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, LoadingSpinnerComponent],
   templateUrl: './gestion-de-tareas.component.html',
   styleUrl: './gestion-de-tareas.component.scss'
 })

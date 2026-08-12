@@ -5,10 +5,23 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 
 class UserController extends Controller
 {
+    // Marcar que el usuario vio el tutorial de IA
+    public function marcarTutorialVisto(Request $request)
+    {
+        $user = Auth::user();
+        if ($user) {
+            $user->tutorial_ia_visto = true;
+            $user->save();
+            return response()->json(['message' => 'Tutorial marcado como visto']);
+        }
+        return response()->json(['message' => 'No autorizado'], 401);
+    }
+
     // Trae los usuarios de la misma empresa
     public function index()
     {

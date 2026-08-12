@@ -1,5 +1,6 @@
 import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { LoadingSpinnerComponent } from '../../../../../../shared/components/loading-spinner/loading-spinner';
 import { FormsModule } from '@angular/forms';
 import { forkJoin, timeout } from 'rxjs';
 import { EstructuraService } from '../../../../../../services/estructura.service';
@@ -9,7 +10,7 @@ import { ToastService } from '../../../../../../services/toast.service';
 @Component({
   selector: 'app-admin-estructura',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, LoadingSpinnerComponent],
   templateUrl: './admin-estructura.html',
   styleUrl: './admin-estructura.scss'
 })

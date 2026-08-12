@@ -29,6 +29,7 @@ export const routes: Routes = [
                     { path: 'usuarios', loadComponent: () => import('./pages/dashboard-cliente/modulos/base/administracion/admin-usuarios/admin-usuarios').then(m => m.AdminUsuarios) },
                     { path: 'roles', loadComponent: () => import('./pages/dashboard-cliente/modulos/base/administracion/admin-roles/admin-roles').then(m => m.AdminRoles) },
                     { path: 'estructura', loadComponent: () => import('./pages/dashboard-cliente/modulos/base/administracion/admin-estructura/admin-estructura').then(m => m.AdminEstructura) },
+                    { path: 'soporte', loadComponent: () => import('./pages/dashboard-cliente/modulos/base/administracion/admin-soporte/admin-soporte').then(m => m.AdminSoporteComponent) },
                     { path: 'auditoria', loadComponent: () => import('./pages/dashboard-cliente/modulos/base/administracion/admin-auditoria/admin-auditoria').then(m => m.AdminAuditoria) }
                 ]
             },

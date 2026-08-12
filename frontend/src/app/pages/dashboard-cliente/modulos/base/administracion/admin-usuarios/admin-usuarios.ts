@@ -1,6 +1,7 @@
 import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { LoadingSpinnerComponent } from '../../../../../../shared/components/loading-spinner/loading-spinner';
 import { timeout } from 'rxjs';
 import { UsuariosService } from '../../../../../../services/usuarios.service';
 import { ToastService } from '../../../../../../services/toast.service';
@@ -8,7 +9,7 @@ import { ToastService } from '../../../../../../services/toast.service';
 @Component({
   selector: 'app-admin-usuarios',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, LoadingSpinnerComponent],
   templateUrl: './admin-usuarios.html',
   styleUrl: './admin-usuarios.scss'
 })

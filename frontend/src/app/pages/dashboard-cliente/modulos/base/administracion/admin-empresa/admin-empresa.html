@@ -14,9 +14,8 @@
   <div class="panel-body">
     <!-- Componente de Carga Neumórfico -->
     @if (isLoading) {
-    <div class="loading-overlay neumorphic-panel">
-      <div class="spinner"></div>
-      <p>Cargando datos de la empresa...</p>
+    <div class="neumorphic-panel fade-in">
+      <app-loading-spinner message="Cargando datos de la empresa..."></app-loading-spinner>
     </div>
     }
 
