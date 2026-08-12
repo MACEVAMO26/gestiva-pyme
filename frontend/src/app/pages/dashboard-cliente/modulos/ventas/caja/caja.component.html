@@ -1,0 +1,95 @@
+<div class="modulo-container">
+  <h2>Caja Registradora</h2>
+  <p>Controla las aperturas, cierres e ingresos de efectivo del día.</p>
+
+  <div *ngIf="cargando">Cargando cajas...</div>
+
+  <div *ngIf="!cargando && cajas.length > 0">
+    <label>Selecciona una caja para operar: </label>
+    <select [(ngModel)]="cajaActiva" (ngModelChange)="seleccionarCaja($event)">
+      <option [ngValue]="null">-- Cajas Disponibles --</option>
+      <!-- En BD no hay "nombre" de caja, usamos el ID y el usuario -->
+      <option *ngFor="let c of cajas" [ngValue]="c">Caja #{{ c.id }} - Usuario {{ c.usuario_id }} ({{ c.estado | uppercase }})</option>
+    </select>
+  </div>
+
+  <div *ngIf="cajaActiva" style="margin-top: 20px;">
+    
+    <!-- CONTROLES DE APERTURA / CIERRE -->
+    <fieldset style="padding: 15px; margin-bottom: 20px; background: #fafafa;">
+      <legend>Estado Actual: <strong [style.color]="cajaActiva.estado === 'abierta' ? 'green' : 'red'">{{ cajaActiva.estado | uppercase }}</strong></legend>
+      
+      <div *ngIf="cajaActiva.estado === 'cerrada'" style="display: flex; gap: 10px; align-items: center;">
+        <label>Base inicial para abrir caja ($):</label>
+        <input type="number" [(ngModel)]="montoApertura" min="0">
+        <button (click)="abrirCaja()" [disabled]="procesando" style="background: green; color: white;">+ Abrir Caja</button>
+      </div>
+
+      <div *ngIf="cajaActiva.estado === 'abierta'" style="display: flex; gap: 10px; align-items: center;">
+        <label>Efectivo final en caja ($):</label>
+        <input type="number" [(ngModel)]="montoCierre" min="0">
+        <button (click)="cerrarCaja()" [disabled]="procesando" style="background: red; color: white;">- Cerrar Caja</button>
+      </div>
+    </fieldset>
+
+    <!-- MOVIMIENTOS MANUALES -->
+    <fieldset *ngIf="cajaActiva.estado === 'abierta'" style="padding: 15px; margin-bottom: 20px;">
+      <legend>Registrar Ingreso / Egreso Manual</legend>
+      <form (ngSubmit)="registrarMovimiento()" style="display: flex; gap: 10px; align-items: end;">
+        
+        <div>
+          <label>Tipo:</label><br>
+          <select name="tipo" [(ngModel)]="nuevoMovimiento.tipo">
+            <option value="ingreso">Ingreso</option>
+            <option value="egreso">Egreso (Gasto)</option>
+          </select>
+        </div>
+
+        <div>
+          <label>Monto ($):</label><br>
+          <input type="number" name="monto" [(ngModel)]="nuevoMovimiento.monto" min="1" required>
+        </div>
+
+        <div style="flex: 1;">
+          <label>Concepto:</label><br>
+          <input type="text" name="concepto" [(ngModel)]="nuevoMovimiento.concepto" required style="width: 100%;">
+        </div>
+
+        <button type="submit" [disabled]="procesando">Registrar</button>
+      </form>
+    </fieldset>
+
+    <!-- TABLA DE MOVIMIENTOS -->
+    <fieldset style="padding: 10px;">
+      <legend>Historial de Movimientos</legend>
+      <table border="1" width="100%" cellpadding="5" cellspacing="0">
+        <thead>
+          <tr style="background: #eee;">
+            <th>ID</th>
+            <th>Tipo</th>
+            <th>Monto</th>
+            <th>Concepto</th>
+            <th>Comprobante</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let m of movimientos">
+            <td>{{ m.id }}</td>
+            <td [style.color]="m.tipo === 'egreso' ? 'red' : 'green'"><strong>{{ m.tipo | uppercase }}</strong></td>
+            <td>$ {{ m.monto }}</td>
+            <td>{{ m.concepto }}</td>
+            <td>
+              <a *ngIf="m.comprobante_url" [href]="m.comprobante_url" target="_blank">Ver Archivo</a>
+              <span *ngIf="!m.comprobante_url">No hay</span>
+            </td>
+          </tr>
+          <tr *ngIf="movimientos.length === 0">
+            <td colspan="5" style="text-align: center;">No hay movimientos registrados.</td>
+          </tr>
+        </tbody>
+      </table>
+    </fieldset>
+
+  </div>
+
+</div>

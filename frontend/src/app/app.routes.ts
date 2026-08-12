@@ -38,17 +38,19 @@ export const routes: Routes = [
             
             // Módulos de Ventas
             { path: 'ventas', loadComponent: () => import('./pages/dashboard-cliente/modulos/ventas/ventas/ventas.component').then(m => m.VentasComponent) },
+            { path: 'prefacturacion', loadComponent: () => import('./pages/dashboard-cliente/modulos/ventas/prefacturacion/prefacturacion.component').then(m => m.PrefacturacionComponent) },
             { path: 'inventario', loadComponent: () => import('./pages/dashboard-cliente/modulos/ventas/inventario/inventario.component').then(m => m.InventarioComponent) },
             { path: 'clientes', loadComponent: () => import('./pages/dashboard-cliente/modulos/ventas/clientes/clientes.component').then(m => m.ClientesComponent) },
             { path: 'compras', loadComponent: () => import('./pages/dashboard-cliente/modulos/ventas/compras/compras.component').then(m => m.ComprasComponent) },
             { path: 'proveedores', loadComponent: () => import('./pages/dashboard-cliente/modulos/ventas/proveedores/proveedores.component').then(m => m.ProveedoresComponent) },
+            { path: 'caja', loadComponent: () => import('./pages/dashboard-cliente/modulos/ventas/caja/caja.component').then(m => m.CajaComponent) },
             
             // Módulos de Servicios
-            { path: 'agenda-y-calendario', loadComponent: () => import('./pages/dashboard-cliente/modulos/servicios/agenda-y-calendario/agenda-y-calendario.component').then(m => m.AgendaYCalendarioComponent) },
-            { path: 'crm-gestion-de-clientes', loadComponent: () => import('./pages/dashboard-cliente/modulos/servicios/crm-gestion-de-clientes/crm-gestion-de-clientes.component').then(m => m.CrmGestionDeClientesComponent) },
-            { path: 'catalogo-de-servicios', loadComponent: () => import('./pages/dashboard-cliente/modulos/servicios/catalogo-de-servicios/catalogo-de-servicios.component').then(m => m.CatalogoDeServiciosComponent) },
+            { path: 'agenda', loadComponent: () => import('./pages/dashboard-cliente/modulos/servicios/agenda-y-calendario/agenda-y-calendario.component').then(m => m.AgendaYCalendarioComponent) },
+            { path: 'gestion-de-clientes', loadComponent: () => import('./pages/dashboard-cliente/modulos/servicios/crm-gestion-de-clientes/crm-gestion-de-clientes.component').then(m => m.CrmGestionDeClientesComponent) },
+            { path: 'servicios', loadComponent: () => import('./pages/dashboard-cliente/modulos/servicios/catalogo-de-servicios/catalogo-de-servicios.component').then(m => m.CatalogoDeServiciosComponent) },
             { path: 'gestion-de-operarios', loadComponent: () => import('./pages/dashboard-cliente/modulos/servicios/gestion-de-operarios/gestion-de-operarios.component').then(m => m.GestionDeOperariosComponent) },
-            { path: 'reportes-de-servicios', loadComponent: () => import('./pages/dashboard-cliente/modulos/servicios/reportes-de-servicios/reportes-de-servicios.component').then(m => m.ReportesDeServiciosComponent) },
+            { path: 'reportes', loadComponent: () => import('./pages/dashboard-cliente/modulos/servicios/reportes-de-servicios/reportes-de-servicios.component').then(m => m.ReportesDeServiciosComponent) },
             
             // Módulos Transversales
             { path: 'gestion-humana', loadComponent: () => import('./pages/dashboard-cliente/modulos/transversales/gestion-humana/gestion-humana.component').then(m => m.GestionHumanaComponent) },

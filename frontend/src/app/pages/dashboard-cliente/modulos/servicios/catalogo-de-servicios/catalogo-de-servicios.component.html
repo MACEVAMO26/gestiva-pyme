@@ -1,3 +1,66 @@
-<div class="catalogo-de-servicios-container">
-  <h2>catalogo-de-servicios (En Construccin)</h2>
+<div class="modulo-container">
+  <h2>Catálogo de Servicios</h2>
+  <p>Registre y gestione el catálogo de servicios que ofrece su empresa.</p>
+
+  <fieldset>
+    <legend>Registrar Nuevo Servicio</legend>
+    <form (ngSubmit)="guardarServicio()">
+      
+      <div>
+        <label>Nombre del Servicio: *</label><br>
+        <input type="text" name="nombre" [(ngModel)]="nuevoServicio.nombre" required>
+      </div>
+
+      <div>
+        <label>Descripción:</label><br>
+        <textarea name="descripcion" [(ngModel)]="nuevoServicio.descripcion" rows="2"></textarea>
+      </div>
+
+      <div>
+        <label>Tarifa Base ($):</label><br>
+        <input type="number" name="tarifa" [(ngModel)]="nuevoServicio.tarifa" min="0">
+      </div>
+
+      <div>
+        <label>Tiempo Estimado (ej. 2 horas, 30 min):</label><br>
+        <input type="text" name="tiempo_estimado" [(ngModel)]="nuevoServicio.tiempo_estimado">
+      </div>
+
+      <div>
+        <button type="submit" [disabled]="guardando">
+          {{ guardando ? 'Guardando...' : '+ Guardar Servicio' }}
+        </button>
+      </div>
+    </form>
+  </fieldset>
+
+  <fieldset>
+    <legend>Servicios Registrados</legend>
+    <div *ngIf="cargando">Cargando catálogo...</div>
+    <table *ngIf="!cargando" border="1" width="100%" cellpadding="5" cellspacing="0">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nombre del Servicio</th>
+          <th>Descripción</th>
+          <th>Tarifa</th>
+          <th>Tiempo Est.</th>
+          <th>Estado</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let s of servicios">
+          <td>{{ s.id }}</td>
+          <td><strong>{{ s.nombre }}</strong></td>
+          <td>{{ s.descripcion }}</td>
+          <td>${{ s.tarifa }}</td>
+          <td>{{ s.tiempo_estimado }}</td>
+          <td>{{ s.activo ? 'ACTIVO' : 'INACTIVO' }}</td>
+        </tr>
+        <tr *ngIf="servicios.length === 0">
+          <td colspan="6">No hay servicios registrados en el catálogo.</td>
+        </tr>
+      </tbody>
+    </table>
+  </fieldset>
 </div>

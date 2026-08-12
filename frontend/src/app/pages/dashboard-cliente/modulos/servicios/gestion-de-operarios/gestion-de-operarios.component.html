@@ -1,3 +1,71 @@
-<div class="gestion-de-operarios-container">
-  <h2>gestion-de-operarios (En Construccin)</h2>
+<div class="modulo-container">
+  <h2>Gestión de Operarios y Tickets</h2>
+  <p>Gestione los tickets de servicio, asigne operarios y registre consumos de materiales.</p>
+
+  <fieldset>
+    <legend>Crear Nuevo Ticket</legend>
+    <form (ngSubmit)="crearTicket()">
+      
+      <div>
+        <label>Nombre del Cliente: *</label><br>
+        <input type="text" name="cliente" [(ngModel)]="nuevoTicket.cliente_nombre" required>
+      </div>
+
+      <div>
+        <label>Servicio Requerido: *</label><br>
+        <input type="text" name="servicio" [(ngModel)]="nuevoTicket.servicio_requerido" required>
+      </div>
+
+      <div>
+        <label>Fecha Solicitada:</label><br>
+        <input type="date" name="fecha_solicitada" [(ngModel)]="nuevoTicket.fecha_solicitada">
+      </div>
+
+      <div>
+        <label>Hora Sugerida:</label><br>
+        <input type="time" name="hora_sugerida" [(ngModel)]="nuevoTicket.hora_sugerida">
+      </div>
+
+      <div>
+        <label>Dirección del Servicio:</label><br>
+        <input type="text" name="direccion" [(ngModel)]="nuevoTicket.direccion">
+      </div>
+
+      <div>
+        <button type="submit" [disabled]="guardando">
+          {{ guardando ? 'Creando...' : '+ Crear Ticket' }}
+        </button>
+      </div>
+    </form>
+  </fieldset>
+
+  <fieldset>
+    <legend>Tickets de Servicio Actuales</legend>
+    <div *ngIf="cargando">Cargando tickets...</div>
+    <table *ngIf="!cargando" border="1" width="100%" cellpadding="5" cellspacing="0">
+      <thead>
+        <tr>
+          <th>Consecutivo</th>
+          <th>Cliente</th>
+          <th>Servicio</th>
+          <th>Fecha Sugerida</th>
+          <th>Estado</th>
+          <th>Técnico Asignado</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let t of tickets">
+          <td>{{ t.consecutivo }}</td>
+          <td><strong>{{ t.cliente_nombre }}</strong></td>
+          <td>{{ t.servicio_requerido }}</td>
+          <td>{{ t.fecha_solicitada }} {{ t.hora_sugerida }}</td>
+          <td>{{ t.estado }}</td>
+          <td>{{ t.tecnico_id || 'Sin Asignar' }}</td>
+        </tr>
+        <tr *ngIf="tickets.length === 0">
+          <td colspan="6">No hay tickets activos en este momento.</td>
+        </tr>
+      </tbody>
+    </table>
+  </fieldset>
 </div>

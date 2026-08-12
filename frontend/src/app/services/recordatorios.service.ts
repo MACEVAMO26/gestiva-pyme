@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 export interface Recordatorio {
-  id?: number;
+  id?: any;
   titulo: string;
   descripcion: string;
   completado: boolean;

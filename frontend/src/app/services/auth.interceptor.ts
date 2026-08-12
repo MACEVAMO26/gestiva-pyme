@@ -11,11 +11,18 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const token = authService.getToken();
 
   let clonedReq = req;
+  let headers = req.headers;
+  
   if (token) {
-    clonedReq = req.clone({
-      headers: req.headers.set('Authorization', `Bearer ${token}`)
-    });
+    headers = headers.set('Authorization', `Bearer ${token}`);
   }
+
+  const user = authService.getUser();
+  if (user && user.empresa_id) {
+    headers = headers.set('X-Empresa-Id', user.empresa_id.toString());
+  }
+
+  clonedReq = req.clone({ headers });
 
   return next(clonedReq).pipe(
     catchError((error: HttpErrorResponse) => {

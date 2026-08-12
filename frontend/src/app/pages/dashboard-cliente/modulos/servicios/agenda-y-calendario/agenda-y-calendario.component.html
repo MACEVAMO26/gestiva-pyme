@@ -1,98 +1,73 @@
 <div class="modulo-container">
   <h2>Agenda y Calendario</h2>
-  <p>Programa y administra las reuniones, eventos o encuentros de la empresa.</p>
+  <p>Programe citas, visitas técnicas y reuniones.</p>
 
-  <!-- FORMULARIO CRUDO -->
-  <fieldset style="margin-bottom: 20px; padding: 10px;">
-    <legend>Agendar Nuevo Evento / Reunión</legend>
-    <form (ngSubmit)="crearReunion()">
+  <fieldset>
+    <legend>Agendar Nuevo Evento</legend>
+    <form (ngSubmit)="guardarEvento()">
       
-      <div style="margin-bottom: 10px;">
-        <label>Título del evento: *</label>
-        <br>
-        <input type="text" name="titulo" [(ngModel)]="nuevaReunion.titulo" required style="width: 100%;">
+      <div>
+        <label>Título del Evento: *</label><br>
+        <input type="text" name="titulo" [(ngModel)]="nuevoEvento.titulo" required>
       </div>
 
-      <div style="margin-bottom: 10px;">
-        <label>Descripción:</label>
-        <br>
-        <textarea name="descripcion" [(ngModel)]="nuevaReunion.descripcion" rows="3" style="width: 100%;"></textarea>
+      <div>
+        <label>Descripción / Detalles:</label><br>
+        <textarea name="descripcion" [(ngModel)]="nuevoEvento.descripcion" rows="2"></textarea>
       </div>
 
-      <div style="margin-bottom: 10px;">
-        <label>Fecha y Hora: *</label>
-        <br>
-        <input type="datetime-local" name="fecha_hora" [(ngModel)]="nuevaReunion.fecha_hora" required>
+      <div>
+        <label>Fecha y Hora de Inicio: *</label><br>
+        <input type="datetime-local" name="fecha_inicio" [(ngModel)]="nuevoEvento.fecha_inicio" required>
       </div>
 
-      <div style="margin-bottom: 10px;">
-        <label>Tipo de Encuentro:</label>
-        <br>
-        <select name="tipo_encuentro" [(ngModel)]="nuevaReunion.tipo_encuentro">
-          <option value="virtual">Virtual</option>
-          <option value="presencial">Presencial</option>
-        </select>
+      <div>
+        <label>Fecha y Hora de Fin: *</label><br>
+        <input type="datetime-local" name="fecha_fin" [(ngModel)]="nuevoEvento.fecha_fin" required>
       </div>
 
-      <div style="margin-bottom: 10px;">
-        <label>Audiencia:</label>
-        <br>
-        <select name="audiencia" [(ngModel)]="nuevaReunion.audiencia">
-          <option value="todos">Toda la empresa</option>
-          <option value="area">Por Área</option>
-          <option value="gerencia">Solo Gerencia</option>
-        </select>
+      <div>
+        <label>Color de Etiqueta:</label><br>
+        <input type="color" name="color_etiqueta" [(ngModel)]="nuevoEvento.color_etiqueta">
       </div>
 
-      <div style="margin-bottom: 10px;">
-        <label>Enlace o Lugar (Dirección):</label>
-        <br>
-        <input type="text" name="enlace_lugar" [(ngModel)]="nuevaReunion.enlace_lugar" style="width: 100%;">
+      <div>
+        <button type="submit" [disabled]="guardando">
+          {{ guardando ? 'Guardando...' : '+ Guardar Evento' }}
+        </button>
       </div>
-
-      <button type="submit" [disabled]="guardando">
-        {{ guardando ? 'Guardando...' : '+ Agendar' }}
-      </button>
-
     </form>
   </fieldset>
 
-  <!-- TABLA DE EVENTOS -->
-  <fieldset style="padding: 10px;">
-    <legend>Eventos Programados</legend>
-
+  <fieldset>
+    <legend>Próximos Eventos y Citas</legend>
     <div *ngIf="cargando">Cargando agenda...</div>
-
     <table *ngIf="!cargando" border="1" width="100%" cellpadding="5" cellspacing="0">
       <thead>
-        <tr style="background: #eee;">
+        <tr>
           <th>ID</th>
-          <th>Fecha / Hora</th>
+          <th>Color</th>
           <th>Título</th>
           <th>Descripción</th>
-          <th>Modalidad</th>
-          <th>Lugar/Enlace</th>
-          <th>Organizador</th>
+          <th>Inicio</th>
+          <th>Fin</th>
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let r of reuniones">
-          <td>{{ r.id }}</td>
-          <td>{{ r.fecha_hora | date:'medium' }}</td>
-          <td><strong>{{ r.titulo }}</strong></td>
-          <td>{{ r.descripcion }}</td>
-          <td>{{ r.tipo_encuentro | uppercase }}</td>
+        <tr *ngFor="let e of eventos">
+          <td>{{ e.id }}</td>
           <td>
-            <a *ngIf="r.tipo_encuentro === 'virtual' && r.enlace_lugar" [href]="r.enlace_lugar" target="_blank">Enlace</a>
-            <span *ngIf="r.tipo_encuentro === 'presencial'">{{ r.enlace_lugar }}</span>
+            <div [style.width.px]="20" [style.height.px]="20" [style.backgroundColor]="e.color_etiqueta"></div>
           </td>
-          <td>{{ r.organizador?.nombres }} {{ r.organizador?.apellidos }}</td>
+          <td><strong>{{ e.titulo }}</strong></td>
+          <td>{{ e.descripcion }}</td>
+          <td>{{ e.fecha_inicio | date:'short' }}</td>
+          <td>{{ e.fecha_fin | date:'short' }}</td>
         </tr>
-        <tr *ngIf="reuniones.length === 0">
-          <td colspan="7" style="text-align: center;">No hay eventos en la agenda.</td>
+        <tr *ngIf="eventos.length === 0">
+          <td colspan="6">No hay eventos programados.</td>
         </tr>
       </tbody>
     </table>
   </fieldset>
-
 </div>

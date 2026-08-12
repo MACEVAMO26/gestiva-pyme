@@ -1,7 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ReunionService, Reunion } from '../../../../../services/reunion.service';
+import { AgendaService, EventoCalendario } from '../../../../../services/agenda.service';
 import { ToastService } from '../../../../../services/toast.service';
 
 @Component({
@@ -12,63 +12,54 @@ import { ToastService } from '../../../../../services/toast.service';
   styleUrl: './agenda-y-calendario.component.scss'
 })
 export class AgendaYCalendarioComponent implements OnInit {
-  private reunionService = inject(ReunionService);
+  private agendaService = inject(AgendaService);
   private toast = inject(ToastService);
 
-  reuniones: Reunion[] = [];
+  eventos: EventoCalendario[] = [];
   cargando = false;
   guardando = false;
 
-  nuevaReunion: Reunion = {
+  nuevoEvento: EventoCalendario = {
     titulo: '',
     descripcion: '',
-    fecha_hora: '',
-    tipo_encuentro: 'virtual',
-    audiencia: 'todos',
-    enlace_lugar: ''
+    fecha_inicio: '',
+    fecha_fin: '',
+    color_etiqueta: '#45a1ae'
   };
 
-  ngOnInit(): void {
-    this.cargarReuniones();
+  ngOnInit() {
+    this.cargarEventos();
   }
 
-  cargarReuniones() {
+  cargarEventos() {
     this.cargando = true;
-    this.reunionService.getReuniones().subscribe({
+    this.agendaService.getEventos().subscribe({
       next: (res) => {
-        this.reuniones = res;
+        this.eventos = res;
         this.cargando = false;
       },
       error: () => {
-        this.toast.error('Error al cargar agenda');
+        this.toast.error('Error al cargar la agenda');
         this.cargando = false;
       }
     });
   }
 
-  crearReunion() {
-    if (!this.nuevaReunion.titulo || !this.nuevaReunion.fecha_hora) {
-      this.toast.warning('Complete título y fecha/hora');
-      return;
+  guardarEvento() {
+    if (!this.nuevoEvento.titulo || !this.nuevoEvento.fecha_inicio || !this.nuevoEvento.fecha_fin) {
+      return this.toast.warning('Título, fecha de inicio y fin son obligatorios');
     }
 
     this.guardando = true;
-    this.reunionService.crearReunion(this.nuevaReunion).subscribe({
+    this.agendaService.crearEvento(this.nuevoEvento).subscribe({
       next: () => {
-        this.toast.success('Reunión agendada correctamente');
+        this.toast.success('Evento agendado con éxito');
+        this.nuevoEvento = { titulo: '', descripcion: '', fecha_inicio: '', fecha_fin: '', color_etiqueta: '#45a1ae' };
+        this.cargarEventos();
         this.guardando = false;
-        this.cargarReuniones();
-        this.nuevaReunion = {
-          titulo: '',
-          descripcion: '',
-          fecha_hora: '',
-          tipo_encuentro: 'virtual',
-          audiencia: 'todos',
-          enlace_lugar: ''
-        };
       },
       error: () => {
-        this.toast.error('Error al agendar reunión');
+        this.toast.error('Error al guardar el evento');
         this.guardando = false;
       }
     });
