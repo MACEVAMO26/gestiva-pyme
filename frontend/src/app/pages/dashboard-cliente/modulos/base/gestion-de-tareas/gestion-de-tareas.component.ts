@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { TareaService, Tarea } from '../../../../../services/tarea.service';
 import { EmpleadoService } from '../../../../../services/empleado.service';
 import { ToastService } from '../../../../../services/toast.service';
+import { timeout } from 'rxjs';
 
 @Component({
   selector: 'app-gestion-de-tareas',
@@ -21,6 +22,19 @@ export class GestionDeTareasComponent implements OnInit {
   empleados: any[] = [];
   cargando = false;
   guardando = false;
+  activeTab: string = 'asignacion';
+
+  switchTab(tab: string) {
+    this.activeTab = tab;
+  }
+
+  get tareasActuales() {
+    return this.tareas.filter(t => t.estado !== 'terminada');
+  }
+
+  get tareasEntregadas() {
+    return this.tareas.filter(t => t.estado === 'terminada');
+  }
 
   // Formulario
   nuevaTarea: Tarea = {
@@ -36,25 +50,25 @@ export class GestionDeTareasComponent implements OnInit {
 
   cargarTareas() {
     this.cargando = true;
-    this.tareaService.getTareas().subscribe({
+    this.tareaService.getTareas().pipe(timeout(8000)).subscribe({
       next: (res) => {
         this.tareas = res;
         this.cargando = false;
       },
       error: (err) => {
+        this.tareas = [];
         this.cargando = false;
-        this.toast.error('Error al cargar tareas');
       }
     });
   }
 
   cargarEmpleados() {
-    this.empleadoService.getEmpleados().subscribe({
+    this.empleadoService.getEmpleados().pipe(timeout(8000)).subscribe({
       next: (res) => {
         this.empleados = res;
       },
       error: () => {
-        // Fallo silencioso o toast
+        this.empleados = [];
       }
     });
   }

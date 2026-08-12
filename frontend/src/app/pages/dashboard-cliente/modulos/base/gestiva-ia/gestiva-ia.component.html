@@ -1,393 +1,9 @@
-<div class="module-container fade-in">
-  <div class="module-header" style="display: flex; justify-content: space-between; align-items: center;">
-    <div>
-      <h1>Inventario</h1>
-      <p>Control de existencias, catálogo de productos, entradas, salidas y kardex.</p>
-    </div>
-    <div>
-      <button class="btn-save" style="background: #10b981;" (click)="exportarExcel()">
-        <i class="fas fa-file-excel" style="margin-right: 5px;"></i> Exportar a Excel
-      </button>
-    </div>
-  </div>
-
-  <!-- HTML PESTAÑAS (TABS) -->
-  <div class="tabs-nav">
-    <button class="tab-btn" 
-            [class.active]="activeTab === 'catalogo'" 
-            (click)="switchTab('catalogo')">
-      Catálogo
-    </button>
-    <button class="tab-btn" 
-            [class.active]="activeTab === 'movimientos'" 
-            (click)="switchTab('movimientos')">
-      Entradas / Salidas
-    </button>
-    <button class="tab-btn" 
-            [class.active]="activeTab === 'ajustes'" 
-            (click)="switchTab('ajustes')">
-      Ajustes
-    </button>
-    <button class="tab-btn" 
-            [class.active]="activeTab === 'kardex'" 
-            (click)="switchTab('kardex')">
-      Kardex
+  <!-- Botón Volver Inyectado -->
+  <div style="margin-bottom: 1.5rem; display: flex; justify-content: flex-start;">
+    <button class="btn-volver" onclick="window.history.back()">
+      <i class="fas fa-arrow-left"></i> Volver
     </button>
   </div>
-
-  <!-- HTML CONTENIDO DE TABS -->
-  <div class="tab-content glass-panel p-4">
-    
-    <!-- HTML CATALOGO DE PRODUCTOS -->
-    @if(activeTab === 'catalogo') {
-      <div class="fade-in">
-        <div class="action-bar" style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
-          <input type="text" 
-                 class="search-input input-neumorphic" 
-                 style="width: 300px;"
-                 placeholder="Buscar por código, nombre..."
-                 [(ngModel)]="searchTerm">
-                 
-          <button class="btn-add" (click)="abrirModal()">
-            <i class="fas fa-plus"></i> Nuevo Producto
-          </button>
-        </div>
-
-        <div class="table-responsive">
-          <table class="premium-table data-table">
-            <thead>
-              <tr>
-                <th>CÓDIGO</th>
-                <th>NOMBRE</th>
-                <th>CATEGORÍA</th>
-                <th>PRECIO</th>
-                <th>COSTO</th>
-                <th>STOCK</th>
-                <th>ESTADO</th>
-                <th>ACCIONES</th>
-              </tr>
-            </thead>
-            <tbody>
-              @for(prod of productosFiltrados; track prod.id) {
-                <tr>
-                  <td><strong>{{prod.codigo}}</strong></td>
-                  <td>{{prod.nombre}}</td>
-                  <td>{{prod.categoria}}</td>
-                  <td>{{prod.precio | currency:'COP':'symbol':'1.0-0'}}</td>
-                  <td>{{prod.costo | currency:'COP':'symbol':'1.0-0'}}</td>
-                  <td>
-                    <span class="badge" [ngClass]="getBadgeClass(prod.stock, prod.stockMinimo)">
-                      {{prod.stock}}
-                    </span>
-                  </td>
-                  <td>
-                    <span class="badge" [class.badge-success]="prod.estado === 'Activo'" [class.badge-danger]="prod.estado === 'Inactivo'">
-                      {{prod.estado}}
-                    </span>
-                  </td>
-                  <td>
-                    <div style="display: flex; gap: 0.5rem; justify-content: center;">
-                      <button class="btn-icon" title="Editar"><i class="fas fa-edit"></i></button>
-                      <button class="btn-icon text-danger" title="Eliminar"><i class="fas fa-trash"></i></button>
-                    </div>
-                  </td>
-                </tr>
-              }
-              @if(productosFiltrados.length === 0) {
-                <tr>
-                  <td colspan="8" style="padding: 0;">
-                    <div class="empty-state" style="padding: 2rem; text-align: center; color: #94a3b8;">
-                      No hay productos registrados.
-                    </div>
-                  </td>
-                </tr>
-              }
-            </tbody>
-          </table>
-        </div>
-      </div>
-    }
-
-    <!-- HTML ENTRADAS / SALIDAS -->
-    @if(activeTab === 'movimientos') {
-      <div class="fade-in">
-        <div class="glass-panel" style="padding: 1.5rem; margin-bottom: 2rem;">
-          <h3 style="margin-top: 0; color: #f97316; font-size: 1.2rem; text-transform: uppercase;">Registrar Movimiento</h3>
-          <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
-            <div class="form-group" style="flex: 1; min-width: 200px;">
-              <label>Tipo *</label>
-              <select class="input-neumorphic">
-                <option value="entrada">Entrada (+)</option>
-                <option value="salida">Salida (-)</option>
-              </select>
-            </div>
-            <div class="form-group" style="flex: 2; min-width: 200px;">
-              <label>Producto *</label>
-              <select class="input-neumorphic">
-                <option disabled selected>Seleccione el producto...</option>
-                <option>PRD-001 - Laptop Dell Inspiron</option>
-                <option>PRD-002 - Mouse Inalámbrico</option>
-              </select>
-            </div>
-            <div class="form-group" style="flex: 1; min-width: 150px;">
-              <label>Cantidad *</label>
-              <input type="number" class="input-neumorphic" placeholder="Ej. 10">
-            </div>
-          </div>
-          <div class="form-group" style="margin-top: 1rem;">
-            <label>Motivo / Observaciones</label>
-            <input type="text" class="input-neumorphic" placeholder="Ej. Compra a proveedor #1040">
-          </div>
-          <div style="text-align: right; margin-top: 1.5rem;">
-            <button class="btn-save">Registrar Movimiento</button>
-          </div>
-        </div>
-
-        <h3 style="color: #cbd5e1; font-size: 1.2rem; text-transform: uppercase; margin-bottom: 1rem;">Historial Reciente</h3>
-        <div class="table-responsive">
-          <table class="premium-table data-table">
-            <thead>
-              <tr>
-                <th>FECHA</th>
-                <th>TIPO</th>
-                <th>PRODUCTO</th>
-                <th>CANTIDAD</th>
-                <th>MOTIVO</th>
-                <th>USUARIO</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>25/07/2026</td>
-                <td><span class="badge badge-success">Entrada</span></td>
-                <td>Laptop Dell Inspiron</td>
-                <td>+10</td>
-                <td>Compra inicial</td>
-                <td>Admin</td>
-              </tr>
-              <tr>
-                <td>24/07/2026</td>
-                <td><span class="badge badge-danger">Salida</span></td>
-                <td>Mouse Inalámbrico</td>
-                <td>-2</td>
-                <td>Venta #0012</td>
-                <td>Asesor Ventas</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    }
-
-    <!-- HTML AJUSTES -->
-    @if(activeTab === 'ajustes') {
-      <div class="fade-in">
-        <div class="glass-panel" style="padding: 1.5rem; margin-bottom: 2rem;">
-          <h3 style="margin-top: 0; color: #f97316; font-size: 1.2rem; text-transform: uppercase;">Nuevo Ajuste (Merma/Daño)</h3>
-          <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
-            <div class="form-group" style="flex: 2; min-width: 200px;">
-              <label>Producto *</label>
-              <select class="input-neumorphic">
-                <option disabled selected>Seleccione el producto...</option>
-                <option>PRD-003 - Monitor LG 24"</option>
-              </select>
-            </div>
-            <div class="form-group" style="flex: 1; min-width: 150px;">
-              <label>Cantidad a Descontar *</label>
-              <input type="number" class="input-neumorphic" placeholder="Ej. -1">
-            </div>
-          </div>
-          <div class="form-group" style="margin-top: 1rem;">
-            <label>Justificación del Ajuste *</label>
-            <input type="text" class="input-neumorphic" placeholder="Ej. Monitor dañado en bodega">
-          </div>
-          <div style="text-align: right; margin-top: 1.5rem;">
-            <button class="btn-save" style="background: #dc2626;">Aplicar Ajuste</button>
-          </div>
-        </div>
-
-        <h3 style="color: #cbd5e1; font-size: 1.2rem; text-transform: uppercase; margin-bottom: 1rem;">Registro de Ajustes</h3>
-        <div class="table-responsive">
-          <table class="premium-table data-table">
-            <thead>
-              <tr>
-                <th>FECHA</th>
-                <th>PRODUCTO</th>
-                <th>CANTIDAD AJUSTADA</th>
-                <th>JUSTIFICACIÓN</th>
-                <th>AUTORIZADO POR</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>20/07/2026</td>
-                <td>Monitor LG 24"</td>
-                <td style="color: #ef4444; font-weight: bold;">-1</td>
-                <td>Pantalla rota al desempacar</td>
-                <td>Gerente General</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    }
-
-    <!-- HTML KARDEX -->
-    @if(activeTab === 'kardex') {
-      <div class="fade-in">
-        <div class="action-bar" style="display: flex; gap: 1rem; margin-bottom: 1.5rem; align-items: flex-end;">
-          <div class="form-group" style="flex: 2; margin: 0;">
-            <label>Seleccionar Producto para Kardex</label>
-            <select class="input-neumorphic">
-              <option disabled selected>Buscar producto...</option>
-              <option selected>PRD-001 - Laptop Dell Inspiron</option>
-            </select>
-          </div>
-          <div class="form-group" style="flex: 1; margin: 0;">
-            <label>Mes</label>
-            <input type="month" class="input-neumorphic">
-          </div>
-          <button class="btn-general" style="background: #3b82f6; padding: 0.8rem 1.5rem;"><i class="fas fa-search"></i> Generar</button>
-        </div>
-
-        <div class="table-responsive">
-          <table class="premium-table data-table">
-            <thead>
-              <tr>
-                <th>FECHA</th>
-                <th>CONCEPTO</th>
-                <th>ENTRADA</th>
-                <th>SALIDA</th>
-                <th>SALDO ACTUAL</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>01/07/2026</td>
-                <td>Saldo Inicial</td>
-                <td>-</td>
-                <td>-</td>
-                <td><strong>0</strong></td>
-              </tr>
-              <tr>
-                <td>05/07/2026</td>
-                <td>Compra Proveedor A</td>
-                <td style="color: #10b981;">+10</td>
-                <td>-</td>
-                <td><strong>10</strong></td>
-              </tr>
-              <tr>
-                <td>12/07/2026</td>
-                <td>Venta Mostrador</td>
-                <td>-</td>
-                <td style="color: #ef4444;">-2</td>
-                <td><strong>8</strong></td>
-              </tr>
-              <tr>
-                <td>15/07/2026</td>
-                <td>Entrada por Devolución</td>
-                <td style="color: #10b981;">+1</td>
-                <td>-</td>
-                <td><strong>9</strong></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    }
-  </div>
-</div>
-
-<!-- HTML MODAL NUEVO PRODUCTO -->
-@if(showModal) {
-<div class="modal-overlay fade-in">
-  <div class="modal-content glass-panel" style="max-width: 500px;">
-    <div class="modal-header">
-      <h2>Nuevo Producto</h2>
-      <button class="btn-close" (click)="cerrarModal()">&times;</button>
-    </div>
-    <div class="modal-body">
-      <div class="form-group">
-        <label>Código SKU *</label>
-        <input type="text" class="input-neumorphic" [(ngModel)]="formProducto.codigo" placeholder="Ej. PRD-004">
-      </div>
-        <div class="form-group">
-          <label>Nombre del Producto *</label>
-          <input type="text" class="input-neumorphic" [(ngModel)]="formProducto.nombre" placeholder="Ej. Teclado Mecánico">
-        </div>
-        <div class="form-group">
-          <label>Categoría *</label>
-          <!-- Se asume que categorias se carga de backend. Por ahora mock -->
-          <select class="input-neumorphic" [(ngModel)]="formProducto.categoria_id">
-            <option value="" disabled selected>Seleccione una categoría</option>
-            <option value="1">Equipos (ID:1)</option>
-            <option value="2">Accesorios (ID:2)</option>
-            <option value="3">Insumos (ID:3)</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Unidad de Medida *</label>
-          <input type="text" class="input-neumorphic" [(ngModel)]="formProducto.unidad_medida" placeholder="Ej. Unidad, Kg, Caja">
-        </div>
-        <div style="display: flex; gap: 1rem;">
-          <div class="form-group" style="flex: 1;">
-            <label>Precio de Venta</label>
-            <input type="number" class="input-neumorphic" [(ngModel)]="formProducto.precio_venta">
-          </div>
-          <div class="form-group" style="flex: 1;">
-            <label>Costo de Compra</label>
-            <input type="number" class="input-neumorphic" [(ngModel)]="formProducto.precio_compra">
-          </div>
-        </div>
-        <div style="display: flex; gap: 1rem;">
-          <div class="form-group" style="flex: 1;">
-            <label>Stock Inicial</label>
-            <input type="number" class="input-neumorphic" [(ngModel)]="formProducto.stock_inicial" placeholder="Ej. 10">
-          </div>
-          <div class="form-group" style="flex: 1;">
-            <label>Imagen del Producto</label>
-            <input type="file" class="input-neumorphic" (change)="onFileSelected($event)" accept="image/*">
-          </div>
-        </div>
-      </div>
-    
-    <div class="modal-footer" style="display: flex; justify-content: center; gap: 1rem; margin-top: 1.5rem;">
-      <button class="btn-volver" (click)="cerrarModal()">Volver</button>
-      <button class="btn-save" (click)="guardarProducto()" [disabled]="guardando">
-        @if(guardando) {
-          <i class="fas fa-spinner fa-spin"></i> Guardando...
-        } @else {
-          Guardar Producto
-        }
-      </button>
-    </div>
-  </div>
-</div>
-}
-
-<!-- HTML TOAST NOTIFICATION -->
-@if(showToast) {
-<div class="toast-container fade-in">
-  <div class="toast-card" [ngClass]="'toast-' + toastType">
-    <div class="toast-icon">
-      @if(toastType === 'success') { <i class="fas fa-check-circle"></i> }
-      @if(toastType === 'warning') { <i class="fas fa-exclamation-triangle"></i> }
-      @if(toastType === 'error') { <i class="fas fa-times-circle"></i> }
-    </div>
-    <div class="toast-content">
-      <h4 class="toast-title">
-        @if(toastType === 'success') { Éxito }
-        @if(toastType === 'warning') { Advertencia }
-        @if(toastType === 'error') { Error }
-      </h4>
-      <p class="toast-message">{{toastMessage}}</p>
-    </div>
-    <button class="toast-close" (click)="showToast = false">&times;</button>
-  </div>
-</div>
-}
-
-
 
 <!-- HTML OVERLAY ONBOARDING -->
 <div class="onboarding-overlay">
@@ -401,7 +17,7 @@
     <!-- HTML CONTENIDO ONBOARDING -->
     <div class="content-container">
       @if (step === 1) {
-        <h2 class="title">¡Hola! Soy Gestiva</h2>
+        <h1 class="title">¡Hola! Soy Gestiva</h1>
         <p class="description">
           Tu inteligencia artificial personal. Estoy aquí para ayudarte a configurar y sacar el máximo provecho de tu nueva plataforma.
         </p>
@@ -411,7 +27,7 @@
       }
 
       @if (step === 2) {
-        <h2 class="title">El primer paso es clave</h2>
+        <h1 class="title">El primer paso es clave</h1>
         <p class="description highlight-text">
           Lo primero que debes hacer es ir al módulo de <strong>Gestión Humana</strong> y agregar a tu <strong>Jefe de Recursos Humanos</strong>.
         </p>
@@ -421,7 +37,7 @@
       }
 
       @if (step === 3) {
-        <h2 class="title">¡Todo listo para empezar!</h2>
+        <h1 class="title">¡Todo listo para empezar!</h1>
         <p class="description">
           A medida que uses la plataforma, estaré analizando tus métricas en segundo plano. Puedes consultarme cuando quieras desde el menú lateral en la sección <strong>"✨ Gestiva AI"</strong>.
         </p>
@@ -432,18 +48,22 @@
 
       <div class="actions">
         @if (step < 3) {
-          <button class="btn-primary" (click)="nextStep()">Siguiente</button>
+          <button class="btn-add" (click)="nextStep()">Siguiente</button>
         } @else {
-          <button class="btn-primary success" (click)="closeTutorial()">¡Empezar a trabajar!</button>
+          <button class="btn-add success" (click)="closeTutorial()">¡Empezar a trabajar!</button>
         }
       </div>
       
       <div class="dots-indicator">
-        <span class="dot" [class.active]="step === 1"></span>
-        <span class="dot" [class.active]="step === 2"></span>
-        <span class="dot" [class.active]="step === 3"></span>
+        <span class="dot" [class.tab-neu-active]="step === 1"></span>
+        <span class="dot" [class.tab-neu-active]="step === 2"></span>
+        <span class="dot" [class.tab-neu-active]="step === 3"></span>
       </div>
 
     </div>
   </div>
 </div>
+
+
+
+

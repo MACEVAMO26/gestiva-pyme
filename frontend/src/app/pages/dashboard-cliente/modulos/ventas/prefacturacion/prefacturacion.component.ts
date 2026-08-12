@@ -1,9 +1,8 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { PrefacturacionService, CotizacionPedido, CotizacionDetalle } from '../../../../../services/prefacturacion.service';
-import { ClienteService, Cliente } from '../../../../../services/cliente.service';
 import { ToastService } from '../../../../../services/toast.service';
+// import { PrefacturacionService } from '../../../../../services/prefacturacion.service'; // Descomentar si se usa para el backend
 
 @Component({
   selector: 'app-prefacturacion',
@@ -13,71 +12,149 @@ import { ToastService } from '../../../../../services/toast.service';
   styleUrl: './prefacturacion.component.scss'
 })
 export class PrefacturacionComponent implements OnInit {
-  private prefactService = inject(PrefacturacionService);
-  private clienteService = inject(ClienteService);
   private toast = inject(ToastService);
 
-  cotizaciones: CotizacionPedido[] = [];
-  clientes: Cliente[] = [];
-  cargando = false;
-
-  nuevaCotizacion: CotizacionPedido = {
-    cliente_id: 0,
-    total: 0,
-    estado: 'borrador',
-    notas: '',
-    valido_hasta: '',
-    detalles: []
-  };
-
-  nuevoDetalle: CotizacionDetalle = {
-    producto_id: 0,
-    cantidad: 1,
-    precio_unitario: 0,
-    subtotal: 0
-  };
+  activeTab: string = 'caja';
+  
+  // Variables Caja
+  cajaAbierta: boolean = false;
+  showModalApertura: boolean = false;
+  montoApertura: number = 0;
+  
+  totalIngresos: number = 0;
+  totalEgresos: number = 0;
+  saldoActual: number = 0;
+  
+  showModalCierre: boolean = false;
+  
+  tipoMovimiento: string = 'ingreso';
+  montoMovimiento: number = 0;
+  conceptoMovimiento: string = '';
+  movimientos: any[] = [];
+  
+  // Variables Prefacturas
+  prefacturas: any[] = [];
+  
+  // Estado global
+  guardando: boolean = false;
+  
+  // Toast
+  showToast: boolean = false;
+  toastType: string = 'success';
+  toastMessage: string = '';
 
   ngOnInit() {
-    this.cargarDatos();
+    this.cargarDatosDemo();
   }
 
-  cargarDatos() {
-    this.cargando = true;
-    this.prefactService.getCotizaciones().subscribe(res => {
-      this.cotizaciones = res;
-      this.cargando = false;
-    });
-    this.clienteService.getClientes().subscribe(res => this.clientes = res);
+  cargarDatosDemo() {
+    this.prefacturas = [
+      { id: 1, consecutivo: 'PRE-1001', cliente: 'Carlos Vargas', fecha: '2023-11-20', total: 150000, estado: 'Pendiente' },
+      { id: 2, consecutivo: 'PRE-1002', cliente: 'Empresa XYZ', fecha: '2023-11-21', total: 450000, estado: 'Procesada' }
+    ];
   }
 
-  agregarDetalle() {
-    if (this.nuevoDetalle.producto_id && this.nuevoDetalle.cantidad > 0) {
-      this.nuevoDetalle.subtotal = this.nuevoDetalle.cantidad * this.nuevoDetalle.precio_unitario;
-      this.nuevaCotizacion.detalles!.push({ ...this.nuevoDetalle });
-      this.calcularTotal();
-      this.nuevoDetalle = { producto_id: 0, cantidad: 1, precio_unitario: 0, subtotal: 0 };
-    } else {
-      this.toast.warning('Datos del ítem incompletos');
-    }
+  switchTab(tab: string) {
+    this.activeTab = tab;
   }
 
-  calcularTotal() {
-    this.nuevaCotizacion.total = this.nuevaCotizacion.detalles!.reduce((sum, item) => sum + item.subtotal, 0);
+  abrirCajaModal() {
+    this.montoApertura = 0;
+    this.showModalApertura = true;
   }
 
-  guardarCotizacion() {
-    if (this.nuevaCotizacion.cliente_id === 0 || this.nuevaCotizacion.detalles!.length === 0) {
-      this.toast.warning('Debe seleccionar cliente y agregar ítems');
+  cerrarCajaModal() {
+    this.showModalApertura = false;
+  }
+
+  confirmarApertura() {
+    this.guardando = true;
+    setTimeout(() => {
+      this.cajaAbierta = true;
+      this.saldoActual = this.montoApertura;
+      this.movimientos.unshift({
+        fecha: new Date().toLocaleTimeString(),
+        tipo: 'apertura',
+        concepto: 'Base inicial de caja',
+        monto: this.montoApertura
+      });
+      this.guardando = false;
+      this.cerrarCajaModal();
+      this.mostrarToast('Caja abierta correctamente', 'success');
+    }, 1000);
+  }
+
+  abrirCierreModal() {
+    this.showModalCierre = true;
+  }
+
+  cerrarCierreModal() {
+    this.showModalCierre = false;
+  }
+
+  confirmarCierre() {
+    this.guardando = true;
+    setTimeout(() => {
+      this.cajaAbierta = false;
+      this.saldoActual = 0;
+      this.totalIngresos = 0;
+      this.totalEgresos = 0;
+      this.movimientos = [];
+      this.guardando = false;
+      this.cerrarCierreModal();
+      this.mostrarToast('Caja cerrada correctamente', 'success');
+    }, 1500);
+  }
+
+  registrarMovimiento() {
+    if (!this.conceptoMovimiento || this.montoMovimiento <= 0) {
+      this.mostrarToast('Complete el monto y concepto', 'warning');
       return;
     }
-    
-    this.prefactService.registrarCotizacion(this.nuevaCotizacion).subscribe({
-      next: () => {
-        this.toast.success('Cotización registrada');
-        this.nuevaCotizacion = { cliente_id: 0, total: 0, estado: 'borrador', notas: '', valido_hasta: '', detalles: [] };
-        this.cargarDatos();
-      },
-      error: () => this.toast.error('Error al registrar cotización')
+
+    if (this.tipoMovimiento === 'egreso' && this.montoMovimiento > this.saldoActual) {
+      this.mostrarToast('Saldo insuficiente en caja', 'error');
+      return;
+    }
+
+    this.movimientos.unshift({
+      fecha: new Date().toLocaleTimeString(),
+      tipo: this.tipoMovimiento,
+      concepto: this.conceptoMovimiento,
+      monto: this.montoMovimiento
     });
+
+    if (this.tipoMovimiento === 'ingreso') {
+      this.totalIngresos += this.montoMovimiento;
+      this.saldoActual += this.montoMovimiento;
+    } else {
+      this.totalEgresos += this.montoMovimiento;
+      this.saldoActual -= this.montoMovimiento;
+    }
+
+    this.montoMovimiento = 0;
+    this.conceptoMovimiento = '';
+    this.mostrarToast('Movimiento registrado', 'success');
+  }
+
+  getBadgeClass(estado: string): string {
+    if (estado === 'Procesada') return 'badge-aprobada';
+    if (estado === 'Rechazada') return 'badge-rechazada';
+    return 'badge-pendiente';
+  }
+
+  generarDocumento(id: number) {
+    const pref = this.prefacturas.find(p => p.id === id);
+    if (pref) {
+      pref.estado = 'Procesada';
+      this.mostrarToast('Factura generada', 'success');
+    }
+  }
+
+  mostrarToast(mensaje: string, tipo: 'success' | 'warning' | 'error') {
+    this.toastMessage = mensaje;
+    this.toastType = tipo;
+    this.showToast = true;
+    setTimeout(() => this.showToast = false, 3000);
   }
 }

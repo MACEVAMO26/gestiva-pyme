@@ -1,13 +1,20 @@
 <!-- HTML GESTIÓN DE ROLES -->
-<div class="panel-contenido">
-  <div class="panel-header">
-    <h2 class="panel-title">Roles y Accesos</h2>
-    <button class="btn-primary btn-pill" (click)="abrirModal()">+ Nuevo Rol</button>
+<div class="fade-in">
+  <!-- Botón Volver Inyectado -->
+  <div style="margin-bottom: 2rem;">
+    <button class="btn-volver" onclick="window.history.back()">
+      <i class="fas fa-arrow-left"></i> VOLVER
+    </button>
+  </div>
+  
+  <div class="module-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+    <h1 style="margin: 0; font-size: 16px; font-weight: bold; text-transform: uppercase;">ROLES Y ACCESOS</h1>
+    <button class="btn-add btn-pill" (click)="abrirModal()">+ Nuevo Rol</button>
   </div>
 
   <div class="panel-body">
     @if (isLoading) {
-    <div class="loading-overlay neu-inset">
+    <div class="loading-overlay neumorphic-panel">
       <div class="spinner"></div>
       <p>Cargando roles...</p>
     </div>
@@ -67,9 +74,9 @@
 
 @if (isModalOpen) {
 <div class="modal-overlay">
-  <div class="modal-card neu-card">
+  <div class="modal-card neumorphic-panel">
     <div class="modal-header">
-      <h2 class="panel-title">Crear Nuevo Rol</h2>
+      <h1>Crear Nuevo Rol</h1>
       <button class="btn-close" (click)="cerrarModal()" [disabled]="isSaving">×</button>
     </div>
     <div class="modal-body">
@@ -77,15 +84,15 @@
         <div class="form-grid">
           <div class="form-group full-width">
             <label>Nombre del Rol <span class="text-danger">*</span></label>
-            <input type="text" class="neu-input" name="nombre" [(ngModel)]="nuevoRol.nombre" required>
+            <input type="text" class="input-neumorphic" name="nombre" [(ngModel)]="nuevoRol.nombre" required>
           </div>
           
           <div class="form-group full-width">
             <label>Descripción</label>
-            <textarea class="neu-input" name="descripcion" [(ngModel)]="nuevoRol.descripcion" rows="3"></textarea>
+            <textarea class="input-neumorphic" name="descripcion" [(ngModel)]="nuevoRol.descripcion" rows="3"></textarea>
           </div>
           
-          <div class="form-group full-width info-box neu-inset">
+          <div class="form-group full-width info-box neumorphic-panel">
             <p><strong>Nota:</strong> Los roles personalizados te permiten definir permisos específicos más adelante. Los roles base del sistema no pueden ser desactivados ni modificados.</p>
           </div>
         </div>
@@ -103,3 +110,7 @@
   </div>
 </div>
 }
+
+
+
+

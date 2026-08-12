@@ -1,95 +1,150 @@
-<div class="modulo-container">
-  <h2>Caja Registradora</h2>
-  <p>Controla las aperturas, cierres e ingresos de efectivo del día.</p>
-
-  <div *ngIf="cargando">Cargando cajas...</div>
-
-  <div *ngIf="!cargando && cajas.length > 0">
-    <label>Selecciona una caja para operar: </label>
-    <select [(ngModel)]="cajaActiva" (ngModelChange)="seleccionarCaja($event)">
-      <option [ngValue]="null">-- Cajas Disponibles --</option>
-      <!-- En BD no hay "nombre" de caja, usamos el ID y el usuario -->
-      <option *ngFor="let c of cajas" [ngValue]="c">Caja #{{ c.id }} - Usuario {{ c.usuario_id }} ({{ c.estado | uppercase }})</option>
-    </select>
+  <!-- Botón Volver Inyectado -->
+  <div style="margin-bottom: 1.5rem; display: flex; justify-content: flex-start;">
+    <button class="btn-volver" onclick="window.history.back()">
+      <i class="fas fa-arrow-left"></i> Volver
+    </button>
   </div>
 
-  <div *ngIf="cajaActiva" style="margin-top: 20px;">
-    
-    <!-- CONTROLES DE APERTURA / CIERRE -->
-    <fieldset style="padding: 15px; margin-bottom: 20px; background: #fafafa;">
-      <legend>Estado Actual: <strong [style.color]="cajaActiva.estado === 'abierta' ? 'green' : 'red'">{{ cajaActiva.estado | uppercase }}</strong></legend>
-      
-      <div *ngIf="cajaActiva.estado === 'cerrada'" style="display: flex; gap: 10px; align-items: center;">
-        <label>Base inicial para abrir caja ($):</label>
-        <input type="number" [(ngModel)]="montoApertura" min="0">
-        <button (click)="abrirCaja()" [disabled]="procesando" style="background: green; color: white;">+ Abrir Caja</button>
-      </div>
+<div class="module-container">
+  <!-- Botón Volver Inyectado -->
+  <div style="margin-bottom: 1.5rem; display: flex; justify-content: flex-start;">
+    <button class="btn-volver" onclick="window.history.back()">
+      <i class="fas fa-arrow-left"></i> Volver
+    </button>
+  </div>
 
-      <div *ngIf="cajaActiva.estado === 'abierta'" style="display: flex; gap: 10px; align-items: center;">
-        <label>Efectivo final en caja ($):</label>
-        <input type="number" [(ngModel)]="montoCierre" min="0">
-        <button (click)="cerrarCaja()" [disabled]="procesando" style="background: red; color: white;">- Cerrar Caja</button>
-      </div>
-    </fieldset>
+  <div class="module-header">
+    <h1>Caja Registradora</h1>
+    <p>Controla las aperturas, cierres e ingresos de efectivo del día.</p>
+  </div>
 
-    <!-- MOVIMIENTOS MANUALES -->
-    <fieldset *ngIf="cajaActiva.estado === 'abierta'" style="padding: 15px; margin-bottom: 20px;">
-      <legend>Registrar Ingreso / Egreso Manual</legend>
-      <form (ngSubmit)="registrarMovimiento()" style="display: flex; gap: 10px; align-items: end;">
-        
-        <div>
-          <label>Tipo:</label><br>
-          <select name="tipo" [(ngModel)]="nuevoMovimiento.tipo">
-            <option value="ingreso">Ingreso</option>
-            <option value="egreso">Egreso (Gasto)</option>
+  <div class="panel-body">
+    @if (cargando) {
+      <div class="loading-overlay neumorphic-panel">
+        <div class="spinner"></div>
+        <p>Cargando cajas...</p>
+      </div>
+    }
+
+    @if (!cargando && cajas.length > 0) {
+      <div class="neumorphic-panel" style="margin-bottom: 2rem;">
+        <div class="form-group full-width">
+          <label class="form-label">Selecciona una caja para operar:</label>
+          <select class="input-neumorphic" [(ngModel)]="cajaActiva" (ngModelChange)="seleccionarCaja($event)">
+            <option [ngValue]="null">-- Cajas Disponibles --</option>
+            <option *ngFor="let c of cajas" [ngValue]="c">Caja #{{ c.id }} - Usuario {{ c.usuario_id }} ({{ c.estado | uppercase }})</option>
           </select>
         </div>
+      </div>
+    }
 
-        <div>
-          <label>Monto ($):</label><br>
-          <input type="number" name="monto" [(ngModel)]="nuevoMovimiento.monto" min="1" required>
+    @if (cajaActiva) {
+      <!-- CONTROLES DE APERTURA / CIERRE -->
+      <div class="neumorphic-panel">
+        <h2 class="subtitulo">Estado Actual: 
+          <strong [style.color]="cajaActiva.estado === 'abierta' ? 'green' : 'red'">{{ cajaActiva.estado | uppercase }}</strong>
+        </h2>
+        
+        @if (cajaActiva.estado === 'cerrada') {
+          <div class="form-grid" style="align-items: end;">
+            <div class="form-group">
+              <label class="form-label">Base inicial para abrir caja ($):</label>
+              <input type="number" class="input-neumorphic" [(ngModel)]="montoApertura" min="0">
+            </div>
+            <div class="form-group" style="padding-bottom: 0.2rem;">
+              <button class="btn-add btn-pill" style="background-color: #066810; border-color: #066810; color: white;" (click)="abrirCaja()" [disabled]="procesando">
+                + Abrir Caja
+              </button>
+            </div>
+          </div>
+        }
+
+        @if (cajaActiva.estado === 'abierta') {
+          <div class="form-grid" style="align-items: end;">
+            <div class="form-group">
+              <label class="form-label">Efectivo final en caja ($):</label>
+              <input type="number" class="input-neumorphic" [(ngModel)]="montoCierre" min="0">
+            </div>
+            <div class="form-group" style="padding-bottom: 0.2rem;">
+              <button class="btn-volver btn-pill" (click)="cerrarCaja()" [disabled]="procesando">
+                - Cerrar Caja
+              </button>
+            </div>
+          </div>
+        }
+      </div>
+
+      <!-- MOVIMIENTOS MANUALES -->
+      @if (cajaActiva.estado === 'abierta') {
+        <div class="neumorphic-panel mt-4">
+          <h2 class="subtitulo">Registrar Ingreso / Egreso Manual</h2>
+          <form (ngSubmit)="registrarMovimiento()">
+            <div class="form-grid" style="align-items: end;">
+              <div class="form-group">
+                <label class="form-label">Tipo:</label>
+                <select class="input-neumorphic" name="tipo" [(ngModel)]="nuevoMovimiento.tipo">
+                  <option value="ingreso">Ingreso</option>
+                  <option value="egreso">Egreso (Gasto)</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Monto ($):</label>
+                <input type="number" class="input-neumorphic" name="monto" [(ngModel)]="nuevoMovimiento.monto" min="1" required>
+              </div>
+
+              <div class="form-group full-width">
+                <label class="form-label">Concepto:</label>
+                <input type="text" class="input-neumorphic" name="concepto" [(ngModel)]="nuevoMovimiento.concepto" required>
+              </div>
+            </div>
+
+            <div class="form-actions" style="margin-top: 1.5rem;">
+              <button type="submit" class="btn-save btn-pill" [disabled]="procesando">
+                Registrar Movimiento
+              </button>
+            </div>
+          </form>
         </div>
+      }
 
-        <div style="flex: 1;">
-          <label>Concepto:</label><br>
-          <input type="text" name="concepto" [(ngModel)]="nuevoMovimiento.concepto" required style="width: 100%;">
+      <!-- TABLA DE MOVIMIENTOS -->
+      <div class="neumorphic-panel mt-4">
+        <h2 class="subtitulo">Historial de Movimientos</h2>
+        <div class="table-container">
+          <table class="data-table neumorphic-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Tipo</th>
+                <th>Monto</th>
+                <th>Concepto</th>
+                <th>Comprobante</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let m of movimientos">
+                <td>{{ m.id }}</td>
+                <td [style.color]="m.tipo === 'egreso' ? 'red' : 'green'"><strong>{{ m.tipo | uppercase }}</strong></td>
+                <td>$ {{ m.monto }}</td>
+                <td>{{ m.concepto }}</td>
+                <td>
+                  <a *ngIf="m.comprobante_url" [href]="m.comprobante_url" target="_blank" class="badge">Ver Archivo</a>
+                  <span *ngIf="!m.comprobante_url" class="text-muted">No hay</span>
+                </td>
+              </tr>
+              <tr *ngIf="movimientos.length === 0">
+                <td colspan="5" class="text-center">No hay movimientos registrados.</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
-
-        <button type="submit" [disabled]="procesando">Registrar</button>
-      </form>
-    </fieldset>
-
-    <!-- TABLA DE MOVIMIENTOS -->
-    <fieldset style="padding: 10px;">
-      <legend>Historial de Movimientos</legend>
-      <table border="1" width="100%" cellpadding="5" cellspacing="0">
-        <thead>
-          <tr style="background: #eee;">
-            <th>ID</th>
-            <th>Tipo</th>
-            <th>Monto</th>
-            <th>Concepto</th>
-            <th>Comprobante</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let m of movimientos">
-            <td>{{ m.id }}</td>
-            <td [style.color]="m.tipo === 'egreso' ? 'red' : 'green'"><strong>{{ m.tipo | uppercase }}</strong></td>
-            <td>$ {{ m.monto }}</td>
-            <td>{{ m.concepto }}</td>
-            <td>
-              <a *ngIf="m.comprobante_url" [href]="m.comprobante_url" target="_blank">Ver Archivo</a>
-              <span *ngIf="!m.comprobante_url">No hay</span>
-            </td>
-          </tr>
-          <tr *ngIf="movimientos.length === 0">
-            <td colspan="5" style="text-align: center;">No hay movimientos registrados.</td>
-          </tr>
-        </tbody>
-      </table>
-    </fieldset>
-
+      </div>
+    }
   </div>
-
 </div>
+
+
+
+
+

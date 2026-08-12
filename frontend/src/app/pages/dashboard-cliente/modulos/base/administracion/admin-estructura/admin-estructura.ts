@@ -57,7 +57,7 @@ export class AdminEstructura implements OnInit {
       areas: this.estructuraService.getAreas(),
       cargos: this.estructuraService.getCargos(),
       roles: this.rolesService.getRoles()
-    }).pipe(timeout(10000)).subscribe({
+    }).pipe(timeout(5000)).subscribe({
       next: (data) => {
         this.sedes = data.sedes;
         this.areas = data.areas;

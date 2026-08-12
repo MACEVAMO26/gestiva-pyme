@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { IaService, IaConfig, IaChatHistory } from '../../../../../services/ia.service';
 import { ToastService } from '../../../../../services/toast.service';
 import { AuthService } from '../../../../../services/auth.service';
+import { timeout } from 'rxjs/operators';
 
 @Component({
   selector: 'app-gestiva-ia',
@@ -54,9 +55,11 @@ export class GestivaIaComponent implements OnInit, AfterViewChecked {
   // --- CONFIGURACIÓN ---
   cargarConfiguracion() {
     if (!this.esGerente) return;
-    this.iaService.getConfiguracion().subscribe({
-      next: (res) => {
-        if (res) this.configuracion = res;
+    this.iaService.getConfiguracion().pipe(timeout(8000)).subscribe({
+      next: (res: any) => {
+        if (res && res.proveedor !== undefined) {
+          this.configuracion = res as IaConfig;
+        }
       },
       error: () => {
         // Fallo silencioso si no hay configuración previa
@@ -81,13 +84,14 @@ export class GestivaIaComponent implements OnInit, AfterViewChecked {
   // --- CHAT ---
   cargarHistorial() {
     this.cargando = true;
-    this.iaService.getHistorialChat().subscribe({
-      next: (res) => {
+    this.iaService.getHistorialChat().pipe(timeout(8000)).subscribe({
+      next: (res: IaChatHistory[]) => {
         this.historial = res;
         this.cargando = false;
         this.scrollToBottom();
       },
       error: () => {
+        this.historial = [];
         this.cargando = false;
       }
     });
@@ -137,5 +141,78 @@ export class GestivaIaComponent implements OnInit, AfterViewChecked {
         this.chatContainer.nativeElement.scrollTop = this.chatContainer.nativeElement.scrollHeight;
       }
     } catch(err) { }
+  }
+
+  // --- VARIABLES PARA EL TEMPLATE (MERGE DE INVENTARIO Y TUTORIAL IA) ---
+  activeTab: string = 'catalogo';
+  showModal: boolean = false;
+  showToast: boolean = false;
+  toastType: string = 'success';
+  toastMessage: string = '';
+  step: number = 1;
+  searchTerm: string = '';
+  productosFiltrados: any[] = [];
+  
+  formProducto: any = {
+    codigo: '',
+    nombre: '',
+    categoria_id: '',
+    unidad_medida: '',
+    precio_venta: null,
+    precio_compra: null,
+    stock_inicial: null
+  };
+
+  switchTab(tab: string) {
+    this.activeTab = tab;
+  }
+
+  abrirModal() {
+    this.showModal = true;
+  }
+
+  cerrarModal() {
+    this.showModal = false;
+  }
+
+  guardarProducto() {
+    this.guardando = true;
+    setTimeout(() => {
+      this.showModal = false;
+      this.guardando = false;
+      this.mostrarToast('success', 'Producto guardado con éxito');
+    }, 800);
+  }
+
+  onFileSelected(event: any) {
+    // Manejar archivo
+  }
+
+  nextStep() {
+    if (this.step < 3) {
+      this.step++;
+    }
+  }
+
+  closeTutorial() {
+    this.step = 3;
+    // Opcional: emitir o guardar que ya vio el tutorial
+  }
+
+  getBadgeClass(stock: number, stockMinimo: number): string {
+    if (stock <= 0) return 'badge-danger';
+    if (stock <= stockMinimo) return 'badge-warning';
+    return 'badge-success';
+  }
+
+  exportarExcel() {
+    this.mostrarToast('success', 'Exportando a Excel...');
+  }
+
+  mostrarToast(type: string, message: string) {
+    this.toastType = type;
+    this.toastMessage = message;
+    this.showToast = true;
+    setTimeout(() => this.showToast = false, 3000);
   }
 }

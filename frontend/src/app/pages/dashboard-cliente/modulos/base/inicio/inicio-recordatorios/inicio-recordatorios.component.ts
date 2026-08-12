@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RecordatoriosService, Recordatorio } from '../../../../../../services/recordatorios.service';
 import { ToastService } from '../../../../../../services/toast.service';
+import { timeout } from 'rxjs';
 
 @Component({
   selector: 'app-inicio-recordatorios',
@@ -19,15 +20,23 @@ export class InicioRecordatoriosComponent implements OnInit {
   nuevoTitulo = '';
   nuevaDescripcion = '';
   guardando = false;
+  cargando = false;
 
   ngOnInit() {
     this.cargarRecordatorios();
   }
 
   cargarRecordatorios() {
-    this.recordatoriosService.getRecordatorios().subscribe({
-      next: (res) => this.recordatorios = res,
-      error: () => this.toast.error('Error al cargar recordatorios')
+    this.cargando = true;
+    this.recordatoriosService.getRecordatorios().pipe(timeout(8000)).subscribe({
+      next: (res) => {
+        this.recordatorios = res;
+        this.cargando = false;
+      },
+      error: () => {
+        this.recordatorios = [];
+        this.cargando = false;
+      }
     });
   }
 

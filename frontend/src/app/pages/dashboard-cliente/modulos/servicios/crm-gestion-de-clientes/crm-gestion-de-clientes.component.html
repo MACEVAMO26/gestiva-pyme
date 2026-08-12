@@ -1,20 +1,47 @@
-<div class="modulo-container">
-  <h2>CRM - Gestión de Clientes</h2>
-  <p>Vista 360º de las interacciones, tickets y servicios prestados a los clientes.</p>
+  <!-- Botón Volver Inyectado -->
+  <div style="margin-bottom: 1.5rem; display: flex; justify-content: flex-start;">
+    <button class="btn-volver" onclick="window.history.back()">
+      <i class="fas fa-arrow-left"></i> Volver
+    </button>
+  </div>
 
-  <fieldset>
-    <legend>Buscador de Clientes</legend>
-    <form>
-      <div>
-        <label>Buscar por Nombre o Documento:</label><br>
-        <input type="text" placeholder="Ej. Juan Pérez">
-        <button type="button">Buscar</button>
-      </div>
-    </form>
-  </fieldset>
+<div class="module-container">
+  <!-- Botón Volver Inyectado -->
+  <div style="margin-bottom: 1.5rem; display: flex; justify-content: flex-start;">
+    <button class="btn-volver" onclick="window.history.back()">
+      <i class="fas fa-arrow-left"></i> Volver
+    </button>
+  </div>
 
-  <fieldset>
-    <legend>Historial Reciente de Servicios</legend>
-    <p>Seleccione un cliente para ver su historial de servicios técnicos y visitas.</p>
-  </fieldset>
+  <div class="module-header">
+    <h1>CRM - Gestión de Clientes</h1>
+    <p>Vista 360º de las interacciones, tickets y servicios prestados a los clientes.</p>
+  </div>
+
+  <div class="panel-body">
+    <div class="neumorphic-panel">
+      <h2 class="subtitulo">Buscador de Clientes</h2>
+      <form>
+        <div class="form-grid" style="align-items: end;">
+          <div class="form-group full-width">
+            <label class="form-label">Buscar por Nombre o Documento:</label>
+            <input type="text" class="input-neumorphic" placeholder="Ej. Juan Pérez">
+          </div>
+          <div class="form-group" style="padding-bottom: 0.2rem;">
+            <button type="button" class="btn-general-1 btn-pill">Buscar</button>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <div class="neumorphic-panel mt-4">
+      <h2 class="subtitulo">Historial Reciente de Servicios</h2>
+      <p class="text-muted" style="font-size: 12px; margin-top: 1rem;">Seleccione un cliente para ver su historial de servicios técnicos y visitas.</p>
+    </div>
+  </div>
 </div>
+
+
+
+
+

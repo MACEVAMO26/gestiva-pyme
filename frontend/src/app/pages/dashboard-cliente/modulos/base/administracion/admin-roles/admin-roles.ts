@@ -33,7 +33,7 @@ export class AdminRoles implements OnInit {
 
   cargarRoles() {
     this.isLoading = true;
-    this.rolesService.getRoles().pipe(timeout(10000)).subscribe({
+    this.rolesService.getRoles().pipe(timeout(5000)).subscribe({
       next: (data) => {
         this.roles = data;
         this.isLoading = false;

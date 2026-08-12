@@ -13,23 +13,23 @@
 
   <!-- HTML PESTAÑAS (TABS) -->
   <div class="tabs-nav">
-    <button class="tab-btn" 
-            [class.active]="activeTab === 'catalogo'" 
+    <button class="tab-neu-inactive" 
+            [class.tab-neu-active]="activeTab === 'catalogo'" 
             (click)="switchTab('catalogo')">
       Catálogo
     </button>
-    <button class="tab-btn" 
-            [class.active]="activeTab === 'movimientos'" 
+    <button class="tab-neu-inactive" 
+            [class.tab-neu-active]="activeTab === 'movimientos'" 
             (click)="switchTab('movimientos')">
       Entradas / Salidas
     </button>
-    <button class="tab-btn" 
-            [class.active]="activeTab === 'ajustes'" 
+    <button class="tab-neu-inactive" 
+            [class.tab-neu-active]="activeTab === 'ajustes'" 
             (click)="switchTab('ajustes')">
       Ajustes
     </button>
-    <button class="tab-btn" 
-            [class.active]="activeTab === 'kardex'" 
+    <button class="tab-neu-inactive" 
+            [class.tab-neu-active]="activeTab === 'kardex'" 
             (click)="switchTab('kardex')">
       Kardex
     </button>
@@ -37,6 +37,12 @@
 
   <!-- HTML CONTENIDO DE TABS -->
   <div class="tab-content glass-panel p-4">
+  <!-- Botón Volver Inyectado -->
+  <div style="margin-bottom: 1.5rem; display: flex; justify-content: flex-start;">
+    <button class="btn-volver" onclick="window.history.back()">
+      <i class="fas fa-arrow-left"></i> Volver
+    </button>
+  </div>
     
     <!-- HTML CATALOGO DE PRODUCTOS -->
     @if(activeTab === 'catalogo') {
@@ -303,7 +309,7 @@
 <div class="modal-overlay fade-in">
   <div class="modal-content glass-panel" style="max-width: 500px;">
     <div class="modal-header">
-      <h2>Nuevo Producto</h2>
+      <h1>Nuevo Producto</h1>
       <button class="btn-close" (click)="cerrarModal()">&times;</button>
     </div>
     <div class="modal-body">
@@ -386,3 +392,6 @@
   </div>
 </div>
 }
+
+
+

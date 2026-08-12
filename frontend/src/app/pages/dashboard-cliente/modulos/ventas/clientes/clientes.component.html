@@ -1,5 +1,5 @@
 <div class="module-container">
-    <!-- HTML ENCABEZADO -->
+<!-- HTML ENCABEZADO -->
     <header class="module-header">
         <div class="header-title">
             <h1>Gestión de Clientes y Leads</h1>
@@ -21,10 +21,10 @@
 
     <!-- HTML NAVEGACION TABS -->
     <div class="tabs-nav">
-        <button class="tab-btn" [class.active]="tabActiva === 'directorio'" (click)="tabActiva = 'directorio'">
+        <button class="tab-neu-inactive" [class.tab-neu-active]="tabActiva === 'directorio'" (click)="tabActiva = 'directorio'">
             Directorio de Clientes
         </button>
-        <button class="tab-btn" [class.active]="tabActiva === 'leads'" (click)="tabActiva = 'leads'">
+        <button class="tab-neu-inactive" [class.tab-neu-active]="tabActiva === 'leads'" (click)="tabActiva = 'leads'">
             Bandeja de Leads
         </button>
     </div>
@@ -219,7 +219,7 @@
     <div class="modal-overlay">
         <div class="glass-panel modal-content">
             <div class="modal-header">
-                <h2>{{ isEditMode ? 'Editar Cliente' : 'Nuevo Cliente' }}</h2>
+                <h1>{{ isEditMode ? 'Editar Cliente' : 'Nuevo Cliente' }}</h1>
                 <button class="btn-icon" (click)="cerrarModal()">✕</button>
             </div>
             <div class="modal-body">
@@ -290,7 +290,7 @@
     <div class="modal-overlay" (click)="cerrarModalLead()">
         <div class="glass-panel modal-content" (click)="$event.stopPropagation()">
             <div class="modal-header">
-                <h2>{{ isEditMode ? 'Editar Lead' : 'Registrar Nuevo Lead' }}</h2>
+                <h1>{{ isEditMode ? 'Editar Lead' : 'Registrar Nuevo Lead' }}</h1>
                 <button class="btn-icon" (click)="cerrarModalLead()">✕</button>
             </div>
             <div class="modal-body">
@@ -351,3 +351,7 @@
     }
 
 </div>
+
+
+
+

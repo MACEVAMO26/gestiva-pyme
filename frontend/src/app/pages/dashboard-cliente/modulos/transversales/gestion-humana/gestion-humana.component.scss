@@ -1,1 +1,290 @@
-.gestion-humana-container { padding: 20px; }
+@use 'sass:color';
+
+/* --- 1. VARIABLES GLOBALES DE COLOR --- */
+$bg-color: #f5f5dc;
+$shadow-light: #ffffff;
+$shadow-dark: #d1d1bc;
+
+$text-dark: #333333;
+$text-muted: #666666;
+
+$btn-add: #45a1ae;
+$btn-volver: #de3737;
+$btn-save: #066810;
+$btn-gen-1: #6B8F71;
+$btn-gen-2: #7C6FA6;
+$btn-gen-3: #C9A227;
+$btn-gen-4: #8E5B75;
+$btn-gen-5: #B5654A;
+$btn-gen-6: #A38B6D;
+
+/* --- 2. FONDOS Y LAYOUT PRINCIPAL --- */
+.gestion-humana-container {
+  padding: 1.5rem;
+  background: $bg-color;
+  min-height: 100vh;
+  font-family: 'Montserrat', sans-serif;
+  color: $text-dark;
+}
+
+/* --- 3. TIPOGRAFIA ESTRICTA --- */
+.titulo-principal {
+  font-size: 16px;
+  font-weight: bold;
+  text-transform: uppercase;
+  text-align: center;
+  margin-bottom: 0.5rem;
+  color: $text-dark;
+}
+
+.subtitulo {
+  font-size: 13px;
+  font-weight: normal;
+  text-transform: uppercase;
+  text-align: left;
+  margin-bottom: 1rem;
+  color: $text-dark;
+}
+
+.texto-normal {
+  font-size: 12px;
+  font-weight: normal;
+  color: $text-dark;
+}
+
+.descripcion-general {
+  font-size: 10px;
+  text-align: center;
+  color: $text-muted;
+  margin-bottom: 1.5rem;
+}
+
+.text-center { text-align: center !important; }
+
+/* --- 4. PANELES NEUMORFICOS --- */
+.neumorphic-panel {
+  background: $bg-color;
+  border-radius: 16px;
+  box-shadow: 8px 8px 16px $shadow-dark, -8px -8px 16px $shadow-light;
+  padding: 2rem;
+  border: none;
+  margin-bottom: 2rem;
+}
+
+.neumorphic-panel-inner {
+  background: $bg-color;
+  border-radius: 12px;
+  box-shadow: inset 4px 4px 8px $shadow-dark, inset -4px -4px 8px $shadow-light;
+  padding: 1.5rem;
+  border: none;
+}
+
+/* --- 5. TABS DE NAVEGACION --- */
+.tabs-nav-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+}
+
+.tab-neu-inactive, .tab-neu-active {
+  padding: 0.6rem 0.8rem;
+  border-radius: 9999px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 10px;
+  font-weight: bold !important;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tab-neu-inactive {
+  background-color: $bg-color;
+  color: $text-muted;
+  box-shadow: 4px 4px 8px $shadow-dark, -4px -4px 8px $shadow-light;
+}
+
+.tab-neu-active {
+  background-color: $bg-color;
+  color: $btn-add;
+  box-shadow: inset 4px 4px 8px $shadow-dark, inset -4px -4px 8px $shadow-light;
+}
+
+/* --- 6. BOTONES (Diseno pildora) --- */
+.btn-pill {
+  border-radius: 9999px;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: bold;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 4px 4px 8px $shadow-dark, -4px -4px 8px $shadow-light;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  outline: none;
+}
+
+.btn-pill:active {
+  box-shadow: inset 4px 4px 8px rgba(0,0,0,0.1), inset -4px -4px 8px rgba(255,255,255,0.5);
+}
+
+.btn-add { background-color: $btn-add; border: 2px solid #2e7a85; color: #000000; padding: 0.5rem 1.5rem; font-size: 12px; }
+.btn-volver { background-color: $btn-volver; border: 2px solid #a82424; color: #ffffff; padding: 0.5rem 1.5rem; font-size: 12px; }
+.btn-save { background-color: $btn-save; border: 2px solid #044b0c; color: #ffffff; padding: 0.5rem 1.5rem; font-size: 12px; }
+.btn-general-1 { background-color: $btn-gen-1; border: 2px solid #4a6850; color: #ffffff; padding: 0.5rem 1.5rem; font-size: 12px; }
+.btn-general-2 { background-color: $btn-gen-2; border: 2px solid #574b7a; color: #ffffff; padding: 0.5rem 1.5rem; font-size: 12px; }
+.btn-general-5 { background-color: $btn-gen-5; border: 2px solid #884732; color: #ffffff; padding: 0.5rem 1.5rem; font-size: 12px; }
+
+/* Botones especificos de las tablas / simetricos */
+.btn-action {
+  width: 100px;
+  padding: 0.4rem 0 !important;
+  font-size: 10px !important;
+  display: inline-flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  text-align: center !important;
+}
+
+.acciones-centro {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.acciones-tabla-centro {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  align-items: center;
+}
+
+/* --- 7. TABLAS NEUMORFICAS --- */
+.table-container {
+  width: 100%;
+  overflow-x: auto;
+  border-radius: 12px;
+  margin-top: 1rem;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 12px;
+  text-align: left;
+  color: $text-dark;
+}
+
+.data-table th, .data-table td {
+  padding: 1rem;
+  vertical-align: middle;
+}
+
+.data-table th {
+  font-weight: bold !important;
+  text-transform: uppercase;
+  font-size: 10px;
+  border-bottom: 2px solid rgba(0,0,0,0.05);
+}
+
+.data-table tr {
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+
+.data-table tr:hover {
+  background-color: rgba(0,0,0,0.02);
+}
+
+/* --- 8. BADGES Y ESTADOS --- */
+.badge {
+  padding: 0.4rem 1rem;
+  border-radius: 9999px;
+  font-size: 10px;
+  font-weight: bold;
+  text-transform: uppercase;
+  background: $bg-color;
+  box-shadow: inset 2px 2px 4px $shadow-dark, inset -2px -2px 4px $shadow-light;
+}
+
+.badge-activo { color: #066810; border: 1px solid rgba(6, 104, 16, 0.2); }
+.badge-baja { color: #de3737; border: 1px solid rgba(222, 55, 55, 0.2); }
+.badge-pendiente { color: #f97316; border: 1px solid rgba(249, 115, 22, 0.2); }
+
+/* --- 9. MODALES --- */
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  width: 90%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #4a4a4a;
+}
+
+.input-neumorphic {
+  background: #f5f5dc;
+  border: none;
+  border-radius: 8px;
+  padding: 0.8rem 1rem;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 12px;
+  color: #333;
+  box-shadow: inset 3px 3px 6px #d0d0bb, inset -3px -3px 6px #ffffff;
+  outline: none;
+}
+
+.input-neumorphic:focus {
+  box-shadow: inset 4px 4px 8px #c2c2a9, inset -4px -4px 8px #ffffff;
+}
+
+.spinner-small {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top: 2px solid white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  display: inline-block;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.fade-in { animation: fadeIn 0.3s ease-in-out; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }

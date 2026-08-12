@@ -1,43 +1,50 @@
 <!-- HTML CONFIGURACIÓN DE EMPRESA -->
-<div class="panel-contenido">
-  <div class="panel-header">
-    <h2 class="panel-title">Configuración de Empresa</h2>
+<div class="fade-in">
+  <!-- Botón Volver Inyectado -->
+  <div style="margin-bottom: 2rem;">
+    <button class="btn-volver" onclick="window.history.back()">
+      <i class="fas fa-arrow-left"></i> VOLVER
+    </button>
+  </div>
+  
+  <div class="module-header">
+    <h1 style="text-align: center; margin-bottom: 2rem; font-size: 16px; font-weight: bold; text-transform: uppercase;">CONFIGURACIÓN DE EMPRESA</h1>
   </div>
   
   <div class="panel-body">
     <!-- Componente de Carga Neumórfico -->
     @if (isLoading) {
-    <div class="loading-overlay neu-inset">
+    <div class="loading-overlay neumorphic-panel">
       <div class="spinner"></div>
       <p>Cargando datos de la empresa...</p>
     </div>
     }
 
     @if (!isLoading) {
-    <div class="neu-card">
+    <div class="neumorphic-panel">
       <form>
         <div class="form-grid">
           <div class="form-group">
             <label>Nombre / Razón Social</label>
-            <input type="text" class="neu-input" name="nombre" [(ngModel)]="empresaData.nombre" required>
+            <input type="text" class="input-neumorphic" name="nombre" [(ngModel)]="empresaData.nombre" required>
           </div>
           <div class="form-group">
             <label>NIT</label>
-            <input type="text" class="neu-input" name="nit" [(ngModel)]="empresaData.nit" required>
+            <input type="text" class="input-neumorphic" name="nit" [(ngModel)]="empresaData.nit" required>
           </div>
           <div class="form-group">
             <label>Dirección</label>
-            <input type="text" class="neu-input" name="direccion" [(ngModel)]="empresaData.direccion">
+            <input type="text" class="input-neumorphic" name="direccion" [(ngModel)]="empresaData.direccion">
           </div>
           <div class="form-group">
             <label>Teléfono</label>
-            <input type="tel" class="neu-input" name="telefono" [(ngModel)]="empresaData.telefono">
+            <input type="tel" class="input-neumorphic" name="telefono" [(ngModel)]="empresaData.telefono">
           </div>
         </div>
         
         <div class="form-group full-width" style="margin-top: 1.5rem;">
           <label>Logo de la Empresa</label>
-          <div class="upload-zone neu-inset">
+          <div class="upload-zone neumorphic-panel">
             <span class="upload-icon">📷</span>
             <p>Clic para subir un nuevo logo</p>
           </div>
@@ -76,3 +83,7 @@
     </div>
   }
 </div>
+
+
+
+

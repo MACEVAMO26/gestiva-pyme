@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CajaService, Caja, CajaMovimiento } from '../../../../../services/caja.service';
 import { ToastService } from '../../../../../services/toast.service';
+import { timeout } from 'rxjs';
 
 @Component({
   selector: 'app-caja',
@@ -38,12 +39,15 @@ export class CajaComponent implements OnInit {
 
   cargarCajas() {
     this.cargando = true;
-    this.cajaService.getCajas().subscribe({
+    this.cajaService.getCajas().pipe(timeout(8000)).subscribe({
       next: (res) => {
         this.cajas = res;
         this.cargando = false;
       },
-      error: () => this.cargando = false
+      error: () => {
+        this.cajas = [];
+        this.cargando = false;
+      }
     });
   }
 
@@ -54,15 +58,20 @@ export class CajaComponent implements OnInit {
   }
 
   cargarMovimientos(cajaId: number) {
-    this.cajaService.getMovimientos(cajaId).subscribe(res => {
-      this.movimientos = res;
+    this.cajaService.getMovimientos(cajaId).pipe(timeout(8000)).subscribe({
+      next: (res) => {
+        this.movimientos = res;
+      },
+      error: () => {
+        this.movimientos = [];
+      }
     });
   }
 
   abrirCaja() {
     if (!this.cajaActiva?.id) return;
     this.procesando = true;
-    this.cajaService.abrirCaja(this.cajaActiva.id, this.montoApertura).subscribe({
+    this.cajaService.abrirCaja(this.cajaActiva.id, this.montoApertura).pipe(timeout(8000)).subscribe({
       next: () => {
         this.toast.success('Caja abierta correctamente');
         if (this.cajaActiva) {
@@ -82,7 +91,7 @@ export class CajaComponent implements OnInit {
   cerrarCaja() {
     if (!this.cajaActiva?.id) return;
     this.procesando = true;
-    this.cajaService.cerrarCaja(this.cajaActiva.id, this.montoCierre).subscribe({
+    this.cajaService.cerrarCaja(this.cajaActiva.id, this.montoCierre).pipe(timeout(8000)).subscribe({
       next: () => {
         this.toast.success('Caja cerrada con éxito');
         if (this.cajaActiva) {
@@ -106,7 +115,7 @@ export class CajaComponent implements OnInit {
     }
 
     this.procesando = true;
-    this.cajaService.registrarMovimiento(this.nuevoMovimiento).subscribe({
+    this.cajaService.registrarMovimiento(this.nuevoMovimiento).pipe(timeout(8000)).subscribe({
       next: () => {
         this.toast.success('Movimiento registrado');
         this.nuevoMovimiento.monto = 0;

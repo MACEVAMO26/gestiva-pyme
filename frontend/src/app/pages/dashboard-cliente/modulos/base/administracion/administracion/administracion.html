@@ -1,28 +1,35 @@
+
 <!-- HTML MÓDULO ADMINISTRACIÓN (LAYOUT PRINCIPAL) -->
-<div class="admin-container">
+<div class="module-container fade-in">
   
+  <div class="module-header" style="margin-bottom: 2rem;">
+    <h1 style="text-align: center; font-size: 16px; font-weight: bold; text-transform: uppercase; margin: 0;">ADMINISTRACIÓN</h1>
+  </div>
+
   <!-- BARRA SUPERIOR DE NAVEGACIÓN INTERNA -->
-  <nav class="admin-nav neu-nav">
-    <a routerLink="./empresa" routerLinkActive="active" class="nav-item">
-      <span class="icon">🏢</span> Empresa
+  <div class="tabs-nav-wrapper">
+    <a routerLink="./empresa" routerLinkActive="tab-neu-active" class="tab-neu-inactive">
+      <span class="icon">🏢</span> EMPRESA
     </a>
-    <a routerLink="./usuarios" routerLinkActive="active" class="nav-item">
-      <span class="icon">👥</span> Usuarios
+    <a routerLink="./usuarios" routerLinkActive="tab-neu-active" class="tab-neu-inactive">
+      <span class="icon">👥</span> USUARIOS
     </a>
-    <a routerLink="./roles" routerLinkActive="active" class="nav-item">
-      <span class="icon">🔑</span> Roles y Accesos
+    <a routerLink="./roles" routerLinkActive="tab-neu-active" class="tab-neu-inactive">
+      <span class="icon">🔑</span> ROLES Y ACCESOS
     </a>
-    <a routerLink="./estructura" routerLinkActive="active" class="nav-item">
-      <span class="icon">📊</span> Estructura
+    <a routerLink="./estructura" routerLinkActive="tab-neu-active" class="tab-neu-inactive">
+      <span class="icon">📊</span> ESTRUCTURA
     </a>
-    <a routerLink="./auditoria" routerLinkActive="active" class="nav-item">
-      <span class="icon">📝</span> Auditoría
+    <a routerLink="./auditoria" routerLinkActive="tab-neu-active" class="tab-neu-inactive">
+      <span class="icon">📝</span> AUDITORÍA
     </a>
-  </nav>
+  </div>
 
   <!-- ÁREA DE CONTENIDO (Donde cargan los subcomponentes) -->
-  <div class="admin-content">
+  <div class="tab-content neumorphic-panel-inner" style="padding: 2rem; position: relative;">
     <router-outlet></router-outlet>
   </div>
 
 </div>
+
+

@@ -2,6 +2,7 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NotificacionesService, Notificacion } from '../../../../../../services/notificaciones.service';
 import { ToastService } from '../../../../../../services/toast.service';
+import { timeout } from 'rxjs';
 
 @Component({
   selector: 'app-inicio-notificaciones',
@@ -23,12 +24,13 @@ export class InicioNotificacionesComponent implements OnInit {
 
   cargarNotificaciones() {
     this.cargando = true;
-    this.notifService.getNotificaciones().subscribe({
+    this.notifService.getNotificaciones().pipe(timeout(8000)).subscribe({
       next: (res) => {
         this.notificaciones = res;
         this.cargando = false;
       },
       error: () => {
+        this.notificaciones = [];
         this.cargando = false;
       }
     });

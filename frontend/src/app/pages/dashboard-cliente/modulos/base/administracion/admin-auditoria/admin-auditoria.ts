@@ -25,7 +25,7 @@ export class AdminAuditoria implements OnInit {
 
   cargarLogs() {
     this.isLoading = true;
-    this.auditoriaService.getLogs().pipe(timeout(10000)).subscribe({
+    this.auditoriaService.getLogs().pipe(timeout(5000)).subscribe({
       next: (data) => {
         // Ordenar del más reciente al más antiguo
         this.logs = data.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());

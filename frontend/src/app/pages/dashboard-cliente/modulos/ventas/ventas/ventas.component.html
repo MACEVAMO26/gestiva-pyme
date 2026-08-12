@@ -1,4 +1,5 @@
 <div class="module-container fade-in">
+
   <div class="module-header" style="display: flex; justify-content: space-between; align-items: center;">
     <div>
       <h1>Ventas</h1>
@@ -13,20 +14,26 @@
 
   <!-- HTML PESTAÑAS -->
   <div class="tabs-nav">
-    <button class="tab-btn" 
-            [class.active]="activeTab === 'pos'" 
+    <button class="tab-neu-inactive" 
+            [class.tab-neu-active]="activeTab === 'pos'" 
             (click)="switchTab('pos')">
       Punto de Venta
     </button>
-    <button class="tab-btn" 
-            [class.active]="activeTab === 'historial'" 
+    <button class="tab-neu-inactive" 
+            [class.tab-neu-active]="activeTab === 'historial'" 
             (click)="switchTab('historial')">
       Historial de Ventas
     </button>
   </div>
 
   <!-- HTML CONTENIDO DE TABS -->
-  <div class="tab-content glass-panel p-4">
+<div class="tab-content glass-panel p-4">
+  <!-- Botón Volver Inyectado -->
+  <div style="margin-bottom: 1.5rem; display: flex; justify-content: flex-start;">
+    <button class="btn-volver" onclick="window.history.back()">
+      <i class="fas fa-arrow-left"></i> Volver
+    </button>
+  </div>
     
     <!-- HTML PUNTO DE VENTA POS -->
     @if(activeTab === 'pos') {
@@ -42,7 +49,7 @@
                 <select class="input-neumorphic" [(ngModel)]="clienteSeleccionado">
                   <option value="" disabled selected>Seleccione cliente...</option>
                   @for(cliente of clientesDisponibles; track cliente.id) {
-                    <option [value]="cliente.id">{{cliente.nombre}} {{cliente.apellido}} ({{cliente.identificacion}})</option>
+                    <option [value]="cliente.id">{{cliente.nombres}} {{cliente.apellidos}} ({{cliente.documento}})</option>
                   }
                 </select>
               </div>
@@ -179,7 +186,7 @@
               @for(venta of ventasFiltradas; track venta.id) {
                 <tr>
                   <td><strong>{{venta.numero_factura}}</strong></td>
-                  <td>{{venta.cliente?.nombre}} {{venta.cliente?.apellido}}</td>
+                  <td>{{venta.cliente?.nombres}} {{venta.cliente?.apellidos}}</td>
                   <td>{{venta.created_at | date:'shortDate'}}</td>
                   <td>{{venta.total | currency:'COP':'symbol':'1.0-0'}}</td>
                   <td>
@@ -233,7 +240,7 @@
       <i class="fas fa-exclamation-triangle" style="font-size: 3rem; color: #ef4444; margin-bottom: 1rem;"></i>
     </div>
     <div class="modal-body">
-      <h2 style="margin-top: 0; color: #ef4444;">¿Anular Venta {{ventaSeleccionada.factura}}?</h2>
+      <h1 style="margin-top: 0; color: #ef4444;">¿Anular Venta {{ventaSeleccionada.factura}}?</h1>
       <p style="color: #cbd5e1; margin-bottom: 1rem;">
         Esta acción es irreversible. Se regresarán los productos al inventario y el monto no se contabilizará en caja.
       </p>
@@ -276,3 +283,9 @@
   </div>
 </div>
 }
+
+
+
+
+
+

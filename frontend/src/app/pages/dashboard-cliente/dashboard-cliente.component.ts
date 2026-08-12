@@ -107,6 +107,12 @@ export class DashboardClienteComponent implements OnInit {
         });
 
         this.modulosSidebar = itemsOrdenados;
+      },
+      error: () => {
+        // Si falla la carga del catálogo, mostrar al menos el módulo de inicio
+        this.modulosSidebar = [
+          { id: 'd_ini', nombre: 'Inicio', icono: 'fas fa-home', ruta: './inicio' }
+        ];
       }
     });
   }

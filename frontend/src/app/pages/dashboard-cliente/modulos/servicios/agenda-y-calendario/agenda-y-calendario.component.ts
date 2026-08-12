@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AgendaService, EventoCalendario } from '../../../../../services/agenda.service';
 import { ToastService } from '../../../../../services/toast.service';
+import { timeout } from 'rxjs';
 
 @Component({
   selector: 'app-agenda-y-calendario',
@@ -33,12 +34,13 @@ export class AgendaYCalendarioComponent implements OnInit {
 
   cargarEventos() {
     this.cargando = true;
-    this.agendaService.getEventos().subscribe({
+    this.agendaService.getEventos().pipe(timeout(8000)).subscribe({
       next: (res) => {
         this.eventos = res;
         this.cargando = false;
       },
       error: () => {
+        this.eventos = [];
         this.toast.error('Error al cargar la agenda');
         this.cargando = false;
       }
@@ -51,7 +53,7 @@ export class AgendaYCalendarioComponent implements OnInit {
     }
 
     this.guardando = true;
-    this.agendaService.crearEvento(this.nuevoEvento).subscribe({
+    this.agendaService.crearEvento(this.nuevoEvento).pipe(timeout(8000)).subscribe({
       next: () => {
         this.toast.success('Evento agendado con éxito');
         this.nuevoEvento = { titulo: '', descripcion: '', fecha_inicio: '', fecha_fin: '', color_etiqueta: '#45a1ae' };

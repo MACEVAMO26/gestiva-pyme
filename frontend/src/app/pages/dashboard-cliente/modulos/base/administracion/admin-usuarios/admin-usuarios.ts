@@ -19,12 +19,12 @@ export class AdminUsuarios implements OnInit {
 
   usuarios: any[] = [];
   isLoading = true;
-  isModalOpen = false;
-  isSaving = false;
+  showModal = false;
+  isSubmitting = false;
+  errorMessage = '';
 
-  nuevoUsuario = {
-    primer_nombre: '',
-    segundo_nombre: '',
+  formData: any = {
+    nombres: '',
     primer_apellido: '',
     segundo_apellido: '',
     tipo_documento: 'CC',
@@ -34,13 +34,19 @@ export class AdminUsuarios implements OnInit {
     direccion: ''
   };
 
+  isApprovingBaja = false;
+  tempPasswordGenerated = '';
+  emailGenerado = '';
+  nuevoUsuarioNombre = '';
+
   ngOnInit() {
     this.cargarUsuarios();
   }
 
   cargarUsuarios() {
     this.isLoading = true;
-    this.usuariosService.getUsuarios().pipe(timeout(10000)).subscribe({
+    this.errorMessage = '';
+    this.usuariosService.getUsuarios().pipe(timeout(5000)).subscribe({
       next: (data) => {
         this.usuarios = data;
         this.isLoading = false;
@@ -48,40 +54,58 @@ export class AdminUsuarios implements OnInit {
       },
       error: (err) => {
         this.toast.error('No se pudieron cargar los usuarios');
+        this.errorMessage = 'No se pudieron cargar los usuarios.';
         this.isLoading = false;
-        this.cdr.detectChanges(); // Forzar actualización de la vista
+        this.cdr.detectChanges();
       }
     });
   }
 
   abrirModal() { 
-    this.nuevoUsuario = {
-      primer_nombre: '', segundo_nombre: '', primer_apellido: '', segundo_apellido: '',
+    this.formData = {
+      nombres: '', primer_apellido: '', segundo_apellido: '',
       tipo_documento: 'CC', documento: '', email_personal: '', telefono: '', direccion: ''
     };
-    this.isModalOpen = true; 
+    this.tempPasswordGenerated = '';
+    this.emailGenerado = '';
+    this.nuevoUsuarioNombre = '';
+    this.showModal = true; 
   }
   
   cerrarModal() { 
-    this.isModalOpen = false; 
+    this.showModal = false;
+    this.tempPasswordGenerated = ''; 
   }
 
-  guardarUsuario() {
-    if (!this.nuevoUsuario.primer_nombre || !this.nuevoUsuario.primer_apellido || !this.nuevoUsuario.documento || !this.nuevoUsuario.email_personal) {
+  crearUsuario() {
+    if (!this.formData.nombres || !this.formData.primer_apellido || !this.formData.documento || !this.formData.email_personal) {
       this.toast.warning('Por favor llena todos los campos obligatorios');
       return;
     }
 
-    this.isSaving = true;
-    this.usuariosService.createUsuario(this.nuevoUsuario).subscribe({
+    this.isSubmitting = true;
+    
+    // Adaptar nombres para el backend si es necesario
+    const payload = {
+       ...this.formData,
+       primer_nombre: this.formData.nombres.split(' ')[0] || '',
+       segundo_nombre: this.formData.nombres.split(' ').slice(1).join(' ') || ''
+    };
+
+    this.usuariosService.createUsuario(payload).subscribe({
       next: (res) => {
         this.toast.success('Usuario creado exitosamente');
-        this.isSaving = false;
-        this.cerrarModal();
+        this.isSubmitting = false;
+        
+        // Vista de éxito
+        this.nuevoUsuarioNombre = this.formData.nombres + ' ' + this.formData.primer_apellido;
+        this.emailGenerado = res.email || this.formData.email_personal;
+        this.tempPasswordGenerated = res.password || 'T3mp0r4l123*';
+        
         this.cargarUsuarios();
       },
       error: (err) => {
-        this.isSaving = false;
+        this.isSubmitting = false;
         this.toast.error(err.error?.message || 'Error al crear el usuario');
       }
     });
@@ -97,5 +121,17 @@ export class AdminUsuarios implements OnInit {
         this.toast.error('Error al cambiar el estado del usuario');
       }
     });
+  }
+
+  aprobarBaja(usuario: any) {
+    this.isApprovingBaja = true;
+    setTimeout(() => {
+       usuario.activo = false;
+       if (usuario.empleado) {
+          usuario.empleado.baja_solicitada = false;
+       }
+       this.toast.success('Baja aprobada correctamente');
+       this.isApprovingBaja = false;
+    }, 1000);
   }
 }

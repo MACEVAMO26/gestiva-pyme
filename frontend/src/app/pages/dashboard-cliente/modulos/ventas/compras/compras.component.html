@@ -6,13 +6,13 @@
 
   <!-- HTML TABS NAVEGACION -->
   <div class="tabs-nav">
-    <button class="tab-btn" 
-            [class.active]="activeTab === 'ordenes'" 
+    <button class="tab-neu-inactive" 
+            [class.tab-neu-active]="activeTab === 'ordenes'" 
             (click)="switchTab('ordenes')">
       Órdenes de Compra
     </button>
-    <button class="tab-btn" 
-            [class.active]="activeTab === 'recepcion'" 
+    <button class="tab-neu-inactive" 
+            [class.tab-neu-active]="activeTab === 'recepcion'" 
             (click)="switchTab('recepcion')">
       Recepción de Mercancía
     </button>
@@ -20,6 +20,12 @@
 
   <!-- HTML CONTENIDO PRINCIPAL -->
   <div class="tab-content glass-panel p-4">
+  <!-- Botón Volver Inyectado -->
+  <div style="margin-bottom: 1.5rem; display: flex; justify-content: flex-start;">
+    <button class="btn-volver" onclick="window.history.back()">
+      <i class="fas fa-arrow-left"></i> Volver
+    </button>
+  </div>
     
     <!-- HTML ORDENES DE COMPRA -->
     @if(activeTab === 'ordenes') {
@@ -156,7 +162,7 @@
 <div class="modal-overlay fade-in">
   <div class="modal-content glass-panel" style="max-width: 600px;">
     <div class="modal-header">
-      <h2>Nueva Orden de Compra</h2>
+      <h1>Nueva Orden de Compra</h1>
       <button class="btn-close" (click)="cerrarModalOrden()">&times;</button>
     </div>
     <div class="modal-body">
@@ -235,7 +241,7 @@
       <i class="fas fa-box-open" style="font-size: 3rem; color: #10b981; margin-bottom: 1rem;"></i>
     </div>
     <div class="modal-body">
-      <h2 style="margin-top: 0;">¿Confirmar Recepción?</h2>
+      <h1 style="margin-top: 0;">¿Confirmar Recepción?</h1>
       <p style="color: #cbd5e1; margin-bottom: 2rem;">Al confirmar, los productos de la orden ingresarán automáticamente al stock del sistema de inventario.</p>
       
       <div style="display: flex; justify-content: center; gap: 1rem;">
@@ -274,3 +280,6 @@
   </div>
 </div>
 }
+
+
+

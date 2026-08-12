@@ -1,31 +1,73 @@
-<div class="modulo-container">
-  <h2>Reportes y Analíticas de Servicios</h2>
-  <p>Visualice las métricas de eficiencia de los técnicos y servicios más solicitados.</p>
+  <!-- Botón Volver Inyectado -->
+  <div style="margin-bottom: 1.5rem; display: flex; justify-content: flex-start;">
+    <button class="btn-volver" onclick="window.history.back()">
+      <i class="fas fa-arrow-left"></i> Volver
+    </button>
+  </div>
 
-  <fieldset>
-    <legend>Filtros de Reporte</legend>
-    <form>
-      <div>
-        <label>Desde:</label>
-        <input type="date">
-      </div>
-      <div>
-        <label>Hasta:</label>
-        <input type="date">
-      </div>
-      <div>
-        <button type="button">Generar Reporte</button>
-      </div>
-    </form>
-  </fieldset>
+<div class="module-container">
+  <!-- Botón Volver Inyectado -->
+  <div style="margin-bottom: 1.5rem; display: flex; justify-content: flex-start;">
+    <button class="btn-volver" onclick="window.history.back()">
+      <i class="fas fa-arrow-left"></i> Volver
+    </button>
+  </div>
 
-  <fieldset>
-    <legend>Métricas Principales</legend>
-    <ul>
-      <li><strong>Total de Tickets Atendidos:</strong> 0</li>
-      <li><strong>Técnico con más servicios:</strong> N/A</li>
-      <li><strong>Servicio más demandado:</strong> N/A</li>
-      <li><strong>Promedio de tiempo de ejecución:</strong> 0 horas</li>
-    </ul>
-  </fieldset>
+  <div class="module-header">
+    <h1>Reportes y Analíticas de Servicios</h1>
+    <p>Visualice las métricas de eficiencia de los técnicos y servicios más solicitados.</p>
+  </div>
+
+  <div class="panel-body">
+    <div class="neumorphic-panel">
+      <h2 class="subtitulo">Filtros de Reporte</h2>
+      <form>
+        <div class="form-grid" style="align-items: end;">
+          <div class="form-group">
+            <label class="form-label">Desde:</label>
+            <input type="date" class="input-neumorphic">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Hasta:</label>
+            <input type="date" class="input-neumorphic">
+          </div>
+          <div class="form-group" style="padding-bottom: 0.2rem;">
+            <button type="button" class="btn-general-2 btn-pill">Generar Reporte</button>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <div class="neumorphic-panel mt-4">
+      <h2 class="subtitulo">Métricas Principales</h2>
+      <div class="metrics-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+        
+        <div class="neumorphic-panel-inner text-center">
+          <p class="text-muted" style="font-size: 10px; text-transform: uppercase;">Total de Tickets Atendidos</p>
+          <strong style="font-size: 24px; color: #45a1ae;">0</strong>
+        </div>
+
+        <div class="neumorphic-panel-inner text-center">
+          <p class="text-muted" style="font-size: 10px; text-transform: uppercase;">Técnico con más servicios</p>
+          <strong style="font-size: 16px; color: #4a4a4a;">N/A</strong>
+        </div>
+
+        <div class="neumorphic-panel-inner text-center">
+          <p class="text-muted" style="font-size: 10px; text-transform: uppercase;">Servicio más demandado</p>
+          <strong style="font-size: 16px; color: #4a4a4a;">N/A</strong>
+        </div>
+
+        <div class="neumorphic-panel-inner text-center">
+          <p class="text-muted" style="font-size: 10px; text-transform: uppercase;">Promedio de tiempo</p>
+          <strong style="font-size: 24px; color: #de3737;">0 hrs</strong>
+        </div>
+
+      </div>
+    </div>
+  </div>
 </div>
+
+
+
+
+

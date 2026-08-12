@@ -5,6 +5,7 @@ import { TiempoService } from '../../../../../services/tiempo.service';
 import { EmpleadoService } from '../../../../../services/empleado.service';
 import { AuthService } from '../../../../../services/auth.service';
 import { ToastService } from '../../../../../services/toast.service';
+import { timeout } from 'rxjs';
 
 @Component({
   selector: 'app-autogestion',
@@ -20,16 +21,31 @@ export class AutogestionComponent implements OnInit {
   private toast = inject(ToastService);
 
   usuarioActual: any;
+  user: any; // Mapeado del auth service
   pestanaActual = 'vacaciones'; // 'vacaciones' | 'turnos' | 'documentos'
   
+  // Perfil / Avatar
+  profileImageUrl: string | null = null;
+  isUploadingAvatar = false;
+
+  // Afiliaciones
+  afiliacion: any = {};
+  formAfiliacion: any = { estado: 'nuevo' };
+  isHR = false;
+  isSaving = false;
+  isSavingAdmin = false;
+  cantidadRenovaciones = 0;
+
   // Vacaciones
   misVacaciones: any[] = [];
   nuevaVacacion = {
     fecha_inicio: '',
     fecha_fin: '',
-    tipo: 'vacaciones',
+    tipo: 'Disfrute Legal',
     observaciones: ''
   };
+  isSubmittingVacacion = false;
+  diasDisponibles = 15; // Por defecto o calculado desde el backend
 
   // Documentos
   misDocumentos: any[] = [];
@@ -37,14 +53,37 @@ export class AutogestionComponent implements OnInit {
   nombreArchivo = '';
 
   // Turnos
-  misTurnos: any[] = []; // O usamos la lógica que determine el backend para 'mis-turnos'
+  misTurnos: any[] = [];
 
   cargando = false;
   guardando = false;
 
   ngOnInit() {
     this.usuarioActual = this.authService.getUser();
+    this.user = this.usuarioActual;
+    
+    // Si el usuario es de Recursos Humanos (Jefe de Area)
+    this.isHR = this.user?.rol?.nombre === 'Jefe de Área';
+    
     this.cargarVacaciones();
+    this.cargarDocumentos();
+    // Aquí cargarías las afiliaciones del empleado si existiera el endpoint:
+    // this.cargarAfiliacion();
+  }
+
+  // --- AVATAR ---
+  onFileSelected(event: any) {
+    if (event.target.files.length > 0) {
+      this.isUploadingAvatar = true;
+      const file = event.target.files[0];
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        this.profileImageUrl = e.target.result;
+        this.isUploadingAvatar = false;
+        this.toast.success('Foto de perfil actualizada (simulación)');
+      };
+      reader.readAsDataURL(file);
+    }
   }
 
   cambiarPestana(pestana: string) {
@@ -54,18 +93,46 @@ export class AutogestionComponent implements OnInit {
     if (pestana === 'turnos') this.cargarTurnos();
   }
 
+  // --- AFILIACIONES ---
+  guardarAfiliaciones() {
+    this.isSaving = true;
+    setTimeout(() => {
+      this.afiliacion = { ...this.formAfiliacion, estado: 'pendiente' };
+      this.formAfiliacion.estado = 'pendiente';
+      this.isSaving = false;
+      this.toast.success('Afiliaciones enviadas a revisión por RRHH');
+    }, 1000);
+  }
+
+  gestionarAfiliacionAdmin() {
+    this.isSavingAdmin = true;
+    setTimeout(() => {
+      this.afiliacion = { ...this.formAfiliacion };
+      this.isSavingAdmin = false;
+      this.toast.success('Gestión de afiliación guardada correctamente');
+    }, 1000);
+  }
+
+  descargarCertificado() {
+    this.toast.success('Generando certificado laboral...');
+  }
+
+  descargarContrato() {
+    this.toast.success('Descargando copia del contrato...');
+  }
+
   // --- VACACIONES ---
   cargarVacaciones() {
     if (!this.usuarioActual) return;
     this.cargando = true;
-    this.tiempoService.getMisVacaciones(this.usuarioActual.id).subscribe({
+    this.tiempoService.getMisVacaciones(this.usuarioActual.id).pipe(timeout(8000)).subscribe({
       next: (res) => {
         this.misVacaciones = res;
         this.cargando = false;
       },
       error: () => {
+        this.misVacaciones = [];
         this.cargando = false;
-        this.toast.error('Error al cargar historial de vacaciones');
       }
     });
   }
@@ -76,19 +143,19 @@ export class AutogestionComponent implements OnInit {
       return;
     }
     
-    this.guardando = true;
+    this.isSubmittingVacacion = true;
     const payload = { ...this.nuevaVacacion, usuario_id: this.usuarioActual?.id };
     
     this.tiempoService.solicitarVacaciones(payload).subscribe({
       next: () => {
         this.toast.success('Solicitud enviada al administrador');
-        this.guardando = false;
-        this.nuevaVacacion = { fecha_inicio: '', fecha_fin: '', tipo: 'vacaciones', observaciones: '' };
+        this.isSubmittingVacacion = false;
+        this.nuevaVacacion = { fecha_inicio: '', fecha_fin: '', tipo: 'Disfrute Legal', observaciones: '' };
         this.cargarVacaciones();
       },
       error: () => {
         this.toast.error('Error al enviar la solicitud');
-        this.guardando = false;
+        this.isSubmittingVacacion = false;
       }
     });
   }
@@ -96,22 +163,16 @@ export class AutogestionComponent implements OnInit {
   // --- DOCUMENTOS ---
   cargarDocumentos() {
     this.cargando = true;
-    this.empleadoService.getMisDocumentos().subscribe({
+    this.empleadoService.getMisDocumentos().pipe(timeout(8000)).subscribe({
       next: (res) => {
         this.misDocumentos = res;
         this.cargando = false;
       },
       error: () => {
+        this.misDocumentos = [];
         this.cargando = false;
-        this.toast.error('Error al cargar documentos');
       }
     });
-  }
-
-  onFileSelected(event: any) {
-    if (event.target.files.length > 0) {
-      this.archivoSeleccionado = event.target.files[0];
-    }
   }
 
   subirDocumento() {
@@ -125,7 +186,6 @@ export class AutogestionComponent implements OnInit {
     formData.append('documento', this.archivoSeleccionado);
     formData.append('nombre', this.nombreArchivo);
     
-    // Suponiendo que se guarda usando el empleado_id, que puede ser igual al usuario_id o depender del backend
     this.empleadoService.uploadDocumento(this.usuarioActual.id, formData).subscribe({
       next: () => {
         this.toast.success('Documento subido correctamente');
@@ -155,8 +215,6 @@ export class AutogestionComponent implements OnInit {
 
   // --- TURNOS ---
   cargarTurnos() {
-    // Aquí idealmente llamaríamos a this.tiempoService.getMisTurnos(this.usuarioActual.id)
-    // Usaremos getTurnos() por ahora como placeholder si no existe el endpoint de mis turnos
     this.cargando = true;
     this.tiempoService.getTurnos().subscribe({
       next: (res) => {

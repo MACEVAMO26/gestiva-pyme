@@ -1,109 +1,228 @@
-/* ESTILOS NEUMÓRFICOS LOCALES PARA ADMIN USUARIOS */
-@use '../../../../../../../styles' as *;
+@use 'sass:color';
 
-.panel-contenido {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-  padding: 1rem;
+/* --- 1. VARIABLES GLOBALES DE COLOR --- */
+$bg-color: #f5f5dc;
+$shadow-light: #ffffff;
+$shadow-dark: #d1d1bc;
+
+$text-dark: #333333;
+$text-muted: #666666;
+
+$btn-add: #45a1ae;
+$btn-volver: #de3737;
+$btn-save: #066810;
+$btn-gen-1: #6B8F71;
+$btn-gen-2: #7C6FA6;
+$btn-gen-3: #C9A227;
+$btn-gen-4: #8E5B75;
+$btn-gen-5: #B5654A;
+$btn-gen-6: #A38B6D;
+
+/* --- 2. FONDOS Y LAYOUT PRINCIPAL --- */
+.gestion-humana-container {
+  padding: 1.5rem;
+  background: $bg-color;
+  min-height: 100vh;
+  font-family: 'Montserrat', sans-serif;
+  color: $text-dark;
 }
 
-.panel-header {
+/* --- 3. TIPOGRAFIA ESTRICTA --- */
+.titulo-principal {
+  font-size: 16px;
+  font-weight: bold;
+  text-transform: uppercase;
+  text-align: center;
+  margin-bottom: 0.5rem;
+  color: $text-dark;
+}
+
+.subtitulo {
+  font-size: 13px;
+  font-weight: normal;
+  text-transform: uppercase;
+  text-align: left;
+  margin-bottom: 1rem;
+  color: $text-dark;
+}
+
+.texto-normal {
+  font-size: 12px;
+  font-weight: normal;
+  color: $text-dark;
+}
+
+.descripcion-general {
+  font-size: 10px;
+  text-align: center;
+  color: $text-muted;
+  margin-bottom: 1.5rem;
+}
+
+.text-center { text-align: center !important; }
+
+/* --- 4. PANELES NEUMORFICOS --- */
+.neumorphic-panel {
+  background: $bg-color;
+  border-radius: 16px;
+  box-shadow: 8px 8px 16px $shadow-dark, -8px -8px 16px $shadow-light;
+  padding: 2rem;
+  border: none;
+  margin-bottom: 2rem;
+}
+
+.neumorphic-panel-inner {
+  background: $bg-color;
+  border-radius: 12px;
+  box-shadow: inset 4px 4px 8px $shadow-dark, inset -4px -4px 8px $shadow-light;
+  padding: 1.5rem;
+  border: none;
+}
+
+/* --- 5. TABS DE NAVEGACION --- */
+.tabs-nav-wrapper {
   display: flex;
-  justify-content: space-between;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+}
+
+.tab-neu-inactive, .tab-neu-active {
+  padding: 0.6rem 0.8rem;
+  border-radius: 9999px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 10px;
+  font-weight: bold !important;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tab-neu-inactive {
+  background-color: $bg-color;
+  color: $text-muted;
+  box-shadow: 4px 4px 8px $shadow-dark, -4px -4px 8px $shadow-light;
+}
+
+.tab-neu-active {
+  background-color: $bg-color;
+  color: $btn-add;
+  box-shadow: inset 4px 4px 8px $shadow-dark, inset -4px -4px 8px $shadow-light;
+}
+
+/* --- 6. BOTONES (Diseno pildora) --- */
+.btn-pill {
+  border-radius: 9999px;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: bold;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 4px 4px 8px $shadow-dark, -4px -4px 8px $shadow-light;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  outline: none;
+}
+
+.btn-pill:active {
+  box-shadow: inset 4px 4px 8px rgba(0,0,0,0.1), inset -4px -4px 8px rgba(255,255,255,0.5);
+}
+
+.btn-add { background-color: $btn-add; border: 2px solid #2e7a85; color: #000000; padding: 0.5rem 1.5rem; font-size: 12px; }
+.btn-volver { background-color: $btn-volver; border: 2px solid #a82424; color: #ffffff; padding: 0.5rem 1.5rem; font-size: 12px; }
+.btn-save { background-color: $btn-save; border: 2px solid #044b0c; color: #ffffff; padding: 0.5rem 1.5rem; font-size: 12px; }
+.btn-general-1 { background-color: $btn-gen-1; border: 2px solid #4a6850; color: #ffffff; padding: 0.5rem 1.5rem; font-size: 12px; }
+.btn-general-2 { background-color: $btn-gen-2; border: 2px solid #574b7a; color: #ffffff; padding: 0.5rem 1.5rem; font-size: 12px; }
+.btn-general-5 { background-color: $btn-gen-5; border: 2px solid #884732; color: #ffffff; padding: 0.5rem 1.5rem; font-size: 12px; }
+
+/* Botones especificos de las tablas / simetricos */
+.btn-action {
+  width: 100px;
+  padding: 0.4rem 0 !important;
+  font-size: 10px !important;
+  display: inline-flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  text-align: center !important;
+}
+
+.acciones-centro {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.acciones-tabla-centro {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
   align-items: center;
 }
 
-.neu-card {
-  background: #f5f5dc;
+/* --- 7. TABLAS NEUMORFICAS --- */
+.table-container {
+  width: 100%;
+  overflow-x: auto;
   border-radius: 12px;
-  padding: 2rem;
-  box-shadow: 6px 6px 12px #d0d0bb, -6px -6px 12px #ffffff;
+  margin-top: 1rem;
 }
 
-.neu-inset {
-  background: #f5f5dc;
-  border-radius: 12px;
-  box-shadow: inset 4px 4px 8px #d0d0bb, inset -4px -4px 8px #ffffff;
-}
-
-/* TABLA NEUMÓRFICA */
-.neu-table-container {
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 6px 6px 12px #d0d0bb, -6px -6px 12px #ffffff;
-  background: #f5f5dc;
-}
-
-.neu-table {
+.data-table {
   width: 100%;
   border-collapse: collapse;
-  
-  th, td {
-    padding: 1rem;
-    text-align: left;
-    font-size: 12px;
-  }
-  
-  th {
-    background: #efefd3;
-    font-weight: 600;
-    color: #333;
-    text-transform: uppercase;
-    font-size: 10px;
-    letter-spacing: 0.5px;
-  }
-  
-  tr {
-    border-bottom: 1px solid rgba(0,0,0,0.05);
-    
-    &:last-child {
-      border-bottom: none;
-    }
-  }
-  
-  .user-name {
-    font-weight: 600;
-    color: #222;
-  }
-  
-  .role-badge {
-    display: inline-block;
-    padding: 0.2rem 0.6rem;
-    border-radius: 4px;
-    background: rgba(69, 161, 174, 0.1);
-    color: #45a1ae;
-    font-weight: 600;
-    font-size: 10px;
-  }
+  font-family: 'Montserrat', sans-serif;
+  font-size: 12px;
+  text-align: left;
+  color: $text-dark;
 }
 
-/* BADGES */
+.data-table th, .data-table td {
+  padding: 1rem;
+  vertical-align: middle;
+}
+
+.data-table th {
+  font-weight: bold !important;
+  text-transform: uppercase;
+  font-size: 10px;
+  border-bottom: 2px solid rgba(0,0,0,0.05);
+}
+
+.data-table tr {
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+
+.data-table tr:hover {
+  background-color: rgba(0,0,0,0.02);
+}
+
+/* --- 8. BADGES Y ESTADOS --- */
 .badge {
-  padding: 0.3rem 0.8rem;
-  border-radius: 50px;
+  padding: 0.4rem 1rem;
+  border-radius: 9999px;
   font-size: 10px;
   font-weight: bold;
   text-transform: uppercase;
-  
-  &-active {
-    background: rgba(6, 104, 16, 0.1);
-    color: #066810;
-  }
-  
-  &-inactive {
-    background: rgba(222, 55, 55, 0.1);
-    color: #de3737;
-  }
+  background: $bg-color;
+  box-shadow: inset 2px 2px 4px $shadow-dark, inset -2px -2px 4px $shadow-light;
 }
 
-/* MODAL NEUMÓRFICO */
+.badge-activo { color: #066810; border: 1px solid rgba(6, 104, 16, 0.2); }
+.badge-baja { color: #de3737; border: 1px solid rgba(222, 55, 55, 0.2); }
+.badge-pendiente { color: #f97316; border: 1px solid rgba(249, 115, 22, 0.2); }
+
+/* --- 9. MODALES --- */
 .modal-overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  top: 0; left: 0; right: 0; bottom: 0;
   background: rgba(0,0,0,0.4);
   display: flex;
   align-items: center;
@@ -111,33 +230,13 @@
   z-index: 1000;
 }
 
-.modal-card {
+.modal-content {
   width: 90%;
   max-width: 600px;
   max-height: 90vh;
   overflow-y: auto;
 }
 
-.modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1.5rem;
-}
-
-.btn-close {
-  background: transparent;
-  border: none;
-  font-size: 24px;
-  cursor: pointer;
-  color: #666;
-  
-  &:hover {
-    color: #de3737;
-  }
-}
-
-/* FORMULARIO */
 .form-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -148,19 +247,15 @@
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  
-  label {
-    font-size: 12px;
-    font-weight: 600;
-    color: #4a4a4a;
-  }
 }
 
-.full-width {
-  grid-column: 1 / -1;
+.form-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #4a4a4a;
 }
 
-.neu-input {
+.input-neumorphic {
   background: #f5f5dc;
   border: none;
   border-radius: 8px;
@@ -169,120 +264,11 @@
   font-size: 12px;
   color: #333;
   box-shadow: inset 3px 3px 6px #d0d0bb, inset -3px -3px 6px #ffffff;
-  transition: all 0.2s ease;
-  
-  &:focus {
-    outline: none;
-    box-shadow: inset 4px 4px 8px #c2c2a9, inset -4px -4px 8px #ffffff;
-  }
+  outline: none;
 }
 
-.info-box {
-  padding: 1rem;
-  font-size: 11px;
-  color: #555;
-  margin-top: 0.5rem;
-}
-
-.text-danger {
-  color: #de3737;
-}
-
-/* BOTONES */
-.btn-primary {
-  background: #45a1ae;
-  color: #000;
-  border: 2px solid #2e7a85;
-  padding: 0.8rem 1.5rem;
-  font-family: 'Montserrat', sans-serif;
-  font-size: 12px;
-  font-weight: bold;
-  cursor: pointer;
-  box-shadow: 4px 4px 8px #d0d0bb, -4px -4px 8px #ffffff;
-  
-  &:active {
-    box-shadow: inset 4px 4px 8px rgba(0,0,0,0.2);
-    transform: translateY(2px);
-  }
-}
-
-.btn-save {
-  background: #066810;
-  color: white;
-  border: 2px solid #044b0c;
-  padding: 0.8rem 2rem;
-  font-family: 'Montserrat', sans-serif;
-  font-size: 12px;
-  font-weight: 600;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  box-shadow: 4px 4px 8px #d0d0bb, -4px -4px 8px #ffffff;
-  
-  &:active {
-    box-shadow: inset 4px 4px 8px rgba(0,0,0,0.2);
-    transform: translateY(2px);
-  }
-  
-  &:disabled {
-    opacity: 0.7;
-    cursor: not-allowed;
-  }
-}
-
-.btn-icon {
-  background: #f5f5dc;
-  border: none;
-  border-radius: 50%;
-  width: 32px;
-  height: 32px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  box-shadow: 2px 2px 4px #d0d0bb, -2px -2px 4px #ffffff;
-  transition: all 0.2s ease;
-  
-  &:hover {
-    box-shadow: inset 2px 2px 4px #d0d0bb, inset -2px -2px 4px #ffffff;
-  }
-}
-
-.btn-pill {
-  border-radius: 50px;
-}
-
-.form-actions {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 2rem;
-}
-
-/* SPINNERS */
-.loading-overlay {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 4rem 2rem;
-  gap: 1rem;
-  
-  p {
-    font-size: 12px;
-    font-weight: 500;
-    color: #666;
-  }
-}
-
-.spinner {
-  width: 40px;
-  height: 40px;
-  border: 4px solid #e0e0c8;
-  border-top: 4px solid #066810;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
+.input-neumorphic:focus {
+  box-shadow: inset 4px 4px 8px #c2c2a9, inset -4px -4px 8px #ffffff;
 }
 
 .spinner-small {
@@ -292,6 +278,7 @@
   border-top: 2px solid white;
   border-radius: 50%;
   animation: spin 1s linear infinite;
+  display: inline-block;
 }
 
 @keyframes spin {
@@ -299,40 +286,5 @@
   100% { transform: rotate(360deg); }
 }
 
-.empty-state {
-  text-align: center;
-  padding: 3rem !important;
-  color: #777;
-  font-style: italic;
-}
-
-/* ESTILOS DE PESTAÑAS (TABS) */
-.tabs-container {
-  display: flex;
-  gap: 1rem;
-  margin-bottom: 1.5rem;
-}
-
-.tab-btn {
-  background: var(--bg-color, #f5f5dc);
-  border: none;
-  padding: 0.8rem 2rem;
-  border-radius: 12px;
-  font-family: 'Montserrat', sans-serif;
-  font-size: 13px;
-  font-weight: 600;
-  color: #555;
-  cursor: pointer;
-  box-shadow: 4px 4px 8px #d0d0bb, -4px -4px 8px #ffffff;
-  transition: all 0.2s ease;
-  
-  &:hover {
-    color: #222;
-  }
-  
-  &.active {
-    box-shadow: inset 4px 4px 8px #d0d0bb, inset -4px -4px 8px #ffffff;
-    color: #45a1ae;
-  }
-}
-
+.fade-in { animation: fadeIn 0.3s ease-in-out; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }

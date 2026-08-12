@@ -1,24 +1,26 @@
 <div class="usuarios-module fade-in">
-  <!-- HTML ENCABEZADO -->
-  <div class="module-header with-back">
-    <button class="btn-back" (click)="cerrarModal()" *ngIf="false"> <!-- handled by parent --> </button>
-    <!-- Wait, parent handles navigation. But we can still have our header here! -->
-    <h1>Gestión de Usuarios</h1>
-    <p>Crea el perfil inicial de los usuarios para que Gestión Humana los asigne.</p>
+  <!-- Botón Volver Inyectado -->
+  <div style="margin-bottom: 2rem;">
+    <button class="btn-volver" onclick="window.history.back()">
+      <i class="fas fa-arrow-left"></i> VOLVER
+    </button>
   </div>
 
-  <div class="actions-bar">
-    <button class="btn-add" (click)="abrirModal()">
-      <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="icon-sm">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-      </svg>
-      Nuevo Usuario
+  <!-- HTML ENCABEZADO -->
+  <div class="module-header">
+    <h1 style="text-align: center; margin-bottom: 0.5rem; font-size: 16px; font-weight: bold; text-transform: uppercase;">GESTIÓN DE USUARIOS</h1>
+    <p style="text-align: center; color: #666666; font-size: 10px; margin-bottom: 2rem;">Crea el perfil inicial de los usuarios para que Gestión Humana los asigne.</p>
+  </div>
+
+  <div class="actions-bar" style="margin-bottom: 1.5rem; display: flex; justify-content: flex-end;">
+    <button class="btn-add btn-pill" (click)="abrirModal()">
+      <i class="fas fa-plus"></i> Nuevo Usuario
     </button>
   </div>
 
   <!-- HTML TABLA USUARIOS -->
-  <div class="table-container glass-panel">
-    <table class="premium-table">
+  <div class="table-container neumorphic-panel">
+    <table class="data-table neumorphic-table">
       <thead>
         <tr>
           <th>Documento</th>
@@ -182,3 +184,6 @@
     </div>
   </div>
 </div>
+
+
+

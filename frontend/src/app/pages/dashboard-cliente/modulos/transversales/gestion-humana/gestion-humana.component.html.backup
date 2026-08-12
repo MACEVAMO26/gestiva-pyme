@@ -1,0 +1,599 @@
+
+<div class="estructura-container fade-in">
+  
+  <div class="tabs-nav">
+    <button class="tab-neu-inactive" [class.tab-neu-active]="currentTab === 'areas'" (click)="setTab('areas')">
+      Áreas / Departamentos
+    </button>
+    <button class="tab-neu-inactive" [class.tab-neu-active]="currentTab === 'cargos'" (click)="setTab('cargos')">
+      Cargos
+    </button>
+  </div>
+
+  <!-- HTML PESTAÑA AREAS -->
+  <!-- AREAS TAB -->
+  <div class="glass-panel p-4 fade-in" *ngIf="currentTab === 'areas'">
+    <div class="flex justify-between items-center mb-4">
+      <h3 class="text-xl font-bold">Gestión de Áreas</h3>
+      <button class="btn-add btn-sm" (click)="abrirModalArea()">+ Nueva Área</button>
+    </div>
+    
+    <table class="premium-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nombre del Área</th>
+          <th>Descripción</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let a of areas">
+          <td>{{a.id}}</td>
+          <td>{{a.nombre}}</td>
+          <td>{{a.descripcion || 'N/A'}}</td>
+          <td>
+            <button class="btn-secondary btn-sm" (click)="abrirModalArea(a)">Editar</button>
+          </td>
+        </tr>
+        <tr *ngIf="areas.length === 0">
+          <td colspan="4" class="empty-state">No hay áreas creadas.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- HTML PESTAÑA CARGOS -->
+  <!-- CARGOS TAB -->
+  <div class="glass-panel p-4 fade-in" *ngIf="currentTab === 'cargos'">
+    <div class="flex justify-between items-center mb-4">
+      <h3 class="text-xl font-bold">Gestión de Cargos</h3>
+      <button class="btn-add btn-sm" (click)="abrirModalCargo()">+ Nuevo Cargo</button>
+    </div>
+    
+    <table class="premium-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nombre del Cargo</th>
+          <th>Nivel de Acceso (Rol)</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let c of cargos">
+          <td>{{c.id}}</td>
+          <td>{{c.nombre}}</td>
+          <td>
+            <span class="badge-role">{{c.rol?.nombre || 'N/A'}}</span>
+          </td>
+          <td>
+            <button class="btn-secondary btn-sm" (click)="abrirModalCargo(c)">Editar</button>
+          </td>
+        </tr>
+        <tr *ngIf="cargos.length === 0">
+          <td colspan="4" class="empty-state">No hay cargos creados.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- HTML MODAL AREA -->
+  <!-- MODAL AREA -->
+  <div class="modal-overlay fade-in" *ngIf="isAreaModalOpen">
+    <div class="modal-content glass-panel form-modal">
+      <div class="modal-header">
+        <h3>{{ areaForm.id ? 'Editar' : 'Nueva' }} Área</h3>
+        <button class="btn-close" (click)="cerrarModalArea()">✕</button>
+      </div>
+      <form (ngSubmit)="guardarArea()">
+        <div class="form-group mb-3">
+          <label>Nombre del Área</label>
+          <input type="text" class="form-control" name="nombre" [(ngModel)]="areaForm.nombre" required placeholder="Ej. Ventas">
+        </div>
+        <div class="form-group mb-3">
+          <label>Descripción</label>
+          <textarea class="form-control" name="descripcion" [(ngModel)]="areaForm.descripcion" rows="3" placeholder="Opcional"></textarea>
+        </div>
+        <div class="form-actions mt-4">
+          <button type="button" class="btn-secondary" (click)="cerrarModalArea()">Cancelar</button>
+          <button type="submit" class="btn-save" [disabled]="isSubmitting">Guardar Área</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- HTML MODAL CARGO -->
+  <!-- MODAL CARGO -->
+  <div class="modal-overlay fade-in" *ngIf="isCargoModalOpen">
+    <div class="modal-content glass-panel form-modal">
+      <div class="modal-header">
+        <h3>{{ cargoForm.id ? 'Editar' : 'Nuevo' }} Cargo</h3>
+        <button class="btn-close" (click)="cerrarModalCargo()">✕</button>
+      </div>
+      <form (ngSubmit)="guardarCargo()">
+        <div class="form-group mb-3">
+          <label>Nombre del Cargo</label>
+          <input type="text" class="form-control" name="nombre" [(ngModel)]="cargoForm.nombre" required placeholder="Ej. Cajero Principal">
+        </div>
+        <div class="form-group mb-3">
+          <label>Rol de Sistema (Permisos)</label>
+          <select class="form-control" name="rol_id" [(ngModel)]="cargoForm.rol_id" required>
+            <option value="">Seleccione el rol de seguridad...</option>
+            <option *ngFor="let r of roles" [value]="r.id">{{r.nombre}}</option>
+          </select>
+          <small class="text-muted block mt-1">El empleado con este cargo heredará estos permisos en el software.</small>
+        </div>
+        <div class="form-group mb-3">
+          <label>Descripción</label>
+          <textarea class="form-control" name="descripcion" [(ngModel)]="cargoForm.descripcion" rows="3" placeholder="Opcional"></textarea>
+        </div>
+        <div class="form-actions mt-4">
+          <button type="button" class="btn-secondary" (click)="cerrarModalCargo()">Cancelar</button>
+          <button type="submit" class="btn-save" [disabled]="isSubmitting">Guardar Cargo</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+</div>
+
+
+<div class="empleados-module fade-in">
+  <div class="module-header flex justify-between items-center">
+    <div>
+      <h1>Gestión Humana</h1>
+      <p>Administra la formalización, contratos y perfiles laborales del personal.</p>
+    </div>
+    <div class="header-actions flex-between-center">
+      <button class="btn-add btn-export" (click)="exportarExcel()">
+        <i class="fas fa-file-excel icon-mr-5"></i> Exportar a Excel
+      </button>
+      <button class="btn-add btn-time-module" (click)="abrirModuloTiempo()">
+        <svg class="icon" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+        </svg>
+        Módulo de Gestión de Tiempos
+      </button>
+    </div>
+  </div>
+
+  <!-- HTML NAVEGACION DE PESTAÑAS -->
+  <!-- TABS NAV -->
+  <div class="tabs-nav">
+    <button class="tab-neu-inactive" [class.tab-neu-active]="currentTab === 'pendientes'" (click)="setTab('pendientes')">
+      Pendientes de Formalizar
+      <span class="badge" *ngIf="pendientes.length > 0">{{pendientes.length}}</span>
+    </button>
+    <button class="tab-neu-inactive" [class.tab-neu-active]="currentTab === 'activos'" (click)="setTab('activos')">
+      Personal Activo
+    </button>
+    <button class="tab-neu-inactive" [class.tab-neu-active]="currentTab === 'inactivos'" (click)="setTab('inactivos')">
+      Inactivos
+    </button>
+    <button class="tab-neu-inactive" [class.tab-neu-active]="currentTab === 'ausentes'" (click)="setTab('ausentes')">
+      Ausentes / Vacaciones
+    </button>
+    <button class="tab-neu-inactive" [class.tab-neu-active]="currentTab === 'estructura'" (click)="setTab('estructura')">
+      Estructura Organizacional
+    </button>
+    <button class="tab-neu-inactive" [class.tab-neu-active]="currentTab === 'configuracion'" (click)="setTab('configuracion')">
+      Configuración Global
+    </button>
+  </div>
+
+  <!-- HTML TABLA PENDIENTES -->
+  <!-- TABLA PENDIENTES -->
+  <div class="table-container glass-panel fade-in" *ngIf="currentTab === 'pendientes'">
+    <div class="alert-info m-3">
+      <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="icon-md text-orange">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3Z" />
+      </svg>
+      <p>Estos usuarios fueron creados por Gerencia y están bloqueados en el sistema hasta que completes su perfil laboral.</p>
+    </div>
+    <table class="premium-table">
+      <thead>
+        <tr>
+          <th>Documento</th>
+          <th>Nombre Completo</th>
+          <th>Correo</th>
+          <th>Fecha Creación</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let p of pendientes">
+          <td>{{ p.documento }}</td>
+          <td>{{ p.nombres }} {{ p.apellidos }}</td>
+          <td>{{ p.email }}</td>
+          <td>{{ p.created_at | date:'shortDate' }}</td>
+          <td>
+            <button class="btn-general btn-sm" (click)="abrirModalFormalizar(p)">
+              Formalizar Perfil
+            </button>
+          </td>
+        </tr>
+        <tr *ngIf="pendientes.length === 0">
+          <td colspan="5" class="empty-state">No hay usuarios pendientes de formalización.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="mt-6">
+      <h3 class="text-xl font-bold mb-3">Solicitudes de Vacaciones Pendientes</h3>
+      <table class="premium-table">
+        <thead>
+          <tr>
+            <th>Empleado</th>
+            <th>Fechas</th>
+            <th>Tipo</th>
+            <th>Observaciones</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let vac of vacacionesPendientes">
+            <td>{{ vac.usuario?.nombres }} {{ vac.usuario?.apellidos }}</td>
+            <td>{{ vac.fecha_inicio | date:'shortDate' }} al {{ vac.fecha_fin | date:'shortDate' }}</td>
+            <td>{{ vac.tipo }}</td>
+            <td>{{ vac.observaciones || 'Ninguna' }}</td>
+            <td>
+              <button class="btn-general btn-sm" (click)="abrirModalVacaciones(vac)">
+                Revisar Solicitud
+              </button>
+            </td>
+          </tr>
+          <tr *ngIf="vacacionesPendientes.length === 0">
+            <td colspan="5" class="empty-state">No hay solicitudes de vacaciones pendientes.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- HTML TABLA ACTIVOS -->
+  <!-- TABLA ACTIVOS -->
+  <div class="table-container glass-panel fade-in" *ngIf="currentTab === 'activos'">
+    <table class="premium-table">
+      <thead>
+        <tr>
+          <th>Cod. Emp</th>
+          <th>Documento</th>
+          <th>Nombre Completo</th>
+          <th>Área</th>
+          <th>Cargo</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <ng-container *ngFor="let emp of empleadosActivos">
+          <!-- Fila Principal del Empleado -->
+          <tr>
+            <td>{{ emp.codigo_empleado || 'N/A' }}</td>
+            <td>{{ emp.usuario?.documento }}</td>
+            <td>{{ emp.usuario?.nombres }} {{ emp.usuario?.apellidos }}</td>
+            <td>{{ emp.area?.nombre || 'Sin Asignar' }}</td>
+            <td>{{ emp.cargo?.nombre || 'Sin Asignar' }}</td>
+            <td>
+              <span class="status-badge status-active" *ngIf="!emp.baja_solicitada">ACTIVO</span>
+              <span class="status-badge status-pending" *ngIf="emp.baja_solicitada">BAJA EN PROCESO</span>
+            </td>
+            <td>
+              <div style="display: flex; gap: 0.5rem;">
+                <button class="btn-secondary btn-sm" (click)="verDetalles(emp)">
+                  {{ empleadoExpandido?.id === emp.id ? 'Ocultar' : 'Detalles' }}
+                </button>
+                <button class="btn-volver btn-sm" (click)="abrirModalBaja(emp)" *ngIf="!emp.baja_solicitada">Baja</button>
+              </div>
+            </td>
+          </tr>
+          
+          <!-- Fila Desplegable: Documentos y Detalles -->
+          <tr *ngIf="empleadoExpandido?.id === emp.id">
+            <td colspan="7" class="expandable-td">
+              <div class="empleado-detalles expandable-panel">
+                <h4 class="panel-title">Documentos del Empleado: {{ emp.usuario?.nombres }}</h4>
+                
+                <!-- Subir Nuevo -->
+                <div class="upload-section">
+                  <div class="form-group flex-1">
+                    <label class="upload-label">Nombre del Documento</label>
+                    <input type="text" class="form-control" [(ngModel)]="nombreDocumento" placeholder="Ej. Cédula, Contrato, etc.">
+                  </div>
+                  <div class="form-group flex-1">
+                    <label class="upload-label">Archivo (PDF o PPT)</label>
+                    <input type="file" id="fileInputDoc" class="form-control" (change)="onFileSelected($event)" accept=".pdf,.ppt,.pptx">
+                  </div>
+                  <button class="btn-save" (click)="subirDocumento()" [disabled]="!archivoSeleccionado || !nombreDocumento || isUploading">
+                    <i class="fas" [ngClass]="isUploading ? 'fa-spinner fa-spin' : 'fa-upload'"></i>
+                    {{ isUploading ? 'Subiendo...' : 'Subir' }}
+                  </button>
+                </div>
+
+                <!-- Lista de Documentos -->
+                <div>
+                  <h5 class="docs-title">Documentos Archivados</h5>
+                  <div *ngIf="documentosEmpleado.length === 0" class="docs-empty">
+                    No hay documentos registrados para este empleado.
+                  </div>
+                  
+                  <div class="documentos-grid docs-grid" *ngIf="documentosEmpleado.length > 0">
+                    <div class="documento-card doc-card" *ngFor="let doc of documentosEmpleado">
+                      <div class="doc-info">
+                        <i class="fas fa-file-pdf icon-pdf" *ngIf="doc.tipo_archivo === 'pdf'"></i>
+                        <i class="fas fa-file-powerpoint icon-ppt" *ngIf="doc.tipo_archivo === 'powerpoint'"></i>
+                        <i class="fas fa-file-alt icon-alt" *ngIf="doc.tipo_archivo !== 'pdf' && doc.tipo_archivo !== 'powerpoint'"></i>
+                        <div class="doc-text">
+                          <strong class="doc-nombre doc-name" [title]="doc.nombre">{{ doc.nombre }}</strong>
+                          <span class="doc-fecha doc-date">{{ doc.created_at | date:'short' }}</span>
+                        </div>
+                      </div>
+                      <div class="doc-acciones doc-actions">
+                        <a [href]="doc.cloudinary_url" target="_blank" class="btn-secondary btn-doc-action" title="Descargar/Ver"><i class="fas fa-download"></i></a>
+                        <button class="btn-volver btn-doc-action" title="Eliminar" (click)="eliminarDocumento(doc.id)"><i class="fas fa-trash"></i></button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </td>
+          </tr>
+        </ng-container>
+        <tr *ngIf="empleadosActivos.length === 0">
+          <td colspan="7" class="empty-state">No hay empleados activos en el sistema.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- HTML TABLA INACTIVOS -->
+  <!-- TABLA INACTIVOS -->
+  <div class="table-container glass-panel fade-in" *ngIf="currentTab === 'inactivos'">
+    <table class="premium-table">
+      <thead>
+        <tr>
+          <th>Cod. Emp</th>
+          <th>Documento</th>
+          <th>Nombre Completo</th>
+          <th>Área</th>
+          <th>Cargo</th>
+          <th>Estado</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let emp of empleadosInactivos">
+          <td>{{ emp.codigo_empleado || 'N/A' }}</td>
+          <td>{{ emp.usuario?.documento }}</td>
+          <td>{{ emp.usuario?.nombres }} {{ emp.usuario?.apellidos }}</td>
+          <td>{{ emp.area?.nombre || 'Sin Asignar' }}</td>
+          <td>{{ emp.cargo?.nombre || 'Sin Asignar' }}</td>
+          <td><span class="status-badge status-inactive">INACTIVO</span></td>
+        </tr>
+        <tr *ngIf="empleadosInactivos.length === 0">
+          <td colspan="6" class="empty-state">No hay empleados inactivos.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- HTML TABLA AUSENTES -->
+  <!-- TABLA AUSENTES -->
+  <div class="table-container glass-panel fade-in" *ngIf="currentTab === 'ausentes'">
+    <table class="premium-table">
+      <thead>
+        <tr>
+          <th>Cod. Emp</th>
+          <th>Documento</th>
+          <th>Nombre Completo</th>
+          <th>Área</th>
+          <th>Cargo</th>
+          <th>Estado</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let emp of empleadosAusentes">
+          <td>{{ emp.codigo_empleado || 'N/A' }}</td>
+          <td>{{ emp.usuario?.documento }}</td>
+          <td>{{ emp.usuario?.nombres }} {{ emp.usuario?.apellidos }}</td>
+          <td>{{ emp.area?.nombre || 'Sin Asignar' }}</td>
+          <td>{{ emp.cargo?.nombre || 'Sin Asignar' }}</td>
+          <td><span class="status-badge status-pending">{{ emp.estado }}</span></td>
+        </tr>
+        <tr *ngIf="empleadosAusentes.length === 0">
+          <td colspan="6" class="empty-state">No hay empleados ausentes (vacaciones, permiso, incapacidad).</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- HTML CONFIGURACION GLOBAL -->
+  <!-- CONFIGURACIÓN GLOBAL TAB -->
+  <div class="glass-panel p-4 fade-in" *ngIf="currentTab === 'configuracion'">
+    <div class="mb-4">
+      <h3 class="text-xl font-bold">Configuración de Seguridad Social</h3>
+      <p class="text-muted">Establezca la Administradora de Riesgos Laborales y la Caja de Compensación para toda la empresa.</p>
+    </div>
+    <form (ngSubmit)="guardarConfiguracionRRHH()">
+      <div class="form-row split form-grid-2">
+        <div class="form-group mb-3">
+          <label>ARL (Administradora de Riesgos Laborales)</label>
+          <input type="text" class="form-control" name="arl" [(ngModel)]="configuracionRRHH.arl" placeholder="Ej. SURA" required>
+        </div>
+        <div class="form-group mb-3">
+          <label>Caja de Compensación Familiar</label>
+          <input type="text" class="form-control" name="caja_compensacion" [(ngModel)]="configuracionRRHH.caja_compensacion" placeholder="Ej. Comfama" required>
+        </div>
+      </div>
+      <div class="form-actions form-actions-right">
+        <button type="submit" class="btn-save" [disabled]="isConfigSubmitting">Guardar Configuración</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- HTML PESTAÑA ESTRUCTURA -->
+  <!-- ESTRUCTURA TAB -->
+  <div class="fade-in" *ngIf="currentTab === 'estructura'">
+    <app-estructura></app-estructura>
+  </div>
+
+  <!-- HTML MODAL FORMALIZAR -->
+  <!-- MODAL FORMALIZAR -->
+  <div class="modal-overlay fade-in" *ngIf="isFormalizarModalOpen">
+    <div class="modal-content glass-panel form-modal">
+      <div class="modal-header">
+        <h3>Formalizar Empleado</h3>
+        <button class="btn-close" (click)="cerrarModalFormalizar()">✕</button>
+      </div>
+      
+      <div class="user-summary mb-3">
+        <p><strong>Usuario:</strong> {{usuarioAFormalizar?.nombres}} {{usuarioAFormalizar?.apellidos}}</p>
+        <p><strong>Documento:</strong> {{usuarioAFormalizar?.documento}}</p>
+      </div>
+
+      <form (ngSubmit)="submitFormalizar()">
+        
+        <h4 class="section-title">Datos Organizacionales</h4>
+        <div class="form-row split">
+          <div class="form-group">
+            <label>Área / Departamento</label>
+            <select class="form-control" name="area_id" [(ngModel)]="formalizarForm.area_id" required>
+              <option value="">Seleccione...</option>
+              <option *ngFor="let a of areas" [value]="a.id">{{a.nombre}}</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Cargo</label>
+            <select class="form-control" name="cargo_id" [(ngModel)]="formalizarForm.cargo_id" required>
+              <option value="">Seleccione...</option>
+              <option *ngFor="let c of cargos" [value]="c.id">{{c.nombre}}</option>
+            </select>
+          </div>
+        </div>
+
+        <h4 class="section-title">Datos Laborales</h4>
+        <div class="form-row split">
+          <div class="form-group">
+            <label>Tipo de Contrato</label>
+            <select class="form-control" name="tipo_contrato" [(ngModel)]="formalizarForm.tipo_contrato" required>
+              <option value="">Seleccione...</option>
+              <option value="Fijo">Término Fijo</option>
+              <option value="Indefinido">Término Indefinido</option>
+              <option value="Obra o Labor">Obra o Labor</option>
+              <option value="Prestación de Servicios">Prestación de Servicios</option>
+              <option value="Aprendizaje">Contrato de Aprendizaje</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Fecha Contratación</label>
+            <input type="date" class="form-control" name="fecha_contratacion" [(ngModel)]="formalizarForm.fecha_contratacion" required>
+          </div>
+        </div>
+
+        <div class="form-row split">
+          <div class="form-group">
+            <label>Salario Básico (Opcional)</label>
+            <input type="number" class="form-control" name="salario" [(ngModel)]="formalizarForm.salario">
+          </div>
+        </div>
+
+
+        <div class="form-actions mt-3">
+          <button type="button" class="btn-secondary" (click)="cerrarModalFormalizar()">Cancelar</button>
+          <button type="submit" class="btn-save flex-center-all" [disabled]="isSubmitting">
+            <span *ngIf="!isSubmitting">Completar Formalización</span>
+            <span *ngIf="isSubmitting" class="flex-items-center">
+              <svg class="icon-spin-sm-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              Guardando...
+            </span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- HTML MODAL SOLICITAR BAJA -->
+  <!-- MODAL SOLICITAR BAJA -->
+  <div class="modal-overlay fade-in" *ngIf="isBajaModalOpen">
+    <div class="modal-content form-modal modal-md">
+      <div class="modal-header">
+        <h3>Solicitar Baja de Empleado</h3>
+        <button class="btn-close" (click)="cerrarModalBaja()">✕</button>
+      </div>
+      
+      <div class="alert-info alert-danger" *ngIf="showConfirmDialog">
+        <p>Estás a punto de solicitar la inactivación de <strong>{{empleadoABaja?.usuario?.nombres}} {{empleadoABaja?.usuario?.apellidos}}</strong>. Esta acción debe ser aprobada por Gerencia.</p>
+      </div>
+
+      <form (ngSubmit)="submitBaja()">
+        <div class="form-group mb-3">
+          <label>Motivo de la baja (Despido, Renuncia, etc.)</label>
+          <textarea class="form-control" name="motivoBaja" [(ngModel)]="motivoBaja" rows="4" required placeholder="Describe brevemente el motivo..."></textarea>
+        </div>
+        
+        <div class="form-actions">
+          <button type="button" class="btn-secondary" (click)="cerrarModalBaja()">Cancelar</button>
+          <button type="submit" class="btn-save flex-center-all" [disabled]="isSubmitting">
+            <span *ngIf="!isSubmitting">Solicitar Baja</span>
+            <span *ngIf="isSubmitting" class="flex-items-center">
+              <svg class="icon-spin-sm-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              Enviando...
+            </span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+</div>
+
+<!-- HTML MODAL REVISAR VACACIONES -->
+<!-- MODAL REVISAR VACACIONES -->
+@if (isVacacionesModalOpen && vacacionSeleccionada) {
+<div class="modal-overlay fade-in">
+  <div class="modal-content glass-panel max-w-500">
+    <div class="modal-header-vac">
+      <h1 class="modal-title-vac">Revisar Solicitud de Vacaciones</h1>
+      <button class="btn-close-vac" (click)="cerrarModalVacaciones()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <p><strong>Empleado:</strong> {{ vacacionSeleccionada.usuario?.nombres }} {{ vacacionSeleccionada.usuario?.apellidos }}</p>
+      <p><strong>Fechas:</strong> {{ vacacionSeleccionada.fecha_inicio | date:'mediumDate' }} al {{ vacacionSeleccionada.fecha_fin | date:'mediumDate' }}</p>
+      <p><strong>Tipo:</strong> {{ vacacionSeleccionada.tipo }}</p>
+      <p><strong>Observaciones:</strong> {{ vacacionSeleccionada.observaciones || 'Ninguna' }}</p>
+
+      <div class="form-group mt-4">
+        <label>Justificación de Respuesta (Obligatorio si rechaza)</label>
+        <textarea 
+          class="input-neumorphic w-full" 
+          rows="3" 
+          [(ngModel)]="justificacionVacacion"
+          placeholder="Ej. Fechas se cruzan con cierre de mes..."
+        ></textarea>
+      </div>
+    </div>
+    <div class="modal-footer-vac">
+      <button class="btn-volver" (click)="cerrarModalVacaciones()">Cancelar</button>
+      <button class="btn-save btn-danger" (click)="responderVacacion('rechazada')" [disabled]="isSubmitting || !justificacionVacacion.trim()">
+        @if (isSubmitting) { <i class="fas fa-spinner fa-spin"></i> } @else { Rechazar }
+      </button>
+      <button class="btn-save" (click)="responderVacacion('aprobada')" [disabled]="isSubmitting">
+        @if (isSubmitting) { <i class="fas fa-spinner fa-spin"></i> } @else { Aprobar }
+      </button>
+    </div>
+  </div>
+</div>
+}
+
+
+
+
+
+

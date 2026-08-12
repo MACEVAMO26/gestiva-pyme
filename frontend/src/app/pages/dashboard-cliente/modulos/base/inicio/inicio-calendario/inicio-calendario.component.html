@@ -1,7 +1,7 @@
 <!-- HTML MÓDULO CALENDARIO -->
-<div class="panel-contenido">
-  <div class="panel-header">
-    <h2 class="panel-title">Calendario Personal</h2>
+<div class="module-container">
+<div class="module-header">
+    <h1>Calendario Personal</h1>
     <div class="month-selector">Agosto 2026</div>
   </div>
 
@@ -33,20 +33,20 @@
 <!-- MODAL PARA CREAR EVENTO (Controlado por estado isModalOpen) -->
 @if (isModalOpen) {
 <div class="modal-overlay">
-  <div class="modal-card neu-card">
+  <div class="modal-card neumorphic-panel">
     <div class="modal-header">
-      <h2 class="panel-title">Nuevo Evento</h2>
+      <h1>Nuevo Evento</h1>
       <button class="btn-close" (click)="cerrarModal()">×</button>
     </div>
     <div class="modal-body">
       <form>
         <div class="form-group">
           <label>Título del Evento</label>
-          <input type="text" class="neu-input" placeholder="Ej. Presentación comercial">
+          <input type="text" class="input-neumorphic" placeholder="Ej. Presentación comercial">
         </div>
         <div class="form-group">
           <label>Descripción</label>
-          <textarea class="neu-input" rows="3"></textarea>
+          <textarea class="input-neumorphic" rows="3"></textarea>
         </div>
         <div class="form-actions">
           <button type="button" class="btn-save btn-pill" (click)="guardarEvento()">Guardar Evento</button>
@@ -56,3 +56,8 @@
   </div>
 </div>
 }
+
+
+
+
+

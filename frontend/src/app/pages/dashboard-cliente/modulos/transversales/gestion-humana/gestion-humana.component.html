@@ -1,3 +1,489 @@
-<div class="gestion-humana-container">
-  <h2>gestion-humana (En Construccin)</h2>
+<div class="gestion-humana-container fade-in">
+
+  <!-- ENCABEZADO -->
+  <div class="module-header text-center mb-4 relative">
+    <h1 class="titulo-principal">GESTIÓN HUMANA</h1>
+    <p class="descripcion-general">Administra la formalización, contratos y perfiles laborales del personal.</p>
+    
+    <div class="acciones-centro mt-3">
+      <button class="btn-general-1 btn-pill" (click)="exportarExcel()">
+        <i class="fas fa-file-excel icon-mr-5"></i> Exportar a Excel
+      </button>
+      <button class="btn-general-2 btn-pill" (click)="abrirModuloTiempo()">
+        <svg class="icon" style="width:16px;height:16px;margin-right:5px;" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+        </svg>
+        Módulo de Gestión de Tiempos
+      </button>
+    </div>
+  </div>
+
+  <!-- NAVEGACIÓN TABS -->
+  <div class="tabs-nav-wrapper">
+    <button class="tab-neu-inactive" [class.tab-neu-active]="currentTab === 'pendientes'" (click)="setTab('pendientes')">
+      Pendientes <span class="badge badge-pendiente" *ngIf="pendientes.length > 0" style="margin-left: 5px;">{{pendientes.length}}</span>
+    </button>
+    <button class="tab-neu-inactive" [class.tab-neu-active]="currentTab === 'activos'" (click)="setTab('activos')">Personal Activo</button>
+    <button class="tab-neu-inactive" [class.tab-neu-active]="currentTab === 'inactivos'" (click)="setTab('inactivos')">Inactivos</button>
+    <button class="tab-neu-inactive" [class.tab-neu-active]="currentTab === 'ausentes'" (click)="setTab('ausentes')">Ausentes / Vacaciones</button>
+    <button class="tab-neu-inactive" [class.tab-neu-active]="currentTab === 'estructura'" (click)="setTab('estructura')">Estructura</button>
+    <button class="tab-neu-inactive" [class.tab-neu-active]="currentTab === 'areas'" (click)="setTab('areas')">Áreas</button>
+    <button class="tab-neu-inactive" [class.tab-neu-active]="currentTab === 'cargos'" (click)="setTab('cargos')">Cargos</button>
+    <button class="tab-neu-inactive" [class.tab-neu-active]="currentTab === 'configuracion'" (click)="setTab('configuracion')">Configuración</button>
+  </div>
+
+  <!-- TAB PENDIENTES -->
+  <div class="neumorphic-panel fade-in" *ngIf="currentTab === 'pendientes'">
+    <h2 class="subtitulo">PENDIENTES DE FORMALIZAR</h2>
+    <div style="background: rgba(249, 115, 22, 0.1); padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
+      <p style="margin:0; font-size: 12px; color: #c2410c;">
+        <svg style="width:16px;height:16px;display:inline;margin-right:5px;" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3Z" />
+        </svg>
+        Estos usuarios fueron creados por Gerencia y están bloqueados en el sistema hasta que completes su perfil laboral.
+      </p>
+    </div>
+    
+    <div class="table-container">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Documento</th>
+            <th>Nombre Completo</th>
+            <th>Correo</th>
+            <th>Fecha Creación</th>
+            <th class="text-center">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let p of pendientes">
+            <td>{{ p.documento }}</td>
+            <td>{{ p.nombres }} {{ p.apellidos }}</td>
+            <td>{{ p.email }}</td>
+            <td>{{ p.created_at | date:'shortDate' }}</td>
+            <td class="text-center">
+              <button class="btn-general-1 btn-pill btn-action" (click)="abrirModalFormalizar(p)">Formalizar</button>
+            </td>
+          </tr>
+          <tr *ngIf="pendientes.length === 0">
+            <td colspan="5" class="text-center" style="padding: 2rem;">No hay usuarios pendientes de formalización.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2 class="subtitulo mt-5" style="margin-top: 2rem;">SOLICITUDES DE VACACIONES PENDIENTES</h2>
+    <div class="table-container">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Empleado</th>
+            <th>Fechas</th>
+            <th>Tipo</th>
+            <th>Observaciones</th>
+            <th class="text-center">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let vac of vacacionesPendientes">
+            <td>{{ vac.usuario?.nombres }} {{ vac.usuario?.apellidos }}</td>
+            <td>{{ vac.fecha_inicio | date:'shortDate' }} al {{ vac.fecha_fin | date:'shortDate' }}</td>
+            <td>{{ vac.tipo }}</td>
+            <td>{{ vac.observaciones || 'Ninguna' }}</td>
+            <td class="text-center">
+              <button class="btn-general-1 btn-pill btn-action" (click)="abrirModalVacaciones(vac)">Revisar</button>
+            </td>
+          </tr>
+          <tr *ngIf="vacacionesPendientes.length === 0">
+            <td colspan="5" class="text-center" style="padding: 2rem;">No hay solicitudes de vacaciones pendientes.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- TAB ACTIVOS -->
+  <div class="neumorphic-panel fade-in" *ngIf="currentTab === 'activos'">
+    <h2 class="subtitulo">PERSONAL ACTIVO</h2>
+    <div class="table-container">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Cod. Emp</th>
+            <th>Documento</th>
+            <th>Nombre Completo</th>
+            <th>Área</th>
+            <th>Cargo</th>
+            <th>Estado</th>
+            <th class="text-center">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <ng-container *ngFor="let emp of empleadosActivos">
+            <tr>
+              <td>{{ emp.codigo_empleado || 'N/A' }}</td>
+              <td>{{ emp.usuario?.documento }}</td>
+              <td>{{ emp.usuario?.nombres }} {{ emp.usuario?.apellidos }}</td>
+              <td>{{ emp.area?.nombre || 'Sin Asignar' }}</td>
+              <td>{{ emp.cargo?.nombre || 'Sin Asignar' }}</td>
+              <td>
+                <span class="badge badge-activo" *ngIf="!emp.baja_solicitada">ACTIVO</span>
+                <span class="badge badge-baja" *ngIf="emp.baja_solicitada">BAJA EN PROCESO</span>
+              </td>
+              <td class="text-center">
+                <div class="acciones-tabla-centro">
+                  <button class="btn-general-1 btn-pill btn-action" (click)="verDetalles(emp)">
+                    {{ empleadoExpandido?.id === emp.id ? 'Ocultar' : 'Detalles' }}
+                  </button>
+                  <button class="btn-general-5 btn-pill btn-action" (click)="abrirModalBaja(emp)" *ngIf="!emp.baja_solicitada">Baja</button>
+                </div>
+              </td>
+            </tr>
+          </ng-container>
+          <tr *ngIf="empleadosActivos.length === 0">
+            <td colspan="7" class="text-center" style="padding: 2rem;">No hay empleados activos en el sistema.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- TAB INACTIVOS -->
+  <div class="neumorphic-panel fade-in" *ngIf="currentTab === 'inactivos'">
+    <h2 class="subtitulo">PERSONAL INACTIVO</h2>
+    <div class="table-container">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Cod. Emp</th>
+            <th>Documento</th>
+            <th>Nombre Completo</th>
+            <th>Área</th>
+            <th>Cargo</th>
+            <th>Estado</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let emp of empleadosInactivos">
+            <td>{{ emp.codigo_empleado || 'N/A' }}</td>
+            <td>{{ emp.usuario?.documento }}</td>
+            <td>{{ emp.usuario?.nombres }} {{ emp.usuario?.apellidos }}</td>
+            <td>{{ emp.area?.nombre || 'Sin Asignar' }}</td>
+            <td>{{ emp.cargo?.nombre || 'Sin Asignar' }}</td>
+            <td><span class="badge badge-baja">INACTIVO</span></td>
+          </tr>
+          <tr *ngIf="empleadosInactivos.length === 0">
+            <td colspan="6" class="text-center" style="padding: 2rem;">No hay empleados inactivos.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- TAB AUSENTES -->
+  <div class="neumorphic-panel fade-in" *ngIf="currentTab === 'ausentes'">
+    <h2 class="subtitulo">PERSONAL AUSENTE / VACACIONES</h2>
+    <div class="table-container">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Cod. Emp</th>
+            <th>Documento</th>
+            <th>Nombre Completo</th>
+            <th>Área</th>
+            <th>Cargo</th>
+            <th>Estado</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let emp of empleadosAusentes">
+            <td>{{ emp.codigo_empleado || 'N/A' }}</td>
+            <td>{{ emp.usuario?.documento }}</td>
+            <td>{{ emp.usuario?.nombres }} {{ emp.usuario?.apellidos }}</td>
+            <td>{{ emp.area?.nombre || 'Sin Asignar' }}</td>
+            <td>{{ emp.cargo?.nombre || 'Sin Asignar' }}</td>
+            <td><span class="badge badge-pendiente">{{ emp.estado }}</span></td>
+          </tr>
+          <tr *ngIf="empleadosAusentes.length === 0">
+            <td colspan="6" class="text-center" style="padding: 2rem;">No hay empleados ausentes.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- TAB ESTRUCTURA -->
+  <div class="fade-in" *ngIf="currentTab === 'estructura'">
+    <app-admin-estructura></app-admin-estructura>
+  </div>
+
+  <!-- TAB AREAS -->
+  <div class="neumorphic-panel fade-in" *ngIf="currentTab === 'areas'">
+    <h2 class="subtitulo text-center">GESTIÓN DE ÁREAS</h2>
+    <div class="acciones-centro">
+      <button class="btn-add btn-pill" (click)="abrirModalArea()">+ Nueva Área</button>
+    </div>
+    
+    <div class="table-container">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Nombre del Área</th>
+            <th>Descripción</th>
+            <th class="text-center">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let a of areas">
+            <td>{{a.id}}</td>
+            <td>{{a.nombre}}</td>
+            <td>{{a.descripcion || 'N/A'}}</td>
+            <td class="text-center">
+              <button class="btn-general-1 btn-pill btn-action" (click)="abrirModalArea(a)">Editar</button>
+            </td>
+          </tr>
+          <tr *ngIf="areas.length === 0">
+            <td colspan="4" class="text-center" style="padding: 2rem;">No hay áreas creadas.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- TAB CARGOS -->
+  <div class="neumorphic-panel fade-in" *ngIf="currentTab === 'cargos'">
+    <h2 class="subtitulo text-center">GESTIÓN DE CARGOS</h2>
+    <div class="acciones-centro">
+      <button class="btn-add btn-pill" (click)="abrirModalCargo()">+ Nuevo Cargo</button>
+    </div>
+    
+    <div class="table-container">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Nombre del Cargo</th>
+            <th>Nivel de Acceso (Rol)</th>
+            <th class="text-center">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let c of cargos">
+            <td>{{c.id}}</td>
+            <td>{{c.nombre}}</td>
+            <td>
+              <span class="badge badge-activo">{{c.rol?.nombre || 'N/A'}}</span>
+            </td>
+            <td class="text-center">
+              <button class="btn-general-1 btn-pill btn-action" (click)="abrirModalCargo(c)">Editar</button>
+            </td>
+          </tr>
+          <tr *ngIf="cargos.length === 0">
+            <td colspan="4" class="text-center" style="padding: 2rem;">No hay cargos creados.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- TAB CONFIGURACION -->
+  <div class="neumorphic-panel fade-in" *ngIf="currentTab === 'configuracion'">
+    <h2 class="subtitulo">CONFIGURACIÓN DE SEGURIDAD SOCIAL</h2>
+    <p class="descripcion-general" style="text-align: left;">Establezca la ARL y la Caja de Compensación para toda la empresa.</p>
+    
+    <form (ngSubmit)="guardarConfiguracionRRHH()">
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">ARL</label>
+          <input type="text" class="input-neumorphic" name="arl" [(ngModel)]="configuracionRRHH.arl" placeholder="Ej. SURA" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Caja de Compensación Familiar</label>
+          <input type="text" class="input-neumorphic" name="caja_compensacion" [(ngModel)]="configuracionRRHH.caja_compensacion" placeholder="Ej. Comfama" required>
+        </div>
+      </div>
+      <div class="acciones-centro" style="margin-top: 2rem;">
+        <button type="submit" class="btn-save btn-pill" [disabled]="isConfigSubmitting">Guardar Configuración</button>
+      </div>
+    </form>
+  </div>
+
 </div>
+
+<!-- MODAL AREA -->
+@if(isAreaModalOpen) {
+  <div class="modal-overlay fade-in">
+    <div class="modal-content neumorphic-panel" style="max-width: 500px;">
+      <div class="text-center mb-4">
+        <h3 class="titulo-principal">{{ areaForm.id ? 'EDITAR' : 'NUEVA' }} ÁREA</h3>
+      </div>
+      <form (ngSubmit)="guardarArea()">
+        <div class="form-group mb-3">
+          <label class="form-label">Nombre del Área</label>
+          <input type="text" class="input-neumorphic" name="nombre" [(ngModel)]="areaForm.nombre" required placeholder="Ej. Ventas">
+        </div>
+        <div class="form-group mb-3">
+          <label class="form-label">Descripción</label>
+          <textarea class="input-neumorphic" name="descripcion" [(ngModel)]="areaForm.descripcion" rows="3" placeholder="Opcional"></textarea>
+        </div>
+        <div class="acciones-centro" style="margin-top: 2rem;">
+          <button type="button" class="btn-general-5 btn-pill btn-action" (click)="cerrarModalArea()">Cancelar</button>
+          <button type="submit" class="btn-save btn-pill btn-action" [disabled]="isSubmitting">Guardar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+}
+
+<!-- MODAL CARGO -->
+@if(isCargoModalOpen) {
+  <div class="modal-overlay fade-in">
+    <div class="modal-content neumorphic-panel" style="max-width: 500px;">
+      <div class="text-center mb-4">
+        <h3 class="titulo-principal">{{ cargoForm.id ? 'EDITAR' : 'NUEVO' }} CARGO</h3>
+      </div>
+      <form (ngSubmit)="guardarCargo()">
+        <div class="form-group mb-3">
+          <label class="form-label">Nombre del Cargo</label>
+          <input type="text" class="input-neumorphic" name="nombre" [(ngModel)]="cargoForm.nombre" required placeholder="Ej. Cajero Principal">
+        </div>
+        <div class="form-group mb-3">
+          <label class="form-label">Rol de Sistema (Permisos)</label>
+          <select class="input-neumorphic" name="rol_id" [(ngModel)]="cargoForm.rol_id" required>
+            <option value="">Seleccione el rol...</option>
+            <option *ngFor="let r of roles" [value]="r.id">{{r.nombre}}</option>
+          </select>
+        </div>
+        <div class="form-group mb-3">
+          <label class="form-label">Descripción</label>
+          <textarea class="input-neumorphic" name="descripcion" [(ngModel)]="cargoForm.descripcion" rows="3" placeholder="Opcional"></textarea>
+        </div>
+        <div class="acciones-centro" style="margin-top: 2rem;">
+          <button type="button" class="btn-general-5 btn-pill btn-action" (click)="cerrarModalCargo()">Cancelar</button>
+          <button type="submit" class="btn-save btn-pill btn-action" [disabled]="isSubmitting">Guardar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+}
+
+<!-- MODAL FORMALIZAR -->
+@if(isFormalizarModalOpen) {
+  <div class="modal-overlay fade-in">
+    <div class="modal-content neumorphic-panel" style="max-width: 600px;">
+      <div class="text-center mb-4">
+        <h3 class="titulo-principal">FORMALIZAR EMPLEADO</h3>
+      </div>
+      <div style="background: rgba(0,0,0,0.05); padding: 1rem; border-radius: 8px; margin: 1rem 0; text-align: center;">
+        <p class="texto-normal"><strong>Usuario:</strong> {{usuarioAFormalizar?.nombres}} {{usuarioAFormalizar?.apellidos}}</p>
+        <p class="texto-normal"><strong>Documento:</strong> {{usuarioAFormalizar?.documento}}</p>
+      </div>
+      <form (ngSubmit)="submitFormalizar()">
+        <h4 class="subtitulo">Datos Organizacionales</h4>
+        <div class="form-grid mb-3">
+          <div class="form-group">
+            <label class="form-label">Área / Depto.</label>
+            <select class="input-neumorphic" name="area_id" [(ngModel)]="formalizarForm.area_id" required>
+              <option value="">Seleccione...</option>
+              <option *ngFor="let a of areas" [value]="a.id">{{a.nombre}}</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Cargo</label>
+            <select class="input-neumorphic" name="cargo_id" [(ngModel)]="formalizarForm.cargo_id" required>
+              <option value="">Seleccione...</option>
+              <option *ngFor="let c of cargos" [value]="c.id">{{c.nombre}}</option>
+            </select>
+          </div>
+        </div>
+
+        <h4 class="subtitulo" style="margin-top: 1.5rem;">Datos Laborales</h4>
+        <div class="form-grid mb-3">
+          <div class="form-group">
+            <label class="form-label">Tipo de Contrato</label>
+            <select class="input-neumorphic" name="tipo_contrato" [(ngModel)]="formalizarForm.tipo_contrato" required>
+              <option value="">Seleccione...</option>
+              <option value="Fijo">Término Fijo</option>
+              <option value="Indefinido">Término Indefinido</option>
+              <option value="Obra o Labor">Obra o Labor</option>
+              <option value="Prestación de Servicios">Prestación de Servicios</option>
+              <option value="Aprendizaje">Contrato de Aprendizaje</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Fecha Contratación</label>
+            <input type="date" class="input-neumorphic" name="fecha_contratacion" [(ngModel)]="formalizarForm.fecha_contratacion" required>
+          </div>
+          <div class="form-group" style="grid-column: 1 / -1;">
+            <label class="form-label">Salario Básico (Opcional)</label>
+            <input type="number" class="input-neumorphic" name="salario" [(ngModel)]="formalizarForm.salario">
+          </div>
+        </div>
+
+        <div class="acciones-centro" style="margin-top: 2rem;">
+          <button type="button" class="btn-general-5 btn-pill btn-action" (click)="cerrarModalFormalizar()">Cancelar</button>
+          <button type="submit" class="btn-save btn-pill btn-action" [disabled]="isSubmitting">
+            @if(isSubmitting) { <span class="spinner-small"></span> } @else { Completar }
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}
+
+<!-- MODAL BAJA -->
+@if(isBajaModalOpen) {
+  <div class="modal-overlay fade-in">
+    <div class="modal-content neumorphic-panel" style="max-width: 450px;">
+      <div class="text-center mb-4">
+        <h3 class="titulo-principal" style="color: #de3737;">SOLICITAR BAJA</h3>
+      </div>
+      <div style="background: rgba(222, 55, 55, 0.1); padding: 1rem; border-radius: 8px; margin: 1rem 0; text-align: center;">
+        <p style="font-size: 12px; color: #de3737;">Estás a punto de solicitar la inactivación de <strong>{{empleadoABaja?.usuario?.nombres}} {{empleadoABaja?.usuario?.apellidos}}</strong>. Esta acción debe ser aprobada por Gerencia.</p>
+      </div>
+      <form (ngSubmit)="submitBaja()">
+        <div class="form-group mb-3">
+          <label class="form-label">Motivo de la baja</label>
+          <textarea class="input-neumorphic" name="motivoBaja" [(ngModel)]="motivoBaja" rows="4" required placeholder="Describe brevemente..."></textarea>
+        </div>
+        <div class="acciones-centro" style="margin-top: 2rem;">
+          <button type="button" class="btn-general-5 btn-pill btn-action" (click)="cerrarModalBaja()">Cancelar</button>
+          <button type="submit" class="btn-volver btn-pill btn-action" [disabled]="isSubmitting">
+            @if(isSubmitting) { <span class="spinner-small"></span> } @else { Solicitar Baja }
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}
+
+<!-- MODAL VACACIONES -->
+@if (isVacacionesModalOpen && vacacionSeleccionada) {
+  <div class="modal-overlay fade-in">
+    <div class="modal-content neumorphic-panel" style="max-width: 500px;">
+      <div class="text-center mb-4">
+        <h3 class="titulo-principal">REVISAR VACACIONES</h3>
+      </div>
+      <div style="background: rgba(0,0,0,0.05); padding: 1rem; border-radius: 8px; margin: 1rem 0; text-align: center;">
+        <p class="texto-normal"><strong>Empleado:</strong> {{ vacacionSeleccionada.usuario?.nombres }} {{ vacacionSeleccionada.usuario?.apellidos }}</p>
+        <p class="texto-normal"><strong>Fechas:</strong> {{ vacacionSeleccionada.fecha_inicio | date:'mediumDate' }} al {{ vacacionSeleccionada.fecha_fin | date:'mediumDate' }}</p>
+        <p class="texto-normal"><strong>Tipo:</strong> {{ vacacionSeleccionada.tipo }}</p>
+        <p class="texto-normal"><strong>Observaciones:</strong> {{ vacacionSeleccionada.observaciones || 'Ninguna' }}</p>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Justificación (Obligatorio si rechaza)</label>
+        <textarea class="input-neumorphic" rows="3" [(ngModel)]="justificacionVacacion" placeholder="Ej. Fechas se cruzan con cierre..."></textarea>
+      </div>
+      <div class="acciones-centro" style="margin-top: 2rem;">
+        <button class="btn-general-5 btn-pill btn-action" (click)="cerrarModalVacaciones()">Cancelar</button>
+        <button class="btn-volver btn-pill btn-action" (click)="responderVacacion('rechazada')" [disabled]="isSubmitting || !justificacionVacacion.trim()">
+          @if (isSubmitting) { <span class="spinner-small"></span> } @else { Rechazar }
+        </button>
+        <button class="btn-save btn-pill btn-action" (click)="responderVacacion('aprobada')" [disabled]="isSubmitting">
+          @if (isSubmitting) { <span class="spinner-small"></span> } @else { Aprobar }
+        </button>
+      </div>
+    </div>
+  </div>
+}
