@@ -104,7 +104,7 @@
           </div>
 
           <div class="form-actions" style="margin-top: 1.5rem;">
-            <button type="submit" class="btn-guardar btn-pill" [disabled]="guardando">
+            <button type="submit" class="btn-save" [disabled]="guardando">
               <span *ngIf="guardando" class="spinner-small"></span> 
               {{ guardando ? 'Guardando...' : (modoEdicion ? 'Actualizar Directriz' : '+ Guardar Directriz') }}
             </button>

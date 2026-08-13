@@ -1,38 +1,155 @@
-// Uses global variables from styles or standard neumorphic colors
-.btn-volver {
-  background-color: #de3737;
-  color: white;
-  border: 2px solid #b02a2a;
-  border-radius: 50px;
-  padding: 8px 20px;
+
+@use 'sass:color';
+
+/* --- 1. VARIABLES GLOBALES DE COLOR --- */
+$bg-color: #f5f5dc;
+$shadow-light: #ffffff;
+$shadow-dark: #d1d1bc;
+
+$text-dark: #333333;
+$text-muted: #666666;
+
+$btn-add: #45a1ae;
+$btn-volver: #de3737;
+$btn-save: #066810;
+$btn-gen-1: #6B8F71;
+$btn-gen-2: #7C6FA6;
+$btn-gen-3: #C9A227;
+$btn-gen-4: #8E5B75;
+$btn-gen-5: #B5654A;
+$btn-gen-6: #A38B6D;
+
+/* --- 2. FONDOS Y LAYOUT PRINCIPAL --- */
+.module-container {
+  padding: 0;
+  background: $bg-color;
+  
+  font-family: 'Montserrat', sans-serif;
+  color: $text-dark;
+}
+
+/* --- 3. TIPOGRAFIA Y TEXTOS --- */
+.module-header h1 {
+  font-size: 16px;
   font-weight: bold;
-  cursor: pointer;
-  box-shadow: 4px 4px 10px #d5d5c0, -4px -4px 10px #ffffff;
+  text-transform: uppercase;
+  text-align: center;
+  margin-bottom: 0.5rem;
+}
+
+.module-header p {
+  font-size: 10px;
+  text-align: center;
+  color: $text-muted;
+}
+
+.subtitulo {
+  font-size: 13px;
+  text-transform: uppercase;
+  font-weight: bold;
+  text-align: left;
+  margin-bottom: 1rem;
+  color: $text-dark;
+}
+
+.form-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: #4a4a4a;
+  margin-bottom: 0.5rem;
+}
+
+/* --- 4. TARJETAS Y PANELES NEUMORFICOS --- */
+.neumorphic-panel, .glass-panel {
+  background: $bg-color;
+  border-radius: 16px;
+  box-shadow: 8px 8px 16px $shadow-dark, -8px -8px 16px $shadow-light;
+  padding: 1.2rem;
+  border: none;
+  margin-bottom: 0;
+}
+
+.neumorphic-panel-inner {
+  background: $bg-color;
+  border-radius: 12px;
+  box-shadow: inset 4px 4px 8px $shadow-dark, inset -4px -4px 8px $shadow-light;
+  padding: 1.5rem;
+  border: none;
+}
+
+/* --- 5. FORMULARIOS E INPUTS --- */
+.input-neumorphic, .form-control {
+  width: 100%;
+  padding: 0.85rem 1rem;
+  border: none;
+  border-radius: 10px;
+  background: $bg-color;
+  box-shadow: inset 6px 6px 10px $shadow-dark, inset -6px -6px 10px $shadow-light;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 12px;
+  color: $text-dark;
+  outline: none;
   transition: all 0.2s ease;
   
-  &:active {
-    box-shadow: inset 4px 4px 10px #9c2424, inset -4px -4px 10px #e45a5a;
+  &:focus {
+    box-shadow: inset 8px 8px 12px $shadow-dark, inset -8px -8px 12px $shadow-light;
   }
 }
 
-.btn-add {
-  background-color: #45a1ae;
-  color: black;
-  border: 2px solid #2c7b86;
-  padding: 10px 20px;
+/* --- 6. BOTONES (DISENO PILDORA Y TABS) --- */
+.btn-neumorphic {
+  padding: 0.75rem 1.5rem;
+  border-radius: 9999px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 12px;
   font-weight: bold;
+  text-transform: uppercase;
   cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 4px 4px 8px $shadow-dark, -4px -4px 8px $shadow-light;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+
+  &:active {
+    box-shadow: inset 4px 4px 8px rgba(0,0,0,0.1), inset -4px -4px 8px rgba(255,255,255,0.5);
+  }
 }
 
-.btn-guardar {
-  background-color: #066810;
-  color: white;
-  border: 2px solid #044a0b;
-  padding: 10px 25px;
-  font-weight: bold;
-  cursor: pointer;
+.btn-add { @extend .btn-neumorphic; background-color: $btn-add; border: 2px solid color.adjust($btn-add, $lightness: -20%); color: #000000; }
+.btn-volver { @extend .btn-neumorphic; background-color: $btn-volver; border: 2px solid color.adjust($btn-volver, $lightness: -20%); color: #ffffff; }
+.btn-save { @extend .btn-neumorphic; background-color: $btn-save; border: 2px solid color.adjust($btn-save, $lightness: -20%); color: #ffffff; }
+
+.btn-general-1 { @extend .btn-neumorphic; background-color: $btn-gen-1; border: 2px solid color.adjust($btn-gen-1, $lightness: -20%); color: #ffffff; }
+.btn-general-2 { @extend .btn-neumorphic; background-color: $btn-gen-2; border: 2px solid color.adjust($btn-gen-2, $lightness: -20%); color: #ffffff; }
+.btn-general-3 { @extend .btn-neumorphic; background-color: $btn-gen-3; border: 2px solid color.adjust($btn-gen-3, $lightness: -20%); color: #ffffff; }
+.btn-general-4 { @extend .btn-neumorphic; background-color: $btn-gen-4; border: 2px solid color.adjust($btn-gen-4, $lightness: -20%); color: #ffffff; }
+.btn-general-5 { @extend .btn-neumorphic; background-color: $btn-gen-5; border: 2px solid color.adjust($btn-gen-5, $lightness: -20%); color: #ffffff; }
+.btn-general-6 { @extend .btn-neumorphic; background-color: $btn-gen-6; border: 2px solid color.adjust($btn-gen-6, $lightness: -20%); color: #ffffff; }
+
+/* Navegacion tipo Tabs */
+.tab-neu-inactive {
+  @extend .btn-neumorphic;
+  background-color: $bg-color;
+  color: $text-muted;
+  border: none;
 }
 
+.tab-neu-active {
+  @extend .btn-neumorphic;
+  background-color: $bg-color;
+  color: $btn-add;
+  box-shadow: inset 4px 4px 8px $shadow-dark, inset -4px -4px 8px $shadow-light;
+  border: none;
+}
+
+/* ========================================= */
+/* FIN DE BASE NEUMORFICA, INICIO DE LOCALES */
+/* ========================================= */
+
+/* ESTILOS ESPECÍFICOS DE GESTIVA IA */
 .btn-icon {
   background: none;
   border: none;
@@ -50,4 +167,65 @@
   &.text-danger:hover {
     color: #de3737;
   }
+}
+
+.table-container {
+  overflow-x: auto;
+  border-radius: 12px;
+  box-shadow: inset 4px 4px 8px #d1d1bc, inset -4px -4px 8px #ffffff;
+  padding: 1rem;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  text-align: left;
+
+  th {
+    padding: 12px 15px;
+    font-weight: 600;
+    color: #666;
+    border-bottom: 2px solid rgba(0,0,0,0.05);
+  }
+
+  td {
+    padding: 12px 15px;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+  }
+
+  tbody tr:hover {
+    background-color: rgba(0,0,0,0.02);
+  }
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.full-width {
+  grid-column: 1 / -1;
+}
+
+.spinner-small {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top: 2px solid white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }

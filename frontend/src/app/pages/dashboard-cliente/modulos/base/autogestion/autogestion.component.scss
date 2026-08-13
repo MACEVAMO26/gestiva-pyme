@@ -21,9 +21,9 @@ $btn-gen-6: #A38B6D;
 
 /* --- 2. FONDOS Y LAYOUT PRINCIPAL --- */
 .module-container {
-  padding: 1.5rem;
+  padding: 0;
   background: $bg-color;
-  min-height: 100vh;
+  
   font-family: 'Montserrat', sans-serif;
   color: $text-dark;
 }
@@ -65,9 +65,9 @@ $btn-gen-6: #A38B6D;
   background: $bg-color;
   border-radius: 16px;
   box-shadow: 8px 8px 16px $shadow-dark, -8px -8px 16px $shadow-light;
-  padding: 2rem;
+  padding: 1.2rem;
   border: none;
-  margin-bottom: 2rem;
+  margin-bottom: 0;
 }
 
 .neumorphic-panel-inner {
@@ -163,7 +163,6 @@ $btn-contract: #7C6FA6;
 .autogestion-container {
   padding: 2rem;
   background-color: $bg-color;
-  min-height: 100vh;
   color: $text-dark;
   font-family: 'Montserrat', sans-serif;
 }
