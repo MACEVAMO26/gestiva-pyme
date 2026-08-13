@@ -1,60 +1,50 @@
 <div class="module-container fade-in">
-  <div class="module-header" style="display: flex; justify-content: space-between; align-items: center;">
-    <div>
-      <h1>Inventario</h1>
-      <p>Control de existencias, catálogo de productos, entradas, salidas y kardex.</p>
-    </div>
-    <div>
-      <button class="btn-save" style="background: #10b981;" (click)="exportarExcel()">
-        <i class="fas fa-file-excel" style="margin-right: 5px;"></i> Exportar a Excel
+  <div class="module-header text-center mb-4 relative">
+    <h1 class="titulo-principal">INVENTARIO</h1>
+    <p class="descripcion-general">Control de existencias, catálogo de productos, entradas, salidas y kardex.</p>
+    
+    <div class="acciones-centro mt-3">
+      <button class="btn-save btn-pill" (click)="exportarExcel()">
+        <i class="fas fa-file-excel icon-mr-5"></i> Exportar a Excel
       </button>
     </div>
   </div>
 
   <!-- HTML PESTAÑAS (TABS) -->
-  <div class="tabs-nav">
+  <div class="tabs-nav-wrapper">
     <button class="tab-neu-inactive" 
             [class.tab-neu-active]="activeTab === 'catalogo'" 
-            (click)="switchTab('catalogo')">
-      Catálogo
-    </button>
+            (click)="switchTab('catalogo')"> <span class="icon">📋</span> Catálogo </button>
     <button class="tab-neu-inactive" 
             [class.tab-neu-active]="activeTab === 'movimientos'" 
-            (click)="switchTab('movimientos')">
-      Entradas / Salidas
-    </button>
+            (click)="switchTab('movimientos')"> <span class="icon">📌</span> Entradas / Salidas </button>
     <button class="tab-neu-inactive" 
             [class.tab-neu-active]="activeTab === 'ajustes'" 
-            (click)="switchTab('ajustes')">
-      Ajustes
-    </button>
+            (click)="switchTab('ajustes')"> <span class="icon">📌</span> Ajustes </button>
     <button class="tab-neu-inactive" 
             [class.tab-neu-active]="activeTab === 'kardex'" 
-            (click)="switchTab('kardex')">
-      Kardex
-    </button>
+            (click)="switchTab('kardex')"> <span class="icon">📌</span> Kardex </button>
   </div>
 
   <!-- HTML CONTENIDO DE TABS -->
-  <div class="tab-content glass-panel p-4">
+  <div class="tab-content neumorphic-panel-inner p-4">
   <!-- Botón Volver Inyectado -->
-  <div style="margin-bottom: 1.5rem; display: flex; justify-content: flex-start;">
-    <button class="btn-volver" onclick="window.history.back()">
+  <div class="volver-wrapper">
+    <button class="btn-volver btn-pill" onclick="window.history.back()">
       <i class="fas fa-arrow-left"></i> Volver
     </button>
   </div>
     
     <!-- HTML CATALOGO DE PRODUCTOS -->
     @if(activeTab === 'catalogo') {
-      <div class="fade-in">
-        <div class="action-bar" style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
+      <div class="neumorphic-panel fade-in">
+        <div class="action-bar">
           <input type="text" 
                  class="search-input input-neumorphic" 
-                 style="width: 300px;"
                  placeholder="Buscar por código, nombre..."
                  [(ngModel)]="searchTerm">
                  
-          <button class="btn-add" (click)="abrirModal()">
+          <button class="btn-add btn-pill" (click)="abrirModal()">
             <i class="fas fa-plus"></i> Nuevo Producto
           </button>
         </div>
@@ -92,7 +82,7 @@
                     </span>
                   </td>
                   <td>
-                    <div style="display: flex; gap: 0.5rem; justify-content: center;">
+                    <div class="acciones-fila">
                       <button class="btn-icon" title="Editar"><i class="fas fa-edit"></i></button>
                       <button class="btn-icon text-danger" title="Eliminar"><i class="fas fa-trash"></i></button>
                     </div>
@@ -102,7 +92,7 @@
               @if(productosFiltrados.length === 0) {
                 <tr>
                   <td colspan="8" style="padding: 0;">
-                    <div class="empty-state" style="padding: 2rem; text-align: center; color: #94a3b8;">
+                    <div class="empty-state">
                       No hay productos registrados.
                     </div>
                   </td>
@@ -114,12 +104,12 @@
       </div>
     }
 
-    <!-- HTML ENTRADAS / SALIDAS -->
+<!-- HTML ENTRADAS / SALIDAS -->
     @if(activeTab === 'movimientos') {
-      <div class="fade-in">
-        <div class="glass-panel" style="padding: 1.5rem; margin-bottom: 2rem;">
-          <h3 style="margin-top: 0; color: #f97316; font-size: 1.2rem; text-transform: uppercase;">Registrar Movimiento</h3>
-          <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+      <div class="neumorphic-panel fade-in">
+        <div class="neumorphic-panel panel-seccion">
+          <h2 class="subtitulo">Registrar Movimiento</h2>
+          <div class="form-fila">
             <div class="form-group" style="flex: 1; min-width: 200px;">
               <label>Tipo *</label>
               <select class="input-neumorphic">
@@ -145,11 +135,11 @@
             <input type="text" class="input-neumorphic" placeholder="Ej. Compra a proveedor #1040">
           </div>
           <div style="text-align: right; margin-top: 1.5rem;">
-            <button class="btn-save">Registrar Movimiento</button>
+            <button class="btn-save btn-pill">Registrar Movimiento</button>
           </div>
         </div>
 
-        <h3 style="color: #cbd5e1; font-size: 1.2rem; text-transform: uppercase; margin-bottom: 1rem;">Historial Reciente</h3>
+        <h2 class="subtitulo">Historial Reciente</h2>
         <div class="table-responsive">
           <table class="premium-table data-table">
             <thead>
@@ -167,7 +157,7 @@
                 <td>25/07/2026</td>
                 <td><span class="badge badge-success">Entrada</span></td>
                 <td>Laptop Dell Inspiron</td>
-                <td>+10</td>
+                <td class="text-positivo">+10</td>
                 <td>Compra inicial</td>
                 <td>Admin</td>
               </tr>
@@ -175,7 +165,7 @@
                 <td>24/07/2026</td>
                 <td><span class="badge badge-danger">Salida</span></td>
                 <td>Mouse Inalámbrico</td>
-                <td>-2</td>
+                <td class="text-negativo">-2</td>
                 <td>Venta #0012</td>
                 <td>Asesor Ventas</td>
               </tr>
@@ -185,12 +175,12 @@
       </div>
     }
 
-    <!-- HTML AJUSTES -->
+<!-- HTML AJUSTES -->
     @if(activeTab === 'ajustes') {
-      <div class="fade-in">
-        <div class="glass-panel" style="padding: 1.5rem; margin-bottom: 2rem;">
-          <h3 style="margin-top: 0; color: #f97316; font-size: 1.2rem; text-transform: uppercase;">Nuevo Ajuste (Merma/Daño)</h3>
-          <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+      <div class="neumorphic-panel fade-in">
+        <div class="neumorphic-panel panel-seccion">
+          <h2 class="subtitulo">Nuevo Ajuste (Merma/Daño)</h2>
+          <div class="form-fila">
             <div class="form-group" style="flex: 2; min-width: 200px;">
               <label>Producto *</label>
               <select class="input-neumorphic">
@@ -208,11 +198,11 @@
             <input type="text" class="input-neumorphic" placeholder="Ej. Monitor dañado en bodega">
           </div>
           <div style="text-align: right; margin-top: 1.5rem;">
-            <button class="btn-save" style="background: #dc2626;">Aplicar Ajuste</button>
+            <button class="btn-save btn-pill">Aplicar Ajuste</button>
           </div>
         </div>
 
-        <h3 style="color: #cbd5e1; font-size: 1.2rem; text-transform: uppercase; margin-bottom: 1rem;">Registro de Ajustes</h3>
+        <h2 class="subtitulo">Registro de Ajustes</h2>
         <div class="table-responsive">
           <table class="premium-table data-table">
             <thead>
@@ -228,7 +218,7 @@
               <tr>
                 <td>20/07/2026</td>
                 <td>Monitor LG 24"</td>
-                <td style="color: #ef4444; font-weight: bold;">-1</td>
+                <td class="text-negativo">-1</td>
                 <td>Pantalla rota al desempacar</td>
                 <td>Gerente General</td>
               </tr>
@@ -238,10 +228,10 @@
       </div>
     }
 
-    <!-- HTML KARDEX -->
+<!-- HTML KARDEX -->
     @if(activeTab === 'kardex') {
-      <div class="fade-in">
-        <div class="action-bar" style="display: flex; gap: 1rem; margin-bottom: 1.5rem; align-items: flex-end;">
+      <div class="neumorphic-panel fade-in">
+        <div class="action-bar-kardex">
           <div class="form-group" style="flex: 2; margin: 0;">
             <label>Seleccionar Producto para Kardex</label>
             <select class="input-neumorphic">
@@ -253,7 +243,7 @@
             <label>Mes</label>
             <input type="month" class="input-neumorphic">
           </div>
-          <button class="btn-general" style="background: #3b82f6; padding: 0.8rem 1.5rem;"><i class="fas fa-search"></i> Generar</button>
+          <button class="btn-add btn-pill"><i class="fas fa-search"></i> Generar</button>
         </div>
 
         <div class="table-responsive">
@@ -278,7 +268,7 @@
               <tr>
                 <td>05/07/2026</td>
                 <td>Compra Proveedor A</td>
-                <td style="color: #10b981;">+10</td>
+                <td class="text-positivo">+10</td>
                 <td>-</td>
                 <td><strong>10</strong></td>
               </tr>
@@ -286,13 +276,13 @@
                 <td>12/07/2026</td>
                 <td>Venta Mostrador</td>
                 <td>-</td>
-                <td style="color: #ef4444;">-2</td>
+                <td class="text-negativo">-2</td>
                 <td><strong>8</strong></td>
               </tr>
               <tr>
                 <td>15/07/2026</td>
                 <td>Entrada por Devolución</td>
-                <td style="color: #10b981;">+1</td>
+                <td class="text-positivo">+1</td>
                 <td>-</td>
                 <td><strong>9</strong></td>
               </tr>
@@ -307,9 +297,9 @@
 <!-- HTML MODAL NUEVO PRODUCTO -->
 @if(showModal) {
 <div class="modal-overlay fade-in">
-  <div class="modal-content glass-panel" style="max-width: 500px;">
+  <div class="modal-content neumorphic-panel" style="max-width: 500px;">
     <div class="modal-header">
-      <h1>Nuevo Producto</h1>
+      <h1 class="titulo-principal">NUEVO PRODUCTO</h1>
       <button class="btn-close" (click)="cerrarModal()">&times;</button>
     </div>
     <div class="modal-body">
@@ -357,9 +347,9 @@
         </div>
       </div>
     
-    <div class="modal-footer" style="display: flex; justify-content: center; gap: 1rem; margin-top: 1.5rem;">
-      <button class="btn-volver" (click)="cerrarModal()">Volver</button>
-      <button class="btn-save" (click)="guardarProducto()" [disabled]="guardando">
+<div class="modal-footer" style="margin-top: 2rem;">
+      <button class="btn-volver btn-pill" (click)="cerrarModal()">Volver</button>
+      <button class="btn-save btn-pill" (click)="guardarProducto()" [disabled]="guardando">
         @if(guardando) {
           <i class="fas fa-spinner fa-spin"></i> Guardando...
         } @else {

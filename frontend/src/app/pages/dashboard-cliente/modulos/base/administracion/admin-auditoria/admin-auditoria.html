@@ -1,15 +1,15 @@
 <div class="fade-in">
   <!-- Botón Volver Inyectado -->
-  <div style="margin-bottom: 2rem;">
-    <button class="btn-volver" onclick="window.history.back()">
+  <div class="volver-wrapper">
+    <button class="btn-volver btn-pill" onclick="window.history.back()">
       <i class="fas fa-arrow-left"></i> VOLVER
     </button>
   </div>
   
-  <div class="module-header" style="text-align: center; margin-bottom: 2rem;">
-    <h1 style="margin-bottom: 1rem; font-size: 16px; font-weight: bold; text-transform: uppercase;">AUDITORÍA DEL SISTEMA</h1>
-    <div class="info-box neumorphic-panel" style="margin: 0 auto; max-width: 400px; padding: 1rem; border-radius: 12px;">
-      <p style="margin: 0; font-size: 11px;"><strong>🛡️ Lectura de Seguridad:</strong> Este módulo registra automáticamente todas las acciones sensibles realizadas por los usuarios en la plataforma.</p>
+  <div class="module-header text-center mb-4 relative">
+    <h1>AUDITORÍA DEL SISTEMA</h1>
+    <div class="info-box-neu neumorphic-panel">
+      <p class="texto-normal"><strong>🛡️ Lectura de Seguridad:</strong> Este módulo registra automáticamente todas las acciones sensibles realizadas por los usuarios en la plataforma.</p>
     </div>
   </div>
 
@@ -48,7 +48,7 @@
                 <span class="role-badge">{{ log.accion }}</span>
               </td>
               <td>
-                <div style="max-width: 400px; overflow-wrap: break-word; color: #555;">
+<div style="max-width: 400px; overflow-wrap: break-word;" class="text-muted">
                   {{ log.detalles || 'Sin detalles' }}
                 </div>
               </td>

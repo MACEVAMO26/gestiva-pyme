@@ -1,37 +1,41 @@
-<div class="module-container">
+<div class="module-container fade-in">
 <!-- HTML ENCABEZADO -->
-    <header class="module-header">
+    <div class="module-header text-center mb-4 relative">
         <div class="header-title">
             <h1>Gestión de Clientes y Leads</h1>
             <p class="text-gray-400 text-sm mt-1 mb-6">Administra tus contactos, prospectos comerciales y portafolio de clientes.</p>
         </div>
         <div class="header-actions">
             @if(tabActiva === 'directorio') {
-                <button class="btn-add" (click)="abrirModalNuevo()">
+                <button class="btn-add btn-pill" (click)="abrirModalNuevo()">
                     + Nuevo Cliente
                 </button>
             }
             @if(tabActiva === 'leads') {
-                <button class="btn-add" (click)="abrirModalNuevoLead()">
+                <button class="btn-add btn-pill" (click)="abrirModalNuevoLead()">
                     + Registrar Lead
                 </button>
             }
         </div>
-    </header>
-
-    <!-- HTML NAVEGACION TABS -->
-    <div class="tabs-nav">
-        <button class="tab-neu-inactive" [class.tab-neu-active]="tabActiva === 'directorio'" (click)="tabActiva = 'directorio'">
-            Directorio de Clientes
-        </button>
-        <button class="tab-neu-inactive" [class.tab-neu-active]="tabActiva === 'leads'" (click)="tabActiva = 'leads'">
-            Bandeja de Leads
-        </button>
     </div>
 
-    @if(tabActiva === 'directorio') {
+    <!-- HTML NAVEGACION TABS -->
+    <div class="tabs-nav-wrapper">
+        <button class="tab-neu-inactive" [class.tab-neu-active]="tabActiva === 'directorio'" (click)="tabActiva = 'directorio'"> <span class="icon">👥</span> Directorio de Clientes </button>
+        <button class="tab-neu-inactive" [class.tab-neu-active]="tabActiva === 'leads'" (click)="tabActiva = 'leads'"> <span class="icon">📌</span> Bandeja de Leads </button>
+    </div>
+    <div class="tab-content neumorphic-panel-inner p-4">
+        <div class="volver-wrapper">
+            <button class="btn-volver btn-pill" onclick="window.history.back()">
+                <i class="fas fa-arrow-left"></i> Volver
+            </button>
+        </div>
 
-    <div class="glass-panel filter-panel">
+
+    @if(tabActiva === 'directorio') {
+        <div class="neumorphic-panel fade-in">
+
+    <div class="neumorphic-panel filter-panel">
         <div class="filter-controls">
             <input type="text" placeholder="Buscar por Nombre, ID, Contacto..." class="input-neumorphic search-input" [(ngModel)]="searchTerm" (input)="filtrarClientes()">
             <select class="input-neumorphic filter-select" [(ngModel)]="tipoFiltro" (change)="filtrarClientes()">
@@ -43,7 +47,7 @@
     </div>
 
     <!-- HTML TABLA PRINCIPAL DE CLIENTES -->
-    <div class="glass-panel table-panel">
+    <div class="neumorphic-panel table-panel">
         <div class="table-responsive">
             <table class="premium-table">
                 <thead>
@@ -61,8 +65,8 @@
                     @for (cliente of clientesFiltrados; track cliente.id) {
                     <tr>
                         <td>
-                            <div style="display: flex; align-items: center; gap: 1rem;">
-                                <div class="avatar-circle" style="background: linear-gradient(135deg, #f97316, #ea580c); width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; color: white;">
+<div style="display: flex; align-items: center; gap: 1rem;">
+                                <div class="avatar-circle">
                                     {{ obtenerIniciales(cliente.nombres, cliente.apellidos) }}
                                 </div>
                                 <div>
@@ -90,19 +94,19 @@
                                 {{cliente.estado_financiero || 'Sin Pre-facturas'}}
                             </span>
                         </td>
-                        <td style="max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" [title]="cliente.comentarios">
+<td class="cell-truncate" [title]="cliente.comentarios">
                             {{cliente.comentarios || '...'}}
                         </td>
                         <td class="actions">
                             <button class="btn-icon" title="Editar" (click)="editarCliente(cliente)">✏️</button>
                             <button class="btn-icon text-danger" title="Eliminar" (click)="eliminarCliente(cliente.id)" [disabled]="deletingId === cliente.id">
                                 <span *ngIf="deletingId !== cliente.id">🗑️</span>
-                                <span *ngIf="deletingId === cliente.id" class="flex items-center">
+<span *ngIf="deletingId === cliente.id" class="flex items-center">
                                     <svg class="animate-spin h-4 w-4 text-red-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                                         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                     </svg>
-                                    <span style="font-size: 0.75rem; margin-left: 0.25rem;">Eliminando...</span>
+                                    Eliminando...
                                 </span>
                             </button>
                         </td>
@@ -111,7 +115,7 @@
                     @if(clientesFiltrados.length === 0) {
                     <tr>
                         <td colspan="7">
-                            <div class="empty-state" style="padding: 2rem; text-align: center; color: #94a3b8;">
+<div class="empty-state">
                                 No hay clientes registrados.
                             </div>
                         </td>
@@ -122,10 +126,12 @@
             </table>
         </div>
     </div>
+        </div>
     } <!-- End if Directorio -->
 
     @if(tabActiva === 'leads') {
-    <!-- HTML BANDEJA DE LEADS KANBAN -->
+        <div class="neumorphic-panel fade-in">
+        <!-- HTML BANDEJA DE LEADS KANBAN -->
     <div class="kanban-board mt-4">
         <!-- COLUMNA: NUEVOS / PENDIENTES -->
         <div class="kanban-column">
@@ -138,12 +144,12 @@
                     <div class="empty-kanban">Sin prospectos nuevos</div>
                 }
                 @for (lead of leadsPendientes; track lead.id) {
-                    <div class="kanban-card glass-panel">
+                    <div class="kanban-card neumorphic-panel">
                         <h5>{{ lead.nombre }}</h5>
                         <p class="text-sm">📞 {{ lead.telefono }}</p>
                         <p class="text-sm text-muted">✉️ {{ lead.correo }}</p>
-                        <div class="kanban-meta mt-2">
-                            <span class="meta-tag assigned" style="background: rgba(245, 158, 11, 0.15); color: #fcd34d; border: 1px solid rgba(245, 158, 11, 0.3);">
+<div class="kanban-meta mt-2">
+                            <span class="meta-tag">
                                 {{ lead.horario_llamada || 'Sin horario' }}
                             </span>
                         </div>
@@ -168,11 +174,11 @@
                     <div class="empty-kanban">Sin prospectos en proceso</div>
                 }
                 @for (lead of leadsContactados; track lead.id) {
-                    <div class="kanban-card glass-panel">
+                    <div class="kanban-card neumorphic-panel">
                         <h5>{{ lead.nombre }}</h5>
                         <p class="text-sm">📞 {{ lead.telefono }}</p>
-                        <div class="kanban-meta mt-2">
-                            <span class="meta-tag assigned" style="background: rgba(59, 130, 246, 0.15); color: #93c5fd; border: 1px solid rgba(59, 130, 246, 0.3);">
+<div class="kanban-meta mt-2">
+                            <span class="meta-tag">
                                 {{ lead.horario_llamada || 'Llamar pronto' }}
                             </span>
                         </div>
@@ -200,7 +206,7 @@
                     <div class="empty-kanban">Sin archivados</div>
                 }
                 @for (lead of leadsArchivados; track lead.id) {
-                    <div class="kanban-card glass-panel done">
+                    <div class="kanban-card neumorphic-panel done">
                         <h5>{{ lead.nombre }}</h5>
                         <p class="text-sm">📞 {{ lead.telefono }}</p>
                         <div class="kanban-actions mt-3">
@@ -212,12 +218,15 @@
             </div>
         </div>
     </div>
+        </div>
     } <!-- End if Leads -->
+
+    </div>
 
     <!-- HTML MODAL DE CREACION DE CLIENTE -->
     @if(mostrarModal) {
     <div class="modal-overlay">
-        <div class="glass-panel modal-content">
+        <div class="neumorphic-panel modal-content">
             <div class="modal-header">
                 <h1>{{ isEditMode ? 'Editar Cliente' : 'Nuevo Cliente' }}</h1>
                 <button class="btn-icon" (click)="cerrarModal()">✕</button>
@@ -261,14 +270,14 @@
                             <input type="text" class="input-neumorphic" [(ngModel)]="clienteActual.membresia" name="membresia" placeholder="Ej: VIP, Gold...">
                         </div>
                     </div>
-                    <div class="form-group" style="margin-top: 15px;">
+<div class="form-group mt-4">
                         <label>Comentarios</label>
                         <textarea class="input-neumorphic" [(ngModel)]="clienteActual.comentarios" name="comentarios" rows="3"></textarea>
                     </div>
                     
                     <div class="modal-footer">
                         <button type="button" class="btn-secondary" (click)="cerrarModal()">Cancelar</button>
-                        <button type="submit" class="btn-save" [disabled]="!clienteForm.form.valid || isSaving">
+                        <button type="submit" class="btn-save btn-pill" [disabled]="!clienteForm.form.valid || isSaving">
                             <span *ngIf="!isSaving">Guardar Cliente</span>
                             <span *ngIf="isSaving" class="flex items-center">
                                 <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -288,7 +297,7 @@
     <!-- HTML MODAL DE CREACION DE LEAD -->
     @if(mostrarModalLead) {
     <div class="modal-overlay" (click)="cerrarModalLead()">
-        <div class="glass-panel modal-content" (click)="$event.stopPropagation()">
+        <div class="neumorphic-panel modal-content" (click)="$event.stopPropagation()">
             <div class="modal-header">
                 <h1>{{ isEditMode ? 'Editar Lead' : 'Registrar Nuevo Lead' }}</h1>
                 <button class="btn-icon" (click)="cerrarModalLead()">✕</button>
@@ -300,7 +309,7 @@
                         <input type="text" [(ngModel)]="leadActual.nombre" name="leadNombre" class="input-neumorphic" required>
                     </div>
                     
-                    <div class="form-grid" style="margin-top: 1.25rem;">
+<div class="form-grid mt-5">
                         <div class="form-group">
                             <label>Teléfono *</label>
                             <input type="text" [(ngModel)]="leadActual.telefono" name="leadTelefono" class="input-neumorphic" required>
@@ -311,7 +320,7 @@
                         </div>
                     </div>
 
-                    <div class="form-grid" style="margin-top: 1.25rem;">
+<div class="form-grid mt-5">
                         <div class="form-group">
                             <label>Horario Preferido (Llamada)</label>
                             <input type="text" [(ngModel)]="leadActual.horario_llamada" name="leadHorario" class="input-neumorphic" placeholder="Ej. Tarde 2pm-5pm">
@@ -326,14 +335,14 @@
                         </div>
                     </div>
 
-                    <div class="form-group" style="margin-top: 1.25rem;">
+<div class="form-group mt-5">
                         <label>Notas / Mensaje Inicial</label>
                         <textarea [(ngModel)]="leadActual.mensaje" name="leadMensaje" class="input-neumorphic" rows="3"></textarea>
                     </div>
 
                     <div class="modal-footer">
                         <button type="button" class="btn-secondary" (click)="cerrarModalLead()">Cancelar</button>
-                        <button type="submit" class="btn-save" [disabled]="!leadForm.form.valid || isSaving">
+                        <button type="submit" class="btn-save btn-pill" [disabled]="!leadForm.form.valid || isSaving">
                             <span *ngIf="!isSaving">Guardar Lead</span>
                             <span *ngIf="isSaving" class="flex items-center">
                                 <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">

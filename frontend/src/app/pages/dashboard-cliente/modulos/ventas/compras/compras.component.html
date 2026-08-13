@@ -5,39 +5,34 @@
   </div>
 
   <!-- HTML TABS NAVEGACION -->
-  <div class="tabs-nav">
+  <div class="tabs-nav-wrapper">
     <button class="tab-neu-inactive" 
             [class.tab-neu-active]="activeTab === 'ordenes'" 
-            (click)="switchTab('ordenes')">
-      Órdenes de Compra
-    </button>
+            (click)="switchTab('ordenes')"> <span class="icon">📌</span> Órdenes de Compra </button>
     <button class="tab-neu-inactive" 
             [class.tab-neu-active]="activeTab === 'recepcion'" 
-            (click)="switchTab('recepcion')">
-      Recepción de Mercancía
-    </button>
+            (click)="switchTab('recepcion')"> <span class="icon">📥</span> Recepción de Mercancía </button>
   </div>
 
-  <!-- HTML CONTENIDO PRINCIPAL -->
-  <div class="tab-content glass-panel p-4">
+<!-- HTML CONTENIDO PRINCIPAL -->
+  <div class="tab-content neumorphic-panel-inner p-4">
   <!-- Botón Volver Inyectado -->
-  <div style="margin-bottom: 1.5rem; display: flex; justify-content: flex-start;">
-    <button class="btn-volver" onclick="window.history.back()">
+  <div class="volver-wrapper">
+    <button class="btn-volver btn-pill" onclick="window.history.back()">
       <i class="fas fa-arrow-left"></i> Volver
     </button>
   </div>
     
     <!-- HTML ORDENES DE COMPRA -->
     @if(activeTab === 'ordenes') {
-      <div class="fade-in">
-        <div class="action-bar" style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
+      <div class="neumorphic-panel fade-in">
+        <div class="action-bar">
           <input type="text" 
                  class="search-input input-neumorphic" 
-                 style="width: 300px;"
                  placeholder="Buscar por número, proveedor..."
                  [(ngModel)]="searchTerm">
                  
-          <button class="btn-add" (click)="abrirModalOrden()">
+          <button class="btn-add btn-pill" (click)="abrirModalOrden()">
             <i class="fas fa-plus"></i> Nueva Orden
           </button>
         </div>
@@ -66,8 +61,8 @@
                       {{orden.estado}}
                     </span>
                   </td>
-                  <td>
-                    <div style="display: flex; gap: 0.5rem; justify-content: center;">
+<td>
+                    <div class="acciones-fila">
                       <button class="btn-icon" title="Ver Detalle"><i class="fas fa-eye"></i></button>
                       <button class="btn-icon text-danger" title="Anular" *ngIf="orden.estado === 'Pendiente'"><i class="fas fa-ban"></i></button>
                     </div>
@@ -77,7 +72,7 @@
               @if(ordenesFiltradas.length === 0) {
                 <tr>
                   <td colspan="6" style="padding: 0;">
-                    <div class="empty-state" style="padding: 2rem; text-align: center; color: #94a3b8;">
+                    <div class="empty-state">
                       No hay órdenes de compra registradas.
                     </div>
                   </td>
@@ -91,10 +86,10 @@
 
     <!-- HTML RECEPCION MERCANCIA -->
     @if(activeTab === 'recepcion') {
-      <div class="fade-in">
-        <div class="glass-panel" style="padding: 1.5rem; margin-bottom: 2rem;">
-          <h3 style="margin-top: 0; color: #f97316; font-size: 1.2rem; text-transform: uppercase;">Recibir Mercancía</h3>
-          <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+      <div class="neumorphic-panel fade-in">
+<div class="neumorphic-panel recepcion-panel">
+          <h2 class="subtitulo">Recibir Mercancía</h2>
+          <div class="recepcion-fila">
             <div class="form-group" style="flex: 2; min-width: 200px;">
               <label>Seleccionar Orden Pendiente *</label>
               <select class="input-neumorphic" [(ngModel)]="ordenSeleccionadaRecepcion">
@@ -117,12 +112,12 @@
             <input type="text" class="input-neumorphic" placeholder="Ej. Mercancía recibida en buen estado. Faltó 1 caja de cables.">
           </div>
           
-          <div style="text-align: right; margin-top: 1.5rem;">
-            <button class="btn-save" (click)="abrirModalRecepcion()">Completar Recepción</button>
+          <div class="recepcion-accion">
+            <button class="btn-save btn-pill" (click)="abrirModalRecepcion()">Completar Recepción</button>
           </div>
         </div>
 
-        <h3 style="color: #cbd5e1; font-size: 1.2rem; text-transform: uppercase; margin-bottom: 1rem;">Últimas Recepciones</h3>
+        <h2 class="subtitulo">Últimas Recepciones</h2>
         <div class="table-responsive">
           <table class="premium-table data-table">
             <thead>
@@ -146,8 +141,8 @@
                   </tr>
                 }
               }
-              <tr>
-                <td colspan="4" style="text-align: center; color: #64748b; padding: 2rem;">Consulte el historial de órdenes recibidas.</td>
+<tr>
+                <td colspan="4" class="tabla-vacia">Consulte el historial de órdenes recibidas.</td>
               </tr>
             </tbody>
           </table>
@@ -160,7 +155,7 @@
 <!-- HTML MODAL NUEVA ORDEN -->
 @if(showModalOrden) {
 <div class="modal-overlay fade-in">
-  <div class="modal-content glass-panel" style="max-width: 600px;">
+  <div class="modal-content neumorphic-panel" style="max-width: 600px;">
     <div class="modal-header">
       <h1>Nueva Orden de Compra</h1>
       <button class="btn-close" (click)="cerrarModalOrden()">&times;</button>
@@ -181,9 +176,9 @@
       </div>
       
       <!-- Detalle simulado de productos -->
-      <div style="background: rgba(0,0,0,0.2); padding: 1rem; border-radius: 8px; margin: 1rem 0;">
-        <h4 style="margin: 0 0 0.5rem 0; color: #f97316;">Detalle de Productos</h4>
-        <div style="display: flex; gap: 0.5rem;">
+      <div class="product-box">
+        <h4>Detalle de Productos</h4>
+        <div class="producto-fila">
           <select class="input-neumorphic" style="flex: 2;" [(ngModel)]="productoActualCompra">
             <option value="" disabled selected>Buscar producto...</option>
             @for(prod of productosDisponibles; track prod.id) {
@@ -192,12 +187,12 @@
           </select>
           <input type="number" class="input-neumorphic" placeholder="Cant." style="flex: 1;" [(ngModel)]="cantidadActualCompra">
           <input type="number" class="input-neumorphic" placeholder="Costo Unit ($)" style="flex: 1;" [(ngModel)]="precioActualCompra">
-          <button class="btn-general" style="background: #3b82f6;" (click)="agregarAlCarrito()">Agregar</button>
+          <button class="btn-add btn-pill btn-agregar" (click)="agregarAlCarrito()">Agregar</button>
         </div>
         
-        <div style="margin-top: 1rem;">
+        <div class="producto-lista">
           @for(item of carritoCompras; track item.id; let idx = $index) {
-            <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.05); padding: 0.5rem; margin-bottom: 0.25rem; border-radius: 4px;">
+            <div class="cart-item">
               <span>{{item.nombre}} - {{item.cantidad}} x {{item.precio_compra | currency:'COP':'symbol':'1.0-0'}} = <strong>{{item.subtotal | currency:'COP':'symbol':'1.0-0'}}</strong></span>
               <button class="btn-icon text-danger" (click)="removerDelCarrito(idx)"><i class="fas fa-times"></i></button>
             </div>
@@ -205,7 +200,7 @@
         </div>
         
         @if(carritoCompras.length === 0) {
-          <p style="font-size: 0.8rem; color: #94a3b8; text-align: center; margin-top: 1rem;">No hay productos agregados.</p>
+          <p class="carrito-vacio">No hay productos agregados.</p>
         }
       </div>
 
@@ -219,9 +214,9 @@
       </div>
     </div>
     
-    <div class="modal-footer" style="display: flex; justify-content: center; gap: 1rem; margin-top: 1.5rem;">
-      <button class="btn-volver" (click)="cerrarModalOrden()">Volver</button>
-      <button class="btn-save" (click)="guardarOrden()" [disabled]="guardando">
+    <div class="modal-footer">
+      <button class="btn-volver btn-pill" (click)="cerrarModalOrden()">Volver</button>
+      <button class="btn-save btn-pill" (click)="guardarOrden()" [disabled]="guardando">
         @if(guardando) {
           <i class="fas fa-spinner fa-spin"></i> Guardando...
         } @else {
@@ -236,17 +231,17 @@
 <!-- HTML MODAL RECEPCION -->
 @if(showModalRecepcion) {
 <div class="modal-overlay fade-in">
-  <div class="modal-content glass-panel" style="max-width: 400px; text-align: center;">
-    <div class="modal-header" style="justify-content: center; border-bottom: none;">
-      <i class="fas fa-box-open" style="font-size: 3rem; color: #10b981; margin-bottom: 1rem;"></i>
+  <div class="modal-content neumorphic-panel" style="max-width: 400px; text-align: center;">
+    <div class="modal-header modal-header-center">
+      <i class="fas fa-box-open icon-success"></i>
     </div>
     <div class="modal-body">
-      <h1 style="margin-top: 0;">¿Confirmar Recepción?</h1>
-      <p style="color: #cbd5e1; margin-bottom: 2rem;">Al confirmar, los productos de la orden ingresarán automáticamente al stock del sistema de inventario.</p>
+      <h1>¿Confirmar Recepción?</h1>
+      <p class="text-muted" style="margin-bottom: 2rem;">Al confirmar, los productos de la orden ingresarán automáticamente al stock del sistema de inventario.</p>
       
-      <div style="display: flex; justify-content: center; gap: 1rem;">
-        <button class="btn-volver" (click)="cerrarModalRecepcion()">Cancelar</button>
-        <button class="btn-save" (click)="recibirOrden()" [disabled]="guardando">
+      <div class="modal-footer">
+        <button class="btn-volver btn-pill" (click)="cerrarModalRecepcion()">Cancelar</button>
+        <button class="btn-save btn-pill" (click)="recibirOrden()" [disabled]="guardando">
           @if(guardando) {
             <i class="fas fa-spinner fa-spin"></i> Procesando...
           } @else {

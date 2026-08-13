@@ -216,7 +216,7 @@ $btn-gen-6: #A38B6D;
 
 .badge-activo { color: #066810; border: 1px solid rgba(6, 104, 16, 0.2); }
 .badge-baja { color: #de3737; border: 1px solid rgba(222, 55, 55, 0.2); }
-.badge-pendiente { color: #f97316; border: 1px solid rgba(249, 115, 22, 0.2); }
+.badge-pendiente { color: #C9A227; border: 1px solid rgba(201, 162, 39, 0.2); }
 
 /* --- 9. MODALES --- */
 .modal-overlay {
@@ -287,3 +287,7 @@ $btn-gen-6: #A38B6D;
 
 .fade-in { animation: fadeIn 0.3s ease-in-out; }
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+.volver-wrapper {
+  margin-bottom: 2rem;
+}

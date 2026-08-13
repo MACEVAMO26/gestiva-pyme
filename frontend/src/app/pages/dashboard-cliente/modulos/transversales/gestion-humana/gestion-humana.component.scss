@@ -80,11 +80,16 @@ $btn-gen-6: #A38B6D;
 
 /* --- 5. TABS DE NAVEGACION --- */
 .tabs-nav-wrapper {
+  background: $bg-color;
+  border-radius: 9999px;
+  box-shadow: inset 4px 4px 8px $shadow-dark, inset -4px -4px 8px $shadow-light;
+  padding: 0.5rem;
+  margin: 0 auto 2rem auto;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   gap: 0.5rem;
-  margin-bottom: 2rem;
+  width: fit-content;
 }
 
 .tab-neu-inactive, .tab-neu-active {
@@ -159,6 +164,12 @@ $btn-gen-6: #A38B6D;
   margin-bottom: 1.5rem;
 }
 
+.volver-wrapper {
+  margin-bottom: 1.5rem;
+  display: flex;
+  justify-content: flex-start;
+}
+
 .acciones-tabla-centro {
   display: flex;
   gap: 0.5rem;
@@ -216,7 +227,7 @@ $btn-gen-6: #A38B6D;
 
 .badge-activo { color: #066810; border: 1px solid rgba(6, 104, 16, 0.2); }
 .badge-baja { color: #de3737; border: 1px solid rgba(222, 55, 55, 0.2); }
-.badge-pendiente { color: #f97316; border: 1px solid rgba(249, 115, 22, 0.2); }
+.badge-pendiente { color: #C9A227; border: 1px solid rgba(201, 162, 39, 0.2); }
 
 /* --- 9. MODALES --- */
 .modal-overlay {
@@ -234,6 +245,43 @@ $btn-gen-6: #A38B6D;
   max-width: 600px;
   max-height: 90vh;
   overflow-y: auto;
+}
+
+.text-danger { color: $btn-volver; }
+
+.banner {
+  padding: 1rem;
+  border-radius: 8px;
+  margin: 1rem 0;
+  text-align: center;
+}
+
+.banner-aviso {
+  background: rgba(201, 162, 39, 0.1);
+  margin-bottom: 1rem;
+  text-align: left;
+}
+
+.banner-peligro {
+  background: rgba(222, 55, 55, 0.1);
+}
+
+.banner-neutral {
+  background: rgba(0,0,0,0.05);
+}
+
+.banner-text {
+  margin: 0;
+  font-size: 12px;
+  color: $text-dark;
+}
+
+.banner-aviso .banner-text {
+  color: $btn-gen-3;
+}
+
+.banner-peligro .banner-text {
+  color: $btn-volver;
 }
 
 .form-grid {

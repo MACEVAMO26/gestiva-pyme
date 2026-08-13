@@ -25,6 +25,8 @@ export class CajaComponent implements OnInit {
 
   montoApertura = 0;
   montoCierre = 0;
+  mostrarFormNuevaCaja = false;
+  baseNuevaCaja = 0;
 
   nuevoMovimiento: CajaMovimiento = {
     caja_id: 0,
@@ -47,6 +49,27 @@ export class CajaComponent implements OnInit {
       error: () => {
         this.cajas = [];
         this.cargando = false;
+      }
+    });
+  }
+
+  crearNuevaCaja() {
+    if (this.baseNuevaCaja < 0) {
+      this.toast.warning('Ingrese una base inicial válida');
+      return;
+    }
+    this.procesando = true;
+    this.cajaService.crearCaja(this.baseNuevaCaja).pipe(timeout(8000)).subscribe({
+      next: (res) => {
+        this.toast.success('Caja creada correctamente');
+        this.mostrarFormNuevaCaja = false;
+        this.baseNuevaCaja = 0;
+        this.procesando = false;
+        this.cargarCajas();
+      },
+      error: () => {
+        this.toast.error('Error al crear la caja');
+        this.procesando = false;
       }
     });
   }

@@ -1,49 +1,44 @@
 <div class="module-container fade-in">
 
-  <div class="module-header" style="display: flex; justify-content: space-between; align-items: center;">
-    <div>
-      <h1>Ventas</h1>
-      <p>Gestión de Punto de Venta (POS) y registro de facturación de clientes.</p>
-    </div>
-    <div>
-      <button class="btn-save" style="background: #10b981;" (click)="exportarExcel()">
-        <i class="fas fa-file-excel" style="margin-right: 5px;"></i> Exportar a Excel
+  <div class="module-header text-center mb-4 relative">
+    <h1 class="titulo-principal">VENTAS</h1>
+    <p class="descripcion-general">Gestión de Punto de Venta (POS) y registro de facturación de clientes.</p>
+    
+    <div class="acciones-centro mt-3">
+      <button class="btn-save btn-pill" (click)="exportarExcel()">
+        <i class="fas fa-file-excel icon-mr-5"></i> Exportar a Excel
       </button>
     </div>
   </div>
 
   <!-- HTML PESTAÑAS -->
-  <div class="tabs-nav">
+  <div class="tabs-nav-wrapper">
     <button class="tab-neu-inactive" 
             [class.tab-neu-active]="activeTab === 'pos'" 
-            (click)="switchTab('pos')">
-      Punto de Venta
-    </button>
+            (click)="switchTab('pos')"> <span class="icon">🛒</span> Punto de Venta </button>
     <button class="tab-neu-inactive" 
             [class.tab-neu-active]="activeTab === 'historial'" 
-            (click)="switchTab('historial')">
-      Historial de Ventas
-    </button>
+            (click)="switchTab('historial')"> <span class="icon">📜</span> Historial de Ventas </button>
   </div>
 
   <!-- HTML CONTENIDO DE TABS -->
-<div class="tab-content glass-panel p-4">
+  <div class="tab-content neumorphic-panel-inner p-4">
   <!-- Botón Volver Inyectado -->
-  <div style="margin-bottom: 1.5rem; display: flex; justify-content: flex-start;">
-    <button class="btn-volver" onclick="window.history.back()">
+  <div class="volver-wrapper">
+    <button class="btn-volver btn-pill" onclick="window.history.back()">
       <i class="fas fa-arrow-left"></i> Volver
     </button>
   </div>
     
     <!-- HTML PUNTO DE VENTA POS -->
     @if(activeTab === 'pos') {
-      <div class="fade-in" style="display: flex; gap: 1.5rem; flex-wrap: wrap;">
+      <div class="neumorphic-panel fade-in pos-layout">
         
         <!-- HTML PANEL IZQUIERDO SELECCION -->
-        <div style="flex: 2; min-width: 300px; display: flex; flex-direction: column; gap: 1.5rem;">
+        <div class="pos-panel-izq">
           <!-- HTML BUSCADOR DE CLIENTE -->
-            <div class="card-section neon-border" style="margin-bottom: 2rem;">
-              <h3 style="color: var(--primary-light);"><i class="fas fa-user"></i> Datos del Cliente</h3>
+            <div class="neumorphic-panel" style="margin-bottom: 0;">
+              <h3 class="panel-titulo"><i class="fas fa-user"></i> Datos del Cliente</h3>
               <div class="form-group" style="margin-top: 1rem;">
                 <label>Cliente (Buscar o Seleccionar)</label>
                 <select class="input-neumorphic" [(ngModel)]="clienteSeleccionado">
@@ -56,9 +51,9 @@
             </div>
 
           <!-- HTML BUSCADOR DE PRODUCTO -->
-          <div class="glass-panel" style="padding: 1.5rem;">
-            <h3 style="margin-top: 0; color: #f97316; font-size: 1.2rem; text-transform: uppercase;">Agregar Producto</h3>
-            <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+          <div class="neumorphic-panel" style="padding: 1.5rem;">
+            <h3 class="panel-titulo" style="margin-bottom: 1rem;">Agregar Producto</h3>
+            <div class="form-fila">
               <div class="form-group" style="flex: 2; margin-bottom: 0; min-width: 200px;">
                 <label>Producto *</label>
                   <select class="input-neumorphic" [(ngModel)]="productoActual">
@@ -73,7 +68,7 @@
                 <input type="number" class="input-neumorphic" [(ngModel)]="cantidadActual" min="1">
               </div>
               <div style="display: flex; align-items: flex-end;">
-                <button class="btn-add" style="padding: 0.75rem 1.5rem;" (click)="agregarAlCarrito()">
+                <button class="btn-add btn-pill" (click)="agregarAlCarrito()">
                   <i class="fas fa-plus"></i> Agregar
                 </button>
               </div>
@@ -81,8 +76,8 @@
           </div>
           
           <!-- HTML CARRITO DE COMPRAS -->
-          <div class="glass-panel" style="padding: 1.5rem; flex: 1;">
-            <h3 style="margin-top: 0; color: #cbd5e1; font-size: 1.2rem; text-transform: uppercase;">Detalle de la Venta</h3>
+          <div class="neumorphic-panel" style="padding: 1.5rem; flex: 1;">
+            <h3 class="panel-titulo" style="margin-bottom: 1rem;">Detalle de la Venta</h3>
             <div class="table-responsive" style="margin-top: 0;">
               <table class="premium-table data-table">
                 <thead>
@@ -97,10 +92,10 @@
                 <tbody>
                     @for(item of carrito; track item.id; let i = $index) {
                       <tr>
-                        <td style="color: #cbd5e1;">{{item.nombre}}</td>
-                        <td style="color: #94a3b8;">{{item.precio_unitario | currency:'COP':'symbol':'1.0-0'}}</td>
-                        <td style="color: var(--primary-light); font-weight: bold;">{{item.cantidad}}</td>
-                        <td style="color: #10b981; font-weight: bold;">{{item.subtotal | currency:'COP':'symbol':'1.0-0'}}</td>
+                        <td>{{item.nombre}}</td>
+                        <td class="text-muted">{{item.precio_unitario | currency:'COP':'symbol':'1.0-0'}}</td>
+                        <td style="font-weight: bold;">{{item.cantidad}}</td>
+                        <td class="text-positivo">{{item.subtotal | currency:'COP':'symbol':'1.0-0'}}</td>
                         <td style="text-align: right;">
                         <button class="btn-icon text-danger" (click)="removerDelCarrito($index)"><i class="fas fa-times"></i></button>
                       </td>
@@ -108,7 +103,7 @@
                   }
                   @if(carrito.length === 0) {
                     <tr>
-                      <td colspan="6" style="text-align: center; padding: 2rem; color: #64748b;">El carrito está vacío. Agregue productos.</td>
+                      <td colspan="6" class="text-muted" style="text-align: center; padding: 2rem;">El carrito está vacío. Agregue productos.</td>
                     </tr>
                   }
                 </tbody>
@@ -118,22 +113,22 @@
         </div>
 
         <!-- HTML PANEL DERECHO TOTALES -->
-        <div style="flex: 1; min-width: 250px;">
-          <div class="glass-panel" style="padding: 1.5rem; position: sticky; top: 1rem;">
-            <h3 style="margin-top: 0; color: #f97316; font-size: 1.2rem; text-transform: uppercase;">Resumen</h3>
+        <div class="pos-panel-der">
+          <div class="neumorphic-panel resumen-panel">
+            <h3 class="panel-titulo" style="margin-bottom: 1rem;">Resumen</h3>
             
-            <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; color: #94a3b8;">
+            <div class="subtotal-fila">
               <span>Subtotal:</span>
               <span>{{totalCarrito | currency:'COP':'symbol':'1.0-0'}}</span>
             </div>
-            <div style="display: flex; justify-content: space-between; margin-bottom: 1rem; color: #94a3b8;">
+            <div class="subtotal-fila">
               <span>Impuestos (0%):</span>
               <span>$0</span>
             </div>
-            <hr style="border-color: rgba(255,255,255,0.1); margin: 1rem 0;">
-            <div style="display: flex; justify-content: space-between; margin-bottom: 2rem;">
-              <span style="font-size: 1.2rem; font-weight: bold; color: white;">TOTAL:</span>
-              <span style="font-size: 1.5rem; font-weight: bold; color: #10b981;">{{totalCarrito | currency:'COP':'symbol':'1.0-0'}}</span>
+            <hr class="divider">
+            <div class="total-fila">
+              <span class="total-label">TOTAL:</span>
+              <span class="total-monto">{{totalCarrito | currency:'COP':'symbol':'1.0-0'}}</span>
             </div>
 
             <div class="form-group" style="margin-bottom: 2rem;">
@@ -145,7 +140,7 @@
               </select>
             </div>
 
-            <button class="btn-save" style="width: 100%; justify-content: center; padding: 1rem; font-size: 1.1rem;" 
+            <button class="btn-save btn-pill btn-block" 
                     (click)="registrarVenta()" [disabled]="guardando">
               @if(guardando) {
                 <i class="fas fa-spinner fa-spin"></i> Registrando...
@@ -160,11 +155,10 @@
 
     <!-- HTML HISTORIAL DE VENTAS -->
     @if(activeTab === 'historial') {
-      <div class="fade-in">
-        <div class="action-bar" style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
+      <div class="neumorphic-panel fade-in">
+        <div class="action-bar">
           <input type="text" 
                  class="search-input input-neumorphic" 
-                 style="width: 300px;"
                  placeholder="Buscar por factura, cliente..."
                  [(ngModel)]="searchTerm">
         </div>
@@ -195,7 +189,7 @@
                     </span>
                   </td>
                   <td>
-                    <select class="input-neumorphic" style="min-width: 120px; padding: 0.25rem; font-size: 0.9em;"
+                    <select class="input-neumorphic select-paquete"
                             [ngModel]="venta.estado_paquete || 'Preparando'"
                             (ngModelChange)="cambiarEstadoPaquete(venta, $event)">
                       <option value="Preparando">Preparando</option>
@@ -204,7 +198,7 @@
                     </select>
                   </td>
                   <td>
-                    <div style="display: flex; gap: 0.5rem; justify-content: center;">
+                    <div class="acciones-fila">
                       <button class="btn-icon" title="Ver Detalle"><i class="fas fa-eye"></i></button>
                       <button class="btn-icon text-danger" title="Anular Factura" 
                               *ngIf="venta.estado !== 'Anulada'"
@@ -218,7 +212,7 @@
               @if(ventasFiltradas.length === 0) {
                 <tr>
                   <td colspan="6" style="padding: 0;">
-                    <div class="empty-state" style="padding: 2rem; text-align: center; color: #94a3b8;">
+                    <div class="empty-state">
                       No hay ventas registradas.
                     </div>
                   </td>
@@ -235,20 +229,19 @@
 <!-- HTML MODAL CONFIRMAR ANULACION -->
 @if(showModalAnular && ventaSeleccionada) {
 <div class="modal-overlay fade-in">
-  <div class="modal-content glass-panel" style="max-width: 450px; text-align: center;">
-    <div class="modal-header" style="justify-content: center; border-bottom: none;">
-      <i class="fas fa-exclamation-triangle" style="font-size: 3rem; color: #ef4444; margin-bottom: 1rem;"></i>
+  <div class="modal-content neumorphic-panel" style="max-width: 450px; text-align: center;">
+    <div class="modal-header modal-header-center">
+      <i class="fas fa-exclamation-triangle icon-danger"></i>
     </div>
     <div class="modal-body">
-      <h1 style="margin-top: 0; color: #ef4444;">¿Anular Venta {{ventaSeleccionada.factura}}?</h1>
-      <p style="color: #cbd5e1; margin-bottom: 1rem;">
+      <h1 class="modal-title">¿Anular Venta {{ventaSeleccionada.factura}}?</h1>
+      <p class="text-muted" style="margin-bottom: 1rem;">
         Esta acción es irreversible. Se regresarán los productos al inventario y el monto no se contabilizará en caja.
       </p>
       
-      <div style="display: flex; justify-content: center; gap: 1rem; margin-top: 2rem;">
-        <button class="btn-volver" (click)="cerrarModalAnular()">Cancelar</button>
-        <!-- Notar que el botón de confirmación de peligro usa un fondo rojo explícito y texto blanco -->
-        <button class="btn-general" style="background-color: #dc2626; color: white;" 
+      <div class="modal-footer">
+        <button class="btn-volver btn-pill" (click)="cerrarModalAnular()">Cancelar</button>
+        <button class="btn-volver btn-pill" 
                 (click)="confirmarAnulacion()" [disabled]="guardando">
           @if(guardando) {
             <i class="fas fa-spinner fa-spin"></i> Anulando...

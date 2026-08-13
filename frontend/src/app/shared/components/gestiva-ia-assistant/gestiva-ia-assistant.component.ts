@@ -24,15 +24,21 @@ export class GestivaIaAssistantComponent implements OnInit, OnDestroy {
   private autoHideTimeout: any;
 
   ngOnInit() {
-    // Pedimos sugerencias iniciales al cargar
-    this.fetchSugerencias();
-
-    // Nos suscribimos a los cambios de ruta para pedir nuevas sugerencias
+    // Solo nos suscribimos a los cambios de ruta para pedir sugerencias
+    // (Esto incluye el NavigationEnd de la carga inicial)
     this.routerSub = this.router.events.pipe(
       filter(event => event instanceof NavigationEnd)
     ).subscribe(() => {
       this.fetchSugerencias();
     });
+    
+    // Fallback: si por alguna razón no se disparó NavigationEnd (ej. ya estábamos en la ruta),
+    // lo pedimos manualmente, pero usando un timeout para desenredar el hilo.
+    setTimeout(() => {
+      if (this.sugerencias.length === 0) {
+        this.fetchSugerencias();
+      }
+    }, 1000);
   }
 
   fetchSugerencias() {
@@ -52,13 +58,7 @@ export class GestivaIaAssistantComponent implements OnInit, OnDestroy {
       next: (res) => {
         if (res.sugerencias && res.sugerencias.length > 0) {
           this.sugerencias = res.sugerencias;
-          this.mostrarGlobo = true;
-
-          // Ocultar globo automaticamente despues de 10 segundos
-          if (this.autoHideTimeout) clearTimeout(this.autoHideTimeout);
-          this.autoHideTimeout = setTimeout(() => {
-            this.mostrarGlobo = false;
-          }, 10000);
+          // Ya no mostramos el globo automáticamente, solo se mostrará cuando el usuario presione toggleGlobo
         }
       },
       error: (err) => {

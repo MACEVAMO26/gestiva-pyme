@@ -20,23 +20,30 @@
 
   <!-- NAVEGACIÓN TABS -->
   <div class="tabs-nav-wrapper">
-    <button class="tab-neu-inactive" [class.tab-neu-active]="currentTab === 'pendientes'" (click)="setTab('pendientes')">
-      Pendientes <span class="badge badge-pendiente" *ngIf="pendientes.length > 0" style="margin-left: 5px;">{{pendientes.length}}</span>
-    </button>
-    <button class="tab-neu-inactive" [class.tab-neu-active]="currentTab === 'activos'" (click)="setTab('activos')">Personal Activo</button>
-    <button class="tab-neu-inactive" [class.tab-neu-active]="currentTab === 'inactivos'" (click)="setTab('inactivos')">Inactivos</button>
-    <button class="tab-neu-inactive" [class.tab-neu-active]="currentTab === 'ausentes'" (click)="setTab('ausentes')">Ausentes / Vacaciones</button>
-    <button class="tab-neu-inactive" [class.tab-neu-active]="currentTab === 'estructura'" (click)="setTab('estructura')">Estructura</button>
-    <button class="tab-neu-inactive" [class.tab-neu-active]="currentTab === 'areas'" (click)="setTab('areas')">Áreas</button>
-    <button class="tab-neu-inactive" [class.tab-neu-active]="currentTab === 'cargos'" (click)="setTab('cargos')">Cargos</button>
-    <button class="tab-neu-inactive" [class.tab-neu-active]="currentTab === 'configuracion'" (click)="setTab('configuracion')">Configuración</button>
+    <button class="tab-neu-inactive" [class.tab-neu-active]="currentTab === 'pendientes'" (click)="setTab('pendientes')"> <span class="icon">⏳</span> Pendientes <span class="badge badge-pendiente" *ngIf="pendientes.length > 0" style="margin-left: 5px;">{{pendientes.length}}</span> </button>
+    <button class="tab-neu-inactive" [class.tab-neu-active]="currentTab === 'activos'" (click)="setTab('activos')"> <span class="icon">✅</span> Personal Activo </button>
+    <button class="tab-neu-inactive" [class.tab-neu-active]="currentTab === 'inactivos'" (click)="setTab('inactivos')"> <span class="icon">✅</span> Inactivos </button>
+    <button class="tab-neu-inactive" [class.tab-neu-active]="currentTab === 'ausentes'" (click)="setTab('ausentes')"> <span class="icon">🏖️</span> Ausentes / Vacaciones </button>
+    <button class="tab-neu-inactive" [class.tab-neu-active]="currentTab === 'estructura'" (click)="setTab('estructura')"> <span class="icon">📊</span> Estructura </button>
+    <button class="tab-neu-inactive" [class.tab-neu-active]="currentTab === 'areas'" (click)="setTab('areas')"> <span class="icon">📍</span> Áreas </button>
+    <button class="tab-neu-inactive" [class.tab-neu-active]="currentTab === 'cargos'" (click)="setTab('cargos')"> <span class="icon">👔</span> Cargos </button>
+    <button class="tab-neu-inactive" [class.tab-neu-active]="currentTab === 'configuracion'" (click)="setTab('configuracion')"> <span class="icon">📌</span> Configuración </button>
   </div>
+
+  <!-- CONTENIDO DE TABS -->
+  <div class="tab-content neumorphic-panel-inner p-4">
+    <!-- Botón Volver Inyectado -->
+    <div class="volver-wrapper">
+      <button class="btn-volver btn-pill" onclick="window.history.back()">
+        <i class="fas fa-arrow-left"></i> Volver
+      </button>
+    </div>
 
   <!-- TAB PENDIENTES -->
   <div class="neumorphic-panel fade-in" *ngIf="currentTab === 'pendientes'">
     <h2 class="subtitulo">PENDIENTES DE FORMALIZAR</h2>
-    <div style="background: rgba(249, 115, 22, 0.1); padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
-      <p style="margin:0; font-size: 12px; color: #c2410c;">
+    <div class="banner banner-aviso">
+      <p class="banner-text">
         <svg style="width:16px;height:16px;display:inline;margin-right:5px;" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3Z" />
         </svg>
@@ -213,7 +220,7 @@
   </div>
 
   <!-- TAB ESTRUCTURA -->
-  <div class="fade-in" *ngIf="currentTab === 'estructura'">
+  <div class="neumorphic-panel fade-in" *ngIf="currentTab === 'estructura'">
     <app-admin-estructura></app-admin-estructura>
   </div>
 
@@ -308,7 +315,6 @@
       </div>
     </form>
   </div>
-
 </div>
 
 <!-- MODAL AREA -->
@@ -375,7 +381,7 @@
       <div class="text-center mb-4">
         <h3 class="titulo-principal">FORMALIZAR EMPLEADO</h3>
       </div>
-      <div style="background: rgba(0,0,0,0.05); padding: 1rem; border-radius: 8px; margin: 1rem 0; text-align: center;">
+      <div class="banner banner-neutral">
         <p class="texto-normal"><strong>Usuario:</strong> {{usuarioAFormalizar?.nombres}} {{usuarioAFormalizar?.apellidos}}</p>
         <p class="texto-normal"><strong>Documento:</strong> {{usuarioAFormalizar?.documento}}</p>
       </div>
@@ -437,10 +443,10 @@
   <div class="modal-overlay fade-in">
     <div class="modal-content neumorphic-panel" style="max-width: 450px;">
       <div class="text-center mb-4">
-        <h3 class="titulo-principal" style="color: #de3737;">SOLICITAR BAJA</h3>
+        <h3 class="titulo-principal text-danger">SOLICITAR BAJA</h3>
       </div>
-      <div style="background: rgba(222, 55, 55, 0.1); padding: 1rem; border-radius: 8px; margin: 1rem 0; text-align: center;">
-        <p style="font-size: 12px; color: #de3737;">Estás a punto de solicitar la inactivación de <strong>{{empleadoABaja?.usuario?.nombres}} {{empleadoABaja?.usuario?.apellidos}}</strong>. Esta acción debe ser aprobada por Gerencia.</p>
+      <div class="banner banner-peligro">
+        <p class="banner-text">Estás a punto de solicitar la inactivación de <strong>{{empleadoABaja?.usuario?.nombres}} {{empleadoABaja?.usuario?.apellidos}}</strong>. Esta acción debe ser aprobada por Gerencia.</p>
       </div>
       <form (ngSubmit)="submitBaja()">
         <div class="form-group mb-3">
@@ -465,7 +471,7 @@
       <div class="text-center mb-4">
         <h3 class="titulo-principal">REVISAR VACACIONES</h3>
       </div>
-      <div style="background: rgba(0,0,0,0.05); padding: 1rem; border-radius: 8px; margin: 1rem 0; text-align: center;">
+      <div class="banner banner-neutral">
         <p class="texto-normal"><strong>Empleado:</strong> {{ vacacionSeleccionada.usuario?.nombres }} {{ vacacionSeleccionada.usuario?.apellidos }}</p>
         <p class="texto-normal"><strong>Fechas:</strong> {{ vacacionSeleccionada.fecha_inicio | date:'mediumDate' }} al {{ vacacionSeleccionada.fecha_fin | date:'mediumDate' }}</p>
         <p class="texto-normal"><strong>Tipo:</strong> {{ vacacionSeleccionada.tipo }}</p>

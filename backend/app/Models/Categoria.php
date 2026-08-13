@@ -22,7 +22,7 @@ class Categoria extends Model
         'descripcion', 
         'tipo', 
         'activo', 
-        'fecha_inactivacion'
+        'inactive_at'
     ];
 
     // --- RELACIONES ---

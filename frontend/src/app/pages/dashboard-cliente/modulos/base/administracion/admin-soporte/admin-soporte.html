@@ -1,6 +1,6 @@
 <div class="soporte-module fade-in">
-  <div style="margin-bottom: 2rem;">
-    <button class="btn-volver" onclick="window.history.back()">
+  <div class="volver-wrapper">
+    <button class="btn-volver btn-pill" onclick="window.history.back()">
       <i class="fas fa-arrow-left"></i> VOLVER
     </button>
   </div>
@@ -33,7 +33,7 @@
           <div class="form-group full-width fade-in mt-3">
             <label class="form-label">Adjuntar Archivo Requerido <span class="text-danger">*</span></label>
             <input type="file" id="archivoRequerido" class="input-neumorphic" (change)="onFileSelected($event)" [accept]="fileAcceptType" style="padding: 10px;">
-            <small style="color: #666; margin-top: 5px; display: block;">Por favor adjunta el archivo correspondiente para esta solicitud.</small>
+            <small class="text-muted" style="margin-top: 5px; display: block;">Por favor adjunta el archivo correspondiente para esta solicitud.</small>
           </div>
         }
       </div>
@@ -70,7 +70,7 @@
           @for (ticket of tickets; track ticket.id) {
             <tr>
               <td>{{ ticket.created_at | date:'dd/MM/yyyy HH:mm' }}</td>
-              <td><strong>{{ ticket.asunto }}</strong><br><small style="color: #666">{{ ticket.mensaje }}</small></td>
+              <td><strong>{{ ticket.asunto }}</strong><br><small class="text-muted">{{ ticket.mensaje }}</small></td>
               <td>
                 <span class="badge" [ngClass]="getEstadoBadgeClass(ticket.estado)">
                   {{ ticket.estado }}
@@ -81,7 +81,7 @@
           }
           @if (tickets.length === 0) {
             <tr>
-              <td colspan="4" class="text-center" style="padding: 2rem; color: #777; font-style: italic;">No tienes tickets de soporte generados.</td>
+              <td colspan="4" class="text-center tabla-vacia">No tienes tickets de soporte generados.</td>
             </tr>
           }
         </tbody>

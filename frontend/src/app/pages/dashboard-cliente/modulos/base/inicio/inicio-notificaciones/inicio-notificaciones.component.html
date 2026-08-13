@@ -1,27 +1,38 @@
+<div class="panel-contenido">
+  <div class="panel-header">
+    <h3 class="panel-title">Mis Notificaciones</h3>
+  </div>
 
-<div>
-  <h3>Mis Notificaciones</h3>
-  <div *ngIf="cargando">Cargando...</div>
-
-  <ul style="list-style: none; padding: 0;" *ngIf="!cargando">
-    <li *ngFor="let n of notificaciones" 
-        [style.background]="n.leida ? '#f9f9f9' : '#e6f7ff'"
-        style="margin-bottom: 5px; border: 1px solid #ccc; padding: 10px;">
-      
-      <strong>{{ n.titulo }}</strong> <span *ngIf="!n.leida" style="color: red; font-size: 10px;">(Nueva)</span>
-      <div style="font-size: 12px;">{{ n.mensaje }}</div>
-      
-      <button *ngIf="!n.leida" (click)="marcarLeida(n.id)" style="font-size: 10px; margin-top: 5px;">
+  <div class="panel-body" *ngIf="!cargando">
+    <div class="notificacion-item" [class.border-warning]="!n.leida" *ngFor="let n of notificaciones">
+      <span class="noti-icon" [ngClass]="n.leida ? 'bg-success' : 'bg-info'">
+        <i [class]="n.leida ? 'fas fa-check' : 'fas fa-bell'"></i>
+      </span>
+      <div class="noti-content">
+        <span class="noti-text">
+          <strong>{{ n.titulo }}</strong>
+          <span class="noti-nueva" *ngIf="!n.leida">Nueva</span>
+        </span>
+        <span class="noti-time">{{ n.mensaje }}</span>
+      </div>
+      <button class="btn-xs" *ngIf="!n.leida" (click)="marcarLeida(n.id)">
         Marcar como leída
       </button>
-    </li>
-    
-    <li *ngIf="notificaciones.length === 0">
-      No tienes notificaciones.
-    </li>
-  </ul>
+    </div>
+
+    <div class="notificacion-item" *ngIf="notificaciones.length === 0">
+      <span class="noti-icon bg-warning">
+        <i class="fas fa-inbox"></i>
+      </span>
+      <div class="noti-content">
+        <span class="noti-text">No tienes notificaciones.</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="notificacion-item" *ngIf="cargando">
+    <div class="noti-content">
+      <span class="noti-text">Cargando...</span>
+    </div>
+  </div>
 </div>
-
-
-
-

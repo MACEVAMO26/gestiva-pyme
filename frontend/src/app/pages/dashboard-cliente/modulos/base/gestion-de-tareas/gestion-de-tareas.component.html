@@ -1,43 +1,34 @@
 <div class="module-container fade-in">
 
-  <div class="module-header" style="margin-bottom: 2rem;">
-    <h1 style="text-align: center; font-size: 16px; font-weight: bold; text-transform: uppercase; margin: 0 0 0.5rem 0;">GESTIÓN DE TAREAS</h1>
-    <p style="text-align: center; color: #666666; font-size: 10px; margin: 0;">Crea, asigna y da seguimiento a las tareas del equipo.</p>
+  <div class="module-header text-center mb-4 relative">
+    <h1 class="titulo-principal">GESTIÓN DE TAREAS</h1>
+    <p class="descripcion-general">Crea, asigna y da seguimiento a las tareas del equipo.</p>
   </div>
 
   <!-- PESTAÑAS -->
   <div class="tabs-nav-wrapper">
     <button class="tab-neu-inactive" 
             [class.tab-neu-active]="activeTab === 'asignacion'" 
-            (click)="switchTab('asignacion')">
-      ASIGNACIÓN DE TAREAS
-    </button>
+            (click)="switchTab('asignacion')"> <span class="icon">📌</span> ASIGNACIÓN DE TAREAS </button>
     <button class="tab-neu-inactive" 
             [class.tab-neu-active]="activeTab === 'actuales'" 
-            (click)="switchTab('actuales')">
-      TAREAS ACTUALES
-    </button>
+            (click)="switchTab('actuales')"> <span class="icon">🔄</span> TAREAS ACTUALES </button>
     <button class="tab-neu-inactive" 
             [class.tab-neu-active]="activeTab === 'entregadas'" 
-            (click)="switchTab('entregadas')">
-      TAREAS ENTREGADAS
-    </button>
+            (click)="switchTab('entregadas')"> <span class="icon">✅</span> TAREAS ENTREGADAS </button>
   </div>
 
-  <div class="tab-content neumorphic-panel-inner" style="padding: 2rem; position: relative;">
+  <div class="tab-content neumorphic-panel-inner p-4">
     
-    @if(activeTab === 'asignacion') {
-    <div class="fade-in">
-      <!-- Botón Volver Inyectado -->
-      <div style="margin-bottom: 2rem;">
-        <button class="btn-volver" onclick="window.history.back()">
-          <i class="fas fa-arrow-left"></i> VOLVER
-        </button>
-      </div>
+    <div class="volver-wrapper">
+      <button class="btn-volver btn-pill" onclick="window.history.back()">
+        <i class="fas fa-arrow-left"></i> Volver
+      </button>
+    </div>
 
-      <!-- Formulario Nueva Tarea -->
-      <div class="neumorphic-panel">
-        <h2 class="subtitulo">Asignar Nueva Tarea</h2>
+    @if(activeTab === 'asignacion') {
+    <div class="neumorphic-panel fade-in">
+      <h2 class="subtitulo">Asignar Nueva Tarea</h2>
         <form (ngSubmit)="crearTarea()">
           
           <div class="form-grid">
@@ -62,7 +53,7 @@
             </div>
           </div>
 
-          <div class="form-actions" style="margin-top: 1.5rem;">
+          <div class="form-actions">
             <button type="submit" class="btn-add btn-pill" [disabled]="guardando">
               @if (guardando) {
                 <span class="spinner-small"></span> Guardando...
@@ -73,21 +64,11 @@
           </div>
         </form>
       </div>
-    </div>
     }
 
     @if(activeTab === 'actuales') {
-    <div class="fade-in">
-      <!-- Botón Volver Inyectado -->
-      <div style="margin-bottom: 2rem;">
-        <button class="btn-volver" onclick="window.history.back()">
-          <i class="fas fa-arrow-left"></i> VOLVER
-        </button>
-      </div>
-
-      <!-- Lista de Tareas -->
-      <div class="neumorphic-panel">
-        <h2 class="subtitulo">Tareas Actuales</h2>
+    <div class="neumorphic-panel fade-in">
+      <h2 class="subtitulo">Tareas Actuales</h2>
 
         @if (cargando) {
           <div class="text-center-py-8">
@@ -120,7 +101,7 @@
                     <strong>{{ t.estado }}</strong>
                   </td>
                   <td>
-                    <select #estadoSelect class="input-neumorphic" style="width: auto; padding: 0.5rem;" (change)="actualizarEstado(t.id, estadoSelect.value)">
+                    <select #estadoSelect class="input-neumorphic select-estado" (change)="actualizarEstado(t.id, estadoSelect.value)">
                       <option value="">Cambiar...</option>
                       <option value="notificada">Notificada</option>
                       <option value="en_proceso">En Proceso</option>
@@ -136,21 +117,11 @@
           </div>
         }
       </div>
-    </div>
     }
 
     @if(activeTab === 'entregadas') {
-    <div class="fade-in">
-      <!-- Botón Volver Inyectado -->
-      <div style="margin-bottom: 2rem;">
-        <button class="btn-volver" onclick="window.history.back()">
-          <i class="fas fa-arrow-left"></i> VOLVER
-        </button>
-      </div>
-
-      <!-- Lista de Tareas -->
-      <div class="neumorphic-panel">
-        <h2 class="subtitulo">Tareas Entregadas</h2>
+    <div class="neumorphic-panel fade-in">
+      <h2 class="subtitulo">Tareas Entregadas</h2>
 
         @if (cargando) {
           <div class="text-center-py-8">
@@ -183,7 +154,7 @@
                     <strong>{{ t.estado }}</strong>
                   </td>
                   <td>
-                    <select #estadoSelect class="input-neumorphic" style="width: auto; padding: 0.5rem;" (change)="actualizarEstado(t.id, estadoSelect.value)">
+                    <select #estadoSelect class="input-neumorphic select-estado" (change)="actualizarEstado(t.id, estadoSelect.value)">
                       <option value="">Cambiar...</option>
                       <option value="notificada">Notificada</option>
                       <option value="en_proceso">En Proceso</option>
@@ -199,7 +170,6 @@
           </div>
         }
       </div>
-    </div>
     }
 
   </div>

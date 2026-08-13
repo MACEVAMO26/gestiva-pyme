@@ -5,18 +5,18 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class MovimientoInventario extends Model
+class CalendarioEvento extends Model
 {
     use HasFactory;
 
-    protected $table = 'movimientos_inventario';
+    protected $table = 'calendario_eventos';
 
     protected $fillable = [
-        'producto_id',
         'usuario_id',
-        'tipo',
-        'cantidad',
-        'justificacion',
-        'fecha_hora'
+        'titulo',
+        'descripcion',
+        'fecha_inicio',
+        'fecha_fin',
+        'color_etiqueta'
     ];
 }

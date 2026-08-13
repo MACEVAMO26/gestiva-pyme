@@ -1,24 +1,18 @@
-  <!-- Botón Volver Inyectado -->
-  <div style="margin-bottom: 1.5rem; display: flex; justify-content: flex-start;">
-    <button class="btn-volver" onclick="window.history.back()">
-      <i class="fas fa-arrow-left"></i> Volver
-    </button>
+<div class="module-container fade-in">
+
+  <div class="module-header text-center mb-4 relative">
+    <h1 class="titulo-principal">CAJA REGISTRADORA</h1>
+    <p class="descripcion-general">Controla las aperturas, cierres e ingresos de efectivo del día.</p>
   </div>
 
-<div class="module-container">
-  <!-- Botón Volver Inyectado -->
-  <div style="margin-bottom: 1.5rem; display: flex; justify-content: flex-start;">
-    <button class="btn-volver" onclick="window.history.back()">
-      <i class="fas fa-arrow-left"></i> Volver
-    </button>
-  </div>
+  <div class="tab-content neumorphic-panel-inner p-4">
+    <div class="volver-wrapper">
+      <button class="btn-volver btn-pill" onclick="window.history.back()">
+        <i class="fas fa-arrow-left"></i> Volver
+      </button>
+    </div>
 
-  <div class="module-header">
-    <h1>Caja Registradora</h1>
-    <p>Controla las aperturas, cierres e ingresos de efectivo del día.</p>
-  </div>
-
-  <div class="panel-body">
+    <div class="panel-body">
     @if (cargando) {
       <div class="loading-overlay neumorphic-panel">
         <div class="spinner"></div>
@@ -27,7 +21,7 @@
     }
 
     @if (!cargando && cajas.length > 0) {
-      <div class="neumorphic-panel" style="margin-bottom: 2rem;">
+      <div class="neumorphic-panel">
         <div class="form-group full-width">
           <label class="form-label">Selecciona una caja para operar:</label>
           <select class="input-neumorphic" [(ngModel)]="cajaActiva" (ngModelChange)="seleccionarCaja($event)">
@@ -38,21 +32,46 @@
       </div>
     }
 
+    @if (!cajaActiva) {
+      <div class="form-actions mb-3">
+        <button class="btn-save btn-pill" (click)="mostrarFormNuevaCaja = !mostrarFormNuevaCaja">
+          <i class="fas fa-plus"></i> Nueva Caja
+        </button>
+      </div>
+
+      @if (mostrarFormNuevaCaja) {
+        <div class="neumorphic-panel mb-3">
+          <h2 class="subtitulo">Crear Nueva Caja</h2>
+          <div class="form-grid form-grid-end">
+            <div class="form-group">
+              <label class="form-label">Base inicial ($):</label>
+              <input type="number" class="input-neumorphic" [(ngModel)]="baseNuevaCaja" min="0">
+            </div>
+            <div class="form-group form-group-btn">
+              <button class="btn-save btn-pill" (click)="crearNuevaCaja()" [disabled]="procesando">
+                Crear Caja
+              </button>
+            </div>
+          </div>
+        </div>
+      }
+    }
+
     @if (cajaActiva) {
       <!-- CONTROLES DE APERTURA / CIERRE -->
       <div class="neumorphic-panel">
         <h2 class="subtitulo">Estado Actual: 
-          <strong [style.color]="cajaActiva.estado === 'abierta' ? 'green' : 'red'">{{ cajaActiva.estado | uppercase }}</strong>
+          <strong [ngClass]="cajaActiva.estado === 'abierta' ? 'estado-abierta' : 'estado-cerrada'">{{ cajaActiva.estado | uppercase }}</strong>
         </h2>
         
         @if (cajaActiva.estado === 'cerrada') {
-          <div class="form-grid" style="align-items: end;">
+          <div class="form-grid form-grid-end">
             <div class="form-group">
               <label class="form-label">Base inicial para abrir caja ($):</label>
               <input type="number" class="input-neumorphic" [(ngModel)]="montoApertura" min="0">
             </div>
-            <div class="form-group" style="padding-bottom: 0.2rem;">
-              <button class="btn-add btn-pill" style="background-color: #066810; border-color: #066810; color: white;" (click)="abrirCaja()" [disabled]="procesando">
+            <div class="form-group form-group-btn">
+              <button class="btn-save btn-pill" (click)="abrirCaja()" [disabled]="procesando">
                 + Abrir Caja
               </button>
             </div>
@@ -60,12 +79,12 @@
         }
 
         @if (cajaActiva.estado === 'abierta') {
-          <div class="form-grid" style="align-items: end;">
+          <div class="form-grid form-grid-end">
             <div class="form-group">
               <label class="form-label">Efectivo final en caja ($):</label>
               <input type="number" class="input-neumorphic" [(ngModel)]="montoCierre" min="0">
             </div>
-            <div class="form-group" style="padding-bottom: 0.2rem;">
+            <div class="form-group form-group-btn">
               <button class="btn-volver btn-pill" (click)="cerrarCaja()" [disabled]="procesando">
                 - Cerrar Caja
               </button>
@@ -79,7 +98,7 @@
         <div class="neumorphic-panel mt-4">
           <h2 class="subtitulo">Registrar Ingreso / Egreso Manual</h2>
           <form (ngSubmit)="registrarMovimiento()">
-            <div class="form-grid" style="align-items: end;">
+            <div class="form-grid form-grid-end">
               <div class="form-group">
                 <label class="form-label">Tipo:</label>
                 <select class="input-neumorphic" name="tipo" [(ngModel)]="nuevoMovimiento.tipo">
@@ -99,7 +118,7 @@
               </div>
             </div>
 
-            <div class="form-actions" style="margin-top: 1.5rem;">
+            <div class="form-actions">
               <button type="submit" class="btn-save btn-pill" [disabled]="procesando">
                 Registrar Movimiento
               </button>
@@ -125,7 +144,7 @@
             <tbody>
               <tr *ngFor="let m of movimientos">
                 <td>{{ m.id }}</td>
-                <td [style.color]="m.tipo === 'egreso' ? 'red' : 'green'"><strong>{{ m.tipo | uppercase }}</strong></td>
+                <td [ngClass]="m.tipo === 'egreso' ? 'text-egreso' : 'text-ingreso'"><strong>{{ m.tipo | uppercase }}</strong></td>
                 <td>$ {{ m.monto }}</td>
                 <td>{{ m.concepto }}</td>
                 <td>
@@ -142,9 +161,5 @@
       </div>
     }
   </div>
+  </div>
 </div>
-
-
-
-
-

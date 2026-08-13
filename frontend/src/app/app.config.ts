@@ -3,7 +3,6 @@ import { provideRouter, PreloadingStrategy, Route, withPreloading } from '@angul
 import { Observable, of } from 'rxjs';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { authInterceptor } from './services/auth.interceptor';
-import { demoMockInterceptor } from './services/demo-mock.interceptor';
 
 import { routes } from './app.routes';
 
@@ -26,6 +25,6 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes, withPreloading(RutasClavePreloadingStrategy)),
-    provideHttpClient(withInterceptors([demoMockInterceptor, authInterceptor]))
+    provideHttpClient(withInterceptors([authInterceptor]))
   ]
 };

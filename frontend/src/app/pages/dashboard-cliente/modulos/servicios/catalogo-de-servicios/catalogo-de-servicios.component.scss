@@ -1,4 +1,3 @@
-
 @use 'sass:color';
 
 /* --- 1. VARIABLES GLOBALES DE COLOR --- */
@@ -21,9 +20,9 @@ $btn-gen-6: #A38B6D;
 
 /* --- 2. FONDOS Y LAYOUT PRINCIPAL --- */
 .module-container {
-  padding: 0;
+  padding: 1.5rem;
   background: $bg-color;
-  
+
   font-family: 'Montserrat', sans-serif;
   color: $text-dark;
 }
@@ -91,7 +90,7 @@ $btn-gen-6: #A38B6D;
   color: $text-dark;
   outline: none;
   transition: all 0.2s ease;
-  
+
   &:focus {
     box-shadow: inset 8px 8px 12px $shadow-dark, inset -8px -8px 12px $shadow-light;
   }
@@ -148,7 +147,401 @@ $btn-gen-6: #A38B6D;
 /* ========================================= */
 /* FIN DE BASE NEUMORFICA, INICIO DE LOCALES */
 /* ========================================= */
-.catalogo-de-servicios-container { padding: 20px; }
+/* ESTILOS LOCALES GESTION DE SERVICIOS (FSM) */
 
+.text-muted { color: $text-muted; }
+.text-danger { color: $btn-volver; }
+.text-xs { font-size: 0.8rem; }
+.text-positivo { color: $btn-save; font-weight: bold; }
+.text-azul { color: $btn-add; }
 
+.fade-in {
+  animation: fadeIn 0.3s ease;
+}
 
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* NAVEGACION TABS */
+.tab-content {
+  padding: 1.25rem;
+}
+
+.volver-wrapper {
+  margin-bottom: 1.5rem;
+  display: flex;
+  justify-content: flex-start;
+}
+
+/* LAYOUT RECEPCION */
+.fsm-layout {
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.fsm-form-col {
+  flex: 1;
+  min-width: 300px;
+}
+
+.fsm-historial-col {
+  flex: 2;
+  min-width: 400px;
+  border-left: 2px solid rgba(0,0,0,0.05);
+  padding-left: 2rem;
+}
+
+.panel-titulo {
+  margin-top: 0;
+  font-size: 13px;
+  font-weight: bold;
+  text-transform: uppercase;
+  color: $text-dark;
+}
+
+/* FORMULARIOS */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #4a4a4a;
+  }
+}
+
+.form-fila {
+  display: flex;
+  gap: 1rem;
+}
+
+.label-xs {
+  font-size: 0.8rem;
+}
+
+/* TABLA */
+.table-responsive { overflow-x: auto; }
+
+.premium-table.data-table, .data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 12px;
+  text-align: left;
+  color: $text-dark;
+
+  th, td { padding: 1rem; vertical-align: middle; }
+  th {
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 10px;
+    border-bottom: 2px solid rgba(0,0,0,0.05);
+  }
+  tr { border-bottom: 1px solid rgba(0,0,0,0.05); }
+  tr:hover { background-color: rgba(0,0,0,0.02); }
+}
+
+/* BADGES */
+.badge {
+  padding: 0.4rem 1rem;
+  border-radius: 9999px;
+  font-size: 10px;
+  font-weight: bold;
+  text-transform: uppercase;
+  background: $bg-color;
+  box-shadow: inset 2px 2px 4px $shadow-dark, inset -2px -2px 4px $shadow-light;
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.badge-success  { color: $btn-save; }
+.badge-warning  { color: $btn-gen-3; }
+.badge-primary  { color: $btn-add; }
+.badge-info     { color: $btn-gen-2; }
+.badge-secondary{ color: $text-muted; }
+
+.tabla-vacia {
+  text-align: center;
+  color: $text-muted;
+  padding: 1rem;
+}
+
+/* BOTONES AUXILIARES */
+.btn-xs {
+  padding: 0.5rem 1rem;
+  font-size: 0.8rem;
+}
+
+.btn-block {
+  width: 100%;
+}
+
+/* EJECUCION */
+.ejecucion-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.ticket-card {
+  padding: 1.5rem;
+  border-top: 4px solid $btn-add;
+}
+
+.ticket-dato {
+  color: $text-muted;
+  font-size: 0.9rem;
+  margin: 0.5rem 0;
+}
+
+/* RENDIMIENTO */
+.rendimiento-layout {
+  display: flex;
+  gap: 2rem;
+}
+
+.rendimiento-tecnicos {
+  flex: 1;
+  min-width: 250px;
+}
+
+.rendimiento-dashboard {
+  flex: 3;
+  min-width: 400px;
+}
+
+.tech-card {
+  padding: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border-left: 4px solid transparent;
+}
+
+.tech-card-active {
+  border-left: 4px solid $btn-gen-3;
+}
+
+.tech-card strong {
+  color: $text-dark;
+}
+
+.rendimiento-titulo {
+  margin-top: 0;
+  color: $text-dark;
+  font-size: 16px;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.chart-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.bar-row {
+  margin-bottom: 0.5rem;
+}
+
+.bar-label {
+  color: $text-dark;
+  font-weight: bold;
+}
+
+.valor-ok     { color: $btn-save; }
+.valor-info   { color: $btn-add; }
+.valor-alerta { color: $btn-volver; }
+
+.progress-bg {
+  width: 100%;
+  height: 12px;
+  background: $bg-color;
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: inset 2px 2px 4px $shadow-dark, inset -2px -2px 4px $shadow-light;
+}
+
+.progress-fill {
+  height: 100%;
+  transition: width 1s ease;
+}
+
+.progress-fill-ok     { background: $btn-save; }
+.progress-fill-info   { background: $btn-add; }
+.progress-fill-alerta { background: $btn-volver; }
+
+/* MODAL NEUMORFICO */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  width: 90%;
+  max-width: 680px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+
+  h1 {
+    font-size: 16px;
+    font-weight: bold;
+    text-transform: uppercase;
+  }
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.empty-state {
+  padding: 2rem 1rem;
+  text-align: center;
+  color: $text-muted;
+  border-radius: 8px;
+}
+
+.btn-close {
+  background: transparent;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: $text-muted;
+
+  &:hover {
+    color: $btn-volver;
+  }
+}
+
+/* CAJA DE MATERIALES */
+.material-box {
+  background: $bg-color;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  border-left: 4px solid $btn-add;
+  box-shadow: inset 3px 3px 6px $shadow-dark, inset -3px -3px 6px $shadow-light;
+
+  h4 {
+    margin: 0 0 0.5rem 0;
+    color: $btn-add;
+    font-size: 13px;
+    text-transform: uppercase;
+  }
+}
+
+/* TOAST NEUMORFICO */
+.toast-container {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  z-index: 1100;
+}
+
+.toast-card {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: $bg-color;
+  border-radius: 14px;
+  padding: 0.9rem 1.1rem;
+  box-shadow: 8px 8px 16px $shadow-dark, -8px -8px 16px $shadow-light;
+  border: 2px solid $shadow-dark;
+  max-width: 340px;
+}
+
+.toast-icon {
+  font-size: 1.4rem;
+}
+
+.toast-success .toast-icon { color: $btn-save; }
+.toast-warning .toast-icon { color: $btn-gen-3; }
+.toast-error   .toast-icon { color: $btn-volver; }
+
+.toast-success { border-color: color.adjust($btn-save, $lightness: -20%); }
+.toast-warning { border-color: color.adjust($btn-gen-3, $lightness: -20%); }
+.toast-error   { border-color: color.adjust($btn-volver, $lightness: -20%); }
+
+.toast-content { flex: 1; }
+
+.toast-title {
+  font-size: 12px;
+  font-weight: bold;
+  text-transform: uppercase;
+  margin: 0;
+}
+
+.toast-message {
+  font-size: 11px;
+  color: $text-muted;
+  margin: 0.15rem 0 0;
+}
+
+.toast-close {
+  background: transparent;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: $text-muted;
+
+  &:hover {
+    color: $btn-volver;
+  }
+}
+
+/* Navegacion tipo Tabs */
+.tabs-nav-wrapper {
+  background: $bg-color;
+  border-radius: 9999px;
+  box-shadow: inset 4px 4px 8px $shadow-dark, inset -4px -4px 8px $shadow-light;
+  padding: 0.5rem;
+  margin: 0 auto 2rem auto;
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  width: fit-content;
+}
+
+.tab-neu-inactive {
+  @extend .btn-neumorphic;
+  background-color: $bg-color;
+  color: $text-muted;
+  border: none;
+  font-size: 10px;
+  padding: 0.8rem 2rem;
+  box-shadow: 4px 4px 8px $shadow-dark, -4px -4px 8px $shadow-light;
+  text-decoration: none;
+}
+
+.tab-neu-active {
+  @extend .btn-neumorphic;
+  background-color: $bg-color;
+  color: $btn-add;
+  box-shadow: inset 4px 4px 8px $shadow-dark, inset -4px -4px 8px $shadow-light;
+  border: none;
+  font-size: 10px;
+  padding: 0.8rem 2rem;
+  text-decoration: none;
+}

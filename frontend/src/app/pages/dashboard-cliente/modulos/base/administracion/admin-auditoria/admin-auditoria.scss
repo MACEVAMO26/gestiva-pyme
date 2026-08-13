@@ -21,7 +21,7 @@ $btn-gen-6: #A38B6D;
 
 /* --- 2. FONDOS Y LAYOUT PRINCIPAL --- */
 .module-container {
-  padding: 0;
+  padding: 1.5rem;
   background: $bg-color;
   
   font-family: 'Montserrat', sans-serif;
@@ -50,6 +50,10 @@ $btn-gen-6: #A38B6D;
   text-align: left;
   margin-bottom: 1rem;
   color: $text-dark;
+}
+
+.text-muted {
+  color: $text-muted;
 }
 
 .form-label {
@@ -453,6 +457,18 @@ $btn-gen-6: #A38B6D;
   padding: 3rem !important;
   color: #777;
   font-style: italic;
+}
+
+.volver-wrapper {
+  margin-bottom: 2rem;
+}
+
+.info-box-neu {
+  max-width: 400px;
+  margin: 1rem auto 0;
+  padding: 1rem;
+  border-radius: 12px;
+  text-align: left;
 }
 
 

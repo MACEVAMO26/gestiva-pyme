@@ -1,21 +1,20 @@
 <div class="usuarios-module fade-in">
   <!-- Botón Volver Inyectado -->
-  <div style="margin-bottom: 2rem;">
-    <button class="btn-volver" onclick="window.history.back()">
+  <div class="volver-wrapper">
+    <button class="btn-volver btn-pill" onclick="window.history.back()">
       <i class="fas fa-arrow-left"></i> VOLVER
     </button>
   </div>
 
   <!-- HTML ENCABEZADO -->
-  <div class="module-header">
-    <h1 style="text-align: center; margin-bottom: 0.5rem; font-size: 16px; font-weight: bold; text-transform: uppercase;">GESTIÓN DE USUARIOS</h1>
-    <p style="text-align: center; color: #666666; font-size: 10px; margin-bottom: 2rem;">Crea el perfil inicial de los usuarios para que Gestión Humana los asigne.</p>
-  </div>
-
-  <div class="actions-bar" style="margin-bottom: 1.5rem; display: flex; justify-content: flex-end;">
-    <button class="btn-add btn-pill" (click)="abrirModal()">
-      <i class="fas fa-plus"></i> Nuevo Usuario
-    </button>
+  <div class="module-header text-center mb-4 relative">
+    <h1>GESTIÓN DE USUARIOS</h1>
+    <p>Crea el perfil inicial de los usuarios para que Gestión Humana los asigne.</p>
+    <div class="acciones-centro">
+      <button class="btn-add btn-pill" (click)="abrirModal()">
+        <i class="fas fa-plus"></i> Nuevo Usuario
+      </button>
+    </div>
   </div>
 
   <!-- HTML TABLA USUARIOS -->
@@ -49,7 +48,7 @@
             </span>
           </td>
           <td>
-            <button class="btn-save btn-sm btn-reject" *ngIf="u.empleado?.baja_solicitada" (click)="aprobarBaja(u)" [disabled]="isApprovingBaja">
+            <button class="btn-save btn-pill btn-sm btn-reject" *ngIf="u.empleado?.baja_solicitada" (click)="aprobarBaja(u)" [disabled]="isApprovingBaja">
               <span *ngIf="!isApprovingBaja">Aprobar Inactivar</span>
               <span *ngIf="isApprovingBaja" class="flex-items-center">
                 <svg class="icon-spin-sm" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -78,7 +77,7 @@
 
   <!-- HTML MODAL CREACION USUARIO -->
   <div class="modal-overlay fade-in" *ngIf="showModal && !tempPasswordGenerated">
-    <div class="modal-content glass-panel form-modal">
+    <div class="modal-content neumorphic-panel form-modal">
       <div class="modal-header">
         <h3>Crear Nuevo Usuario</h3>
         <button class="btn-close" (click)="cerrarModal()">
@@ -135,7 +134,7 @@
 
           <div class="form-actions mt-3">
             <button type="button" class="btn-secondary" (click)="cerrarModal()">Cancelar</button>
-            <button type="submit" class="btn-save flex-items-center flex-justify-center" [disabled]="isSubmitting">
+            <button type="submit" class="btn-save btn-pill flex-items-center flex-justify-center" [disabled]="isSubmitting">
               <span *ngIf="!isSubmitting">Crear Usuario</span>
               <span *ngIf="isSubmitting" class="flex-items-center">
                 <svg class="icon-spin-sm" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">

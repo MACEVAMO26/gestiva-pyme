@@ -21,7 +21,7 @@ $btn-gen-6: #A38B6D;
 
 /* --- 2. FONDOS Y LAYOUT PRINCIPAL --- */
 .module-container {
-  padding: 0;
+  padding: 1.5rem;
   background: $bg-color;
   
   font-family: 'Montserrat', sans-serif;
@@ -264,6 +264,22 @@ $btn-gen-6: #A38B6D;
   }
 }
 
+.logo-preview {
+  max-width: 160px;
+  max-height: 80px;
+  object-fit: contain;
+  border-radius: 8px;
+  box-shadow: 4px 4px 8px #d0d0bb, -4px -4px 8px #ffffff;
+  margin-bottom: 0.5rem;
+  align-self: flex-start;
+}
+
+.logo-approval-note {
+  font-size: 11px;
+  color: #b5651a;
+  margin-top: 0.25rem;
+}
+
 .form-actions {
   display: flex;
   justify-content: flex-end;
@@ -442,6 +458,10 @@ $btn-gen-6: #A38B6D;
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+.volver-wrapper {
+  margin-bottom: 2rem;
 }
 
 

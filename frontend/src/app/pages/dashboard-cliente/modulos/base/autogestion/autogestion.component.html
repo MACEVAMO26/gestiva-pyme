@@ -1,14 +1,23 @@
 
-<div class="autogestion-container fade-in">
+<div class="module-container fade-in">
   <!-- HTML ENCABEZADO -->
-  <div class="module-header">
+  <div class="module-header text-center mb-4 relative">
     <div class="header-content">
       <h1>Autogestión del Empleado</h1>
       <p>Administra tu perfil, solicita tiempos y mantén tus documentos al día.</p>
     </div>
   </div>
 
-  <div class="autogestion-grid">
+  <div class="tab-content neumorphic-panel-inner p-4">
+    
+    <div class="volver-wrapper">
+      <button class="btn-volver btn-pill" onclick="window.history.back()">
+        <i class="fas fa-arrow-left"></i> Volver
+      </button>
+    </div>
+
+    <div class="neumorphic-panel fade-in">
+      <div class="autogestion-grid">
     
     <!-- HTML COLUMNA IZQUIERDA -->
     <div class="left-column">
@@ -76,7 +85,7 @@
                 <span class="doc-date">{{ doc.created_at | date:'shortDate' }}</span>
               </div>
             </div>
-            <a [href]="doc.cloudinary_url" target="_blank" class="btn-save btn-sm" title="Descargar Documento">
+            <a [href]="doc.cloudinary_url" target="_blank" class="btn-save btn-pill btn-sm" title="Descargar Documento">
               Descargar
             </a>
           </div>
@@ -225,7 +234,7 @@
           
           <div class="form-actions">
             @if (isHR) {
-              <button type="button" class="btn-save" (click)="gestionarAfiliacionAdmin()" [disabled]="isSavingAdmin">
+              <button type="button" class="btn-save btn-pill" (click)="gestionarAfiliacionAdmin()" [disabled]="isSavingAdmin">
                 <span *ngIf="!isSavingAdmin">Guardar Gestión (RRHH)</span>
                 <span *ngIf="isSavingAdmin" class="loading-text">
                   <svg class="icon-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -237,7 +246,7 @@
               </button>
             } @else {
               @if (formAfiliacion.estado !== 'pendiente') {
-                <button type="submit" class="btn-save" [disabled]="isSaving">
+                <button type="submit" class="btn-save btn-pill" [disabled]="isSaving">
                   <span *ngIf="!isSaving">{{ formAfiliacion.estado === 'nuevo' ? 'Guardar Afiliaciones' : 'Actualizar Afiliaciones' }}</span>
                   <span *ngIf="isSaving" class="loading-text">
                     <svg class="icon-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -247,11 +256,11 @@
                     Guardando...
                   </span>
                 </button>
-                <button type="button" class="btn-save btn-cert" (click)="descargarCertificado()">
+                <button type="button" class="btn-save btn-pill btn-cert" (click)="descargarCertificado()">
                   <i class="fas fa-file-pdf"></i> Certificado Laboral
                 </button>
                 @if (user?.rol?.nombre?.includes('Gerente') && user?.empresa?.contrato_aceptado) {
-                  <button type="button" class="btn-save btn-contract" (click)="descargarContrato()">
+                  <button type="button" class="btn-save btn-pill btn-contract" (click)="descargarContrato()">
                     <i class="fas fa-file-contract"></i> Contrato SaaS
                   </button>
                 }
@@ -313,7 +322,7 @@
             <textarea [(ngModel)]="nuevaVacacion.observaciones" name="vac_obs" rows="2"></textarea>
           </div>
           
-          <button type="submit" class="btn-save w-full mt-2" [disabled]="isSubmittingVacacion">
+          <button type="submit" class="btn-save btn-pill w-full mt-2" [disabled]="isSubmittingVacacion">
             {{ isSubmittingVacacion ? 'Enviando...' : 'Enviar Solicitud a RRHH' }}
           </button>
         </form>
@@ -346,6 +355,7 @@
         }
       </div>
 
+    </div>
     </div>
   </div>
 </div>

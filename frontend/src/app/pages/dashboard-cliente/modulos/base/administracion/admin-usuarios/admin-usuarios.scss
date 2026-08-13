@@ -21,7 +21,7 @@ $btn-gen-6: #A38B6D;
 
 /* --- 2. FONDOS Y LAYOUT PRINCIPAL --- */
 .module-container {
-  padding: 0;
+  padding: 1.5rem;
   background: $bg-color;
   
   font-family: 'Montserrat', sans-serif;
@@ -451,5 +451,16 @@ $btn-gen-6: #A38B6D;
 
 .badge-activo { color: #066810; border: 1px solid rgba(6, 104, 16, 0.2); }
 .badge-baja { color: #de3737; border: 1px solid rgba(222, 55, 55, 0.2); }
-.badge-pendiente { color: #f97316; border: 1px solid rgba(249, 115, 22, 0.2); }
+.badge-pendiente { color: #C9A227; border: 1px solid rgba(201, 162, 39, 0.2); }
+
+.volver-wrapper {
+  margin-bottom: 2rem;
+}
+
+.acciones-centro {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
 

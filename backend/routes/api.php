@@ -177,6 +177,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::apiResource('ordenes-compra', OrdenCompraController::class);
     Route::apiResource('cotizaciones-pedidos', CotizacionPedidoController::class);
+    Route::put('cotizaciones-pedidos/{id}/estado', [CotizacionPedidoController::class, 'cambiarEstado']);
     Route::apiResource('movimientos-inventario', MovimientoInventarioController::class);
 
 
@@ -185,6 +186,25 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::apiResource('inventario', \App\Http\Controllers\InventarioController::class);
    
+    // --- CAJA ---
+    Route::get('/cajas', [\App\Http\Controllers\CajaController::class, 'index']);
+    Route::post('/cajas', [\App\Http\Controllers\CajaController::class, 'store']);
+    Route::post('/cajas/{id}/abrir', [\App\Http\Controllers\CajaController::class, 'abrir']);
+    Route::post('/cajas/{id}/cerrar', [\App\Http\Controllers\CajaController::class, 'cerrar']);
+    Route::get('/cajas/{id}/movimientos', [\App\Http\Controllers\CajaMovimientoController::class, 'index']);
+    Route::post('/cajas/{id}/movimientos', [\App\Http\Controllers\CajaMovimientoController::class, 'store']);
+
+    // --- AGENDA Y CALENDARIO ---
+    Route::get('/calendario-eventos', [\App\Http\Controllers\CalendarioEventoController::class, 'index']);
+    Route::post('/calendario-eventos', [\App\Http\Controllers\CalendarioEventoController::class, 'store']);
+    Route::put('/calendario-eventos/{id}', [\App\Http\Controllers\CalendarioEventoController::class, 'update']);
+    Route::delete('/calendario-eventos/{id}', [\App\Http\Controllers\CalendarioEventoController::class, 'destroy']);
+
+    // --- TICKETS DE SERVICIOS (OPERARIOS) ---
+    Route::get('/servicios-tickets', [\App\Http\Controllers\TicketServicioController::class, 'index']);
+    Route::post('/servicios-tickets', [\App\Http\Controllers\TicketServicioController::class, 'store']);
+    Route::put('/servicios-tickets/{id}/estado', [\App\Http\Controllers\TicketServicioController::class, 'cambiarEstado']);
+    Route::post('/servicios-tickets/{id}/materiales', [\App\Http\Controllers\TicketServicioController::class, 'agregarMaterial']);
 
     // --- TURNOS ---
 

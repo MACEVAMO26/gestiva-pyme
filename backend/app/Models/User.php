@@ -25,18 +25,54 @@ class User extends Authenticatable
     
     protected $fillable = [
         'empresa_id',
-        'cargo_id',
         'rol_id',
         'nombres',
         'apellidos',
+        'primer_nombre',
+        'segundo_nombre',
+        'primer_apellido',
+        'segundo_apellido',
+        'tipo_documento',
         'documento',
         'email',
+        'email_personal',
         'password_hash',
+        'avatar_url',
         'activo',
         'telegram_chat_id',
+        'telefono',
+        'direccion',
         'perfil_formalizado',
-        'debe_cambiar_clave'
+        'debe_cambiar_clave',
+        'last_activity_at'
     ];
+
+    // Nombres completos calculados a partir de las columnas reales
+    protected $appends = ['nombres', 'apellidos'];
+
+    public function getNombresAttribute()
+    {
+        return trim(($this->primer_nombre ?? '') . ' ' . ($this->segundo_nombre ?? ''));
+    }
+
+    public function setNombresAttribute($value)
+    {
+        $partes = preg_split('/\s+/', trim((string) $value), 2);
+        $this->primer_nombre = $partes[0] ?? null;
+        $this->segundo_nombre = $partes[1] ?? null;
+    }
+
+    public function getApellidosAttribute()
+    {
+        return trim(($this->primer_apellido ?? '') . ' ' . ($this->segundo_apellido ?? ''));
+    }
+
+    public function setApellidosAttribute($value)
+    {
+        $partes = preg_split('/\s+/', trim((string) $value), 2);
+        $this->primer_apellido = $partes[0] ?? null;
+        $this->segundo_apellido = $partes[1] ?? null;
+    }
 
     
     // --- OCULTOS ---

@@ -376,10 +376,16 @@ export class SaasAdminComponent implements OnInit {
         if (vista === 'comercial') {
           this.cargarLeads();
         }
+        if (vista === 'control-ia') {
+          this.cargarConfiguracionIA();
+        }
       } else {
         const savedView = localStorage.getItem('saas_current_view');
         if (savedView) {
           this.currentView = savedView;
+          if (savedView === 'control-ia') {
+            this.cargarConfiguracionIA();
+          }
         }
       }
     });
@@ -483,6 +489,22 @@ export class SaasAdminComponent implements OnInit {
   }
 
   // --- MÉTODOS PARA CONTROL DE IA ---
+  cargarConfiguracionIA() {
+    this.http.get('/api/saas/ia-config').subscribe({
+      next: (res: any) => {
+        const data = res?.data;
+        if (data) {
+          this.iaConfigSeleccionada.proveedor = data.proveedor || 'gemini';
+          this.iaConfigSeleccionada.modo = data.modo || 'apagado';
+          this.iaConfigSeleccionada.apiKey = data.api_key || '';
+        }
+      },
+      error: (err) => {
+        console.error('Error cargando configuración de IA', err);
+      }
+    });
+  }
+
   guardarConfiguracionIA() {
     if (!this.iaConfigSeleccionada.empresaId) {
       alert('Por favor, selecciona una empresa primero.');
@@ -493,17 +515,24 @@ export class SaasAdminComponent implements OnInit {
       return;
     }
 
-    const payload = {
+    // Si la llave aún muestra el valor enmascarado (********), se conserva la guardada en el servidor
+    const mantenerLlave = this.iaConfigSeleccionada.apiKey.startsWith('********');
+
+    const payload: any = {
       proveedor: this.iaConfigSeleccionada.proveedor,
-      api_key: this.iaConfigSeleccionada.apiKey,
       empresa_id: this.iaConfigSeleccionada.empresaId, // Enviado por si a futuro se hace por empresa
-      modo: this.iaConfigSeleccionada.modo
+      modo: this.iaConfigSeleccionada.modo,
+      mantener_llave: mantenerLlave
     };
+    if (!mantenerLlave) {
+      payload.api_key = this.iaConfigSeleccionada.apiKey;
+    }
 
     // Llamada HTTP al backend para guardar la configuración
     this.http.post('/api/saas/ia-config', payload).subscribe({
       next: (res: any) => {
         alert(res.message || 'Configuración de Inteligencia Artificial guardada con éxito.');
+        this.cargarConfiguracionIA();
       },
       error: (err) => {
         console.error('Error guardando IA', err);

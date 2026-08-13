@@ -14,6 +14,7 @@ class IaConfig extends Model
     protected $fillable = [
         'proveedor',
         'api_key',
+        'modo',
         'is_active',
     ];
 

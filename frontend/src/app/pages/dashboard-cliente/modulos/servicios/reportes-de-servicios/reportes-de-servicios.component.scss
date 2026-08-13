@@ -21,7 +21,7 @@ $btn-gen-6: #A38B6D;
 
 /* --- 2. FONDOS Y LAYOUT PRINCIPAL --- */
 .module-container {
-  padding: 0;
+  padding: 1.5rem;
   background: $bg-color;
   
   font-family: 'Montserrat', sans-serif;
@@ -148,7 +148,64 @@ $btn-gen-6: #A38B6D;
 /* ========================================= */
 /* FIN DE BASE NEUMORFICA, INICIO DE LOCALES */
 /* ========================================= */
-.reportes-de-servicios-container { padding: 20px; }
+/* ESTILOS LOCALES REPORTES Y ANALITICAS DE SERVICIOS */
+
+.volver-wrapper {
+  margin-bottom: 1.5rem;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.panel-body {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.text-center { text-align: center; }
+.text-muted { color: $text-muted; }
+
+/* FORMULARIOS */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+}
+
+/* METRICAS */
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.metric-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  color: $text-muted;
+  margin: 0 0 0.5rem 0;
+}
+
+.metric-value {
+  font-size: 16px;
+  color: $text-dark;
+}
+
+.metric-value-accent {
+  font-size: 24px;
+  color: $btn-add;
+}
+
+.metric-value-danger {
+  font-size: 24px;
+  color: $btn-volver;
+}
 
 
 

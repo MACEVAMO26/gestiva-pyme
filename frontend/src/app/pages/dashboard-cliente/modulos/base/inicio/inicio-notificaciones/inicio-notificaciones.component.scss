@@ -21,7 +21,7 @@ $btn-gen-6: #A38B6D;
 
 /* --- 2. FONDOS Y LAYOUT PRINCIPAL --- */
 .module-container {
-  padding: 0;
+  padding: 1.5rem;
   background: $bg-color;
   font-family: 'Montserrat', sans-serif;
   color: $text-dark;
@@ -165,8 +165,8 @@ $color-success: #6B8F71;
 
 .panel-header {
   border-bottom: 2px solid rgba(0,0,0,0.05);
-  padding-bottom: 1rem;
-  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  margin-bottom: 0.75rem;
 }
 
 .panel-title {
@@ -240,6 +240,36 @@ $color-success: #6B8F71;
   font-family: 'Montserrat', sans-serif;
   font-size: 9px;
   color: $text-muted;
+}
+
+.noti-nueva {
+  display: inline-block;
+  margin-left: 0.4rem;
+  padding: 0.1rem 0.5rem;
+  border-radius: 9999px;
+  background: $color-warning;
+  color: #ffffff;
+  font-size: 9px;
+  font-weight: bold;
+  text-transform: uppercase;
+  vertical-align: middle;
+}
+
+.btn-xs {
+  padding: 0.45rem 1rem;
+  border: none;
+  border-radius: 9999px;
+  background: $color-info;
+  color: #ffffff;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 10px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 3px 3px 6px #d6d6c0, -3px -3px 6px #ffffff;
+
+  &:active {
+    box-shadow: inset 3px 3px 6px #d6d6c0, inset -3px -3px 6px #ffffff;
+  }
 }
 
 

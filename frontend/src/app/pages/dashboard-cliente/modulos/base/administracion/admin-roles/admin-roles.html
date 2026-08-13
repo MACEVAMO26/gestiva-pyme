@@ -1,15 +1,18 @@
 <!-- HTML GESTIÓN DE ROLES -->
 <div class="fade-in">
   <!-- Botón Volver Inyectado -->
-  <div style="margin-bottom: 2rem;">
-    <button class="btn-volver" onclick="window.history.back()">
+  <div class="volver-wrapper">
+    <button class="btn-volver btn-pill" onclick="window.history.back()">
       <i class="fas fa-arrow-left"></i> VOLVER
     </button>
   </div>
   
-  <div class="module-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
-    <h1 style="margin: 0; font-size: 16px; font-weight: bold; text-transform: uppercase;">ROLES Y ACCESOS</h1>
-    <button class="btn-add btn-pill" (click)="abrirModal()">+ Nuevo Rol</button>
+  <div class="module-header text-center mb-4 relative">
+    <h1>ROLES Y ACCESOS</h1>
+    <p>Define los roles y permisos de acceso al sistema.</p>
+    <div class="acciones-centro">
+      <button class="btn-add btn-pill" (click)="abrirModal()">+ Nuevo Rol</button>
+    </div>
   </div>
 
   <div class="panel-body">
@@ -48,7 +51,7 @@
                 @if (rol.es_base) {
                   <span class="role-badge">Sistema</span>
                 } @else {
-                  <span class="role-badge" style="background-color: var(--secondary-color); color: white;">Personalizado</span>
+                  <span class="role-badge role-badge-personalizado">Personalizado</span>
                 }
               </td>
               <td>

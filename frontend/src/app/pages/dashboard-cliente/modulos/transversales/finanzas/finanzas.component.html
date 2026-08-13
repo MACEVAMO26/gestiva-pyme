@@ -1,6 +1,6 @@
 <div class="module-container fade-in">
 
-  <div class="module-header">
+  <div class="module-header text-center mb-4 relative">
     <h1>Prefacturación y Caja</h1>
     <p>Control de cuadre diario de caja, ingresos, egresos y documentos pendientes de pago.</p>
   </div>
@@ -9,70 +9,65 @@
   <div class="tabs-nav-wrapper">
     <button class="tab-neu-inactive" 
             [class.tab-neu-active]="activeTab === 'caja'" 
-            (click)="switchTab('caja')">
-      GESTIÓN DE CAJA
-    </button>
+            (click)="switchTab('caja')"> <span class="icon">💵</span> GESTIÓN DE CAJA </button>
     <button class="tab-neu-inactive" 
             [class.tab-neu-active]="activeTab === 'prefacturas'" 
-            (click)="switchTab('prefacturas')">
-      PREFACTURAS PENDIENTES
-    </button>
+            (click)="switchTab('prefacturas')"> <span class="icon">🧾</span> PREFACTURAS PENDIENTES </button>
   </div>
 
   <!-- HTML CONTENIDO DE TABS -->
-  <div class="tab-content neumorphic-panel-inner" style="padding: 2rem; position: relative;">
+  <div class="tab-content neumorphic-panel-inner p-4">
+    <!-- Botón Volver Inyectado -->
+    <div class="volver-wrapper">
+      <button class="btn-volver btn-pill" onclick="window.history.back()">
+        <i class="fas fa-arrow-left"></i> Volver
+      </button>
+    </div>
     
     <!-- HTML GESTIÓN DE CAJA -->
     @if(activeTab === 'caja') {
-      <div class="fade-in">
-        
-        <!-- Botón Volver Inyectado dentro del tab -->
-        <div style="margin-bottom: 2rem;">
-          <button class="btn-volver" onclick="window.history.back()">
-            <i class="fas fa-arrow-left"></i> VOLVER
-          </button>
-        </div>
+      <div class="neumorphic-panel fade-in">
 
         @if(!cajaAbierta) {
           <!-- CAJA CERRADA -->
-          <div style="text-align: center; padding: 2rem;">
-            <i class="fas fa-cash-register" style="font-size: 5rem; color: #64748b; margin-bottom: 1.5rem;"></i>
-            <h1 style="text-align: center !important; color: #cbd5e1; margin-bottom: 1rem; font-size: 1.5rem;">LA CAJA ESTÁ CERRADA</h1>
-            <p style="color: #94a3b8; margin-bottom: 2rem; font-size: 12px;">Debes realizar la apertura de caja para empezar a registrar movimientos en efectivo.</p>
+          <div class="estado-caja">
+            <i class="fas fa-cash-register icon-cerrada"></i>
+            <h1 class="estado-title">LA CAJA ESTÁ CERRADA</h1>
+            <p class="text-muted" style="margin-bottom: 2rem;">Debes realizar la apertura de caja para empezar a registrar movimientos en efectivo.</p>
             <button class="btn-save btn-pill" style="padding: 1rem 2rem; font-size: 1.2rem;" (click)="abrirCajaModal()">
               <i class="fas fa-lock-open"></i> Abrir Caja
             </button>
           </div>
         } @else {
           <!-- CAJA ABIERTA -->
-          <div style="display: flex; gap: 1.5rem; flex-wrap: wrap; margin-bottom: 2rem;">
+          <div class="caja-abierta">
             
             <!-- TARJETAS DE RESUMEN -->
-            <div style="flex: 1; display: flex; flex-direction: column; gap: 1rem;">
-              <div class="neumorphic-panel" style="padding: 1.5rem; text-align: center; border-bottom: 4px solid #10b981;">
-                <h3 style="margin-top: 0; color: #94a3b8; font-size: 0.9rem; text-transform: uppercase;">Total Ingresos</h3>
-                <span style="font-size: 2rem; font-weight: bold; color: #10b981;">{{totalIngresos | currency:'COP':'symbol':'1.0-0'}}</span>
+            <div class="tarjetas-resumen">
+              <div class="neumorphic-panel card-resumen card-ingreso">
+                <h3 class="card-label">Total Ingresos</h3>
+                <span class="card-monto monto-ingreso">{{totalIngresos | currency:'COP':'symbol':'1.0-0'}}</span>
               </div>
-              <div class="neumorphic-panel" style="padding: 1.5rem; text-align: center; border-bottom: 4px solid #ef4444;">
-                <h3 style="margin-top: 0; color: #94a3b8; font-size: 0.9rem; text-transform: uppercase;">Total Egresos</h3>
-                <span style="font-size: 2rem; font-weight: bold; color: #ef4444;">{{totalEgresos | currency:'COP':'symbol':'1.0-0'}}</span>
+              <div class="neumorphic-panel card-resumen card-egreso">
+                <h3 class="card-label">Total Egresos</h3>
+                <span class="card-monto monto-egreso">{{totalEgresos | currency:'COP':'symbol':'1.0-0'}}</span>
               </div>
-              <div class="neumorphic-panel-inner" style="padding: 1.5rem; text-align: center; border-bottom: 4px solid #45a1ae;">
-                <h3 style="margin-top: 0; color: #94a3b8; font-size: 0.9rem; text-transform: uppercase;">Saldo Actual en Caja</h3>
-                <span style="font-size: 2.5rem; font-weight: bold; color: #45a1ae;">{{saldoActual | currency:'COP':'symbol':'1.0-0'}}</span>
+              <div class="neumorphic-panel-inner card-resumen card-saldo">
+                <h3 class="card-label">Saldo Actual en Caja</h3>
+                <span class="card-monto monto-saldo">{{saldoActual | currency:'COP':'symbol':'1.0-0'}}</span>
               </div>
               
-              <button class="btn-volver btn-pill" style="padding: 1rem; width: 100%; justify-content: center; font-size: 1.1rem; margin-top: auto;" (click)="abrirCierreModal()">
+              <button class="btn-volver btn-pill btn-cierre btn-pill" (click)="abrirCierreModal()">
                 <i class="fas fa-lock"></i> Realizar Cierre de Caja
               </button>
             </div>
 
             <!-- REGISTRO DE MOVIMIENTOS Y TABLA -->
-            <div style="flex: 2; display: flex; flex-direction: column; gap: 1.5rem; min-width: 300px;">
+            <div class="movimientos-columna">
               
               <div class="neumorphic-panel" style="padding: 1.5rem;">
-                <h3 style="margin-top: 0; color: #f97316; font-size: 1.2rem; text-transform: uppercase;">Registrar Movimiento Manual</h3>
-                <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                <h3 class="panel-titulo" style="margin-bottom: 1rem;">Registrar Movimiento Manual</h3>
+                <div class="form-fila">
                   <div class="form-group" style="flex: 1;">
                     <label class="form-label">Tipo</label>
                     <select class="input-neumorphic" [(ngModel)]="tipoMovimiento">
@@ -89,7 +84,7 @@
                     <input type="text" class="input-neumorphic" [(ngModel)]="conceptoMovimiento" placeholder="Ej. Pago servicio internet">
                   </div>
                   <div style="display: flex; align-items: flex-end; padding-bottom: 0.5rem;">
-                    <button class="btn-add btn-pill" style="padding: 0.75rem 1.5rem;" (click)="registrarMovimiento()">
+                    <button class="btn-add btn-pill" (click)="registrarMovimiento()">
                       Guardar
                     </button>
                   </div>
@@ -97,7 +92,7 @@
               </div>
 
               <div class="neumorphic-panel" style="padding: 1.5rem; flex: 1;">
-                <h3 style="margin-top: 0; color: #4a4a4a; font-size: 1.2rem; text-transform: uppercase;">Últimos Movimientos del Día</h3>
+                <h3 class="panel-titulo" style="margin-bottom: 1rem;">Últimos Movimientos del Día</h3>
                 <div class="table-responsive" style="margin-top: 1rem;">
                   <table class="data-table neumorphic-table">
                     <thead>
@@ -114,13 +109,13 @@
                           <td>{{mov.fecha}}</td>
                           <td>
                             @if(mov.tipo === 'ingreso' || mov.tipo === 'apertura') {
-                              <span class="badge status-badge" style="background: #10b981; color: white; text-transform: capitalize;">{{mov.tipo}}</span>
+                              <span class="badge badge-success">{{mov.tipo}}</span>
                             } @else {
-                              <span class="badge status-badge" style="background: #ef4444; color: white; text-transform: capitalize;">{{mov.tipo}}</span>
+                              <span class="badge badge-danger">{{mov.tipo}}</span>
                             }
                           </td>
                           <td>{{mov.concepto}}</td>
-                          <td [ngStyle]="{'color': (mov.tipo === 'egreso') ? '#ef4444' : '#10b981', 'font-weight': 'bold'}">
+                          <td [ngClass]="mov.tipo === 'egreso' ? 'text-negativo' : 'text-positivo'">
                             {{mov.tipo === 'egreso' ? '-' : '+'}}{{mov.monto | currency:'COP':'symbol':'1.0-0'}}
                           </td>
                         </tr>
@@ -136,17 +131,11 @@
       </div>
     }
 
-    <!-- HTML PREFACTURAS PENDIENTES -->
+<!-- HTML PREFACTURAS PENDIENTES -->
     @if(activeTab === 'prefacturas') {
-      <div class="fade-in">
-        <!-- Botón Volver Inyectado dentro del tab -->
-        <div style="margin-bottom: 2rem;">
-          <button class="btn-volver" onclick="window.history.back()">
-            <i class="fas fa-arrow-left"></i> VOLVER
-          </button>
-        </div>
+      <div class="neumorphic-panel fade-in">
 
-        <p style="color: #94a3b8; margin-bottom: 1.5rem;">Documentos pendientes de confirmación de pago o emisión de factura final.</p>
+        <p class="text-muted" style="margin-bottom: 1.5rem;">Documentos pendientes de confirmación de pago o emisión de factura final.</p>
         
         <div class="table-responsive">
           <table class="data-table neumorphic-table">
@@ -174,11 +163,11 @@
                   </td>
                   <td style="text-align: center;">
                     @if(pref.estado === 'Pendiente') {
-                      <button class="btn-save" style="padding: 0.5rem 1rem; font-size: 0.8rem;" (click)="generarDocumento(pref.id)">
+                      <button class="btn-save btn-pill btn-xs" (click)="generarDocumento(pref.id)">
                         <i class="fas fa-file-invoice"></i> Generar Factura
                       </button>
                     } @else {
-                      <span style="color: #64748b; font-size: 0.8rem;"><i class="fas fa-check"></i> Procesada</span>
+                      <span class="text-muted" style="font-size: 0.8rem;"><i class="fas fa-check"></i> Procesada</span>
                     }
                   </td>
                 </tr>
@@ -194,22 +183,22 @@
 <!-- HTML MODAL APERTURA -->
 @if(showModalApertura) {
 <div class="modal-overlay fade-in">
-  <div class="modal-content glass-panel" style="max-width: 400px; text-align: center;">
-    <div class="modal-header" style="justify-content: center; border-bottom: none;">
-      <i class="fas fa-key" style="font-size: 3rem; color: #10b981; margin-bottom: 1rem;"></i>
+  <div class="modal-content neumorphic-panel" style="max-width: 400px; text-align: center;">
+    <div class="modal-header modal-header-center">
+      <i class="fas fa-key icon-success"></i>
     </div>
     <div class="modal-body">
-      <h1 style="margin-top: 0; color: white; text-align: center !important;">APERTURA DE CAJA</h1>
-      <p style="color: #cbd5e1; margin-bottom: 1.5rem;">Indica el monto base (sencillo) con el que inicia la caja hoy.</p>
+      <h1 class="modal-title">APERTURA DE CAJA</h1>
+      <p class="text-muted" style="margin-bottom: 1.5rem;">Indica el monto base (sencillo) con el que inicia la caja hoy.</p>
       
       <div class="form-group" style="text-align: left;">
         <label>Base Inicial ($)</label>
-        <input type="number" class="input-neumorphic" [(ngModel)]="montoApertura" style="font-size: 1.5rem; text-align: right;" placeholder="0">
+        <input type="number" class="input-neumorphic monto-input" [(ngModel)]="montoApertura" placeholder="0">
       </div>
       
-      <div style="display: flex; justify-content: center; gap: 1rem; margin-top: 2rem;">
-        <button class="btn-volver" (click)="cerrarCajaModal()">Cancelar</button>
-        <button class="btn-save" (click)="confirmarApertura()" [disabled]="guardando">
+      <div class="modal-footer">
+        <button class="btn-volver btn-pill" (click)="cerrarCajaModal()">Cancelar</button>
+        <button class="btn-save btn-pill" (click)="confirmarApertura()" [disabled]="guardando">
           @if(guardando) {
             <i class="fas fa-spinner fa-spin"></i> Abriendo...
           } @else {
@@ -225,18 +214,17 @@
 <!-- HTML MODAL CIERRE -->
 @if(showModalCierre) {
 <div class="modal-overlay fade-in">
-  <div class="modal-content glass-panel" style="max-width: 400px; text-align: center;">
-    <div class="modal-header" style="justify-content: center; border-bottom: none;">
-      <i class="fas fa-lock" style="font-size: 3rem; color: #ef4444; margin-bottom: 1rem;"></i>
+  <div class="modal-content neumorphic-panel" style="max-width: 400px; text-align: center;">
+    <div class="modal-header modal-header-center">
+      <i class="fas fa-lock icon-danger"></i>
     </div>
     <div class="modal-body">
-      <h1 style="margin-top: 0; color: #ef4444; text-align: center !important;">CIERRE DE CAJA</h1>
-      <p style="color: #cbd5e1; margin-bottom: 1.5rem;">El sistema registrará un saldo esperado de <strong>{{saldoActual | currency:'COP':'symbol':'1.0-0'}}</strong>. ¿Estás seguro de realizar el cuadre y cerrar la caja?</p>
+      <h1 class="modal-title">CIERRE DE CAJA</h1>
+      <p class="text-muted" style="margin-bottom: 1.5rem;">El sistema registrará un saldo esperado de <strong>{{saldoActual | currency:'COP':'symbol':'1.0-0'}}</strong>. ¿Estás seguro de realizar el cuadre y cerrar la caja?</p>
       
-      <div style="display: flex; justify-content: center; gap: 1rem; margin-top: 2rem;">
-        <button class="btn-volver" style="background-color: #3f3f46 !important;" (click)="cerrarCierreModal()">Cancelar</button>
-        <!-- Notar que el botón de cerrar usa el fondo rojo (volver) como botón de peligro -->
-        <button class="btn-volver" (click)="confirmarCierre()" [disabled]="guardando">
+      <div class="modal-footer">
+        <button class="btn-secondary" (click)="cerrarCierreModal()">Cancelar</button>
+        <button class="btn-volver btn-pill" (click)="confirmarCierre()" [disabled]="guardando">
           @if(guardando) {
             <i class="fas fa-spinner fa-spin"></i> Cerrando...
           } @else {
@@ -270,7 +258,6 @@
   </div>
 </div>
 }
-
 
 
 

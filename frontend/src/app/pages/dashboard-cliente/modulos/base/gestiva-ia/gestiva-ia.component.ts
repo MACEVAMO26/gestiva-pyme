@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { LoadingSpinnerComponent } from '../../../../../shared/components/loading-spinner/loading-spinner';
+import { ToastService } from '../../../../../services/toast.service';
 
 interface Directriz {
   id: number;
@@ -21,6 +22,7 @@ interface Directriz {
 })
 export class GestivaIaComponent implements OnInit {
   private http = inject(HttpClient);
+  private toastService = inject(ToastService);
 
   cargando = false;
   guardando = false;
@@ -36,7 +38,11 @@ export class GestivaIaComponent implements OnInit {
   };
 
   ngOnInit() {
-    this.cargarDirectrices();
+    // Retraso de 500ms para evitar que la petición concurrente con el Asistente IA 
+    // bloquee el servidor local de PHP (php artisan serve) en Windows.
+    setTimeout(() => {
+      this.cargarDirectrices();
+    }, 500);
   }
 
   cargarDirectrices() {
@@ -49,7 +55,7 @@ export class GestivaIaComponent implements OnInit {
       error: (err) => {
         console.error('Error al cargar directrices', err);
         this.cargando = false;
-        alert('Error al cargar directrices.');
+        this.toastService.error('Error al cargar directrices.');
       }
     });
   }
@@ -76,7 +82,7 @@ export class GestivaIaComponent implements OnInit {
 
   guardarDirectriz() {
     if (!this.form.mensaje || !this.form.audiencia) {
-      alert('Por favor completa los campos requeridos.');
+      this.toastService.warning('Por favor completa los campos requeridos.');
       return;
     }
 
@@ -88,12 +94,12 @@ export class GestivaIaComponent implements OnInit {
           this.guardando = false;
           this.cerrarFormulario();
           this.cargarDirectrices();
-          alert('Directriz actualizada con éxito');
+          this.toastService.success('Directriz actualizada con éxito');
         },
         error: (err) => {
           console.error(err);
           this.guardando = false;
-          alert('Error al actualizar');
+          this.toastService.error('Error al actualizar');
         }
       });
     } else {
@@ -102,12 +108,12 @@ export class GestivaIaComponent implements OnInit {
           this.guardando = false;
           this.cerrarFormulario();
           this.cargarDirectrices();
-          alert('Directriz creada con éxito');
+          this.toastService.success('Directriz creada con éxito');
         },
         error: (err) => {
           console.error(err);
           this.guardando = false;
-          alert('Error al crear');
+          this.toastService.error('Error al crear');
         }
       });
     }
@@ -119,7 +125,7 @@ export class GestivaIaComponent implements OnInit {
       error: (err) => {
         console.error(err);
         directriz.activo = !directriz.activo; // revertir
-        alert('Error al cambiar estado');
+        this.toastService.error('Error al cambiar estado');
       }
     });
   }
@@ -129,11 +135,11 @@ export class GestivaIaComponent implements OnInit {
       this.http.delete(`/api/ia/directrices/${id}`).subscribe({
         next: () => {
           this.cargarDirectrices();
-          alert('Directriz eliminada');
+          this.toastService.success('Directriz eliminada');
         },
         error: (err) => {
           console.error(err);
-          alert('Error al eliminar');
+          this.toastService.error('Error al eliminar');
         }
       });
     }

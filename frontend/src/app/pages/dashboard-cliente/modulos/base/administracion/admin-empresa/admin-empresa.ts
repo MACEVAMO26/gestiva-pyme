@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { timeout } from 'rxjs';
 import { EmpresaService } from '../../../../../../services/empresa.service';
 import { AuthService } from '../../../../../../services/auth.service';
+import { SoporteService } from '../../../../../../services/soporte.service';
 
 @Component({
   selector: 'app-admin-empresa',
@@ -16,6 +17,7 @@ import { AuthService } from '../../../../../../services/auth.service';
 export class AdminEmpresa implements OnInit {
   private empresaService = inject(EmpresaService);
   private authService = inject(AuthService);
+  private soporteService = inject(SoporteService);
   private cdr = inject(ChangeDetectorRef);
 
   empresaData: any = {
@@ -30,6 +32,9 @@ export class AdminEmpresa implements OnInit {
 
   isLoading = true;
   isSaving = false;
+
+  logoSeleccionado: File | null = null;
+  logoPreview: string | null = null;
   
   toasts: any[] = [];
 
@@ -67,6 +72,19 @@ export class AdminEmpresa implements OnInit {
     }
   }
 
+  onLogoSelected(event: any) {
+    const file = event.target.files[0];
+    if (file) {
+      this.logoSeleccionado = file;
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        this.logoPreview = e.target.result;
+        this.cdr.detectChanges();
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
   guardarCambios() {
     if (!this.empresaData.nombre || !this.empresaData.nit) {
       this.mostrarToast('Campos Incompletos', 'warning', 'Por favor llena los campos obligatorios.');
@@ -75,7 +93,36 @@ export class AdminEmpresa implements OnInit {
 
     this.isSaving = true;
     const currentUser = this.authService.getUser();
-    
+
+    // Si se seleccionó un nuevo logo, se envía como solicitud administrativa
+    // y el administrador del SaaS debe aprobarlo antes de aplicarse.
+    if (this.logoSeleccionado) {
+      const formData = new FormData();
+      formData.append('tipo', 'cambio_datos');
+      formData.append('logo', this.logoSeleccionado);
+      formData.append('datos_nuevos', JSON.stringify({
+        razon_social: this.empresaData.nombre,
+        nit: this.empresaData.nit,
+        direccion: this.empresaData.direccion || '',
+        telefono: this.empresaData.telefono || ''
+      }));
+
+      this.soporteService.createAdminRequest(formData).subscribe({
+        next: (res) => {
+          this.isSaving = false;
+          this.logoSeleccionado = null;
+          this.logoPreview = null;
+          this.mostrarToast('Solicitud enviada', 'success', 'El nuevo logo se envió para aprobación del administrador del SaaS.');
+        },
+        error: (err) => {
+          this.isSaving = false;
+          console.error('[AdminEmpresa] Error al enviar solicitud de logo:', err);
+          this.mostrarToast('Error', 'error', 'Hubo un problema al enviar la solicitud del logo.');
+        }
+      });
+      return;
+    }
+
     const payload = {
       ...this.empresaData,
       razon_social: this.empresaData.nombre,

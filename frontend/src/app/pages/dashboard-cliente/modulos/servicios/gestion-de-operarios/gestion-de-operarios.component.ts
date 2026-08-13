@@ -64,4 +64,14 @@ export class GestionDeOperariosComponent implements OnInit {
       }
     });
   }
+
+  getBadgeEstado(estado: string): string {
+    switch (estado) {
+      case 'Completado': return 'badge-success';
+      case 'Pendiente': return 'badge-warning';
+      case 'Asignado': return 'badge-primary';
+      case 'En Sitio': return 'badge-info';
+      default: return 'badge-secondary';
+    }
+  }
 }

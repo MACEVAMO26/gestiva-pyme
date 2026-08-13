@@ -15,6 +15,40 @@ $shadow-lg:
   0 8px 12px -2px rgba(0, 0, 0, 0.4),
   0 3px 5px -2px rgba(0, 0, 0, 0.2);
 $transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+/* --- NEOGLASSMORPHISM: SISTEMA DE BOTONES DE CRISTAL --- */
+@mixin glass-btn($tint, $tint-hover, $border-color, $text-color: #ffffff) {
+  background: $tint;
+  color: $text-color;
+  border: 1px solid $border-color;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow:
+    0 8px 20px rgba(0, 0, 0, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.22),
+    inset 0 -2px 6px rgba(255, 255, 255, 0.06);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  &:hover {
+    background: $tint-hover;
+    transform: translateY(-2px);
+    box-shadow:
+      0 12px 26px rgba(0, 0, 0, 0.24),
+      inset 0 1px 0 rgba(255, 255, 255, 0.28),
+      inset 0 -2px 6px rgba(255, 255, 255, 0.08);
+  }
+  &:active {
+    transform: translateY(0) scale(0.98);
+    box-shadow:
+      inset 0 2px 8px rgba(0, 0, 0, 0.22),
+      inset 0 -1px 0 rgba(255, 255, 255, 0.08);
+  }
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
 [data-daltonism='protanopia'] {
   filter: contrast(1.2) hue-rotate(-10deg) saturate(1.5);
 }
@@ -23,6 +57,29 @@ $transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 [data-daltonism='tritanopia'] {
   filter: contrast(1.2) hue-rotate(40deg) saturate(1.5);
+}
+
+/* --- VARIANTES DE CRISTAL PARA BOTONES TAILWIND --- */
+.glass-btn-red {
+  @include glass-btn(rgba(225, 29, 72, 0.22), rgba(225, 29, 72, 0.45), rgba(225, 29, 72, 0.5));
+}
+.glass-btn-green {
+  @include glass-btn(rgba(16, 185, 129, 0.22), rgba(16, 185, 129, 0.45), rgba(16, 185, 129, 0.5));
+}
+.glass-btn-blue {
+  @include glass-btn(rgba(59, 130, 246, 0.22), rgba(59, 130, 246, 0.45), rgba(59, 130, 246, 0.5));
+}
+.glass-btn-gray {
+  @include glass-btn(rgba(148, 163, 184, 0.16), rgba(148, 163, 184, 0.3), rgba(255, 255, 255, 0.22), #e2e8f0);
+}
+.glass-btn-cyan {
+  @include glass-btn(rgba(6, 182, 212, 0.22), rgba(6, 182, 212, 0.45), rgba(6, 182, 212, 0.5));
+}
+.glass-btn-indigo {
+  @include glass-btn(rgba(99, 102, 241, 0.24), rgba(99, 102, 241, 0.48), rgba(99, 102, 241, 0.55));
+}
+.glass-btn-amber {
+  @include glass-btn(rgba(245, 158, 11, 0.24), rgba(245, 158, 11, 0.48), rgba(245, 158, 11, 0.55));
 }
 
 * {
@@ -83,7 +140,7 @@ $sidebar-text-muted: #0f172a;
   z-index: 20;
   box-shadow: $shadow-sm;
   .header-left {
-    width: 205px;
+    width: 235px;
     height: 100%;
     display: flex;
     align-items: center;
@@ -148,15 +205,18 @@ $sidebar-text-muted: #0f172a;
         display: flex;
         align-items: center;
         gap: 0.5rem;
-        background: #069c6a;
+        background: rgba(16, 185, 129, 0.25);
         padding: 0.5rem 1.75rem 0.5rem 0.5rem;
         border-radius: 50px;
-        box-shadow: $shadow-sm;
-        border: none;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.22);
+        border: 1px solid rgba(16, 185, 129, 0.4);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
         cursor: pointer;
-        transition: background 0.3s ease;
+        transition: all 0.3s ease;
         &:hover {
-          background: #05875b;
+          background: rgba(16, 185, 129, 0.4);
+          border-color: rgba(16, 185, 129, 0.55);
         }
 
         .avatar {
@@ -200,7 +260,7 @@ $sidebar-text-muted: #0f172a;
 
 /* --- 6. BARRA LATERAL --- */
 .sidebar-saas {
-  width: 205px;
+  width: 235px;
   background-color: $sidebar-bg;
   border-right: none;
   display: flex;
@@ -278,8 +338,8 @@ $sidebar-text-muted: #0f172a;
       display: flex;
       align-items: center;
       gap: 10px;
-      padding: 0.65rem 1rem;
-      margin: 0 0.85rem;
+      padding: 0.6rem 0.85rem;
+      margin: 0 0.5rem;
       border-radius: 50px;
       border: 1px solid rgba(255, 255, 255, 0.4);
       background: transparent;
@@ -733,20 +793,16 @@ $sidebar-text-muted: #0f172a;
         }
 
         .btn-view {
-          background: #069c6a;
-          color: white;
-          border: none;
+          @include glass-btn(
+            rgba(16, 185, 129, 0.22),
+            rgba(16, 185, 129, 0.38),
+            rgba(16, 185, 129, 0.45)
+          );
           padding: 0.5rem 1rem;
           border-radius: 50px;
-          cursor: pointer;
           
           font-weight: 600;
           align-self: center;
-          transition: all 0.3s ease;
-          &:hover {
-            background: #4f46e5;
-            transform: translateY(-1px);
-          }
         }
       }
     }
@@ -1377,20 +1433,23 @@ $sidebar-text-muted: #0f172a;
   margin-top: 2rem;
 }
 .saas-btn-cancel {
-  background: transparent;
-  color: #94a3b8;
-  border: none;
-  cursor: pointer;
+  @include glass-btn(
+    rgba(148, 163, 184, 0.12),
+    rgba(148, 163, 184, 0.22),
+    rgba(255, 255, 255, 0.18),
+    #cbd5e1
+  );
   padding: 0.75rem 1.75rem;
   border-radius: 50px;
 }
 .saas-btn-submit {
-  background: #069c6a;
-  color: white;
-  border: none;
+  @include glass-btn(
+    rgba(6, 182, 212, 0.22),
+    rgba(6, 182, 212, 0.38),
+    rgba(6, 182, 212, 0.45)
+  );
   padding: 0.75rem 1.75rem;
   border-radius: 50px;
-  cursor: pointer;
   font-weight: bold;
 }
 .saas-success-overlay {
@@ -1457,12 +1516,13 @@ $sidebar-text-muted: #0f172a;
   word-break: break-all;
 }
 .saas-success-btn {
-  background: #6366f1;
-  color: white;
-  border: none;
+  @include glass-btn(
+    rgba(99, 102, 241, 0.3),
+    rgba(99, 102, 241, 0.5),
+    rgba(99, 102, 241, 0.55)
+  );
   padding: 0.75rem 2rem;
-  border-radius: 8px;
-  cursor: pointer;
+  border-radius: 12px;
   font-weight: bold;
   width: 100%;
 }
@@ -1471,12 +1531,13 @@ $sidebar-text-muted: #0f172a;
   z-index: 99;
 }
 .saas-btn-access {
-  background-color: #f59e0b;
+  @include glass-btn(
+    rgba(245, 158, 11, 0.3),
+    rgba(245, 158, 11, 0.45),
+    rgba(245, 158, 11, 0.5)
+  );
   padding: 0.75rem;
   border-radius: 9999px;
-  border: none;
-  cursor: pointer;
-  box-shadow: none;
 }
 .saas-access-icon {
   width: 24px;
@@ -1589,49 +1650,42 @@ $sidebar-text-muted: #0f172a;
 
 /* --- 23. BOTONES SOFT UI --- */
 .soft-ui-btn {
-  background: #069c6a; /* Bright green like Ver Detalles */
-  color: white;
+  @include glass-btn(
+    rgba(16, 185, 129, 0.22),
+    rgba(16, 185, 129, 0.38),
+    rgba(16, 185, 129, 0.45)
+  );
   font-weight: 600;
   padding: 0.5rem 1.25rem;
   border-radius: 50px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-  transition: all 0.3s ease;
-  border: none;
-  cursor: pointer;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  &:hover {
-    background: #05875b;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.4);
-  }
-  &:active {
-    box-shadow: inset 0px 4px 6px rgba(0, 0, 0, 0.2);
-  }
 }
 
 .soft-ui-toggle {
-  background: rgba(150, 80, 80, 0.4); /* Rojo grisáceo apagado */
+  background: rgba(148, 163, 184, 0.18);
   width: 48px;
   height: 18px; /* Menos alto, pero igual de largo */
   flex-shrink: 0;
   border-radius: 9px; /* Mitad de 18 */
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.35);
   transition: all 0.3s ease;
   position: relative;
-  border: 1px solid transparent;
+  border: 1px solid rgba(255, 255, 255, 0.2);
   cursor: pointer;
   display: flex;
   align-items: center;
 
   &.active {
-    background: #069c6a; /* Verde sólido activo */
-    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2); /* Sin el efecto de luz externa */
+    background: rgba(16, 185, 129, 0.4);
+    border-color: rgba(16, 185, 129, 0.55);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.25);
   }
 
   &.inactive {
-    background: rgba(150, 80, 80, 0.4);
+    background: rgba(150, 80, 80, 0.35);
+    border-color: rgba(225, 29, 72, 0.3);
   }
 
   .soft-ui-toggle-thumb {
@@ -1731,22 +1785,24 @@ $sidebar-text-muted: #0f172a;
 }
 
 .neu-dark-button {
-  background: #069c6a;
-  color: white;
+  @include glass-btn(
+    rgba(148, 163, 184, 0.12),
+    rgba(148, 163, 184, 0.22),
+    rgba(255, 255, 255, 0.2),
+    #e2e8f0
+  );
   font-weight: 600;
   padding: 0.5rem 1.25rem;
   border-radius: 50px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-  transition: all 0.3s ease;
-  border: none;
-  cursor: pointer;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  &:hover {
-    background: #05875b;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.4);
+  &.active {
+    @include glass-btn(
+      rgba(16, 185, 129, 0.3),
+      rgba(16, 185, 129, 0.45),
+      rgba(16, 185, 129, 0.55)
+    );
   }
 }
 
@@ -1755,7 +1811,11 @@ $sidebar-text-muted: #0f172a;
 }
 
 .neu-action-btn {
-  color: white;
+  @include glass-btn(
+    rgba(255, 255, 255, 0.14),
+    rgba(255, 255, 255, 0.26),
+    rgba(255, 255, 255, 0.3)
+  );
   padding: 0.5rem;
   border-radius: 50%;
   width: 2.5rem;
@@ -1763,24 +1823,36 @@ $sidebar-text-muted: #0f172a;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-  transition: all 0.3s ease;
-  border: none;
-  cursor: pointer;
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.4);
-  }
 }
 
 .neu-action-check {
-  background: #069c6a;
-  &:hover { background: #05875b; }
+  @include glass-btn(
+    rgba(16, 185, 129, 0.25),
+    rgba(16, 185, 129, 0.45),
+    rgba(16, 185, 129, 0.5)
+  );
+  padding: 0.5rem;
+  border-radius: 50%;
+  width: 2.5rem;
+  height: 2.5rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .neu-action-close {
-  background: #e11d48;
-  &:hover { background: #be123c; }
+  @include glass-btn(
+    rgba(225, 29, 72, 0.25),
+    rgba(225, 29, 72, 0.45),
+    rgba(225, 29, 72, 0.5)
+  );
+  padding: 0.5rem;
+  border-radius: 50%;
+  width: 2.5rem;
+  height: 2.5rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 
@@ -1817,20 +1889,13 @@ $sidebar-text-muted: #0f172a;
 
 /* --- BOTÓN NUEVO (ESTILO SAAS ADMIN) --- */
 .btn-new {
-  background: #10b981;
-  color: white;
-  border: none;
+  @include glass-btn(
+    rgba(16, 185, 129, 0.25),
+    rgba(16, 185, 129, 0.45),
+    rgba(16, 185, 129, 0.5)
+  );
   padding: 0.6rem 1.5rem;
   border-radius: 50px;
-  cursor: pointer;
   font-weight: 600;
-  box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.4);
-  transition: all 0.3s ease;
-  
-  &:hover {
-    background: #059669;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 8px -1px rgba(16, 185, 129, 0.5);
-  }
 }
 

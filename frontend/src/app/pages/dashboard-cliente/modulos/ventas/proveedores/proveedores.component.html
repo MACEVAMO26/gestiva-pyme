@@ -5,45 +5,38 @@
   </div>
 
   <!-- HTML PESTAÑAS -->
-  <div class="tabs-nav">
+  <div class="tabs-nav-wrapper">
     <button class="tab-neu-inactive" 
             [class.tab-neu-active]="activeTab === 'directorio'" 
-            (click)="switchTab('directorio')">
-      Directorio
-    </button>
+            (click)="switchTab('directorio')"> <span class="icon">📖</span> Directorio </button>
     <button class="tab-neu-inactive" 
             [class.tab-neu-active]="activeTab === 'cuentas'" 
-            (click)="switchTab('cuentas')">
-      Cuentas por Pagar
-    </button>
+            (click)="switchTab('cuentas')"> <span class="icon">📌</span> Cuentas por Pagar </button>
     <button class="tab-neu-inactive" 
             [class.tab-neu-active]="activeTab === 'evaluaciones'" 
-            (click)="switchTab('evaluaciones')">
-      Evaluaciones y Contratos
-    </button>
+            (click)="switchTab('evaluaciones')"> <span class="icon">📌</span> Evaluaciones y Contratos </button>
   </div>
 
   <!-- HTML CONTENIDO DE TABS -->
-  <div class="tab-content glass-panel p-4">
+  <div class="tab-content neumorphic-panel-inner p-4">
   <!-- Botón Volver Inyectado -->
-  <div style="margin-bottom: 1.5rem; display: flex; justify-content: flex-start;">
-    <button class="btn-volver" onclick="window.history.back()">
+  <div class="volver-wrapper">
+    <button class="btn-volver btn-pill" onclick="window.history.back()">
       <i class="fas fa-arrow-left"></i> Volver
     </button>
   </div>
     
     <!-- HTML DIRECTORIO -->
     @if(activeTab === 'directorio') {
-      <div class="fade-in">
-        <div class="action-bar" style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
+      <div class="neumorphic-panel fade-in">
+        <div class="action-bar">
           <input type="text" 
                  class="search-input input-neumorphic" 
-                 style="width: 300px;"
                  placeholder="Buscar por Razón Social, NIT, Contacto..."
                  [(ngModel)]="searchTerm"
                  (input)="filtrarProveedores()">
                  
-          <button class="btn-add" (click)="abrirModal()">
+          <button class="btn-add btn-pill" (click)="abrirModal()">
             <i class="fas fa-plus"></i> Nuevo Proveedor
           </button>
         </div>
@@ -62,8 +55,8 @@
             <tbody>
               @if (proveedoresFiltrados.length === 0) {
                 <tr>
-                  <td colspan="5" style="padding: 2rem; text-align: center; color: #94a3b8;">
-                    <div class="empty-state" style="padding: 2rem; text-align: center; color: #94a3b8;">
+                  <td colspan="5" style="padding: 2rem; text-align: center;">
+                    <div class="empty-state">
                       No hay proveedores registrados.
                     </div>
                   </td>
@@ -73,15 +66,15 @@
                   <tr>
                     <td>
                       <strong>{{proveedor.razon_social}}</strong><br>
-                      <span style="font-size: 0.8rem; color: #94a3b8;">ID: {{ formatearId(proveedor.id) }} | NIT: {{proveedor.nit}}</span>
+                      <span class="text-muted text-xs">ID: {{ formatearId(proveedor.id) }} | NIT: {{proveedor.nit}}</span>
                     </td>
                     <td>
                       <strong>{{proveedor.contacto || 'N/A'}}</strong><br>
-                      <span style="font-size: 0.8rem;">📞 {{proveedor.telefono || 'N/A'}}</span>
+                      <span class="text-xs">📞 {{proveedor.telefono || 'N/A'}}</span>
                     </td>
                     <td>
-                      <span style="font-size: 0.8rem;">✉️ {{proveedor.email || 'N/A'}}</span><br>
-                      <span style="font-size: 0.8rem;">📍 {{proveedor.direccion || 'N/A'}}</span>
+                      <span class="text-xs">✉️ {{proveedor.email || 'N/A'}}</span><br>
+                      <span class="text-xs">📍 {{proveedor.direccion || 'N/A'}}</span>
                     </td>
                     <td>
                       <span class="badge" [ngClass]="getBadgeEval(proveedor.estado_evaluacion || 'No Evaluado')">
@@ -89,7 +82,7 @@
                       </span>
                     </td>
                     <td>
-                      <div style="display: flex; gap: 0.5rem;">
+                      <div class="acciones-fila">
                         <button class="btn-icon" (click)="abrirModal(proveedor)" title="Editar">✏️</button>
                         <button class="btn-icon text-danger" (click)="eliminarProveedor(proveedor.id)" title="Eliminar" [disabled]="deletingId === proveedor.id">
                           @if(deletingId === proveedor.id) {
@@ -109,16 +102,16 @@
       </div>
     }
 
-    <!-- HTML CUENTAS POR PAGAR -->
+<!-- HTML CUENTAS POR PAGAR -->
     @if(activeTab === 'cuentas') {
-      <div class="fade-in">
-        <div style="display: flex; gap: 1.5rem; margin-bottom: 2rem;">
-          <div class="glass-panel" style="padding: 1.5rem; border-bottom: 4px solid #ef4444; flex: 1;">
-            <h3 style="margin-top: 0; color: #94a3b8; font-size: 0.9rem; text-transform: uppercase;">Total Adeudado</h3>
-            <span style="font-size: 2.5rem; font-weight: bold; color: #ef4444;">{{totalDeuda | currency:'COP':'symbol':'1.0-0'}}</span>
+      <div class="neumorphic-panel fade-in">
+        <div class="cuentas-resumen">
+          <div class="neumorphic-panel card-resumen">
+            <h3 class="card-label">Total Adeudado</h3>
+            <span class="monto-deuda">{{totalDeuda | currency:'COP':'symbol':'1.0-0'}}</span>
           </div>
-          <div style="flex: 2; padding-top: 1rem;">
-            <p style="color: #cbd5e1;">Aquí puedes visualizar las facturas pendientes de pago a tus proveedores. Recuerda registrar los pagos a tiempo para mantener un buen historial crediticio y una evaluación 'Excelente'.</p>
+          <div class="info-deuda">
+            <p class="text-muted">Aquí puedes visualizar las facturas pendientes de pago a tus proveedores. Recuerda registrar los pagos a tiempo para mantener un buen historial crediticio y una evaluación 'Excelente'.</p>
           </div>
         </div>
 
@@ -148,11 +141,11 @@
                   </td>
                   <td style="text-align: center;">
                     @if(cuenta.estado !== 'Pagada') {
-                      <button class="btn-save" style="padding: 0.5rem 1rem; font-size: 0.8rem;" (click)="abrirPago(cuenta)">
+                      <button class="btn-save btn-pill btn-xs" (click)="abrirPago(cuenta)">
                         <i class="fas fa-hand-holding-usd"></i> Registrar Pago
                       </button>
                     } @else {
-                      <span style="color: #10b981; font-size: 0.8rem;"><i class="fas fa-check-double"></i> Saldado</span>
+                      <span class="text-positivo text-xs"><i class="fas fa-check-double"></i> Saldado</span>
                     }
                   </td>
                 </tr>
@@ -165,8 +158,8 @@
 
     <!-- HTML EVALUACIONES -->
     @if(activeTab === 'evaluaciones') {
-      <div class="fade-in">
-        <p style="color: #cbd5e1; margin-bottom: 1.5rem;">Califica el desempeño de tus proveedores. Un historial de entregas a tiempo y buena calidad de repuestos impacta directamente en tu puntuación de calidad (SLAs).</p>
+      <div class="neumorphic-panel fade-in">
+        <p class="text-muted" style="margin-bottom: 1.5rem;">Califica el desempeño de tus proveedores. Un historial de entregas a tiempo y buena calidad de repuestos impacta directamente en tu puntuación de calidad (SLAs).</p>
         
         <div class="table-responsive">
           <table class="premium-table data-table">
@@ -185,15 +178,15 @@
                 <tr>
                   <td><strong>{{eval.proveedor}}</strong></td>
                   <td>{{eval.vigencia}}</td>
-                  <td style="color: #fbbf24; font-size: 1.1rem; letter-spacing: 2px;">
+                  <td class="stars">
                     {{ '★'.repeat(eval.calificacion || 0) }}{{ '☆'.repeat(5 - (eval.calificacion || 0)) }}
                   </td>
                   <td>
                     <span class="badge" [ngClass]="getBadgeEval(eval.nrc)">{{eval.nrc}}</span>
                   </td>
-                  <td style="max-width: 250px; overflow: hidden; text-overflow: ellipsis;">{{eval.comentarios}}</td>
+                  <td class="cell-truncate">{{eval.comentarios}}</td>
                   <td style="text-align: center;">
-                    <button class="btn-general" style="background-color: #3b82f6; color: white; padding: 0.4rem 0.8rem;" (click)="abrirEvaluar(eval)">
+                    <button class="btn-general-2 btn-pill" style="padding: 0.4rem 0.8rem;" (click)="abrirEvaluar(eval)">
                       <i class="fas fa-star-half-alt"></i> Calificar
                     </button>
                   </td>
@@ -212,13 +205,13 @@
 <!-- HTML MODAL DIRECTORIO -->
 @if (showModal) {
 <div class="modal-overlay fade-in">
-  <div class="modal-content glass-panel" style="max-width: 600px;">
+  <div class="modal-content neumorphic-panel" style="max-width: 600px;">
     <div class="modal-header">
-      <h1 style="margin: 0; color: white; text-align: center !important;">{{ isEditMode ? 'EDITAR PROVEEDOR' : 'NUEVO PROVEEDOR' }}</h1>
+      <h1>{{ isEditMode ? 'EDITAR PROVEEDOR' : 'NUEVO PROVEEDOR' }}</h1>
       <button class="btn-close" (click)="cerrarModal()">&times;</button>
     </div>
     <div class="modal-body">
-      <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+      <div class="form-fila">
         <div class="form-group" style="flex: 2; min-width: 200px;">
           <label>Razón Social *</label>
           <input type="text" class="input-neumorphic" [(ngModel)]="proveedorActual.razon_social" placeholder="Empresa S.A.S">
@@ -229,7 +222,7 @@
         </div>
       </div>
 
-      <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+      <div class="form-fila">
         <div class="form-group" style="flex: 1;">
           <label>Contacto Principal</label>
           <input type="text" class="input-neumorphic" [(ngModel)]="proveedorActual.contacto" placeholder="Nombre completo">
@@ -250,9 +243,9 @@
         <input type="text" class="input-neumorphic" [(ngModel)]="proveedorActual.direccion" placeholder="Calle/Carrera">
       </div>
     </div>
-    <div class="modal-footer" style="display: flex; justify-content: center; gap: 1rem; margin-top: 1.5rem;">
-      <button class="btn-volver" (click)="cerrarModal()">Volver</button>
-      <button class="btn-save" (click)="guardarProveedor()" [disabled]="isSaving">
+    <div class="modal-footer">
+      <button class="btn-volver btn-pill" (click)="cerrarModal()">Volver</button>
+      <button class="btn-save btn-pill" (click)="guardarProveedor()" [disabled]="isSaving">
         @if(isSaving) {
           <i class="fas fa-spinner fa-spin"></i> Guardando...
         } @else {
@@ -267,17 +260,17 @@
 <!-- HTML MODAL REGISTRAR PAGO -->
 @if(showModalPago && cuentaSeleccionada) {
 <div class="modal-overlay fade-in">
-  <div class="modal-content glass-panel" style="max-width: 450px; text-align: center;">
-    <div class="modal-header" style="justify-content: center; border-bottom: none;">
-      <i class="fas fa-money-check-alt" style="font-size: 3rem; color: #10b981; margin-bottom: 1rem;"></i>
+  <div class="modal-content neumorphic-panel" style="max-width: 450px; text-align: center;">
+    <div class="modal-header modal-header-center">
+      <i class="fas fa-money-check-alt icon-success"></i>
     </div>
     <div class="modal-body">
-      <h1 style="margin-top: 0; color: white;">REGISTRAR PAGO</h1>
-      <p style="color: #cbd5e1; margin-bottom: 1rem;">¿Confirmas el pago total de la factura <strong>{{cuentaSeleccionada.factura}}</strong> por valor de <strong>{{cuentaSeleccionada.monto | currency:'COP':'symbol':'1.0-0'}}</strong> a {{cuentaSeleccionada.proveedor}}?</p>
+      <h1 class="modal-title">REGISTRAR PAGO</h1>
+      <p class="text-muted" style="margin-bottom: 1rem;">¿Confirmas el pago total de la factura <strong>{{cuentaSeleccionada.factura}}</strong> por valor de <strong>{{cuentaSeleccionada.monto | currency:'COP':'symbol':'1.0-0'}}</strong> a {{cuentaSeleccionada.proveedor}}?</p>
       
-      <div style="display: flex; justify-content: center; gap: 1rem; margin-top: 2rem;">
-        <button class="btn-volver" (click)="cerrarPago()">Cancelar</button>
-        <button class="btn-save" (click)="confirmarPago()" [disabled]="isSaving">
+      <div class="modal-footer">
+        <button class="btn-volver btn-pill" (click)="cerrarPago()">Cancelar</button>
+        <button class="btn-save btn-pill" (click)="confirmarPago()" [disabled]="isSaving">
           @if(isSaving) {
             <i class="fas fa-spinner fa-spin"></i> Procesando...
           } @else {
@@ -293,17 +286,17 @@
 <!-- HTML MODAL EVALUACION -->
 @if(showModalEvaluacion && evaluacionSeleccionada) {
 <div class="modal-overlay fade-in">
-  <div class="modal-content glass-panel" style="max-width: 500px;">
+  <div class="modal-content neumorphic-panel" style="max-width: 500px;">
     <div class="modal-header">
-      <h1 style="margin: 0; color: white; text-align: center !important;">EVALUAR PROVEEDOR</h1>
+      <h1>EVALUAR PROVEEDOR</h1>
       <button class="btn-close" (click)="cerrarEvaluar()">&times;</button>
     </div>
     <div class="modal-body">
-      <p style="text-align: center; color: #94a3b8; margin-bottom: 1.5rem;">Evaluación para: <strong>{{evaluacionSeleccionada.proveedor}}</strong></p>
+      <p class="text-muted" style="text-align: center; margin-bottom: 1.5rem;">Evaluación para: <strong>{{evaluacionSeleccionada.proveedor}}</strong></p>
       
       <div class="form-group" style="text-align: center;">
         <label>Calificación (1 a 5 Estrellas)</label>
-        <input type="number" class="input-neumorphic" [(ngModel)]="nuevaCalificacion" min="1" max="5" style="text-align: center; font-size: 1.5rem;">
+        <input type="number" class="input-neumorphic monto-input" [(ngModel)]="nuevaCalificacion" min="1" max="5">
       </div>
 
       <div class="form-group">
@@ -311,9 +304,9 @@
         <textarea class="input-neumorphic" rows="3" [(ngModel)]="nuevoComentario" placeholder="Ej: Entregas rápidas, buena garantía..."></textarea>
       </div>
     </div>
-    <div class="modal-footer" style="display: flex; justify-content: center; gap: 1rem; margin-top: 1.5rem;">
-      <button class="btn-volver" (click)="cerrarEvaluar()">Volver</button>
-      <button class="btn-save" (click)="guardarEvaluacion()" [disabled]="isSaving">
+    <div class="modal-footer">
+      <button class="btn-volver btn-pill" (click)="cerrarEvaluar()">Volver</button>
+      <button class="btn-save btn-pill" (click)="guardarEvaluacion()" [disabled]="isSaving">
         @if(isSaving) {
           <i class="fas fa-spinner fa-spin"></i> Guardando...
         } @else {

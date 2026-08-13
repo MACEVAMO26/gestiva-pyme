@@ -1,4 +1,3 @@
-
 @use 'sass:color';
 
 /* --- 1. VARIABLES GLOBALES DE COLOR --- */
@@ -21,9 +20,9 @@ $btn-gen-6: #A38B6D;
 
 /* --- 2. FONDOS Y LAYOUT PRINCIPAL --- */
 .module-container {
-  padding: 0;
+  padding: 1.5rem;
   background: $bg-color;
-  
+
   font-family: 'Montserrat', sans-serif;
   color: $text-dark;
 }
@@ -91,7 +90,7 @@ $btn-gen-6: #A38B6D;
   color: $text-dark;
   outline: none;
   transition: all 0.2s ease;
-  
+
   &:focus {
     box-shadow: inset 8px 8px 12px $shadow-dark, inset -8px -8px 12px $shadow-light;
   }
@@ -148,7 +147,349 @@ $btn-gen-6: #A38B6D;
 /* ========================================= */
 /* FIN DE BASE NEUMORFICA, INICIO DE LOCALES */
 /* ========================================= */
-/* Estilos prefacturacion */
+/* ESTILOS LOCALES PREFACTURACION Y CAJA */
 
+.text-muted { color: $text-muted; }
+.text-danger { color: $btn-volver; }
+.text-positivo { color: $btn-save; font-weight: bold; }
+.text-negativo { color: $btn-volver; font-weight: bold; }
 
+.fade-in {
+  animation: fadeIn 0.3s ease;
+}
 
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* NAVEGACION TABS */
+.tabs-nav-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+}
+
+.tab-content {
+  padding: 1.25rem;
+  position: relative;
+}
+
+.volver-wrapper {
+  margin-bottom: 2rem;
+  display: flex;
+  justify-content: flex-start;
+}
+
+/* CAJA CERRADA */
+.estado-caja {
+  text-align: center;
+  padding: 2rem;
+}
+
+.icon-cerrada {
+  font-size: 5rem;
+  color: $text-muted;
+  margin-bottom: 1.5rem;
+}
+
+.estado-title {
+  text-align: center;
+  color: $text-dark;
+  margin-bottom: 1rem;
+  font-size: 16px;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+/* CAJA ABIERTA - TARJETAS RESUMEN */
+.caja-abierta {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 2rem;
+}
+
+.tarjetas-resumen {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.card-resumen {
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.card-ingreso { border-bottom: 4px solid $btn-save; }
+.card-egreso  { border-bottom: 4px solid $btn-volver; }
+.card-saldo   { border-bottom: 4px solid $btn-add; }
+
+.card-label {
+  margin-top: 0;
+  color: $text-muted;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+}
+
+.card-monto {
+  font-weight: bold;
+}
+
+.monto-ingreso { font-size: 2rem; color: $btn-save; }
+.monto-egreso  { font-size: 2rem; color: $btn-volver; }
+.monto-saldo   { font-size: 2.5rem; color: $btn-add; }
+
+.btn-cierre {
+  padding: 1rem;
+  width: 100%;
+  justify-content: center;
+  margin-top: auto;
+}
+
+/* COLUMNA DERECHA */
+.movimientos-columna {
+  flex: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  min-width: 300px;
+}
+
+.panel-titulo {
+  margin-top: 0;
+  font-size: 13px;
+  font-weight: bold;
+  text-transform: uppercase;
+  color: $text-dark;
+}
+
+.form-fila {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+/* FORMULARIOS */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #4a4a4a;
+  }
+}
+
+/* TABLA */
+.table-responsive { overflow-x: auto; }
+
+.data-table, .neumorphic-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 12px;
+  text-align: left;
+  color: $text-dark;
+
+  th, td { padding: 1rem; vertical-align: middle; }
+  th {
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 10px;
+    border-bottom: 2px solid rgba(0,0,0,0.05);
+  }
+  tr { border-bottom: 1px solid rgba(0,0,0,0.05); }
+  tr:hover { background-color: rgba(0,0,0,0.02); }
+}
+
+/* BADGES */
+.badge {
+  padding: 0.4rem 1rem;
+  border-radius: 9999px;
+  font-size: 10px;
+  font-weight: bold;
+  text-transform: uppercase;
+  background: $bg-color;
+  box-shadow: inset 2px 2px 4px $shadow-dark, inset -2px -2px 4px $shadow-light;
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.badge-success   { color: $btn-save; }
+.badge-danger    { color: $btn-volver; }
+.badge-aprobada  { color: $btn-save; }
+.badge-rechazada { color: $btn-volver; }
+.badge-pendiente { color: $btn-gen-3; }
+
+/* BOTONES AUXILIARES */
+.btn-xs {
+  padding: 0.5rem 1rem;
+  font-size: 0.8rem;
+}
+
+.btn-secondary {
+  padding: 0.75rem 1.5rem;
+  border-radius: 9999px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 12px;
+  font-weight: bold;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 4px 4px 8px $shadow-dark, -4px -4px 8px $shadow-light;
+  background-color: $bg-color;
+  color: $text-muted;
+  border: 2px solid $shadow-dark;
+
+  &:active {
+    box-shadow: inset 4px 4px 8px $shadow-dark, inset -4px -4px 8px $shadow-light;
+  }
+}
+
+/* MODAL NEUMORFICO */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  width: 90%;
+  max-width: 680px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+
+  h1 {
+    font-size: 16px;
+    font-weight: bold;
+    text-transform: uppercase;
+  }
+}
+
+.modal-header-center {
+  justify-content: center;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.btn-close {
+  background: transparent;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: $text-muted;
+
+  &:hover {
+    color: $btn-volver;
+  }
+}
+
+.icon-success {
+  font-size: 3rem;
+  color: $btn-save;
+  margin-bottom: 1rem;
+}
+
+.icon-danger {
+  font-size: 3rem;
+  color: $btn-volver;
+  margin-bottom: 1rem;
+}
+
+.modal-title {
+  margin-top: 0;
+  color: $text-dark;
+  text-align: center;
+  font-size: 16px;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.monto-input {
+  font-size: 1.25rem;
+  text-align: right;
+}
+
+/* TOAST NEUMORFICO */
+.toast-container {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  z-index: 1100;
+}
+
+.toast-card {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: $bg-color;
+  border-radius: 14px;
+  padding: 0.9rem 1.1rem;
+  box-shadow: 8px 8px 16px $shadow-dark, -8px -8px 16px $shadow-light;
+  border: 2px solid $shadow-dark;
+  max-width: 340px;
+}
+
+.toast-icon {
+  font-size: 1.4rem;
+}
+
+.toast-success .toast-icon { color: $btn-save; }
+.toast-warning .toast-icon { color: $btn-gen-3; }
+.toast-error   .toast-icon { color: $btn-volver; }
+
+.toast-success { border-color: color.adjust($btn-save, $lightness: -20%); }
+.toast-warning { border-color: color.adjust($btn-gen-3, $lightness: -20%); }
+.toast-error   { border-color: color.adjust($btn-volver, $lightness: -20%); }
+
+.toast-content { flex: 1; }
+
+.toast-title {
+  font-size: 12px;
+  font-weight: bold;
+  text-transform: uppercase;
+  margin: 0;
+}
+
+.toast-message {
+  font-size: 11px;
+  color: $text-muted;
+  margin: 0.15rem 0 0;
+}
+
+.toast-close {
+  background: transparent;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: $text-muted;
+
+  &:hover {
+    color: $btn-volver;
+  }
+}

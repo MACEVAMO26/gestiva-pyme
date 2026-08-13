@@ -36,6 +36,10 @@ export class CajaService {
     return this.http.get<Caja[]>(this.apiUrl);
   }
 
+  crearCaja(base_inicial: number, observaciones?: string): Observable<Caja> {
+    return this.http.post<Caja>(this.apiUrl, { base_inicial, observaciones });
+  }
+
   abrirCaja(id: number, base_inicial: number, observaciones?: string): Observable<any> {
     return this.http.post(`${this.apiUrl}/${id}/abrir`, { base_inicial, observaciones });
   }

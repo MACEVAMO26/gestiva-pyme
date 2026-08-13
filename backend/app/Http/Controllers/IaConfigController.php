@@ -20,6 +20,7 @@ class IaConfigController extends Controller
                 'success' => true,
                 'data' => [
                     'proveedor' => $config->proveedor,
+                    'modo' => $config->modo,
                     // Por seguridad, no devolvemos la api key completa, solo un indicador o parcialmente ofuscada
                     'api_key' => '********' . substr(Crypt::decryptString($config->api_key), -4)
                 ]
@@ -38,27 +39,43 @@ class IaConfigController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'proveedor' => 'required|string|in:openai,gemini',
-            'api_key' => 'required|string'
+            'proveedor' => 'required|string|in:openai,gemini,claude,personalizada',
+            'api_key' => 'nullable|string',
+            'modo' => 'nullable|string|in:apagado,simple,avanzado'
         ]);
+
+        $mantenerLlave = $request->boolean('mantener_llave');
+
+        if (!$mantenerLlave && !$request->filled('api_key')) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Debes ingresar una API Key para habilitar la IA.'
+            ], 422);
+        }
 
         // Desactivamos todas las configuraciones previas
         IaConfig::where('is_active', true)->update(['is_active' => false]);
 
+        $modo = $request->input('modo', 'apagado');
+
         // Buscamos si ya existe el proveedor para actualizarlo, si no lo creamos
         $config = IaConfig::where('proveedor', $request->proveedor)->first();
 
+        $data = [
+            'modo' => $modo,
+            'is_active' => true
+        ];
+
+        if (!$mantenerLlave) {
+            $data['api_key'] = Crypt::encryptString($request->api_key);
+        }
+
         if ($config) {
-            $config->update([
-                'api_key' => Crypt::encryptString($request->api_key),
-                'is_active' => true
-            ]);
+            $config->update($data);
         } else {
-            $config = IaConfig::create([
+            $config = IaConfig::create(array_merge($data, [
                 'proveedor' => $request->proveedor,
-                'api_key' => Crypt::encryptString($request->api_key),
-                'is_active' => true
-            ]);
+            ]));
         }
 
         return response()->json([

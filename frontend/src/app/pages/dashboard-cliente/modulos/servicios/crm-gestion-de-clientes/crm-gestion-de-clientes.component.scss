@@ -21,7 +21,7 @@ $btn-gen-6: #A38B6D;
 
 /* --- 2. FONDOS Y LAYOUT PRINCIPAL --- */
 .module-container {
-  padding: 0;
+  padding: 1.5rem;
   background: $bg-color;
   
   font-family: 'Montserrat', sans-serif;
@@ -148,7 +148,38 @@ $btn-gen-6: #A38B6D;
 /* ========================================= */
 /* FIN DE BASE NEUMORFICA, INICIO DE LOCALES */
 /* ========================================= */
-.crm-gestion-de-clientes-container { padding: 20px; }
+/* ESTILOS LOCALES CRM GESTION DE CLIENTES */
+
+.volver-wrapper {
+  margin-bottom: 1.5rem;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.panel-body {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.text-muted { color: $text-muted; }
+
+/* FORMULARIOS */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+}
+
+.full-width {
+  grid-column: 1 / -1;
+}
 
 
 

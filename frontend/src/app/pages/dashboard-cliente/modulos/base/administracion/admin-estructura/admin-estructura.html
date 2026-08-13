@@ -1,5 +1,5 @@
 <div class="gestion-humana-container fade-in">
-  <div style="margin-bottom: 2rem;">
+  <div class="volver-wrapper">
     <button class="btn-volver btn-pill" onclick="window.history.back()">
       <i class="fas fa-arrow-left icon-mr-5"></i> Volver
     </button>
@@ -21,9 +21,9 @@
   </div>
 
   <div class="tabs-nav-wrapper">
-    <button class="tab-neu-inactive" [class.tab-neu-active]="activeTab === 'sedes'" (click)="setTab('sedes')">Sedes</button>
-    <button class="tab-neu-inactive" [class.tab-neu-active]="activeTab === 'areas'" (click)="setTab('areas')">Áreas</button>
-    <button class="tab-neu-inactive" [class.tab-neu-active]="activeTab === 'cargos'" (click)="setTab('cargos')">Cargos</button>
+    <button class="tab-neu-inactive" [class.tab-neu-active]="activeTab === 'sedes'" (click)="setTab('sedes')"> <span class="icon">🏢</span> Sedes </button>
+    <button class="tab-neu-inactive" [class.tab-neu-active]="activeTab === 'areas'" (click)="setTab('areas')"> <span class="icon">📍</span> Áreas </button>
+    <button class="tab-neu-inactive" [class.tab-neu-active]="activeTab === 'cargos'" (click)="setTab('cargos')"> <span class="icon">👔</span> Cargos </button>
   </div>
 
   <div class="neumorphic-panel">

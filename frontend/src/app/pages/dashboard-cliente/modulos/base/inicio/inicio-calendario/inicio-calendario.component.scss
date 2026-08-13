@@ -21,7 +21,7 @@ $btn-gen-6: #A38B6D;
 
 /* --- 2. FONDOS Y LAYOUT PRINCIPAL --- */
 .module-container {
-  padding: 0;
+  padding: 1.5rem;
   background: $bg-color;
   font-family: 'Montserrat', sans-serif;
   color: $text-dark;
@@ -227,9 +227,11 @@ $save-btn-color: #066810; /* Verde exclusivo de guardado */
 }
 
 .day-cell.today {
-  border: 2px solid $accent-color;
-  color: $accent-color;
+  background: $accent-color;
+  color: #ffffff;
   font-weight: bold;
+  border: none;
+  box-shadow: inset 3px 3px 6px color.adjust($accent-color, $lightness: -15%), inset -3px -3px 6px color.adjust($accent-color, $lightness: 10%);
 }
 
 .day-cell.has-event {

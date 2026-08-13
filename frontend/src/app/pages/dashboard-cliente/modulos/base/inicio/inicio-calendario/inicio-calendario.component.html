@@ -2,30 +2,35 @@
 <div class="module-container">
 <div class="module-header">
     <h1>Calendario Personal</h1>
-    <div class="month-selector">Agosto 2026</div>
+    <div class="month-selector" style="display: flex; align-items: center; justify-content: center; gap: 1rem;">
+      <button class="btn-icon" (click)="mesAnterior()" title="Mes anterior" style="width: 24px; height: 24px; font-size: 10px;">◀</button>
+      <span>{{ nombreMes }}</span>
+      <button class="btn-icon" (click)="mesSiguiente()" title="Mes siguiente" style="width: 24px; height: 24px; font-size: 10px;">▶</button>
+    </div>
   </div>
 
   <div class="panel-body">
     <!-- Grilla del calendario -->
     <div class="calendar-grid">
       <!-- Días de la semana -->
-      <div class="weekday">Lun</div><div class="weekday">Mar</div><div class="weekday">Mié</div>
-      <div class="weekday">Jue</div><div class="weekday">Vie</div><div class="weekday">Sáb</div><div class="weekday">Dom</div>
+      @for (dia of diasSemana; track dia) {
+        <div class="weekday">{{ dia }}</div>
+      }
       
       <!-- Días vacíos -->
-      <div class="day-cell empty"></div><div class="day-cell empty"></div><div class="day-cell empty"></div><div class="day-cell empty"></div><div class="day-cell empty"></div>
+      @for (vacio of diasVacios; track $index) {
+        <div class="day-cell empty"></div>
+      }
       
       <!-- Días interactivos (Del 1 al 31) -->
-      <div class="day-cell" (click)="abrirModal()">1</div>
-      <div class="day-cell" (click)="abrirModal()">2</div>
-      <div class="day-cell has-event" (click)="abrirModal()">3</div>
-      <!-- Simplificado para visualización -->
-      <div class="day-cell" (click)="abrirModal()">4</div>
-      <div class="day-cell" (click)="abrirModal()">5</div>
-      <div class="day-cell" (click)="abrirModal()">6</div>
-      <div class="day-cell" (click)="abrirModal()">7</div>
-      <div class="day-cell today" (click)="abrirModal()">8</div>
-      <div class="day-cell" (click)="abrirModal()">9</div>
+      @for (dia of diasDelMes; track dia.dia) {
+        <div class="day-cell" 
+             [class.today]="dia.hoy" 
+             [class.has-event]="dia.evento" 
+             (click)="abrirModal()">
+          {{ dia.dia }}
+        </div>
+      }
     </div>
   </div>
 </div>

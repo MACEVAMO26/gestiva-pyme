@@ -214,9 +214,41 @@ $btn-gen-6: #A38B6D;
   box-shadow: inset 2px 2px 4px $shadow-dark, inset -2px -2px 4px $shadow-light;
 }
 
-.badge-activo { color: #066810; border: 1px solid rgba(6, 104, 16, 0.2); }
-.badge-baja { color: #de3737; border: 1px solid rgba(222, 55, 55, 0.2); }
-.badge-pendiente { color: #f97316; border: 1px solid rgba(249, 115, 22, 0.2); }
+.badge-activo { color: $btn-save; border: 1px solid rgba(6, 104, 16, 0.2); }
+.badge-baja { color: $btn-volver; border: 1px solid rgba(222, 55, 55, 0.2); }
+.badge-pendiente { color: $btn-gen-3; border: 1px solid rgba(201, 162, 39, 0.2); }
+.badge-info { color: $btn-gen-2; border: 1px solid rgba(124, 111, 166, 0.2); }
+
+.text-danger { color: $btn-volver; }
+.text-muted { color: $text-muted; }
+
+.volver-wrapper {
+  margin-bottom: 2rem;
+}
+
+.soporte-module {
+  padding: 0.5rem 0;
+}
+
+.form-actions {
+  margin-top: 1rem;
+}
+
+.flex-items-center {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-mr-5 {
+  margin-right: 0.5rem;
+}
+
+.tabla-vacia {
+  padding: 2rem;
+  color: $text-muted;
+  font-style: italic;
+}
 
 /* --- 9. MODALES --- */
 .modal-overlay {

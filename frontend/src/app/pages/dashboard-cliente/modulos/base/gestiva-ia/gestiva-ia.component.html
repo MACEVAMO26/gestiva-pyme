@@ -1,26 +1,24 @@
 <div class="module-container fade-in">
-  <div class="module-header" style="margin-bottom: 2rem;">
-    <h1 style="text-align: center; font-size: 16px; font-weight: bold; text-transform: uppercase; margin: 0 0 0.5rem 0;">DIRECTRICES IA</h1>
-    <p style="text-align: center; color: #666666; font-size: 10px; margin: 0;">Configura los recordatorios y sugerencias silenciosas que la IA le dará a tu equipo.</p>
+  <div class="module-header text-center mb-4 relative">
+    <h1>DIRECTRICES IA</h1>
+    <p>Configura los recordatorios y sugerencias silenciosas que la IA le dará a tu equipo.</p>
   </div>
 
-  <div class="neumorphic-panel-inner" style="padding: 2rem;">
+  <div class="tab-content neumorphic-panel-inner p-4">
     
-    <!-- Botón Volver Inyectado (Si estamos navegando de una lista a un form) -->
-    <div style="margin-bottom: 2rem;" *ngIf="showForm">
-      <button class="btn-volver" (click)="cerrarFormulario()">
-        <i class="fas fa-arrow-left"></i> VOLVER
+    <div class="volver-wrapper">
+      <button class="btn-volver btn-pill" onclick="window.history.back()">
+        <i class="fas fa-arrow-left"></i> Volver
       </button>
     </div>
 
     <!-- LISTADO DE DIRECTRICES -->
-    <div *ngIf="!showForm" class="fade-in">
+    <div *ngIf="!showForm" class="neumorphic-panel fade-in">
       <div style="display: flex; justify-content: flex-end; margin-bottom: 15px;">
         <button class="btn-add btn-pill" (click)="abrirFormulario()">+ Nueva Directriz</button>
       </div>
 
-      <div class="neumorphic-panel">
-        <h2 class="subtitulo">Directrices Activas</h2>
+      <h2 class="subtitulo">Directrices Activas</h2>
 
         <div *ngIf="cargando" class="text-center-py-8">
           <app-loading-spinner message="Cargando directrices..."></app-loading-spinner>
@@ -43,10 +41,7 @@
                 <td>{{ dir.mensaje }}</td>
                 <td>{{ dir.audiencia }}</td>
                 <td>
-                  <button class="btn-pill" 
-                          style="font-size: 10px; padding: 5px 10px; border: 2px solid transparent;"
-                          [ngStyle]="{'background-color': dir.activo ? '#45a1ae' : '#999', 'color': '#fff'}"
-                          (click)="toggleActivo(dir)">
+                  <button class="btn-estado" [class.btn-estado-activa]="dir.activo" [class.btn-estado-inactiva]="!dir.activo" (click)="toggleActivo(dir)">
                     {{ dir.activo ? 'ACTIVA' : 'INACTIVA' }}
                   </button>
                 </td>
@@ -65,13 +60,11 @@
             </tbody>
           </table>
         </div>
-      </div>
     </div>
 
     <!-- FORMULARIO DE CREACIÓN/EDICIÓN -->
-    <div *ngIf="showForm" class="fade-in">
-      <div class="neumorphic-panel">
-        <h2 class="subtitulo">{{ modoEdicion ? 'Editar Directriz' : 'Nueva Directriz' }}</h2>
+    <div *ngIf="showForm" class="neumorphic-panel fade-in">
+      <h2 class="subtitulo">{{ modoEdicion ? 'Editar Directriz' : 'Nueva Directriz' }}</h2>
         
         <form (ngSubmit)="guardarDirectriz()">
           <div class="form-grid">
@@ -103,14 +96,13 @@
 
           </div>
 
-          <div class="form-actions" style="margin-top: 1.5rem;">
-            <button type="submit" class="btn-save" [disabled]="guardando">
+          <div class="form-actions">
+            <button type="submit" class="btn-save btn-pill" [disabled]="guardando">
               <span *ngIf="guardando" class="spinner-small"></span> 
               {{ guardando ? 'Guardando...' : (modoEdicion ? 'Actualizar Directriz' : '+ Guardar Directriz') }}
             </button>
           </div>
         </form>
-      </div>
     </div>
 
   </div>

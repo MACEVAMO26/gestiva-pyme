@@ -1,25 +1,17 @@
-  <!-- Botón Volver Inyectado -->
-  <div style="margin-bottom: 1.5rem; display: flex; justify-content: flex-start;">
-    <button class="btn-volver" onclick="window.history.back()">
-      <i class="fas fa-arrow-left"></i> Volver
-    </button>
-  </div>
-
-<div class="module-container">
-  <!-- Botón Volver Inyectado -->
-  <div style="margin-bottom: 1.5rem; display: flex; justify-content: flex-start;">
-    <button class="btn-volver" onclick="window.history.back()">
-      <i class="fas fa-arrow-left"></i> Volver
-    </button>
-  </div>
-
-  <div class="module-header">
+<div class="module-container fade-in">
+  <div class="module-header text-center mb-4 relative">
     <h1>CRM - Gestión de Clientes</h1>
     <p>Vista 360º de las interacciones, tickets y servicios prestados a los clientes.</p>
   </div>
 
-  <div class="panel-body">
-    <div class="neumorphic-panel">
+  <div class="tab-content neumorphic-panel-inner p-4">
+    <div class="volver-wrapper">
+      <button class="btn-volver btn-pill" onclick="window.history.back()">
+        <i class="fas fa-arrow-left"></i> Volver
+      </button>
+    </div>
+
+    <div class="neumorphic-panel fade-in">
       <h2 class="subtitulo">Buscador de Clientes</h2>
       <form>
         <div class="form-grid" style="align-items: end;">
@@ -32,16 +24,11 @@
           </div>
         </div>
       </form>
-    </div>
 
-    <div class="neumorphic-panel mt-4">
-      <h2 class="subtitulo">Historial Reciente de Servicios</h2>
-      <p class="text-muted" style="font-size: 12px; margin-top: 1rem;">Seleccione un cliente para ver su historial de servicios técnicos y visitas.</p>
+      <div class="mt-4">
+        <h2 class="subtitulo">Historial Reciente de Servicios</h2>
+        <p class="text-muted" style="font-size: 12px; margin-top: 1rem;">Seleccione un cliente para ver su historial de servicios técnicos y visitas.</p>
+      </div>
     </div>
   </div>
 </div>
-
-
-
-
-

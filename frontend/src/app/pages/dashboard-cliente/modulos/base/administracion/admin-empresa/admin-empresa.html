@@ -1,14 +1,15 @@
 <!-- HTML CONFIGURACIÓN DE EMPRESA -->
 <div class="fade-in">
   <!-- Botón Volver Inyectado -->
-  <div style="margin-bottom: 2rem;">
-    <button class="btn-volver" onclick="window.history.back()">
+  <div class="volver-wrapper">
+    <button class="btn-volver btn-pill" onclick="window.history.back()">
       <i class="fas fa-arrow-left"></i> VOLVER
     </button>
   </div>
   
-  <div class="module-header">
-    <h1 style="text-align: center; margin-bottom: 2rem; font-size: 16px; font-weight: bold; text-transform: uppercase;">CONFIGURACIÓN DE EMPRESA</h1>
+  <div class="module-header text-center mb-4 relative">
+    <h1>CONFIGURACIÓN DE EMPRESA</h1>
+    <p>Configura la información general, NIT y logo de tu empresa.</p>
   </div>
   
   <div class="panel-body">
@@ -41,12 +42,21 @@
           </div>
         </div>
         
-        <div class="form-group full-width" style="margin-top: 1.5rem;">
+        <div class="form-group full-width">
           <label>Logo de la Empresa</label>
-          <div class="upload-zone neumorphic-panel">
+          @if (logoPreview) {
+            <img [src]="logoPreview" class="logo-preview" alt="Nuevo logo">
+          } @else if (empresaData.logo_url) {
+            <img [src]="empresaData.logo_url" class="logo-preview" alt="Logo actual">
+          }
+          <div class="upload-zone neumorphic-panel" (click)="logoInput.click()">
             <span class="upload-icon">📷</span>
-            <p>Clic para subir un nuevo logo</p>
+            <p>{{ logoSeleccionado ? logoSeleccionado.name : 'Clic para subir un nuevo logo' }}</p>
           </div>
+          <input type="file" #logoInput (change)="onLogoSelected($event)" accept=".jpg,.jpeg,.png" style="display: none">
+          @if (logoSeleccionado) {
+            <p class="logo-approval-note">El nuevo logo se enviará para aprobación del administrador del SaaS antes de aplicarse.</p>
+          }
         </div>
 
         <div class="form-actions">
