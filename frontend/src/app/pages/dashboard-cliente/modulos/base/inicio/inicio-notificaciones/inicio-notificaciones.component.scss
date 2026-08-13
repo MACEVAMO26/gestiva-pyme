@@ -21,9 +21,8 @@ $btn-gen-6: #A38B6D;
 
 /* --- 2. FONDOS Y LAYOUT PRINCIPAL --- */
 .module-container {
-  padding: 1.5rem;
+  padding: 0;
   background: $bg-color;
-  min-height: 100vh;
   font-family: 'Montserrat', sans-serif;
   color: $text-dark;
 }
