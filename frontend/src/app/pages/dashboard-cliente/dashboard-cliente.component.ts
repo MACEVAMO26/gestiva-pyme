@@ -47,75 +47,121 @@ export class DashboardClienteComponent implements OnInit {
   private construirSidebar() {
     this.modulosService.getCatalogoModulos().subscribe({
       next: (catalogo) => {
-        // Almacenamos temporalmente los botones creados para luego ordenarlos
         const botones: { [key: string]: ModuloSidebar } = {};
         
-        catalogo.forEach((paquete: any) => {
-          if (paquete.id === 'default' || paquete.id === 'ventas' || paquete.id === 'servicios') {
-            // Desglosar
-            if (paquete.submodulos && Array.isArray(paquete.submodulos)) {
-              paquete.submodulos.forEach((sub: any) => {
-                botones[sub.id] = {
-                  id: sub.id,
-                  nombre: sub.nombre,
-                  icono: sub.icono || 'fas fa-circle',
-                  ruta: `./${this.slugify(sub.nombre)}`
-                };
-              });
-            }
-          } else if (paquete.id === 'rrhh' || paquete.id === 'finanzas' || paquete.id === 'addons') {
-            // Módulo completo
-            let nombre = paquete.nombre;
-            // Estandarizar nombre para evitar mayúsculas exageradas
-            if (paquete.id === 'rrhh') nombre = 'Gestión Humana';
-            if (paquete.id === 'finanzas') nombre = 'Finanzas';
-            
-            botones[paquete.id] = {
-              id: paquete.id,
-              nombre: nombre,
-              icono: paquete.icono || 'fas fa-circle',
-              ruta: `./${this.slugify(nombre)}`
+        // 1. Agregar los módulos 'default' siempre (Inicio, Administración, Tareas, etc.)
+        const defaultPkg = catalogo.find((p: any) => p.id === 'default');
+        if (defaultPkg && defaultPkg.submodulos) {
+          defaultPkg.submodulos.forEach((sub: any) => {
+            botones[sub.id] = {
+              id: sub.id,
+              nombre: sub.nombre,
+              icono: sub.icono || 'fas fa-circle',
+              ruta: `./${this.slugify(sub.nombre)}`
             };
-          }
-        });
+          });
+        }
 
-        // Aplicamos el orden estricto dictado por el usuario
-        const ordenDeseado = [
-          'd_ini', // Inicio
-          'd_adm', // Administración
-          'd_tar', // Gestión de Tareas
-          'd_gia', // Gestiva IA
-          'rrhh',  // Gestión Humana
-          'v_prov', // Proveedores
-          'v_rep',  // Compras
-          'v_inv',  // Inventario
-          'v_pos',  // Ventas
-          'v_cxc',  // Clientes
-          's_age',  // Agenda
-          's_crm',  // Gestión de Clientes
-          's_cat',  // Servicios
-          's_ope',  // Gestión de Operarios
-          's_rep',  // Reportes
-          'finanzas', // Finanzas
-          'd_aut',  // Autogestión
-          'addons'  // Addons+
+        // 2. Si el usuario pertenece a una empresa, consultar los módulos asignados a esa empresa
+        if (this.user?.empresa_id) {
+          this.modulosService.getModulosPorEmpresa(this.user.empresa_id).subscribe({
+            next: (resp) => {
+              const modulosEmpresa = resp.modulos || {};
+
+              catalogo.forEach((paquete: any) => {
+                if (paquete.id === 'default') return;
+
+                const estadoPaquete = (modulosEmpresa as any)[paquete.id] || [];
+
+                if (paquete.id === 'ventas' || paquete.id === 'servicios') {
+                  // Desglosar submódulos
+                  if (paquete.submodulos && Array.isArray(paquete.submodulos)) {
+                    paquete.submodulos.forEach((sub: any) => {
+                      // Verificar si está asignado en la BD
+                      const asignadoDb = estadoPaquete.find((s: any) => s.id === sub.id)?.asignado;
+                      if (asignadoDb) {
+                        botones[sub.id] = {
+                          id: sub.id,
+                          nombre: sub.nombre,
+                          icono: sub.icono || 'fas fa-circle',
+                          ruta: `./${this.slugify(sub.nombre)}`
+                        };
+                      }
+                    });
+                  }
+                } else if (paquete.id === 'rrhh' || paquete.id === 'finanzas' || paquete.id === 'addons') {
+                  // Módulo completo: revisar si tiene algún submódulo asignado en la BD
+                  const isAsignado = estadoPaquete.some((s: any) => s.asignado);
+                  if (isAsignado) {
+                    let nombre = paquete.nombre;
+                    if (paquete.id === 'rrhh') nombre = 'Gestión Humana';
+                    if (paquete.id === 'finanzas') nombre = 'Finanzas';
+                    
+                    botones[paquete.id] = {
+                      id: paquete.id,
+                      nombre: nombre,
+                      icono: paquete.icono || 'fas fa-circle',
+                      ruta: `./${this.slugify(nombre)}`
+                    };
+                  }
+                }
+              });
+
+              this.aplicarOrdenamiento(botones);
+            },
+            error: () => this.aplicarOrdenamiento(botones) // Si falla, mostrar solo los default
+          });
+        } else {
+          // Si no tiene empresa (caso inusual en cliente), mostrar solo los default
+          this.aplicarOrdenamiento(botones);
+        }
+      },
+      error: () => {
+        // Si falla la carga del catálogo completo
+        this.modulosSidebar = [
+          { id: 'd_ini', nombre: 'Inicio', icono: 'fas fa-home', ruta: './inicio' }
         ];
+      }
+    });
+  }
 
-        let itemsOrdenados: ModuloSidebar[] = [];
-        
-        const esGerente = this.user?.rol?.nombre === 'Gerente General' || this.user?.rol?.nombre === 'Gerente';
+  private aplicarOrdenamiento(botones: { [key: string]: ModuloSidebar }) {
+    const ordenDeseado = [
+      'd_ini', // Inicio
+      'd_adm', // Administración
+      'd_tar', // Gestión de Tareas
+      'd_gia', // Gestiva IA
+      'rrhh',  // Gestión Humana
+      'v_prov', // Proveedores
+      'v_rep',  // Compras
+      'v_inv',  // Inventario
+      'v_pos',  // Ventas
+      'v_cxc',  // Clientes
+      's_age',  // Agenda
+      's_crm',  // Gestión de Clientes
+      's_cat',  // Servicios
+      's_ope',  // Gestión de Operarios
+      's_rep',  // Reportes
+      'finanzas', // Finanzas
+      'd_aut',  // Autogestión
+      'addons'  // Addons+
+    ];
 
-        ordenDeseado.forEach(id => {
-          if (id === 'd_gia' && !esGerente) {
-              // Ocultar Gestiva IA (directrices) a los empleados
-              return;
-          }
-          if (botones[id]) {
-            itemsOrdenados.push(botones[id]);
-          }
-        });
+    let itemsOrdenados: ModuloSidebar[] = [];
+    const esGerente = this.user?.rol?.nombre === 'Gerente General' || this.user?.rol?.nombre === 'Gerente';
 
-        this.modulosSidebar = itemsOrdenados;
+    ordenDeseado.forEach(id => {
+      if (id === 'd_gia' && !esGerente) {
+          // Ocultar Gestiva IA (directrices) a los empleados
+          return;
+      }
+      if (botones[id]) {
+        itemsOrdenados.push(botones[id]);
+      }
+    });
+
+    this.modulosSidebar = itemsOrdenados;
+  }
       },
       error: () => {
         // Si falla la carga del catálogo, mostrar al menos el módulo de inicio
