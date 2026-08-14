@@ -176,6 +176,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // --- OPERACIONES COMERCIALES ---
 
     Route::apiResource('ordenes-compra', OrdenCompraController::class);
+    Route::apiResource('recepciones', \App\Http\Controllers\RecepcionController::class);
     Route::apiResource('cotizaciones-pedidos', CotizacionPedidoController::class);
     Route::put('cotizaciones-pedidos/{id}/estado', [CotizacionPedidoController::class, 'cambiarEstado']);
     Route::apiResource('movimientos-inventario', MovimientoInventarioController::class);

@@ -24,6 +24,20 @@
         <button class="close-chat" (click)="closeChat()">&times;</button>
       </div>
     </div>
+
+    <!-- Tareas permitidas + tutorial -->
+    <div class="chat-tareas">
+      <div class="chat-tareas-title">TAREAS PERMITIDAS</div>
+      <div class="chat-tareas-grid">
+        <button class="suggestion-btn" (click)="sendSuggestion('Genera un resumen ejecutivo de mis ventas, clientes y tareas del mes. Incluye secciones claras y puntos clave.')">Generar resúmenes y reportes</button>
+        <button class="suggestion-btn" (click)="sendSuggestion('Ayúdame a redactar un correo profesional. Indícame el tema (venta, cobro, cliente o colaborador).')">Redactar correos y respuestas</button>
+        <button class="suggestion-btn" (click)="sendSuggestion('Analiza mis datos de ventas y clientes y recomiéndame qué métricas revisar para mejorar resultados.')">Analizar datos de ventas/clientes</button>
+        <button class="suggestion-btn" (click)="sendSuggestion('Diseña un plan de seguimientos automáticos y alertas para mis clientes y tareas.')">Automatizar seguimientos y alertas</button>
+      </div>
+      <button class="btn-replay-tutorial" (click)="verTutorial()">
+        <i class="fas fa-redo"></i> ¿Deseas ver el tutorial de nuevo?
+      </button>
+    </div>
     
     <div class="chat-body" style="overflow-y: auto; max-height: 300px;">
       

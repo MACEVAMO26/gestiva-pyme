@@ -19,7 +19,7 @@ class DocumentoEmpleadoController extends Controller
     public function misDocumentos(Request $request)
     {
         // Obtener el empleado del usuario autenticado
-        $empleado = Empleado::where('user_id', $request->user()->id)->first();
+        $empleado = Empleado::where('usuario_id', $request->user()->id)->first();
         if (!$empleado) {
             return response()->json([], 200); // Si no es empleado, no tiene documentos
         }

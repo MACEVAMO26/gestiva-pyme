@@ -17,7 +17,10 @@ class VentaController extends Controller
 {
     public function index()
     {
-        $ventas = Venta::where('activo', true)->orderBy('created_at', 'desc')->get();
+        $empresaId = auth()->user()?->empresa_id ?? null;
+        $ventas = Venta::when($empresaId, fn ($q) => $q->where('empresa_id', $empresaId))
+            ->orderBy('created_at', 'desc')
+            ->get();
         // Here we could eager load 'cliente' if Venta had a relation, assuming it does or we just return them.
         return response()->json($ventas);
     }
@@ -47,7 +50,7 @@ class VentaController extends Controller
                 'estado' => 'Completada',
                 'estado_paquete' => 'Preparando',
                 'vendedor_id' => Auth::id(),
-                'activo' => true
+                'empresa_id' => auth()->user()?->empresa_id ?? null
             ]);
 
             foreach ($request->productos as $p) {

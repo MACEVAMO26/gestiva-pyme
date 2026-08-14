@@ -5,7 +5,7 @@ import { AuthService } from '../../services/auth.service';
 import { AccessibilityService } from '../../services/accessibility/accessibility.service';
 import { ModulosService } from '../../services/modulos.service';
 import { GestivaIaTutorialComponent } from '../../shared/components/gestiva-ia-tutorial/gestiva-ia-tutorial.component';
-import { GestivaIaAssistantComponent } from '../../shared/components/gestiva-ia-assistant/gestiva-ia-assistant.component';
+import { GestivaBotComponent } from '../../shared/components/gestiva-bot/gestiva-bot';
 
 interface ModuloSidebar {
   id: string;
@@ -17,7 +17,7 @@ interface ModuloSidebar {
 @Component({
   selector: 'app-dashboard-cliente',
   standalone: true,
-  imports: [CommonModule, RouterModule, GestivaIaTutorialComponent, GestivaIaAssistantComponent],
+  imports: [CommonModule, RouterModule, GestivaIaTutorialComponent, GestivaBotComponent],
   templateUrl: './dashboard-cliente.component.html',
   styleUrl: './dashboard-cliente.component.scss'
 })

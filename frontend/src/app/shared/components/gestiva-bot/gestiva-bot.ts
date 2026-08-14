@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Router, NavigationEnd } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { filter, Subscription } from 'rxjs';
+import { IaStateService } from '../../../services/ia-state/ia-state.service';
 
 @Component({
   selector: 'app-gestiva-bot',
@@ -15,6 +16,7 @@ import { filter, Subscription } from 'rxjs';
 export class GestivaBotComponent implements OnInit, OnDestroy {
   private router = inject(Router);
   private http = inject(HttpClient);
+  private iaStateService = inject(IaStateService);
   private routerSub!: Subscription;
 
   // Estados visuales
@@ -154,5 +156,9 @@ export class GestivaBotComponent implements OnInit, OnDestroy {
         this.chatHistory.push({ role: 'assistant', content: 'Error de conexión con el servicio de Inteligencia Artificial.' });
       }
     });
+  }
+
+  verTutorial() {
+    this.iaStateService.triggerTutorial();
   }
 }

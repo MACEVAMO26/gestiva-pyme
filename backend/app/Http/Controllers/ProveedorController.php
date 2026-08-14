@@ -7,9 +7,9 @@ use App\Models\Proveedor;
 
 class ProveedorController extends Controller
 {
-    public function index()
+public function index()
     {
-        $empresaId = request()->header('X-Empresa-Id');
+        $empresaId = request()->header('X-Empresa-Id') ?? (auth()->user()?->empresa_id ?? null);
         if (!$empresaId) {
             return response()->json(['error' => 'Empresa no especificada'], 400);
         }
@@ -22,9 +22,9 @@ class ProveedorController extends Controller
         return response()->json($proveedores);
     }
 
-    public function store(Request $request)
+public function store(Request $request)
     {
-        $empresaId = $request->header('X-Empresa-Id');
+        $empresaId = request()->header('X-Empresa-Id') ?? (auth()->user()?->empresa_id ?? null);
         if (!$empresaId) {
             return response()->json(['error' => 'Empresa no especificada'], 400);
         }

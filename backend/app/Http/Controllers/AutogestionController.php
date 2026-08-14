@@ -7,6 +7,20 @@ use Illuminate\Support\Facades\DB;
 
 class AutogestionController extends Controller
 {
+    // --- ESTADÍSTICAS DE AUTOGESTIÓN DEL USUARIO ---
+    public function getStats(Request $request)
+    {
+        $user = $request->user();
+        $userId = $user->id;
+
+        return response()->json([
+            'afiliacion' => DB::table('afiliaciones')->where('user_id', $userId)->first(),
+            'vacaciones_pendientes' => DB::table('vacaciones')->where('usuario_id', $userId)->where('estado', 'pendiente')->count(),
+            'turnos_asignados' => DB::table('asignacion_turnos')->where('usuario_id', $userId)->count(),
+            'tareas_pendientes' => DB::table('tareas')->where('asignado_id', $userId)->whereIn('estado', ['Pendiente', 'En Proceso'])->count(),
+        ]);
+    }
+
     // --- GESTIÓN DE AFILIACIONES PROPIAS ---
     // Obtiene los datos de afiliación del usuario autenticado
     public function misAfiliaciones(Request $request)

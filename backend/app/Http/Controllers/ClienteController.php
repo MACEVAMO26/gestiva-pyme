@@ -7,9 +7,9 @@ use App\Models\Cliente;
 
 class ClienteController extends Controller
 {
-    public function index()
+public function index()
     {
-        $empresaId = request()->header('X-Empresa-Id');
+        $empresaId = request()->header('X-Empresa-Id') ?? (auth()->user()?->empresa_id ?? null);
         if (!$empresaId) {
             return response()->json(['error' => 'Empresa no especificada'], 400);
         }
@@ -22,9 +22,9 @@ class ClienteController extends Controller
         return response()->json($clientes);
     }
 
-    public function store(Request $request)
+public function store(Request $request)
     {
-        $empresaId = $request->header('X-Empresa-Id');
+        $empresaId = request()->header('X-Empresa-Id') ?? (auth()->user()?->empresa_id ?? null);
         if (!$empresaId) {
             return response()->json(['error' => 'Empresa no especificada'], 400);
         }
@@ -77,11 +77,11 @@ class ClienteController extends Controller
         return response()->json(['message' => 'Cliente actualizado exitosamente', 'cliente' => $cliente]);
     }
 
-    public function destroy($id)
+public function destroy($id)
     {
         $cliente = Cliente::findOrFail($id);
         $cliente->activo = 0;
-        $cliente->fecha_inactivacion = now();
+        $cliente->inactive_at = now();
         $cliente->save();
 
         return response()->json(['message' => 'Cliente eliminado exitosamente']);

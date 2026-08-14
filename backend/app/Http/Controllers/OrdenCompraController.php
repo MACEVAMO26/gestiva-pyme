@@ -8,6 +8,12 @@ use Illuminate\Support\Facades\DB;
 
 class OrdenCompraController extends Controller
 {
+    // Lista las ordenes de compra con sus detalles y proveedor
+    public function index()
+    {
+        return OrdenCompra::with(['proveedor', 'detalles.producto'])->orderBy('created_at', 'desc')->get();
+    }
+
     // Registra una nueva orden de compra con sus detalles
     public function store(Request $request)
     {

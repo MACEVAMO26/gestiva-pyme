@@ -12,6 +12,6 @@ class Venta extends Model
         'estado',
         'estado_paquete',
         'vendedor_id',
-        'activo'
+        'empresa_id'
     ];
 }
