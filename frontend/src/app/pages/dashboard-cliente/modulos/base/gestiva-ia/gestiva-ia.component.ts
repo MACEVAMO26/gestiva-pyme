@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
@@ -23,6 +23,7 @@ interface Directriz {
 export class GestivaIaComponent implements OnInit {
   private http = inject(HttpClient);
   private toastService = inject(ToastService);
+  private cdr = inject(ChangeDetectorRef);
 
   cargando = false;
   guardando = false;
@@ -51,10 +52,12 @@ export class GestivaIaComponent implements OnInit {
       next: (res) => {
         this.directrices = res;
         this.cargando = false;
+        this.cdr.detectChanges();
       },
       error: (err) => {
         console.error('Error al cargar directrices', err);
         this.cargando = false;
+        this.cdr.detectChanges();
         this.toastService.error('Error al cargar directrices.');
       }
     });
@@ -95,10 +98,12 @@ export class GestivaIaComponent implements OnInit {
           this.cerrarFormulario();
           this.cargarDirectrices();
           this.toastService.success('Directriz actualizada con éxito');
+          this.cdr.detectChanges();
         },
         error: (err) => {
           console.error(err);
           this.guardando = false;
+          this.cdr.detectChanges();
           this.toastService.error('Error al actualizar');
         }
       });
@@ -109,10 +114,12 @@ export class GestivaIaComponent implements OnInit {
           this.cerrarFormulario();
           this.cargarDirectrices();
           this.toastService.success('Directriz creada con éxito');
+          this.cdr.detectChanges();
         },
         error: (err) => {
           console.error(err);
           this.guardando = false;
+          this.cdr.detectChanges();
           this.toastService.error('Error al crear');
         }
       });
