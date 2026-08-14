@@ -15,7 +15,7 @@ return new class extends Migration
             $table->integer('id', true);
             $table->string('razon_social');
             $table->string('nit')->unique();
-            $table->enum('tipo_empresa', ['Servicios', 'Ventas', 'Ventas y Servicios']);
+            $table->enum('tipo_empresa', ['Servicios', 'Ventas', 'Ventas y Servicios', 'Especial']);
             $table->string('direccion')->nullable();
             $table->string('telefono')->nullable();
             $table->string('email')->nullable();

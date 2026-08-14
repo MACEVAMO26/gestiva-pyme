@@ -316,6 +316,7 @@ export class SaasAdminComponent implements OnInit {
   ticketsSoporte: any[] = [];
   ticketsSoportePendientes: number = 0;
   paquetesModulos: any[] = [];
+  guardandoPaqueteId: string | null = null;
   statsSuscripciones = {
     mrr: 0,
     clientesActivos: 0,
@@ -1167,12 +1168,14 @@ export class SaasAdminComponent implements OnInit {
     this.isEditMode = true;
     this.editingId = empresa.id;
     this.listaDescuentosEmpresa = (empresa.descuento && empresa.descuento !== 'N/A') ? empresa.descuento.split(',').map((d: string) => d.trim()) : [];
+    // La lista muestra 'Mixto' pero la BD/backend guarda 'Ventas y Servicios'
+    const tipoEmpresa = empresa.tipo_empresa === 'Mixto' ? 'Ventas y Servicios' : empresa.tipo_empresa;
     this.nuevaEmpresa = {
       razon_social: empresa.razon_social,
       dominio: empresa.dominio || '',
       nit: empresa.nit,
       email: empresa.email || '',
-      tipo_empresa: empresa.tipo_empresa,
+      tipo_empresa: tipoEmpresa,
       fecha_inscripcion: empresa.fecha_inscripcion ? empresa.fecha_inscripcion.substring(0, 10) : '',
       periodo: empresa.periodo || 'Mensual',
       descuento: empresa.descuento || 'N/A',
@@ -1318,25 +1321,27 @@ export class SaasAdminComponent implements OnInit {
       this.toastService.warning('Por favor selecciona una empresa primero.');
       return;
     }
+    const empresaId: string = this.empresaSeleccionadaId;
     const paquete = this.paquetesModulos.find((p) => p.id === paqueteId);
     if (paquete) {
       const modulosState = paquete.submodulos.map((sub: any) => ({
         id: sub.id,
         activo: sub.activo
       }));
+      this.guardandoPaqueteId = paqueteId;
       this.toastService.info('Guardando cambios...');
-      this.modulosService.updatePaqueteEmpresa(this.empresaSeleccionadaId, modulosState).subscribe({
+      this.modulosService.updatePaqueteEmpresa(empresaId, modulosState).subscribe({
         next: (res) => {
           console.log(`Paquete ${paquete.nombre} actualizado masivamente`, res);
+          this.guardandoPaqueteId = null;
           this.toastService.success(`¡Los cambios al paquete ${paquete.nombre} se han guardado correctamente!`);
-          this.cdr.detectChanges();
-          
+          // Refresca desde el servidor para que el panel siempre muestre el estado real
+          this.cargarModulosDeEmpresa(empresaId);
         },
         error: (err) => {
+          this.guardandoPaqueteId = null;
           console.error('Error al actualizar paquete masivamente', err);
           this.toastService.error('Error al guardar el paquete en el servidor.');
-          this.cdr.detectChanges();
-          
         }
       });
     }

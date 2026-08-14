@@ -133,11 +133,16 @@ class EmpresaController extends Controller
     // Crea una nueva empresa y genera automáticamente su usuario gerente administrador
     public function store(Request $request)
     {
+        // 'Mixto' es un alias de presentación; la BD guarda 'Ventas y Servicios'
+        if ($request->input('tipo_empresa') === 'Mixto') {
+            $request->merge(['tipo_empresa' => 'Ventas y Servicios']);
+        }
+
         $validatedData = $request->validate([
             'razon_social' => 'required|string|max:255',
             'dominio' => 'required|string|unique:empresa,dominio|max:255',
             'nit' => 'required|string|max:255|unique:empresa',
-            'tipo_empresa' => 'required|in:Servicios,Ventas,Ventas y Servicios',
+            'tipo_empresa' => 'required|in:Servicios,Ventas,Ventas y Servicios,Especial',
             'direccion' => 'nullable|string|max:255',
             'telefono' => 'nullable|string|max:255',
             'email' => 'nullable|email|max:255',
@@ -259,11 +264,16 @@ class EmpresaController extends Controller
     {
         $empresa = Empresa::findOrFail($id);
 
+        // 'Mixto' es un alias de presentación; la BD guarda 'Ventas y Servicios'
+        if ($request->input('tipo_empresa') === 'Mixto') {
+            $request->merge(['tipo_empresa' => 'Ventas y Servicios']);
+        }
+
         $validatedData = $request->validate([
             'razon_social' => 'required|string|max:255',
             'dominio' => ['required', 'string', 'max:255', Rule::unique('empresa')->ignore($empresa->id)],
             'nit' => ['required', 'string', 'max:255', Rule::unique('empresa')->ignore($empresa->id)],
-            'tipo_empresa' => 'required|in:Servicios,Ventas,Ventas y Servicios',
+            'tipo_empresa' => 'required|in:Servicios,Ventas,Ventas y Servicios,Especial',
             'direccion' => 'nullable|string|max:255',
             'telefono' => 'nullable|string|max:255',
             'email' => 'nullable|email|max:255',

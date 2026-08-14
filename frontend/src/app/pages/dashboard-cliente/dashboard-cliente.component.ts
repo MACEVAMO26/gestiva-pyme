@@ -4,6 +4,7 @@ import { RouterModule, Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { AccessibilityService } from '../../services/accessibility/accessibility.service';
 import { ModulosService } from '../../services/modulos.service';
+import { ChangeDetectorRef } from '@angular/core';
 import { GestivaIaTutorialComponent } from '../../shared/components/gestiva-ia-tutorial/gestiva-ia-tutorial.component';
 import { GestivaBotComponent } from '../../shared/components/gestiva-bot/gestiva-bot';
 
@@ -27,6 +28,7 @@ export class DashboardClienteComponent implements OnInit {
   private authService = inject(AuthService);
   private modulosService = inject(ModulosService);
   private router = inject(Router);
+  private cdr = inject(ChangeDetectorRef);
 
   // --- VARIABLES DE ESTADO ---
   user: any = null;
@@ -80,9 +82,9 @@ export class DashboardClienteComponent implements OnInit {
                   // Desglosar submódulos
                   if (paquete.submodulos && Array.isArray(paquete.submodulos)) {
                     paquete.submodulos.forEach((sub: any) => {
-                      // Verificar si está asignado Y activo en la BD
-                      const modDb = estadoPaquete.find((s: any) => s.id === sub.id);
-                      if (modDb?.asignado && modDb.activo) {
+                      // Verificar si está ACTIVO en la BD
+                      const moduloActivoDb = estadoPaquete.find((s: any) => s.id === sub.id)?.activo;
+                      if (moduloActivoDb) {
                         botones[sub.id] = {
                           id: sub.id,
                           nombre: sub.nombre,
@@ -93,9 +95,9 @@ export class DashboardClienteComponent implements OnInit {
                     });
                   }
                 } else if (paquete.id === 'rrhh' || paquete.id === 'finanzas' || paquete.id === 'addons') {
-                  // Módulo completo: revisar si tiene algún submódulo asignado en la BD
-                  const isAsignado = estadoPaquete.some((s: any) => s.asignado && s.activo);
-                  if (isAsignado) {
+                  // Módulo completo: revisar si tiene algún submódulo ACTIVO en la BD
+                  const isActivo = estadoPaquete.some((s: any) => s.activo);
+                  if (isActivo) {
                     let nombre = paquete.nombre;
                     if (paquete.id === 'rrhh') nombre = 'Gestión Humana';
                     if (paquete.id === 'finanzas') nombre = 'Finanzas';
@@ -110,20 +112,34 @@ export class DashboardClienteComponent implements OnInit {
                 }
               });
 
-              // Determinar el plan según los paquetes de módulos activos
-              const modulosVentas = ((modulosEmpresa as any)['ventas'] || []) as any[];
-              const modulosServicios = ((modulosEmpresa as any)['servicios'] || []) as any[];
-              const tieneVentas = modulosVentas.some((s: any) => s.asignado && s.activo);
-              const tieneServicios = modulosServicios.some((s: any) => s.asignado && s.activo);
-
-              if (tieneVentas && tieneServicios) {
-                this.planActual = 'Mixto';
-              } else if (tieneVentas) {
-                this.planActual = 'Ventas';
-              } else if (tieneServicios) {
-                this.planActual = 'Servicios';
+              // Determinar el plan según el paquete COMPRADO (tipo_empresa de la empresa)
+              const tipoComprado = (this.user?.empresa as any)?.tipo_empresa;
+              if (tipoComprado) {
+                if (tipoComprado.includes('Ventas y Servicios') || tipoComprado === 'Mixto') {
+                  this.planActual = 'Mixto';
+                } else if (tipoComprado === 'Ventas') {
+                  this.planActual = 'Ventas';
+                } else if (tipoComprado === 'Servicios') {
+                  this.planActual = 'Servicios';
+                } else {
+                  this.planActual = 'Especial';
+                }
               } else {
-                this.planActual = 'Especial';
+                // Respaldo: derivar de los paquetes de módulos activos
+                const modulosVentas = ((modulosEmpresa as any)['ventas'] || []) as any[];
+                const modulosServicios = ((modulosEmpresa as any)['servicios'] || []) as any[];
+                const tieneVentas = modulosVentas.some((s: any) => s.asignado && s.activo);
+                const tieneServicios = modulosServicios.some((s: any) => s.asignado && s.activo);
+
+                if (tieneVentas && tieneServicios) {
+                  this.planActual = 'Mixto';
+                } else if (tieneVentas) {
+                  this.planActual = 'Ventas';
+                } else if (tieneServicios) {
+                  this.planActual = 'Servicios';
+                } else {
+                  this.planActual = 'Especial';
+                }
               }
 
               this.aplicarOrdenamiento(botones);
@@ -180,6 +196,7 @@ export class DashboardClienteComponent implements OnInit {
     });
 
     this.modulosSidebar = itemsOrdenados;
+    this.cdr.detectChanges();
   }
 
 
