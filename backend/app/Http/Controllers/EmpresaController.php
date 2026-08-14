@@ -303,12 +303,24 @@ class EmpresaController extends Controller
         $empresa = Empresa::findOrFail($id);
         $empresa->renovaciones += 1;
         
-        $proximo = $empresa->fecha_proximo_pago ? CarbonCarbon::parse($empresa->fecha_proximo_pago) : CarbonCarbon::now();
+        $proximo = $empresa->fecha_proximo_pago ? \Carbon\Carbon::parse($empresa->fecha_proximo_pago) : \Carbon\Carbon::now();
         $empresa->fecha_proximo_pago = $proximo->addDays(30)->format('Y-m-d');
         
         $empresa->save();
         
         return response()->json(['message' => 'Renovación registrada exitosamente', 'empresa' => $empresa]);
+    }
+
+    // Marca la suscripción como no renovada, dejando la empresa inactiva
+    public function noRenovar($id)
+    {
+        $empresa = Empresa::findOrFail($id);
+        $empresa->activo = 0;
+        $empresa->estado_pago = 'no_renovado';
+        $empresa->inactive_at = now();
+        $empresa->save();
+
+        return response()->json(['message' => 'Suscripción marcada como no renovada. Empresa inactiva.', 'empresa' => $empresa]);
     }
 
     // Modifica el estado de la empresa alternando su disponibilidad o marcándola en mora
@@ -408,7 +420,7 @@ class EmpresaController extends Controller
             <div style="text-align: center;">
                 <p>Aceptado digitalmente el <strong>' . $data['fecha'] . '</strong> desde la IP <strong>' . $data['ip'] . '</strong>.</p>
                 <div style="margin-top: 20px;">
-                    <img src="' . $empresa->contrato_firma_path . '" style="max-width: 250px; max-height: 150px; border-bottom: 1px solid #000; padding-bottom: 10px;">
+                    ' . (extension_loaded('gd') && $empresa->contrato_firma_path ? '<img src="' . $empresa->contrato_firma_path . '" style="max-width: 250px; max-height: 150px; border-bottom: 1px solid #000; padding-bottom: 10px;">' : '<div style="width: 250px; height: 60px; border-bottom: 1px solid #000; margin: 0 auto;"></div>') . '
                 </div>
                 <p style="margin-top: 10px;"><strong>' . $nombreGerente . '</strong></p>
                 <p>Representante Legal - ' . $empresa->razon_social . '</p>

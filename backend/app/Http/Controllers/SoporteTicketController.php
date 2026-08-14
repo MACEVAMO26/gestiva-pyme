@@ -84,7 +84,7 @@ class SoporteTicketController extends Controller
         $request->validate([
             'estado' => 'sometimes|in:Abierto,En progreso,Resuelto,Cerrado',
             'notas_resolucion' => 'nullable|string',
-            'tecnico_id' => 'nullable|exists:users,id'
+            'tecnico_id' => 'nullable|exists:usuarios,id'
         ]);
 
         $ticket = SoporteTicket::findOrFail($id);

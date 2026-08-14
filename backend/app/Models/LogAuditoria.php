@@ -13,6 +13,8 @@ class LogAuditoria extends Model
     // --- TABLA ---
     protected $table = 'logs_auditoria';
 
+    public $timestamps = false;
+
     
     // --- CAMPOS ---
     

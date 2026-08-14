@@ -12,7 +12,7 @@ class LogAuditoriaController extends Controller
     public function index()
     {
         return LogAuditoria::with('usuario')
-                           ->orderBy('created_at', 'desc')
+                           ->orderBy('fecha_hora', 'desc')
                            ->take(500)
                            ->get();
     }

@@ -15,11 +15,11 @@ return new class extends Migration
             $table->id();
             $table->integer('empresa_id');
             $table->foreign('empresa_id')->references('id')->on('empresa');
-            $table->foreignId('usuario_id')->constrained('users');
+            $table->foreignId('usuario_id')->constrained('usuarios')->cascadeOnDelete();
             $table->string('asunto');
             $table->text('mensaje');
             $table->enum('estado', ['Abierto', 'En progreso', 'Resuelto', 'Cerrado'])->default('Abierto');
-            $table->foreignId('tecnico_id')->nullable()->constrained('users');
+            $table->foreignId('tecnico_id')->nullable()->constrained('usuarios')->nullOnDelete();
             $table->text('notas_resolucion')->nullable();
             $table->boolean('activo')->default(true);
             $table->timestamps();

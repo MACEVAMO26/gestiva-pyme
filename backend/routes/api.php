@@ -76,6 +76,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::patch('/roles/{id}/status', [RoleController::class, 'changeStatus']);
 
     // --- PERFIL DE EMPLEADO & AUTOGESTION ---
+    Route::get('/empleados/pendientes', [\App\Http\Controllers\EmpleadoController::class, 'pendientes']);
     Route::get('/empleados/{id}', [UserController::class, 'getEmpleado']);
     Route::put('/empleados/{id}', [UserController::class, 'updateEmpleado']);
     Route::post('/empleados/{id}/baja', [UserController::class, 'bajaEmpleado']);
@@ -114,7 +115,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::patch('usuarios/{id}/status', [UserController::class, 'changeStatus']);
 
     // --- GESTION HUMANA (Empleados) ---
-    Route::get('/empleados/pendientes', [\App\Http\Controllers\EmpleadoController::class, 'pendientes']);
     Route::get('/empleados', [\App\Http\Controllers\EmpleadoController::class, 'index']);
     Route::get('/empleados/{id}/certificado', [\App\Http\Controllers\EmpleadoController::class, 'generarCertificado']);
     Route::post('/empleados/{usuarioId}/formalizar', [\App\Http\Controllers\EmpleadoController::class, 'formalizar']);
