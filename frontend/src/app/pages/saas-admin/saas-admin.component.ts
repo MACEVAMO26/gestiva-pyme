@@ -416,7 +416,7 @@ export class SaasAdminComponent implements OnInit {
     }
 
     this.modulosService.getCatalogoModulos().subscribe(catalog => {
-      this.paquetesModulos = catalog;
+      this.paquetesModulos = catalog.filter((p: any) => p.id !== 'default');
     });
 
     if (typeof window !== 'undefined') {

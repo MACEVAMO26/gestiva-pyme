@@ -106,6 +106,10 @@ class ModulosController extends Controller
             return response()->json(['error' => 'Empresa no encontrada'], 404);
         }
 
+        if (!Modulo::where('id', $moduloId)->exists()) {
+            return response()->json(['error' => 'Módulo no encontrado'], 404);
+        }
+
         $moduloPivot = DB::table('empresa_modulo')
                          ->where('empresa_id', $empresaId)
                          ->where('modulo_id', $moduloId)
@@ -149,6 +153,10 @@ class ModulosController extends Controller
         foreach ($modulosState as $mod) {
             $moduloId = $mod['id'];
             $activo = $mod['activo'];
+
+            if (!Modulo::where('id', $moduloId)->exists()) {
+                continue;
+            }
 
             $moduloPivot = DB::table('empresa_modulo')
                              ->where('empresa_id', $empresaId)

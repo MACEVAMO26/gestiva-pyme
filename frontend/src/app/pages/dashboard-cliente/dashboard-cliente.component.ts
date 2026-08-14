@@ -30,7 +30,7 @@ export class DashboardClienteComponent implements OnInit {
 
   // --- VARIABLES DE ESTADO ---
   user: any = null;
-  planActual: string = 'Premium'; // Simulado
+  planActual: string = 'Especial';
 
   modulosSidebar: ModuloSidebar[] = [];
   isSidebarCollapsed = false;
@@ -61,6 +61,9 @@ export class DashboardClienteComponent implements OnInit {
             };
           });
         }
+
+        // Pintar de inmediato los módulos base sin esperar la llamada HTTP
+        this.aplicarOrdenamiento(botones);
 
         // 2. Si el usuario pertenece a una empresa, consultar los módulos asignados a esa empresa
         if (this.user?.empresa_id) {
@@ -106,6 +109,22 @@ export class DashboardClienteComponent implements OnInit {
                   }
                 }
               });
+
+              // Determinar el plan según los paquetes de módulos activos
+              const modulosVentas = ((modulosEmpresa as any)['ventas'] || []) as any[];
+              const modulosServicios = ((modulosEmpresa as any)['servicios'] || []) as any[];
+              const tieneVentas = modulosVentas.some((s: any) => s.asignado && s.activo);
+              const tieneServicios = modulosServicios.some((s: any) => s.asignado && s.activo);
+
+              if (tieneVentas && tieneServicios) {
+                this.planActual = 'Mixto';
+              } else if (tieneVentas) {
+                this.planActual = 'Ventas';
+              } else if (tieneServicios) {
+                this.planActual = 'Servicios';
+              } else {
+                this.planActual = 'Especial';
+              }
 
               this.aplicarOrdenamiento(botones);
             },
