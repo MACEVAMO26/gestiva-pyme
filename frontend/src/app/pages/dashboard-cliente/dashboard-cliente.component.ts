@@ -77,9 +77,9 @@ export class DashboardClienteComponent implements OnInit {
                   // Desglosar submódulos
                   if (paquete.submodulos && Array.isArray(paquete.submodulos)) {
                     paquete.submodulos.forEach((sub: any) => {
-                      // Verificar si está asignado en la BD
-                      const asignadoDb = estadoPaquete.find((s: any) => s.id === sub.id)?.asignado;
-                      if (asignadoDb) {
+                      // Verificar si está asignado Y activo en la BD
+                      const modDb = estadoPaquete.find((s: any) => s.id === sub.id);
+                      if (modDb?.asignado && modDb.activo) {
                         botones[sub.id] = {
                           id: sub.id,
                           nombre: sub.nombre,
@@ -91,7 +91,7 @@ export class DashboardClienteComponent implements OnInit {
                   }
                 } else if (paquete.id === 'rrhh' || paquete.id === 'finanzas' || paquete.id === 'addons') {
                   // Módulo completo: revisar si tiene algún submódulo asignado en la BD
-                  const isAsignado = estadoPaquete.some((s: any) => s.asignado);
+                  const isAsignado = estadoPaquete.some((s: any) => s.asignado && s.activo);
                   if (isAsignado) {
                     let nombre = paquete.nombre;
                     if (paquete.id === 'rrhh') nombre = 'Gestión Humana';
