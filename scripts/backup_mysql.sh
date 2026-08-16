@@ -37,10 +37,7 @@ if "$MYSQLDUMP" -h "$HOST" -P "$PORT" -u "$USER" $PASSARG \
      --single-transaction --routines --triggers --default-character-set=utf8mb4 \
      "$DB" > "$OUT" 2> "$ERR"; then
   rm -f "$ERR"
-  if git rev-parse --git-dir >/dev/null 2>&1; then
-    git add -f "$OUT" >/dev/null 2>&1
-  fi
-  echo "BACKUP MySQL generado y agregado al commit: backups/$(basename "$OUT")"
+  echo "BACKUP MySQL generado localmente en: backups/$(basename "$OUT")"
 else
   MSG="$(cat "$ERR" 2>/dev/null)"
   rm -f "$OUT" "$ERR"
