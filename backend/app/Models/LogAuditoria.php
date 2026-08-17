@@ -20,16 +20,18 @@ class LogAuditoria extends Model
     
         protected $fillable = [
         'usuario_id',
+        'modulo',
         'accion',
-        'entidad_afectada',
-        'entidad_id',
-        'detalles'
+        'entidad_afectada_id',
+        'descripcion',
+        'ip_origen',
+        'fecha_hora'
     ];
 
     // --- CASTS ---
     
     protected $casts = [
-        'detalles' => 'array',
+        'fecha_hora' => 'datetime',
     ];
 
     // --- RELACIONES ---

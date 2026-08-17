@@ -18,11 +18,11 @@ class Inventario extends Model
     
     protected $fillable = [
         'producto_id',
-        'cantidad_disponible',
-        'cantidad_reservada',
-        'ubicacion',
-        'lote',
-        'fecha_vencimiento'
+        'stock_actual',
+        'stock_minimo',
+        'bodega',
+        'estante',
+        'posicion'
     ];
 
         

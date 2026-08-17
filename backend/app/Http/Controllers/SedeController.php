@@ -43,9 +43,10 @@ class SedeController extends Controller
 
         \App\Models\LogAuditoria::create([
             'usuario_id' => $user->id,
-            'empresa_id' => $user->empresa_id,
+            'modulo' => 'sedes',
             'accion' => 'Crear Sede',
-            'detalles' => 'Sede creada: ' . $sede->nombre
+            'entidad_afectada_id' => $sede->id,
+            'descripcion' => 'Sede creada: ' . $sede->nombre
         ]);
 
         return response()->json(['message' => 'Sede creada con éxito', 'sede' => $sede], 201);
@@ -77,9 +78,10 @@ class SedeController extends Controller
 
         \App\Models\LogAuditoria::create([
             'usuario_id' => $user->id,
-            'empresa_id' => $user->empresa_id,
+            'modulo' => 'sedes',
             'accion' => 'Actualizar Sede',
-            'detalles' => 'Sede actualizada: ' . $sede->nombre
+            'entidad_afectada_id' => $sede->id,
+            'descripcion' => 'Sede actualizada: ' . $sede->nombre
         ]);
 
         return response()->json(['message' => 'Sede actualizada con éxito', 'sede' => $sede]);
@@ -94,9 +96,10 @@ class SedeController extends Controller
 
         \App\Models\LogAuditoria::create([
             'usuario_id' => $user->id,
-            'empresa_id' => $user->empresa_id,
+            'modulo' => 'sedes',
             'accion' => 'Eliminar Sede',
-            'detalles' => 'Sede eliminada: ' . $sede->nombre
+            'entidad_afectada_id' => $sede->id,
+            'descripcion' => 'Sede eliminada: ' . $sede->nombre
         ]);
 
         return response()->json(['message' => 'Sede eliminada con éxito']);

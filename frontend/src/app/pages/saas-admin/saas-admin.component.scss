@@ -1899,3 +1899,21 @@ $sidebar-text-muted: #0f172a;
   font-weight: 600;
 }
 
+/* --- CARRITO DE SUSCRIPCIONES & CHECKOUT --- */
+.neu-dark-input {
+  background: #090d16;
+  border: 1px solid #1e293b;
+  border-radius: 8px;
+  color: #f8fafc;
+  padding: 0.5rem 0.75rem;
+  transition: all 0.2s ease-in-out;
+  outline: none;
+  font-family: 'Inter', sans-serif;
+  box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.5), inset -2px -2px 5px rgba(255, 255, 255, 0.02);
+
+  &:focus {
+    border-color: #10b981;
+  }
+}
+
+

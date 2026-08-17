@@ -49,4 +49,11 @@ export class VentaService {
   anularVenta(id: number): Observable<any> {
     return this.http.post(`${this.apiUrl}/${id}/anular`, {});
   }
+
+  updateEstadoPaquete(id: number, estadoPaquete: string, clienteId: number): Observable<any> {
+    return this.http.patch(`${this.apiUrl}/${id}/estado-paquete`, {
+      estado_paquete: estadoPaquete,
+      cliente_id: clienteId
+    });
+  }
 }

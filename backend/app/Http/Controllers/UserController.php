@@ -108,15 +108,19 @@ class UserController extends Controller
                 'empresa_id' => auth()->user()->empresa_id,
             ]);
 
-            // LEY: El primer usuario creado por el gerente asume el rol de RRHH
-            $companyUsersCount = User::where('empresa_id', auth()->user()->empresa_id)->count();
-            
-            // Si hay exactamente 2 usuarios (El gerente y este nuevo que se acaba de crear)
-            if ($companyUsersCount === 2) {
-                $roleJefe = \App\Models\Role::firstOrCreate(
-                    ['empresa_id' => auth()->user()->empresa_id, 'nombre' => 'Jefe de Área']
-                );
-                
+            // LEY: El Jefe de RRHH es el primer cargo que crea el gerente. Si no existe un
+            // Jefe de RRHH activo (primer usuario o reemplazo tras despido), este nuevo
+            // usuario asume ese cargo y entra FORMALIZADO de inmediato.
+            $roleJefe = \App\Models\Role::firstOrCreate(
+                ['empresa_id' => auth()->user()->empresa_id, 'nombre' => 'Jefe de Área']
+            );
+
+            $jefeRRHHActivo = User::where('empresa_id', auth()->user()->empresa_id)
+                ->where('rol_id', $roleJefe->id)
+                ->where('activo', true)
+                ->exists();
+
+            if (!$jefeRRHHActivo) {
                 $cargoRRHH = \App\Models\Cargo::firstOrCreate(
                     ['empresa_id' => auth()->user()->empresa_id, 'nombre' => 'Jefe de Recursos Humanos'],
                     ['descripcion' => 'Responsable de la gestión humana de la empresa']
@@ -127,7 +131,7 @@ class UserController extends Controller
                     ['descripcion' => 'Área encargada de nómina, contratación y bienestar']
                 );
 
-                // Asignar los permisos inmediatamente a este primer usuario
+                // Asignar los permisos inmediatamente a este usuario
                 $user->rol_id = $roleJefe->id;
                 $user->cargo_id = $cargoRRHH->id;
                 $user->perfil_formalizado = true; // No requiere formalización adicional
@@ -209,9 +213,34 @@ class UserController extends Controller
     public function changeStatus($id)
     {
         $user = User::findOrFail($id);
-        
+        $empresaId = auth()->user()->empresa_id;
+
+        $rolUsuario = $user->rol;
+        $rolSolicitante = auth()->user()->rol;
+
+        // LEY: El Gerente General es el primer cargo/usuario, no se puede eliminar.
+        // Tampoco se puede inactivar desde el aplicativo; solo el SAAS admin puede
+        // cambiar sus datos (nombres) cuando la empresa cambia de gerente.
+        if ($rolUsuario && $rolUsuario->nombre === 'Gerente General') {
+            return response()->json([
+                'error' => 'El Gerente General no puede ser inactivado. Solo el SAAS admin puede cambiar sus datos.'
+            ], 422);
+        }
+
+        // LEY: El Jefe de RRHH solo puede ser inactivado por el Gerente General
+        // (por despido), y los datos se conservan por normativa colombiana.
+        $esJefeRRHH = $rolUsuario && $rolUsuario->nombre === 'Jefe de Área';
+        if ($esJefeRRHH) {
+            $esGerente = $rolSolicitante && $rolSolicitante->nombre === 'Gerente General';
+            if (!$esGerente) {
+                return response()->json([
+                    'error' => 'Solo el Gerente General puede inactivar al Jefe de Recursos Humanos.'
+                ], 403);
+            }
+        }
+
         $user->activo = !$user->activo;
-        $user->fecha_inactivacion = $user->activo ? null : now();
+        $user->inactive_at = $user->activo ? null : now();
 
         $user->save();
 

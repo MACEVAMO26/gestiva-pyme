@@ -62,12 +62,20 @@ class CargoController extends Controller
     public function changeStatus($id)
     {
         $cargo = Cargo::findOrFail($id);
+
+        // LEY: El cargo "Gerente General" es el primer cargo creado y no se puede inactivar.
+        if ($cargo->nombre === 'Gerente General') {
+            return response()->json([
+                'error' => 'El cargo Gerente General no puede ser inactivado.'
+            ], 422);
+        }
+
         $cargo->activo = !$cargo->activo;
         
         if (!$cargo->activo) {
-            $cargo->fecha_inactivacion = now();
+            $cargo->inactive_at = now();
         } else {
-            $cargo->fecha_inactivacion = null;
+            $cargo->inactive_at = null;
         }
 
         $cargo->save();

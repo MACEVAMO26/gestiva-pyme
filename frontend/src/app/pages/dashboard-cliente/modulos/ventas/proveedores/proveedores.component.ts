@@ -2,6 +2,7 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ProveedorService, Proveedor } from '../../../../../services/proveedor.service';
+import { CuentasPagarService, CuentaPorPagar } from '../../../../../services/cuentas-pagar.service';
 import { ToastService } from '../../../../../services/toast.service';
 import { timeout } from 'rxjs';
 
@@ -14,6 +15,7 @@ import { timeout } from 'rxjs';
 })
 export class ProveedoresComponent implements OnInit {
   private proveedorService = inject(ProveedorService);
+  private cuentasPagarService = inject(CuentasPagarService);
   private toast = inject(ToastService);
 
   proveedores: Proveedor[] = [];
@@ -45,7 +47,8 @@ export class ProveedoresComponent implements OnInit {
 
   ngOnInit() {
     this.cargarProveedores();
-    this.cargarMockDatos();
+    this.cargarCuentasPorPagar();
+    this.cargarEvaluaciones();
   }
 
   cargarProveedores() {
@@ -55,6 +58,7 @@ export class ProveedoresComponent implements OnInit {
         this.proveedores = res;
         this.proveedoresFiltrados = res;
         this.cargando = false;
+        this.cargarEvaluaciones();
       },
       error: () => {
         this.proveedores = [];
@@ -65,17 +69,34 @@ export class ProveedoresComponent implements OnInit {
     });
   }
 
-  cargarMockDatos() {
-    this.cuentasPorPagar = [
-      { id: 1, proveedor: 'Empresa A S.A.S', factura: 'F-1001', emision: '2023-11-01', vencimiento: '2023-11-30', monto: 1500000, estado: 'Vencida' },
-      { id: 2, proveedor: 'Distribuidora B', factura: 'F-2050', emision: '2023-11-15', vencimiento: '2023-12-15', monto: 850000, estado: 'Pendiente' }
-    ];
-    this.totalDeuda = this.cuentasPorPagar.reduce((acc, c) => acc + c.monto, 0);
+  cargarCuentasPorPagar() {
+    this.cuentasPagarService.getCuentas().pipe(timeout(8000)).subscribe({
+      next: (res) => {
+        this.cuentasPorPagar = res;
+        this.totalDeuda = res.reduce((acc, c) => acc + (c.saldo_pendiente || 0), 0);
+      },
+      error: () => {
+        this.cuentasPorPagar = [];
+        this.totalDeuda = 0;
+      }
+    });
+  }
 
-    this.contratos = [
-      { id: 1, proveedor: 'Empresa A S.A.S', nrc: 'Evaluado', calificacion: 4.5, comentarios: 'Buen servicio general' },
-      { id: 2, proveedor: 'Distribuidora B', nrc: 'Pendiente', calificacion: 0, comentarios: '' }
-    ];
+  cargarEvaluaciones() {
+    this.contratos = this.proveedores
+      .filter(p => p.calificacion !== undefined || p.estado_evaluacion)
+      .map(p => ({
+        id: p.id,
+        proveedor: p.razon_social,
+        vigencia: '',
+        nrc: p.estado_evaluacion || 'Pendiente',
+        calificacion: p.calificacion || 0,
+        comentarios: p.comentarios_evaluacion || ''
+      }));
+  }
+
+  nombreProveedorCuenta(cuenta: any): string {
+    return cuenta.proveedor?.razon_social || cuenta.proveedor?.nombre || '-';
   }
 
   filtrarProveedores() {
@@ -205,12 +226,29 @@ export class ProveedoresComponent implements OnInit {
   }
 
   confirmarPago() {
+    if (!this.cuentaSeleccionada?.id) {
+      this.toast.error('Cuenta no válida');
+      return;
+    }
     this.isSaving = true;
-    setTimeout(() => {
-      this.toast.success('Pago confirmado con éxito');
+    const monto = Number(this.cuentaSeleccionada.saldo_pendiente || 0);
+    if (monto <= 0) {
+      this.toast.warning('La cuenta ya está saldada');
       this.isSaving = false;
-      this.cerrarPago();
-    }, 1000);
+      return;
+    }
+    this.cuentasPagarService.registrarAbono(this.cuentaSeleccionada.id, monto).pipe(timeout(8000)).subscribe({
+      next: () => {
+        this.toast.success('Pago confirmado con éxito');
+        this.isSaving = false;
+        this.cerrarPago();
+        this.cargarCuentasPorPagar();
+      },
+      error: (err) => {
+        this.isSaving = false;
+        this.toast.error(err.error?.message || 'Error al registrar el pago');
+      }
+    });
   }
 
   abrirEvaluar(evaluacion: any) {
@@ -226,11 +264,27 @@ export class ProveedoresComponent implements OnInit {
   }
 
   guardarEvaluacion() {
+    if (!this.evaluacionSeleccionada?.id) {
+      this.toast.error('Proveedor no válido');
+      return;
+    }
     this.isSaving = true;
-    setTimeout(() => {
-      this.toast.success('Evaluación guardada');
-      this.isSaving = false;
-      this.cerrarEvaluar();
-    }, 1000);
+    const payload = {
+      calificacion: Number(this.nuevaCalificacion) || 0,
+      comentarios_evaluacion: this.nuevoComentario,
+      estado_evaluacion: this.nuevaCalificacion > 0 ? 'Evaluado' : 'Pendiente'
+    };
+    this.proveedorService.actualizarProveedor(this.evaluacionSeleccionada.id, payload).pipe(timeout(8000)).subscribe({
+      next: () => {
+        this.toast.success('Evaluación guardada');
+        this.isSaving = false;
+        this.cerrarEvaluar();
+        this.cargarProveedores();
+      },
+      error: () => {
+        this.toast.error('Error al guardar la evaluación');
+        this.isSaving = false;
+      }
+    });
   }
 }

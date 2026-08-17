@@ -5,6 +5,7 @@ import { LoadingSpinnerComponent } from '../../../../../../shared/components/loa
 import { timeout } from 'rxjs';
 import { UsuariosService } from '../../../../../../services/usuarios.service';
 import { ToastService } from '../../../../../../services/toast.service';
+import { AuthService } from '../../../../../../services/auth.service';
 
 @Component({
   selector: 'app-admin-usuarios',
@@ -17,12 +18,36 @@ export class AdminUsuarios implements OnInit {
   private usuariosService = inject(UsuariosService);
   private toast = inject(ToastService);
   private cdr = inject(ChangeDetectorRef);
+  private authService = inject(AuthService);
 
   usuarios: any[] = [];
   isLoading = true;
   showModal = false;
   isSubmitting = false;
   errorMessage = '';
+
+  // LEY: El Gerente General es el primer cargo de la empresa y el único autorizado
+  // para inactivar al Jefe de Recursos Humanos (los datos se conservan por ley colombiana).
+  esGerente(): boolean {
+    const rol = this.authService.getUser()?.rol?.nombre;
+    return rol === 'Gerente General' || rol === 'Gerente';
+  }
+
+  esJefeRRHH(usuario: any): boolean {
+    return usuario?.rol?.nombre === 'Jefe de Área';
+  }
+
+  esGerenteGeneral(usuario: any): boolean {
+    return usuario?.rol?.nombre === 'Gerente General';
+  }
+
+  // Un empleado regular siempre puede inactivarse desde aquí;
+  // el Jefe de RRHH SOLO puede inactivarlo el gerente; el gerente nunca.
+  puedeInactivar(usuario: any): boolean {
+    if (this.esGerenteGeneral(usuario)) return false;
+    if (this.esJefeRRHH(usuario)) return this.esGerente();
+    return true;
+  }
 
   formData: any = {
     nombres: '',
@@ -113,13 +138,25 @@ export class AdminUsuarios implements OnInit {
   }
 
   cambiarEstado(usuario: any) {
+    if (!this.puedeInactivar(usuario)) {
+      if (this.esGerenteGeneral(usuario)) {
+        this.toast.error('El Gerente General no puede ser inactivado.');
+      } else {
+        this.toast.error('Solo el Gerente General puede inactivar al Jefe de Recursos Humanos.');
+      }
+      return;
+    }
+
+    const accion = usuario.activo ? 'inactivar' : 'activar';
+    if (!confirm(`¿Estás seguro de ${accion} a ${usuario.nombres} ${usuario.apellidos}?`)) return;
+
     this.usuariosService.changeStatus(usuario.id).subscribe({
       next: (res) => {
         usuario.activo = !usuario.activo;
         this.toast.success(res.message || 'Estado actualizado');
       },
       error: (err) => {
-        this.toast.error('Error al cambiar el estado del usuario');
+        this.toast.error(err.error?.error || 'Error al cambiar el estado del usuario');
       }
     });
   }

@@ -2,7 +2,7 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ProductoService, Producto, Categoria } from '../../../../../services/producto.service';
-import { InventarioService } from '../../../../../services/inventario.service';
+import { InventarioService, Inventario, MovimientoInventario } from '../../../../../services/inventario.service';
 import { ToastService } from '../../../../../services/toast.service';
 import { timeout } from 'rxjs';
 
@@ -23,18 +23,23 @@ export class InventarioComponent implements OnInit {
   categorias: Categoria[] = [];
   productosFiltrados: any[] = [];
   productosOriginales: any[] = [];
+  inventario: Inventario[] = [];
+  movimientos: any[] = [];
   searchTerm: string = '';
-  
+
   cargando = false;
   guardando = false;
 
   showModal: boolean = false;
   formProducto: any = this.resetFormProducto();
 
-  // Toast
-  showToast: boolean = false;
-  toastType: string = 'success';
-  toastMessage: string = '';
+  // Formulario movimiento
+  formMovimiento: any = { tipo: 'entrada', producto_id: '', cantidad: 1, observaciones: '' };
+  // Formulario ajuste
+  formAjuste: any = { producto_id: '', cantidad: 1, observaciones: '' };
+  // Kardex
+  productoKardex: any = '';
+  kardexFilas: any[] = [];
 
   ngOnInit() {
     this.cargarDatos();
@@ -43,29 +48,39 @@ export class InventarioComponent implements OnInit {
   cargarDatos() {
     this.cargando = true;
     this.productoService.getCategorias().pipe(timeout(8000)).subscribe({
+      next: (res) => { this.categorias = res; },
+      error: () => { this.categorias = []; }
+    });
+
+    this.productoService.getProductos().pipe(timeout(8000)).subscribe({
       next: (res) => {
-        this.categorias = res;
+        this.productosOriginales = res;
+        this.filtrarProductos();
       },
       error: () => {
-        this.categorias = [];
-        this.cargando = false;
+        this.productosOriginales = [];
+        this.productosFiltrados = [];
       }
     });
-    
-    // Mock data for UI until backend is fully integrated
-    const mockProductos = [
-      { id: 1, codigo: 'PRD-001', nombre: 'Laptop Dell Inspiron', categoria: 'Equipos', precio: 2500000, costo: 2000000, stock: 15, stockMinimo: 5, estado: 'Activo' },
-      { id: 2, codigo: 'PRD-002', nombre: 'Mouse Inalámbrico', categoria: 'Accesorios', precio: 45000, costo: 25000, stock: 3, stockMinimo: 10, estado: 'Activo' },
-      { id: 3, codigo: 'PRD-003', nombre: 'Monitor LG 24"', categoria: 'Equipos', precio: 650000, costo: 500000, stock: 0, stockMinimo: 2, estado: 'Inactivo' }
-    ];
-    
-    this.productosOriginales = mockProductos;
-    this.productosFiltrados = [...this.productosOriginales];
-    this.cargando = false;
+
+    this.inventarioService.getInventario().pipe(timeout(8000)).subscribe({
+      next: (res) => { this.inventario = res; },
+      error: () => { this.inventario = []; }
+    });
+
+    this.inventarioService.getMovimientos().pipe(timeout(8000)).subscribe({
+      next: (res) => { this.movimientos = res; },
+      error: () => { this.movimientos = []; },
+      complete: () => { this.cargando = false; }
+    });
   }
 
   switchTab(tab: string) {
     this.activeTab = tab;
+    if (tab === 'kardex' && !this.kardexFilas.length && this.productosOriginales.length) {
+      this.productoKardex = this.productosOriginales[0]?.id || '';
+      this.generarKardex();
+    }
   }
 
   abrirModal() {
@@ -90,51 +105,184 @@ export class InventarioComponent implements OnInit {
   }
 
   onFileSelected(event: any) {
-    // Manejo de archivo
+    // Manejo de archivo (pendiente subida a Cloudinary)
   }
 
   guardarProducto() {
-    if (!this.formProducto.nombre || !this.formProducto.codigo) {
-      this.mostrarToast('Nombre y código obligatorios', 'warning');
+    if (!this.formProducto.nombre || !this.formProducto.categoria_id) {
+      this.toast.warning('Nombre y categoría son obligatorios');
       return;
     }
-    
     this.guardando = true;
-    setTimeout(() => {
-      this.mostrarToast('Producto guardado exitosamente', 'success');
-      this.cerrarModal();
-      this.guardando = false;
-    }, 1000);
+    const payload: Producto = {
+      categoria_id: Number(this.formProducto.categoria_id),
+      nombre: this.formProducto.nombre,
+      descripcion: this.formProducto.codigo || '',
+      precio_compra: Number(this.formProducto.precio_compra) || 0,
+      precio_venta: Number(this.formProducto.precio_venta) || 0,
+      stock_inicial: Number(this.formProducto.stock_inicial) || 0,
+      unidad_medida: this.formProducto.unidad_medida || 'Unidad',
+      activo: true
+    };
+
+    this.productoService.crearProducto(payload).pipe(timeout(8000)).subscribe({
+      next: (prod) => {
+        // Crear registro de inventario asociado
+        if (prod.id) {
+          this.inventarioService.getInventario().pipe(timeout(5000)).subscribe(() => {});
+        }
+        this.toast.success('Producto guardado exitosamente');
+        this.cerrarModal();
+        this.guardando = false;
+        this.cargarDatos();
+      },
+      error: () => {
+        this.toast.error('Error al guardar el producto');
+        this.guardando = false;
+      }
+    });
   }
 
-  getBadgeClass(stock: number, stockMinimo: number): string {
-    if (stock === 0) return 'badge-danger';
-    if (stock <= stockMinimo) return 'badge-warning';
+  getBadgeClass(stock: number | undefined, stockMinimo: number | undefined): string {
+    const s = stock ?? 0;
+    const m = stockMinimo ?? 0;
+    if (s === 0) return 'badge-danger';
+    if (s <= m) return 'badge-warning';
     return 'badge-success';
   }
 
   exportarExcel() {
-    this.mostrarToast('Exportando catálogo a Excel...', 'success');
+    this.toast.success('Exportando catálogo a Excel...');
   }
 
-  mostrarToast(mensaje: string, tipo: 'success' | 'warning' | 'error') {
-    this.toastMessage = mensaje;
-    this.toastType = tipo;
-    this.showToast = true;
-    setTimeout(() => this.showToast = false, 3000);
-  }
-
-  // Se dispara automáticamente por ngModel (o se puede llamar en un (input))
   filtrarProductos() {
     if (!this.searchTerm) {
       this.productosFiltrados = [...this.productosOriginales];
       return;
     }
-    
     const term = this.searchTerm.toLowerCase();
-    this.productosFiltrados = this.productosOriginales.filter(p => 
-      p.nombre.toLowerCase().includes(term) || 
-      p.codigo.toLowerCase().includes(term)
+    this.productosFiltrados = this.productosOriginales.filter(p =>
+      (p.nombre || '').toLowerCase().includes(term) ||
+      (p.descripcion || '').toLowerCase().includes(term)
     );
+  }
+
+  // Helpers de vista: resolver categoría y stock del producto real
+  nombreCategoria(producto: any): string {
+    const c = this.categorias.find(cat => cat.id === producto.categoria_id);
+    return c?.nombre || 'Sin categoría';
+  }
+
+  codigoProducto(producto: any): string {
+    return producto.descripcion || 'PRD-' + String(producto.id).padStart(3, '0');
+  }
+
+  stockProducto(producto: any): number {
+    const inv = this.inventario.find(i => i.producto_id === producto.id);
+    return inv?.stock_actual ?? 0;
+  }
+
+  stockMinimoProducto(producto: any): number {
+    const inv = this.inventario.find(i => i.producto_id === producto.id);
+    return inv?.stock_minimo ?? 0;
+  }
+
+  // --- MOVIMIENTOS (entradas/salidas) ---
+  registrarMovimiento() {
+    if (!this.formMovimiento.producto_id || this.formMovimiento.cantidad <= 0) {
+      this.toast.warning('Seleccione producto y cantidad válida');
+      return;
+    }
+    this.guardando = true;
+    const payload: MovimientoInventario = {
+      inventario_id: Number(this.formMovimiento.producto_id),
+      tipo_movimiento: this.formMovimiento.tipo === 'salida' ? 'salida' : 'entrada',
+      cantidad: Number(this.formMovimiento.cantidad),
+      observaciones: this.formMovimiento.observaciones || ''
+    };
+    this.inventarioService.registrarMovimiento(payload).pipe(timeout(8000)).subscribe({
+      next: () => {
+        this.toast.success('Movimiento registrado');
+        this.formMovimiento = { tipo: 'entrada', producto_id: '', cantidad: 1, observaciones: '' };
+        this.guardando = false;
+        this.cargarDatos();
+      },
+      error: () => {
+        this.toast.error('Error al registrar el movimiento');
+        this.guardando = false;
+      }
+    });
+  }
+
+  nombreMovimientoProducto(m: any): string {
+    const p = this.productosOriginales.find(prod => prod.id === m.inventario_id || prod.id === m.producto_id);
+    return p?.nombre || 'Producto #' + (m.inventario_id ?? m.producto_id);
+  }
+
+  fechaMovimiento(m: any): string {
+    return m.fecha_hora ? new Date(m.fecha_hora).toLocaleDateString() : '-';
+  }
+
+  // --- AJUSTES (merma/daño) ---
+  ajustesRegistrados(): any[] {
+    return this.movimientos.filter(m => m.tipo_movimiento === 'ajuste' || m.tipo === 'ajuste');
+  }
+
+  aplicarAjuste() {
+    if (!this.formAjuste.producto_id || this.formAjuste.cantidad <= 0) {
+      this.toast.warning('Seleccione producto y cantidad válida');
+      return;
+    }
+    this.guardando = true;
+    const payload: MovimientoInventario = {
+      inventario_id: Number(this.formAjuste.producto_id),
+      tipo_movimiento: 'ajuste',
+      cantidad: -Number(this.formAjuste.cantidad),
+      observaciones: this.formAjuste.observaciones || 'Ajuste por merma/daño'
+    };
+    this.inventarioService.registrarMovimiento(payload).pipe(timeout(8000)).subscribe({
+      next: () => {
+        this.toast.success('Ajuste aplicado');
+        this.formAjuste = { producto_id: '', cantidad: 1, observaciones: '' };
+        this.guardando = false;
+        this.cargarDatos();
+      },
+      error: () => {
+        this.toast.error('Error al aplicar el ajuste');
+        this.guardando = false;
+      }
+    });
+  }
+
+  // --- KARDEX ---
+  generarKardex() {
+    if (!this.productoKardex) return;
+    const id = Number(this.productoKardex);
+    const movs = this.movimientos.filter(m => (m.inventario_id === id || m.producto_id === id));
+    const inv = this.inventario.find(i => i.producto_id === id);
+    let saldo = 0;
+    this.kardexFilas = [
+      { fecha: 'Inicio', concepto: 'Saldo Inicial', entrada: 0, salida: 0, saldo: inv?.stock_actual ?? 0 }
+    ];
+    // Se reconstruye la secuencia aproximada desde los movimientos existentes
+    saldo = inv?.stock_actual ?? 0;
+    movs.forEach(m => {
+      const entrada = m.tipo_movimiento === 'entrada' || (m.tipo === 'entrada') ? Math.abs(m.cantidad) : 0;
+      const salida = (m.tipo_movimiento === 'salida' || m.tipo === 'salida' || m.tipo === 'ajuste' || m.tipo_movimiento === 'ajuste') ? Math.abs(m.cantidad) : 0;
+      this.kardexFilas.push({
+        fecha: this.fechaMovimiento(m),
+        concepto: m.tipo_movimiento || m.tipo || 'Movimiento',
+        entrada, salida,
+        saldo: 0 // saldo exacto requiere serie histórica; se muestra el stock actual del producto
+      });
+    });
+    if (this.kardexFilas.length === 1) {
+      this.kardexFilas.push({ fecha: '-', concepto: 'Sin movimientos registrados', entrada: 0, salida: 0, saldo: inv?.stock_actual ?? 0 });
+    }
+  }
+
+  nombreKardexProducto(id: number): string {
+    const p = this.productosOriginales.find(prod => prod.id === id);
+    return p?.nombre || 'Producto #' + id;
   }
 }

@@ -18,10 +18,10 @@ class VentaController extends Controller
     public function index()
     {
         $empresaId = auth()->user()?->empresa_id ?? null;
-        $ventas = Venta::when($empresaId, fn ($q) => $q->where('empresa_id', $empresaId))
+        $ventas = Venta::with('cliente')
+            ->when($empresaId, fn ($q) => $q->where('empresa_id', $empresaId))
             ->orderBy('created_at', 'desc')
             ->get();
-        // Here we could eager load 'cliente' if Venta had a relation, assuming it does or we just return them.
         return response()->json($ventas);
     }
 
@@ -39,13 +39,22 @@ class VentaController extends Controller
         try {
             DB::beginTransaction();
 
-            $total = 0;
+            $subtotal = 0;
             foreach ($request->productos as $p) {
-                $total += $p['cantidad'] * $p['precio_unitario'];
+                $subtotal += $p['cantidad'] * $p['precio_unitario'];
             }
 
+            // Siguiente consecutivo de factura por empresa
+            $consecutivo = (Venta::where('empresa_id', auth()->user()?->empresa_id)
+                ->max('factura_consecutivo') ?? 0) + 1;
+
             $venta = Venta::create([
-                'total' => $total,
+                'factura_consecutivo' => $consecutivo,
+                'cliente_id' => $request->cliente_id,
+                'subtotal' => $subtotal,
+                'impuestos' => 0,
+                'descuentos' => 0,
+                'total' => $subtotal,
                 'metodo_pago' => $request->metodo_pago,
                 'estado' => 'Completada',
                 'estado_paquete' => 'Preparando',
@@ -62,19 +71,19 @@ class VentaController extends Controller
                     'subtotal' => $p['cantidad'] * $p['precio_unitario']
                 ]);
 
-                // Descontar inventario
+                // Descontar inventario (esquema real: stock_actual)
                 $inventario = Inventario::where('producto_id', $p['id'])->first();
                 if ($inventario) {
-                    $inventario->cantidad_disponible -= $p['cantidad'];
+                    $inventario->stock_actual -= $p['cantidad'];
                     $inventario->save();
 
-                    // Notificación de stock bajo (umbral de 10)
-                    if ($inventario->cantidad_disponible <= 10) {
+                    // Notificación de stock bajo (umbral = stock_minimo)
+                    if ($inventario->stock_actual <= $inventario->stock_minimo) {
                         $producto = \App\Models\Producto::find($p['id']);
                         \App\Models\Notificacion::create([
-                            'usuario_id' => Auth::id(), // Notificar al vendedor actual (idealmente sería a los administradores)
+                            'usuario_id' => Auth::id(),
                             'titulo' => 'Alerta de Stock Bajo',
-                            'mensaje' => 'El producto "' . ($producto ? $producto->nombre : 'ID '.$p['id']) . '" tiene un stock bajo (' . $inventario->cantidad_disponible . ' unidades restantes).',
+                            'descripcion' => 'El producto "' . ($producto ? $producto->nombre : 'ID '.$p['id']) . '" tiene un stock bajo (' . $inventario->stock_actual . ' unidades restantes).',
                             'leida' => false
                         ]);
                     }
@@ -118,8 +127,6 @@ class VentaController extends Controller
         $cliente = Cliente::find($request->cliente_id);
         if ($cliente && $cliente->email) {
             try {
-                // Se reutiliza el mailable o se crea uno nuevo (ej. EstadoPaqueteMail)
-                // Para mantenerlo simple, usaremos el mismo o le pasaremos una variable extra en el futuro
                 Mail::to($cliente->email)->send(new ReciboVentaMail($venta, $cliente, true));
             } catch (\Exception $e) {
                 \Log::error('No se pudo enviar actualización de estado de paquete: ' . $e->getMessage());
@@ -127,5 +134,39 @@ class VentaController extends Controller
         }
 
         return response()->json(['message' => 'Estado del paquete actualizado', 'venta' => $venta]);
+    }
+
+    // Anula una venta: restaura el inventario descontado y marca la venta como Anulada
+    public function anularVenta($id)
+    {
+        $venta = Venta::findOrFail($id);
+
+        if ($venta->estado === 'Anulada') {
+            return response()->json(['message' => 'La venta ya está anulada.'], 422);
+        }
+
+        try {
+            DB::beginTransaction();
+
+            // Restaurar el inventario de cada detalle
+            $detalles = VentaDetalle::where('venta_id', $venta->id)->get();
+            foreach ($detalles as $detalle) {
+                $inventario = Inventario::where('producto_id', $detalle->producto_id)->first();
+                if ($inventario) {
+                    $inventario->stock_actual += $detalle->cantidad;
+                    $inventario->save();
+                }
+            }
+
+            $venta->estado = 'Anulada';
+            $venta->estado_paquete = null;
+            $venta->save();
+
+            DB::commit();
+            return response()->json(['message' => 'Venta anulada correctamente.', 'venta' => $venta]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['message' => 'Error al anular la venta', 'error' => $e->getMessage()], 500);
+        }
     }
 }

@@ -106,7 +106,7 @@
                     <tbody>
                       @for(mov of movimientos; track $index) {
                         <tr>
-                          <td>{{mov.fecha}}</td>
+                          <td>{{fechaMovimiento(mov)}}</td>
                           <td>
                             @if(mov.tipo === 'ingreso' || mov.tipo === 'apertura') {
                               <span class="badge badge-success">{{mov.tipo}}</span>
@@ -152,18 +152,18 @@
             <tbody>
               @for(pref of prefacturas; track pref.id) {
                 <tr>
-                  <td><strong>{{pref.consecutivo}}</strong></td>
-                  <td>{{pref.cliente}}</td>
-                  <td>{{pref.fecha}}</td>
+                  <td><strong>{{consecutivoPref(pref)}}</strong></td>
+                  <td>{{nombreClientePref(pref)}}</td>
+                  <td>{{fechaPref(pref)}}</td>
                   <td>{{pref.total | currency:'COP':'symbol':'1.0-0'}}</td>
                   <td>
-                    <span class="badge" [ngClass]="getBadgeClass(pref.estado)">
-                      {{pref.estado}}
+                    <span class="badge" [ngClass]="getBadgeClass(estadoPref(pref))">
+                      {{estadoPref(pref)}}
                     </span>
                   </td>
                   <td style="text-align: center;">
-                    @if(pref.estado === 'Pendiente') {
-                      <button class="btn-save btn-pill btn-xs" (click)="generarDocumento(pref.id)">
+                    @if(estadoPref(pref) === 'Pendiente' || estadoPref(pref) === 'borrador' || estadoPref(pref) === 'enviado') {
+                      <button class="btn-save btn-pill btn-xs" (click)="generarDocumento(pref.id!)">
                         <i class="fas fa-file-invoice"></i> Generar Factura
                       </button>
                     } @else {

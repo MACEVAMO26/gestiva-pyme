@@ -58,6 +58,22 @@
                 Procesando...
               </span>
             </button>
+
+            <button
+              class="btn-save btn-pill btn-sm"
+              [ngClass]="u.activo ? 'btn-reject' : 'btn-approve'"
+              *ngIf="puedeInactivar(u)"
+              (click)="cambiarEstado(u)"
+            >
+              {{ u.activo ? 'Inactivar' : 'Activar' }}
+            </button>
+
+            <span class="status-badge status-inactive" *ngIf="!puedeInactivar(u) && esGerenteGeneral(u)">
+              Protegido
+            </span>
+            <span class="status-badge status-inactive" *ngIf="!puedeInactivar(u) && esJefeRRHH(u) && !esGerenteGeneral(u)">
+              Solo Gerente
+            </span>
           </td>
         </tr>
         <tr *ngIf="usuarios.length === 0 && !isLoading && !errorMessage">

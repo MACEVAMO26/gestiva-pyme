@@ -38,7 +38,7 @@
           }
           @for (log of logs; track log.id) {
             <tr>
-              <td style="white-space: nowrap;">{{ log.created_at | date:'short' }}</td>
+              <td style="white-space: nowrap;">{{ (log.fecha_hora || log.created_at) | date:'short' }}</td>
               <td>
                 <div class="user-info">
                   <span class="user-name">{{ log.usuario?.nombre || 'Sistema' }}</span>
@@ -49,7 +49,7 @@
               </td>
               <td>
 <div style="max-width: 400px; overflow-wrap: break-word;" class="text-muted">
-                  {{ log.detalles || 'Sin detalles' }}
+                  {{ log.descripcion || log.detalles || 'Sin detalles' }}
                 </div>
               </td>
             </tr>

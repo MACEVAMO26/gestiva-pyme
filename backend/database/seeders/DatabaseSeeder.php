@@ -17,7 +17,7 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             ModuloSeeder::class,
-            DemoDataSeeder::class,
+            TarifasCatalogoSeeder::class,
         ]);
     }
 }

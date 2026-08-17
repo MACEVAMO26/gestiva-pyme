@@ -13,22 +13,93 @@
 
     <div class="neumorphic-panel fade-in">
       <h2 class="subtitulo">Buscador de Clientes</h2>
-      <form>
-        <div class="form-grid" style="align-items: end;">
-          <div class="form-group full-width">
-            <label class="form-label">Buscar por Nombre o Documento:</label>
-            <input type="text" class="input-neumorphic" placeholder="Ej. Juan Pérez">
-          </div>
-          <div class="form-group" style="padding-bottom: 0.2rem;">
-            <button type="button" class="btn-general-1 btn-pill">Buscar</button>
-          </div>
+      <div class="form-grid" style="align-items: end;">
+        <div class="form-group full-width">
+          <label class="form-label">Buscar por Nombre o Documento:</label>
+          <input type="text" class="input-neumorphic" [(ngModel)]="busqueda" (keyup.enter)="buscar()" placeholder="Ej. Juan Pérez o 1234567890">
         </div>
-      </form>
-
-      <div class="mt-4">
-        <h2 class="subtitulo">Historial Reciente de Servicios</h2>
-        <p class="text-muted" style="font-size: 12px; margin-top: 1rem;">Seleccione un cliente para ver su historial de servicios técnicos y visitas.</p>
+        <div class="form-group" style="padding-bottom: 0.2rem;">
+          <button type="button" class="btn-general-1 btn-pill" (click)="buscar()">Buscar</button>
+        </div>
       </div>
+
+      @if(clientes.length === 0) {
+        <div class="empty-state" style="margin-top: 1.5rem;">
+          <i class="fas fa-users mb-2" style="font-size: 1.5rem; opacity: 0.5;"></i>
+          <p style="font-size: 0.9rem; margin: 0;">Aún no hay clientes registrados. Créalos desde el módulo de Ventas.</p>
+        </div>
+      } @else {
+        <div class="table-responsive" style="margin-top: 1.5rem;">
+          <table class="premium-table data-table">
+            <thead>
+              <tr>
+                <th>CLIENTE</th>
+                <th>DOCUMENTO</th>
+                <th>CONTACTO</th>
+                <th>TIPO</th>
+                <th style="text-align: center;">ACCIÓN</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for(cli of resultados; track cli.id) {
+                <tr [class.fila-seleccionada]="clienteSeleccionado?.id === cli.id" (click)="seleccionarCliente(cli)">
+                  <td><strong>{{nombreCliente(cli)}}</strong></td>
+                  <td>{{cli.documento}}</td>
+                  <td>{{cli.telefono}}<br><span class="text-muted text-xs">{{cli.email}}</span></td>
+                  <td><span class="badge badge-primary">{{cli.tipo_cliente || 'Cliente'}}</span></td>
+                  <td style="text-align: center;">
+                    <button class="btn-add btn-pill btn-xs" (click)="seleccionarCliente(cli); $event.stopPropagation()">
+                      <i class="fas fa-eye"></i> Ver 360º
+                    </button>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
     </div>
+
+    @if(clienteSeleccionado) {
+      <div class="neumorphic-panel fade-in mt-4">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+          <div>
+            <h2 class="subtitulo" style="margin: 0;">Historial Reciente de Servicios</h2>
+            <p class="text-muted" style="font-size: 12px; margin-top: 0.5rem;">Cliente: <strong>{{nombreCliente(clienteSeleccionado)}}</strong></p>
+          </div>
+          <button class="btn-save btn-pill btn-xs" (click)="nuevaVisita()">
+            <i class="fas fa-plus"></i> Nueva Visita
+          </button>
+        </div>
+
+        <div class="table-responsive" style="margin-top: 1.5rem;">
+          <table class="premium-table data-table">
+            <thead>
+              <tr>
+                <th>CONSECUTIVO</th>
+                <th>SERVICIO</th>
+                <th>FECHA SOLICITADA</th>
+                <th>ESTADO</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for(tk of historialTickets; track tk.id) {
+                <tr>
+                  <td><strong>{{tk.consecutivo}}</strong></td>
+                  <td>{{tk.servicio_requerido}}</td>
+                  <td>{{tk.fecha_solicitada}}</td>
+                  <td><span class="badge" [ngClass]="getBadgeEstado(tk.estado)">{{tk.estado}}</span></td>
+                </tr>
+              }
+              @if(historialTickets.length === 0) {
+                <tr>
+                  <td colspan="4" class="tabla-vacia">Este cliente aún no tiene tickets de servicio registrados.</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    }
   </div>
 </div>

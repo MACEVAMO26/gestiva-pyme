@@ -8,7 +8,7 @@ export interface OrdenCompraDetalle {
   producto_id: number;
   cantidad: number;
   precio_unitario: number;
-  subtotal: number;
+  subtotal?: number;
 }
 
 export interface OrdenCompra {
@@ -16,10 +16,10 @@ export interface OrdenCompra {
   proveedor_id: number;
   usuario_id?: number;
   fecha_requerida?: string;
-  estado: 'borrador' | 'enviada' | 'aprobada' | 'rechazada' | 'anulada' | 'recibida';
+  estado?: 'borrador' | 'enviada' | 'aprobada' | 'rechazada' | 'anulada' | 'recibida' | 'pendiente';
   justificacion_rechazo?: string;
   motivo_anulacion?: string;
-  total: number;
+  total?: number;
   detalles?: OrdenCompraDetalle[];
 }
 
@@ -28,14 +28,15 @@ export interface RecepcionDetalle {
   recepcion_id?: number;
   producto_id: number;
   cantidad_recibida: number;
+  estado_calidad?: 'Bueno' | 'Malo' | 'Regular';
 }
 
 export interface Recepcion {
   id?: number;
   orden_compra_id: number;
   usuario_id?: number;
-  tipo_recepcion: 'total' | 'parcial';
-  fecha_hora?: string;
+  fecha_recepcion?: string;
+  observaciones?: string;
   detalles?: RecepcionDetalle[];
 }
 

@@ -83,7 +83,7 @@ class VacacionController extends Controller
         $vacacion->save();
 
         if ($vacacion->estado === 'aprobada' && $vacacion->usuario) {
-            $empleado = \App\Models\Empleado::where('user_id', $vacacion->usuario_id)->first();
+            $empleado = \App\Models\Empleado::where('usuario_id', $vacacion->usuario_id)->first();
             if ($empleado) {
                 $empleado->estado = 'en vacaciones';
                 $empleado->save();

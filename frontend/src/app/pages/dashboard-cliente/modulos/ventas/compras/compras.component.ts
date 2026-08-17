@@ -5,6 +5,8 @@ import { CompraService } from '../../../../../services/compra.service';
 import { ProveedorService, Proveedor } from '../../../../../services/proveedor.service';
 import { ProductoService, Producto } from '../../../../../services/producto.service';
 import { ToastService } from '../../../../../services/toast.service';
+import { AuthService } from '../../../../../services/auth.service';
+import { timeout } from 'rxjs';
 
 @Component({
   selector: 'app-compras',
@@ -17,6 +19,7 @@ export class ComprasComponent implements OnInit {
   private compraService = inject(CompraService);
   private proveedorService = inject(ProveedorService);
   private productoService = inject(ProductoService);
+  private authService = inject(AuthService);
   private toast = inject(ToastService);
 
   activeTab: string = 'ordenes';
@@ -24,12 +27,12 @@ export class ComprasComponent implements OnInit {
   guardando = false;
 
   searchTerm: string = '';
-  
-  // Listas de datos mock (hasta conectar todo)
+
   ordenes: any[] = [];
   ordenesFiltradas: any[] = [];
-  proveedoresDisponibles: any[] = [];
-  productosDisponibles: any[] = [];
+  proveedoresDisponibles: Proveedor[] = [];
+  productosDisponibles: Producto[] = [];
+  recepciones: any[] = [];
 
   // Variables Recepcion
   ordenSeleccionadaRecepcion: any = null;
@@ -43,48 +46,53 @@ export class ComprasComponent implements OnInit {
   precioActualCompra: number = 0;
   carritoCompras: any[] = [];
 
-  // Toast
-  showToast: boolean = false;
-  toastType: string = 'success';
-  toastMessage: string = '';
-
   ngOnInit() {
-    this.cargarDatosDemo();
+    this.cargarDatos();
   }
 
-  cargarDatosDemo() {
-    this.proveedoresDisponibles = [
-      { id: 1, nombre: 'Distribuidora ABC', nit: '900.123.456-1' },
-      { id: 2, nombre: 'Tecnología Global S.A.', nit: '800.987.654-2' }
-    ];
+  cargarDatos() {
+    this.cargando = true;
+    this.proveedorService.getProveedores().pipe(timeout(8000)).subscribe({
+      next: (res) => { this.proveedoresDisponibles = res; },
+      error: () => { this.proveedoresDisponibles = []; }
+    });
 
-    this.productosDisponibles = [
-      { id: 1, nombre: 'Laptop Dell', stock_inicial: 10 },
-      { id: 2, nombre: 'Mouse Óptico', stock_inicial: 50 },
-      { id: 3, nombre: 'Teclado Mecánico', stock_inicial: 20 }
-    ];
+    this.productoService.getProductos().pipe(timeout(8000)).subscribe({
+      next: (res) => { this.productosDisponibles = res.filter(p => p.activo !== false); },
+      error: () => { this.productosDisponibles = []; }
+    });
 
-    this.ordenes = [
-      { 
-        id: 1, 
-        numero_orden: 'OC-1001', 
-        proveedor: { nombre: 'Distribuidora ABC' }, 
-        created_at: new Date('2023-11-01'), 
-        updated_at: new Date('2023-11-02'),
-        total: 1500000, 
-        estado: 'Recibido' 
+    this.compraService.getOrdenes().pipe(timeout(8000)).subscribe({
+      next: (res) => {
+        this.ordenes = res;
+        this.filtrarOrdenes();
       },
-      { 
-        id: 2, 
-        numero_orden: 'OC-1002', 
-        proveedor: { nombre: 'Tecnología Global S.A.' }, 
-        created_at: new Date(), 
-        updated_at: new Date(),
-        total: 850000, 
-        estado: 'Pendiente' 
+      error: () => {
+        this.ordenes = [];
+        this.ordenesFiltradas = [];
       }
-    ];
-    this.filtrarOrdenes();
+    });
+
+    this.compraService.getRecepciones().pipe(timeout(8000)).subscribe({
+      next: (res) => { this.recepciones = res; },
+      error: () => { this.recepciones = []; },
+      complete: () => { this.cargando = false; }
+    });
+  }
+
+  numeroOrden(orden: any): string {
+    return 'OC-' + String(orden.id ?? '').padStart(4, '0');
+  }
+
+  nombreProveedor(orden: any): string {
+    return orden.proveedor?.razon_social || orden.proveedor?.nombre || '-';
+  }
+
+  estadoOrden(orden: any): string {
+    const e = orden.estado || '';
+    if (e === 'recibida' || e === 'Recibido') return 'Recibido';
+    if (e === 'anulada' || e === 'Anulado') return 'Anulado';
+    return 'Pendiente';
   }
 
   switchTab(tab: string) {
@@ -97,9 +105,9 @@ export class ComprasComponent implements OnInit {
       return;
     }
     const term = this.searchTerm.toLowerCase();
-    this.ordenesFiltradas = this.ordenes.filter(o => 
-      o.numero_orden.toLowerCase().includes(term) ||
-      o.proveedor?.nombre?.toLowerCase().includes(term)
+    this.ordenesFiltradas = this.ordenes.filter(o =>
+      this.numeroOrden(o).toLowerCase().includes(term) ||
+      this.nombreProveedor(o).toLowerCase().includes(term)
     );
   }
 
@@ -134,7 +142,7 @@ export class ComprasComponent implements OnInit {
 
   agregarAlCarrito() {
     if (!this.productoActualCompra || this.cantidadActualCompra <= 0 || this.precioActualCompra <= 0) {
-      this.mostrarToast('Debe seleccionar producto, cantidad y precio', 'warning');
+      this.toast.warning('Debe seleccionar producto, cantidad y precio');
       return;
     }
 
@@ -142,7 +150,7 @@ export class ComprasComponent implements OnInit {
     if (!producto) return;
 
     const subtotal = this.cantidadActualCompra * this.precioActualCompra;
-    
+
     this.carritoCompras.push({
       id: producto.id,
       nombre: producto.nombre,
@@ -166,22 +174,40 @@ export class ComprasComponent implements OnInit {
 
   guardarOrden() {
     if (!this.formOrden.proveedor || this.carritoCompras.length === 0) {
-      this.mostrarToast('Debe seleccionar proveedor y agregar productos', 'warning');
+      this.toast.warning('Debe seleccionar proveedor y agregar productos');
       return;
     }
 
     this.guardando = true;
-    setTimeout(() => {
-      this.mostrarToast('Orden de compra generada', 'success');
-      this.cerrarModalOrden();
-      this.guardando = false;
-    }, 1000);
+    const payload = {
+      proveedor_id: Number(this.formOrden.proveedor),
+      usuario_id: this.authService.getUser()?.id,
+      fecha_requerida: this.formOrden.fechaEsperada || new Date().toISOString().substring(0, 10),
+      detalles: this.carritoCompras.map(item => ({
+        producto_id: item.id,
+        cantidad: item.cantidad,
+        precio_unitario: item.precio_compra
+      }))
+    };
+
+    this.compraService.crearOrden(payload).pipe(timeout(15000)).subscribe({
+      next: () => {
+        this.toast.success('Orden de compra generada');
+        this.cerrarModalOrden();
+        this.guardando = false;
+        this.cargarDatos();
+      },
+      error: () => {
+        this.toast.error('Error al generar la orden de compra');
+        this.guardando = false;
+      }
+    });
   }
 
   // --- LOGICA RECEPCION ---
   abrirModalRecepcion() {
     if (!this.ordenSeleccionadaRecepcion || this.ordenSeleccionadaRecepcion === 'null') {
-      this.mostrarToast('Debe seleccionar una orden pendiente', 'warning');
+      this.toast.warning('Debe seleccionar una orden pendiente');
       return;
     }
     this.showModalRecepcion = true;
@@ -192,20 +218,39 @@ export class ComprasComponent implements OnInit {
   }
 
   recibirOrden() {
-    this.guardando = true;
-    setTimeout(() => {
-      this.mostrarToast('Mercancía ingresada correctamente al stock', 'success');
-      this.cerrarModalRecepcion();
-      this.ordenSeleccionadaRecepcion = null;
-      this.guardando = false;
-    }, 1500);
-  }
+    const orden = this.ordenes.find(o => o.id == this.ordenSeleccionadaRecepcion);
+    if (!orden) {
+      this.toast.error('Orden no encontrada');
+      return;
+    }
 
-  // --- TOAST ---
-  mostrarToast(mensaje: string, tipo: 'success' | 'warning' | 'error') {
-    this.toastMessage = mensaje;
-    this.toastType = tipo;
-    this.showToast = true;
-    setTimeout(() => this.showToast = false, 3000);
+    const detalles = (orden.detalles || []).map((d: any) => ({
+      producto_id: d.producto_id,
+      cantidad_recibida: d.cantidad,
+      estado_calidad: 'Bueno'
+    }));
+
+    this.guardando = true;
+    const payload = {
+      orden_compra_id: orden.id,
+      usuario_id: this.authService.getUser()?.id,
+      fecha_recepcion: new Date().toISOString().substring(0, 10),
+      observaciones: 'Recepción de mercancía',
+      detalles
+    };
+
+    this.compraService.crearRecepcion(payload).pipe(timeout(15000)).subscribe({
+      next: () => {
+        this.toast.success('Mercancía ingresada correctamente al stock');
+        this.cerrarModalRecepcion();
+        this.ordenSeleccionadaRecepcion = null;
+        this.guardando = false;
+        this.cargarDatos();
+      },
+      error: () => {
+        this.toast.error('Error al registrar la recepción');
+        this.guardando = false;
+      }
+    });
   }
 }

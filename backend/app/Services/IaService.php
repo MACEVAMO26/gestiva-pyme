@@ -14,27 +14,64 @@ class IaService
      */
     public function processRequest($prompt, $modo = 'basico', $empresaId = null)
     {
-        // Obtener la configuración activa
-        $config = IaConfig::where('is_active', true)->first();
-
-        if (!$config) {
-            throw new \Exception('No hay ninguna IA configurada y activa en el sistema.');
+        $empresa = null;
+        if ($empresaId) {
+            $empresa = \App\Models\Empresa::find($empresaId);
         }
 
-        // Desencriptar la API Key
-        $apiKey = Crypt::decryptString($config->api_key);
+        $useByok = false;
+        $apiKey = null;
+        $proveedor = null;
+        $modelo = null;
 
-        // Si es modo avanzado, recuperar el historial de chat
+        // 1. Validar si la empresa tiene su propia API de IA (BYOK)
+        if ($empresa && $empresa->ia_byok_activo && $empresa->ia_byok_key) {
+            $useByok = true;
+            $apiKey = Crypt::decryptString($empresa->ia_byok_key);
+            $proveedor = $empresa->ia_byok_proveedor ?: 'gemini';
+            $modelo = $empresa->ia_byok_modelo;
+        }
+
+        $user = auth()->user();
+        $iaModo = $user ? $user->ia_modo : 'ninguno';
+
+        // 2. Control de límites (si no usa su propia API Key)
+        if (!$useByok) {
+            if ($iaModo === 'ninguno') {
+                throw new \Exception('Su usuario no tiene permisos habilitados para usar la Inteligencia Artificial.');
+            }
+
+            if ($iaModo === 'simple') {
+                $consultasHoy = \App\Models\IaConsumoTokens::where('usuario_id', $user->id)
+                    ->where('fecha', date('Y-m-d'))
+                    ->where('modo', 'simple')
+                    ->sum('cantidad_consultas');
+                
+                if ($consultasHoy >= 15) {
+                    throw new \Exception('Has alcanzado tu límite diario de 15 consultas de IA Simple. Por favor, contacta al administrador para subir a Modo Avanzado o espera al día siguiente.');
+                }
+            }
+        }
+
+        // 3. Obtener credenciales globales si no es BYOK
+        if (!$useByok) {
+            $config = IaConfig::where('is_active', true)->first();
+            if (!$config) {
+                throw new \Exception('No hay ninguna IA configurada y activa en el sistema.');
+            }
+            $apiKey = Crypt::decryptString($config->api_key);
+            $proveedor = $config->proveedor;
+            $modelo = null;
+        }
+
+        // Historial de chat si es modo avanzado
         $messages = [];
-
         if ($modo === 'avanzado') {
-            // Contexto inicial del sistema para la IA
             $messages[] = [
                 'role' => 'system',
                 'content' => 'Eres Gestiva AI, un asistente virtual experto en ventas, contabilidad y gestión de servicios. Responde de manera profesional, concisa y amable.'
             ];
 
-            // Traer los últimos 10 mensajes del historial para contexto
             $historial = IaChatHistory::where('empresa_id', $empresaId)
                 ->orderBy('created_at', 'asc')
                 ->take(10)
@@ -49,24 +86,34 @@ class IaService
             }
         }
 
-        // Añadir el nuevo mensaje del usuario
         $messages[] = [
             'role' => 'user',
             'content' => $prompt
         ];
 
-        // Llamar a la API correspondiente según el proveedor
-        if ($config->proveedor === 'openai') {
-            $respuesta = $this->callOpenAI($apiKey, $messages);
-        } elseif ($config->proveedor === 'gemini') {
-            $respuesta = $this->callGemini($apiKey, $messages);
+        // 4. Llamada al proveedor de IA
+        if ($proveedor === 'openai') {
+            $resData = $this->callOpenAI($apiKey, $messages, $modelo);
         } else {
-            throw new \Exception('Proveedor de IA no soportado.');
+            $resData = $this->callGemini($apiKey, $messages, $modelo);
         }
 
-        // Si es modo avanzado, guardar el historial
+        $respuesta = $resData['text'];
+
+        // 5. Registro de consumos e historial (Solo si NO es BYOK)
+        if (!$useByok && $user) {
+            \App\Models\IaConsumoTokens::create([
+                'empresa_id' => $user->empresa_id,
+                'usuario_id' => $user->id,
+                'modo' => $iaModo,
+                'fecha' => date('Y-m-d'),
+                'tokens_entrada' => $resData['tokens_entrada'],
+                'tokens_salida' => $resData['tokens_salida'],
+                'cantidad_consultas' => 1
+            ]);
+        }
+
         if ($modo === 'avanzado') {
-            // Guardar pregunta del usuario
             IaChatHistory::create([
                 'empresa_id' => $empresaId,
                 'rol' => 'user',
@@ -74,7 +121,6 @@ class IaService
                 'modo' => 'avanzado'
             ]);
 
-            // Guardar respuesta de la IA
             IaChatHistory::create([
                 'empresa_id' => $empresaId,
                 'rol' => 'assistant',
@@ -86,31 +132,33 @@ class IaService
         return $respuesta;
     }
 
-    private function callOpenAI($apiKey, $messages)
+    private function callOpenAI($apiKey, $messages, $modelo = null)
     {
         $response = Http::withHeaders([
             'Authorization' => 'Bearer ' . $apiKey,
             'Content-Type' => 'application/json',
         ])->post('https://api.openai.com/v1/chat/completions', [
-            'model' => 'gpt-3.5-turbo', // Se puede configurar después
+            'model' => $modelo ?: 'gpt-3.5-turbo',
             'messages' => $messages,
         ]);
 
         if ($response->successful()) {
-            return $response->json('choices.0.message.content');
+            return [
+                'text' => $response->json('choices.0.message.content'),
+                'tokens_entrada' => $response->json('usage.prompt_tokens') ?: 0,
+                'tokens_salida' => $response->json('usage.completion_tokens') ?: 0
+            ];
         }
 
         throw new \Exception('Error al contactar con OpenAI: ' . $response->body());
     }
 
-    private function callGemini($apiKey, $messages)
+    private function callGemini($apiKey, $messages, $modelo = null)
     {
-        // Gemini API tiene un formato diferente para el historial
-        // Adaptamos el array de messages al formato de Gemini
         $contents = [];
         foreach ($messages as $msg) {
             if ($msg['role'] === 'system') {
-                continue; // Gemini maneja el system prompt de otra forma, lo omitiremos en versión simple o podemos insertarlo en el user prompt
+                continue;
             }
             $role = $msg['role'] === 'assistant' ? 'model' : 'user';
             $contents[] = [
@@ -121,7 +169,8 @@ class IaService
             ];
         }
 
-        $url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent?key=" . $apiKey;
+        $modeloUsado = $modelo ?: 'gemini-3.5-flash-lite';
+        $url = "https://generativelanguage.googleapis.com/v1beta/models/{$modeloUsado}:generateContent?key=" . $apiKey;
         
         $response = Http::withHeaders([
             'Content-Type' => 'application/json',
@@ -130,7 +179,11 @@ class IaService
         ]);
 
         if ($response->successful()) {
-            return $response->json('candidates.0.content.parts.0.text');
+            return [
+                'text' => $response->json('candidates.0.content.parts.0.text'),
+                'tokens_entrada' => $response->json('usageMetadata.promptTokenCount') ?: 0,
+                'tokens_salida' => $response->json('usageMetadata.candidatesTokenCount') ?: 0
+            ];
         }
 
         throw new \Exception('Error al contactar con Gemini: ' . $response->body());

@@ -22,7 +22,7 @@ class Cliente extends Model
         'direccion', 
         'ciudad', 
         'activo', 
-        'fecha_inactivacion',
+        'inactive_at',
         'tipo_cliente',
         'membresia',
         'pedidos_activos',

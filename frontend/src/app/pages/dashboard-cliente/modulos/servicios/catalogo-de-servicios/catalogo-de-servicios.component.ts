@@ -1,6 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { CatalogoServiciosService, Servicio } from '../../../../../services/catalogo-servicios.service';
+import { OperariosTicketsService, ServicioTicket, ServicioMaterial } from '../../../../../services/operarios-tickets.service';
+import { InventarioService, Inventario } from '../../../../../services/inventario.service';
+import { EmpleadoService } from '../../../../../services/empleado.service';
+import { ToastService } from '../../../../../services/toast.service';
+import { timeout } from 'rxjs';
 
 @Component({
   selector: 'app-catalogo-de-servicios',
@@ -10,16 +16,23 @@ import { FormsModule } from '@angular/forms';
   styleUrl: './catalogo-de-servicios.component.scss'
 })
 export class CatalogoDeServiciosComponent implements OnInit {
+  private catalogoService = inject(CatalogoServiciosService);
+  private ticketsService = inject(OperariosTicketsService);
+  private inventarioService = inject(InventarioService);
+  private empleadoService = inject(EmpleadoService);
+  private toast = inject(ToastService);
+
   activeTab: string = 'recepcion';
   guardando: boolean = false;
+  cargando: boolean = false;
 
   // Recepción
   formTicket: any = { cliente: '', servicio: '', fecha: '', hora: '', direccion: '' };
-  
-  catalogo: any[] = [];
-  tickets: any[] = [];
-  ticketsPendientes: any[] = [];
-  
+
+  catalogo: Servicio[] = [];
+  tickets: ServicioTicket[] = [];
+  ticketsPendientes: ServicioTicket[] = [];
+
   // Rendimiento Técnico
   tecnicos: any[] = [];
   tecnicoDashboard: any = null;
@@ -31,73 +44,107 @@ export class CatalogoDeServiciosComponent implements OnInit {
 
   // Ejecución / Materiales
   modalEjecucion: boolean = false;
-  inventario: any[] = [];
+  inventario: Inventario[] = [];
   materialSeleccionado: string = '';
   cantidadMaterial: number = 1;
   materialesUsados: any[] = [];
-
-  // Toast
-  showToast: boolean = false;
-  toastType: string = 'success';
-  toastMessage: string = '';
+  notasEjecucion: string = '';
 
   ngOnInit() {
-    this.cargarDatosDemo();
+    this.cargarCatalogo();
+    this.cargarTickets();
+    this.cargarInventario();
+    this.cargarTecnicos();
   }
 
-  cargarDatosDemo() {
-    this.catalogo = [
-      { id: 1, codigo: 'SERV-001', nombre: 'Mantenimiento Preventivo', duracionEst: '2 horas', tarifaBase: 150000 },
-      { id: 2, codigo: 'SERV-002', nombre: 'Reparación de Equipos', duracionEst: '4 horas', tarifaBase: 350000 },
-      { id: 3, codigo: 'SERV-003', nombre: 'Instalación Básica', duracionEst: '1 hora', tarifaBase: 80000 }
-    ];
+  cargarCatalogo() {
+    this.catalogoService.getServicios().pipe(timeout(8000)).subscribe({
+      next: (res) => { this.catalogo = res; },
+      error: () => { this.catalogo = []; }
+    });
+  }
 
-    this.tickets = [
-      { id: 1, consecutivo: 'TK-1001', cliente: 'Clínica San José', servicio: 'Mantenimiento Preventivo', estado: 'Completado', tecnico: 'Juan Pérez' },
-      { id: 2, consecutivo: 'TK-1002', cliente: 'Industrias XYZ', servicio: 'Reparación de Equipos', estado: 'Pendiente', tecnico: '', direccion: 'Calle 100 #45-12', fechaSol: '2023-11-20', horaSol: '14:00' },
-      { id: 3, consecutivo: 'TK-1003', cliente: 'Supermercado Central', servicio: 'Instalación Básica', estado: 'Asignado', tecnico: 'María Gómez', direccion: 'Carrera 50 #30-10', fechaSol: '2023-11-21', horaSol: '09:00' },
-      { id: 4, consecutivo: 'TK-1004', cliente: 'Hotel del Mar', servicio: 'Mantenimiento Preventivo', estado: 'En Sitio', tecnico: 'Juan Pérez', direccion: 'Avenida 1 #2-3', fechaSol: '2023-11-22', horaSol: '10:00' }
-    ];
+  cargarTickets() {
+    this.cargando = true;
+    this.ticketsService.getTickets().pipe(timeout(8000)).subscribe({
+      next: (res) => {
+        this.tickets = res;
+        this.filtrarTicketsPendientes();
+        this.cargando = false;
+      },
+      error: () => {
+        this.tickets = [];
+        this.ticketsPendientes = [];
+        this.cargando = false;
+      }
+    });
+  }
 
-    this.tecnicos = [
-      { id: 1, nombre: 'Juan Pérez', rendimiento: { cumplidas: 85, satisfactorias: 80, quejas: 2 } },
-      { id: 2, nombre: 'María Gómez', rendimiento: { cumplidas: 95, satisfactorias: 94, quejas: 1 } },
-      { id: 3, nombre: 'Carlos Ruiz', rendimiento: { cumplidas: 60, satisfactorias: 50, quejas: 10 } }
-    ];
+  cargarInventario() {
+    this.inventarioService.getInventario().pipe(timeout(8000)).subscribe({
+      next: (res) => { this.inventario = res; },
+      error: () => { this.inventario = []; }
+    });
+  }
 
-    this.inventario = [
-      { id: 1, nombre: 'Cable UTP (Metros)', stock: 500 },
-      { id: 2, nombre: 'Router WiFi', stock: 50 },
-      { id: 3, nombre: 'Conector RJ45', stock: 1000 }
-    ];
-
-    this.filtrarTicketsPendientes();
+  cargarTecnicos() {
+    this.empleadoService.getEmpleados().pipe(timeout(8000)).subscribe({
+      next: (res) => {
+        this.tecnicos = res.map((e: any) => ({
+          id: e.id,
+          nombre: `${e.usuario?.primer_nombre || e.usuario?.nombres || ''} ${e.usuario?.primer_apellido || e.usuario?.apellidos || ''}`.trim(),
+          cargo: e.cargo?.nombre || '',
+          estado: e.estado
+        })).filter((t: any) => t.nombre);
+        if (this.tecnicos.length > 0) {
+          this.seleccionarTecnicoRender(this.tecnicos[0]);
+        }
+      },
+      error: () => { this.tecnicos = []; }
+    });
   }
 
   switchTab(tab: string) {
     this.activeTab = tab;
+    if (tab === 'recepcion' || tab === 'agenda' || tab === 'ejecucion') this.cargarTickets();
+    if (tab === 'catalogo') this.cargarCatalogo();
+  }
+
+  nombreTecnico(id?: number): string {
+    const tec = this.tecnicos.find(t => t.id === id);
+    return tec?.nombre || 'Sin Asignar';
+  }
+
+  codigoServicio(id?: number): string {
+    return `SERV-${String(id).padStart(3, '0')}`;
   }
 
   crearTicket() {
+    if (!this.formTicket.cliente || !this.formTicket.servicio) {
+      this.toast.warning('Complete cliente y servicio');
+      return;
+    }
     this.guardando = true;
-    setTimeout(() => {
-      const nuevoId = this.tickets.length + 1;
-      this.tickets.push({
-        id: nuevoId,
-        consecutivo: `TK-100${nuevoId}`,
-        cliente: this.formTicket.cliente,
-        servicio: this.formTicket.servicio,
-        estado: 'Pendiente',
-        tecnico: '',
-        direccion: this.formTicket.direccion,
-        fechaSol: this.formTicket.fecha,
-        horaSol: this.formTicket.hora
-      });
-      this.filtrarTicketsPendientes();
-      this.mostrarToast('success', 'Ticket creado exitosamente');
-      this.formTicket = { cliente: '', servicio: '', fecha: '', hora: '', direccion: '' };
-      this.guardando = false;
-    }, 800);
+    const ticket: ServicioTicket = {
+      cliente_nombre: this.formTicket.cliente,
+      servicio_requerido: this.formTicket.servicio,
+      fecha_solicitada: this.formTicket.fecha || undefined,
+      hora_sugerida: this.formTicket.hora || undefined,
+      direccion: this.formTicket.direccion || undefined,
+      estado: 'Pendiente'
+    };
+    this.ticketsService.crearTicket(ticket).pipe(timeout(8000)).subscribe({
+      next: () => {
+        this.toast.success('Ticket creado exitosamente');
+        this.formTicket = { cliente: '', servicio: '', fecha: '', hora: '', direccion: '' };
+        this.guardando = false;
+        this.cargarTickets();
+      },
+      error: () => {
+        this.toast.error('Error al crear el ticket');
+        this.guardando = false;
+      }
+    });
   }
 
   filtrarTicketsPendientes() {
@@ -106,7 +153,7 @@ export class CatalogoDeServiciosComponent implements OnInit {
 
   getBadgeEstado(estado: string): string {
     switch (estado) {
-      case 'Completado': return 'badge-success';
+      case 'Finalizado': return 'badge-success';
       case 'Pendiente': return 'badge-warning';
       case 'Asignado': return 'badge-primary';
       case 'En Sitio': return 'badge-info';
@@ -117,7 +164,7 @@ export class CatalogoDeServiciosComponent implements OnInit {
   // --- ASIGNACION ---
   abrirAsignacion(tk: any) {
     this.ticketSeleccionado = tk;
-    this.tecnicoSeleccionado = '';
+    this.tecnicoSeleccionado = tk.tecnico_id ? String(tk.tecnico_id) : '';
     this.modalAsignacion = true;
   }
 
@@ -127,17 +174,23 @@ export class CatalogoDeServiciosComponent implements OnInit {
   }
 
   guardarAsignacion() {
+    if (!this.ticketSeleccionado?.id || !this.tecnicoSeleccionado) {
+      this.toast.warning('Seleccione un técnico');
+      return;
+    }
     this.guardando = true;
-    setTimeout(() => {
-      if (this.ticketSeleccionado) {
-        this.ticketSeleccionado.tecnico = this.tecnicoSeleccionado;
-        this.ticketSeleccionado.estado = 'Asignado';
-        this.filtrarTicketsPendientes();
-        this.mostrarToast('success', 'Técnico despachado exitosamente');
+    this.ticketsService.actualizarEstado(this.ticketSeleccionado.id, 'Asignado', Number(this.tecnicoSeleccionado)).pipe(timeout(8000)).subscribe({
+      next: () => {
+        this.toast.success('Técnico despachado exitosamente');
+        this.cerrarAsignacion();
+        this.guardando = false;
+        this.cargarTickets();
+      },
+      error: () => {
+        this.toast.error('Error al asignar técnico');
+        this.guardando = false;
       }
-      this.cerrarAsignacion();
-      this.guardando = false;
-    }, 800);
+    });
   }
 
   // --- EJECUCION ---
@@ -146,6 +199,7 @@ export class CatalogoDeServiciosComponent implements OnInit {
     this.materialSeleccionado = '';
     this.cantidadMaterial = 1;
     this.materialesUsados = [];
+    this.notasEjecucion = '';
     this.modalEjecucion = true;
   }
 
@@ -154,47 +208,84 @@ export class CatalogoDeServiciosComponent implements OnInit {
     this.ticketSeleccionado = null;
   }
 
+  nombreProducto(id: number): string {
+    const inv = this.inventario.find(i => i.producto_id === id);
+    return inv?.producto?.nombre || `Producto #${id}`;
+  }
+
+  stockProducto(id: number): number {
+    const inv = this.inventario.find(i => i.producto_id === id);
+    return inv?.stock_actual || 0;
+  }
+
   agregarMaterial() {
     if (this.materialSeleccionado && this.cantidadMaterial > 0) {
-      const mat = this.inventario.find(i => i.nombre === this.materialSeleccionado);
-      if (mat) {
-        this.materialesUsados.push({
-          id: Math.random(),
-          nombre: mat.nombre,
-          cantidad: this.cantidadMaterial
-        });
-        this.materialSeleccionado = '';
-        this.cantidadMaterial = 1;
-      }
+      const productoId = Number(this.materialSeleccionado);
+      this.materialesUsados.push({
+        producto_id: productoId,
+        cantidad: this.cantidadMaterial
+      });
+      this.materialSeleccionado = '';
+      this.cantidadMaterial = 1;
     }
   }
 
   finalizarServicio() {
+    if (!this.ticketSeleccionado?.id) return;
     this.guardando = true;
-    setTimeout(() => {
-      if (this.ticketSeleccionado) {
-        this.ticketSeleccionado.estado = 'Completado';
-        this.mostrarToast('success', 'Servicio cerrado. Materiales descontados.');
-      }
-      this.cerrarEjecucion();
-      this.guardando = false;
-    }, 800);
+
+    const ticketId = this.ticketSeleccionado.id;
+    let acciones = Promise.resolve();
+
+    for (const mat of this.materialesUsados) {
+      const material: ServicioMaterial = {
+        producto_id: mat.producto_id,
+        cantidad: mat.cantidad
+      };
+      acciones = acciones.then(() =>
+        new Promise<void>((resolve, reject) => {
+          this.ticketsService.agregarMaterial(ticketId, material).pipe(timeout(8000)).subscribe({
+            next: () => resolve(),
+            error: () => reject()
+          });
+        })
+      );
+    }
+
+    acciones
+      .then(() => {
+        const tecnicoId = this.ticketSeleccionado?.tecnico_id;
+        return this.ticketsService.actualizarEstado(ticketId, 'Finalizado', tecnicoId, this.notasEjecucion).pipe(timeout(8000)).toPromise();
+      })
+      .then(() => {
+        this.toast.success('Servicio cerrado. Materiales descontados.');
+        this.cerrarEjecucion();
+        this.guardando = false;
+        this.cargarTickets();
+      })
+      .catch(() => {
+        this.toast.error('Error al finalizar el servicio');
+        this.guardando = false;
+      });
   }
 
   // --- RENDIMIENTO ---
   seleccionarTecnicoRender(tec: any) {
-    this.tecnicoDashboard = tec;
+    const ticketsTec = this.tickets.filter(t => t.tecnico_id === tec.id);
+    const finalizados = ticketsTec.filter(t => t.estado === 'Finalizado').length;
+    this.tecnicoDashboard = {
+      ...tec,
+      rendimiento: {
+        cumplidas: finalizados,
+        total: ticketsTec.length,
+        satisfactorias: finalizados,
+        quejas: 0
+      }
+    };
   }
 
   getPorcentaje(valor: number, total: number = 100): number {
+    if (total <= 0) return 0;
     return Math.min(Math.round((valor / total) * 100), 100);
-  }
-
-  // --- TOAST ---
-  mostrarToast(type: string, message: string) {
-    this.toastType = type;
-    this.toastMessage = message;
-    this.showToast = true;
-    setTimeout(() => this.showToast = false, 3000);
   }
 }

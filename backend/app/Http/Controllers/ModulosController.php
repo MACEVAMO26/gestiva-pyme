@@ -99,6 +99,59 @@ class ModulosController extends Controller
         $empresa->modulos()->sync($syncData);
     }
 
+    public function sincronizarModulosPorSuscripcion(Empresa $empresa)
+    {
+        $tipo = $empresa->tipo_empresa;
+        $tarifas = $empresa->tarifasCatalogo()->pluck('tarifas_catalogo.id')->toArray();
+
+        $paquetesPermitidos = ['base'];
+        if ($tipo === 'Ventas' || $tipo === 'Ventas y Servicios') $paquetesPermitidos[] = 'ventas';
+        if ($tipo === 'Servicios' || $tipo === 'Ventas y Servicios') $paquetesPermitidos[] = 'servicios';
+        
+        // Módulos Especiales (Adicionales)
+        if (in_array('modulo_rrhh', $tarifas)) $paquetesPermitidos[] = 'rrhh';
+        if (in_array('modulo_finanzas', $tarifas)) $paquetesPermitidos[] = 'finanzas';
+        
+        // Addons
+        if (in_array('addon_factura', $tarifas) || in_array('addon_contable', $tarifas)) {
+            $paquetesPermitidos[] = 'addons';
+        }
+
+        $modulosMaster = Modulo::all();
+
+        foreach ($modulosMaster as $modulo) {
+            $permitido = in_array($modulo->paquete, $paquetesPermitidos);
+            
+            $pivot = DB::table('empresa_modulo')
+                       ->where('empresa_id', $empresa->id)
+                       ->where('modulo_id', $modulo->id)
+                       ->first();
+
+            if ($permitido) {
+                // Si el módulo está cubierto por el pago y no existe en la BD, se asigna y activa
+                if (!$pivot) {
+                    DB::table('empresa_modulo')->insert([
+                        'empresa_id' => $empresa->id,
+                        'modulo_id' => $modulo->id,
+                        'activo' => true,
+                        'created_at' => now(),
+                        'updated_at' => now()
+                    ]);
+                    $this->crearRolBaseModulo($empresa->id, $modulo->id);
+                }
+                // Si ya existe, NO se sobrescribe 'activo' para respetar la configuración manual del SaaS Admin
+            } else {
+                // Si NO está cubierto por el pago y está activo, se APAGA forzosamente
+                if ($pivot && $pivot->activo) {
+                    DB::table('empresa_modulo')
+                        ->where('empresa_id', $empresa->id)
+                        ->where('modulo_id', $modulo->id)
+                        ->update(['activo' => false, 'updated_at' => now()]);
+                }
+            }
+        }
+    }
+
     public function toggleModuloEmpresa(Request $request, $empresaId, $moduloId)
     {
         $empresa = Empresa::find($empresaId);

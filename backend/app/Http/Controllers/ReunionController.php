@@ -103,7 +103,7 @@ class ReunionController extends Controller
             \App\Models\Notificacion::create([
                 'usuario_id' => $u->id,
                 'titulo' => 'Nueva Reunión Agendada',
-                'mensaje' => "Se ha agendado: {$reunion->titulo} (" . ucfirst($reunion->tipo_encuentro) . ")",
+                'descripcion' => "Se ha agendado: {$reunion->titulo} (" . ucfirst($reunion->tipo_encuentro) . ")",
                 'leida' => false
             ]);
         }

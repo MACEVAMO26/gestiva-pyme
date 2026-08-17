@@ -24,7 +24,7 @@ class NotificacionController extends Controller
         $validatedData = $request->validate([
             'usuario_id' => 'required|integer|exists:usuarios,id',
             'titulo' => 'required|string|max:255',
-            'mensaje' => 'required|string',
+            'descripcion' => 'required|string',
         ]);
 
         $validatedData['leida'] = false;
@@ -33,14 +33,15 @@ class NotificacionController extends Controller
         return response()->json($notificacion, 201);
     }
 
-    // Elimina la notificacion tras ser leida para liberar espacio
+    // Marca la notificación como leída
     public function marcarLeida(int $id)
     {
         $notificacion = Notificacion::where('usuario_id', Auth::id())->findOrFail($id);
-        $notificacion->delete();
+        $notificacion->leida = true;
+        $notificacion->save();
 
         return response()->json([
-            'message' => 'Notificación leída y eliminada del servidor para ahorrar espacio.'
+            'message' => 'Notificación marcada como leída.'
         ]);
     }
 }

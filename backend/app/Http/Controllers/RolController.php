@@ -22,7 +22,7 @@ class RoleController extends Controller
             'descripcion' => 'nullable|string',
         ]);
         $data = array_merge($validatedData, [
-            'empresa_id' => 1,
+            'empresa_id' => auth()->user()->empresa_id,
             'activo' => true,
         ]);
         $role = Role::create($data);
@@ -54,7 +54,7 @@ class RoleController extends Controller
     {
         $role = Role::findOrFail($id);
         $role->activo = !$role->activo;
-        $role->fecha_inactivacion = $role->activo ? null : now();
+        $role->inactive_at = $role->activo ? null : now();
         $role->save();
         $message = $role->activo ? 'Rol activado correctamente.' : 'Rol inactivado correctamente.';
         return response()->json(['mensaje' => $message]);

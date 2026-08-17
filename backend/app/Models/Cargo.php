@@ -29,6 +29,6 @@ class Cargo extends Model
         'descripcion',
         'funciones',
         'activo',
-        'fecha_inactivacion'
+        'inactive_at'
     ];
 }

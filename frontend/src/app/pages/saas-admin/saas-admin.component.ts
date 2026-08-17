@@ -19,14 +19,21 @@ export interface SuscripcionEmpresa {
   empresaId: number;
   nombreEmpresa: string;
   fechaInscripcion: string;
-  plan: 'Mensual' | 'Anual';
-  modulosExtra: number; // Cantidad de transversales (20k c/u)
-  addonsList: { nombre: string, valor: number }[]; // Conectores externos
-  descuentosAplicados: { descripcion: 'N/A' | 'Referido 10%' | 'Mes Gratis', porcentaje: number }[];
-  cargosExtra: { descripcion: string, valor: number }[]; // Cargos por soporte técnico u otros
-  fechaProximoPago: Date;
-  estado: 'Activa' | 'Inactiva' | 'En Mora';
+  plan: string;
+  tipoEmpresa?: string;
+  modulosExtra: number;
+  addonsList: any[];
+  descuentosAplicados: any[];
+  cargosExtra: any[];
+  proximoPagoTotal?: number;
+  fechaProximoPago: any;
+  estado: string;
   renovaciones: number;
+  cartItems?: any[];
+  iaByokActivo?: boolean;
+  iaByokProveedor?: string;
+  iaByokModelo?: string;
+  iaByokKeyExists?: boolean;
 }
 
 @Component({
@@ -56,6 +63,15 @@ export class SaasAdminComponent implements OnInit {
       automatizar: false
     }
   };
+  
+  // --- VARIABLES PARA CONTRATOS SAAS ---
+  contratosHistory: any[] = [];
+  nuevoContrato = {
+    version: '1.0',
+    contenido: '<h1 style="text-align: center;">CONTRATO DE PRESTACIÓN DE SERVICIOS SAAS</h1><p>Entre los suscritos a saber: de una parte GESTIVAPYME...</p>'
+  };
+  isGuardandoContrato = false;
+
   empresasEnMora: number = 0;
   empresaDestacadaId: number | null = null;
   camposAprobados: { [key: string]: boolean } = {};
@@ -149,7 +165,18 @@ export class SaasAdminComponent implements OnInit {
     }
   ];
 
-  // --- VARIABLES PARA GESTIÓN DE SUSCRIPCIÓN ---
+  // --- VARIABLES PARA GESTIÓN DE SUSCRIPCIÓN (CARRITO) ---
+  editandoSuscripcion = false;
+  catalogoTarifas: any[] = [];
+  cartItemsSelect: { [key: string]: { active: boolean, cantidad: number } } = {};
+  selectedTipoEmpresa: string = 'Ventas';
+  iaByokActivo: boolean = false;
+  iaByokProveedor: string = 'gemini';
+  iaByokModelo: string = 'gemini-3.5-flash-lite';
+  iaByokKey: string = '';
+  iaByokKeyExists: boolean = false;
+  activeTabCarrito: string = 'plan_base';
+
   showGestionSuscripcionModal = false;
   suscripcionEnEdicion: SuscripcionEmpresa | null = null;
 
@@ -233,75 +260,156 @@ export class SaasAdminComponent implements OnInit {
     this.toastService.success(`Suscripción de ${sub.nombreEmpresa} renovada exitosamente hasta el ${nuevaFecha.toLocaleDateString()}.`);
   }
 
-  // --- MÉTODOS DEL MODAL DE GESTIÓN ---
-  abrirModalGestionSuscripcion(suscripcion: SuscripcionEmpresa) {
-    // Clonamos profundamente para no mutar los originales hasta guardar
-    this.suscripcionEnEdicion = JSON.parse(JSON.stringify(suscripcion));
-    this.showGestionSuscripcionModal = true;
-  }
-
-  cerrarModalGestionSuscripcion() {
-    this.suscripcionEnEdicion = null;
-    this.showGestionSuscripcionModal = false;
-  }
-
-  agregarCargoExtra() {
-    if (this.suscripcionEnEdicion) {
-      this.suscripcionEnEdicion.cargosExtra.push({ descripcion: '', valor: 0 });
-    }
-  }
-
-  eliminarCargoExtra(index: number) {
-    if (this.suscripcionEnEdicion) {
-      this.suscripcionEnEdicion.cargosExtra.splice(index, 1);
-    }
-  }
-
-  agregarDescuento() {
-    if (this.suscripcionEnEdicion) {
-      this.suscripcionEnEdicion.descuentosAplicados.push({ descripcion: 'N/A', porcentaje: 0 });
-    }
-  }
-
-  eliminarDescuento(index: number) {
-    if (this.suscripcionEnEdicion) {
-      this.suscripcionEnEdicion.descuentosAplicados.splice(index, 1);
-    }
-  }
-  
-  agregarSuscripcionAddon() {
-    if (this.suscripcionEnEdicion) {
-      this.suscripcionEnEdicion.addonsList.push({ nombre: '', valor: 0 });
-    }
-  }
-
-  eliminarSuscripcionAddon(index: number) {
-    if (this.suscripcionEnEdicion) {
-      this.suscripcionEnEdicion.addonsList.splice(index, 1);
-    }
-  }
-
-  guardarGestionSuscripcion() {
-    if (!this.suscripcionEnEdicion) return;
-    
-    // Call backend API
-    const payload = {
-      descuentosAplicados: this.suscripcionEnEdicion.descuentosAplicados,
-      cargosExtra: this.suscripcionEnEdicion.cargosExtra,
-      addonsList: this.suscripcionEnEdicion.addonsList
-    };
-
-    this.empresaService.updateTarifas(this.suscripcionEnEdicion.empresaId || this.suscripcionEnEdicion.id, payload).subscribe({
-      next: () => {
-        this.toastService.success('Tarifas de la empresa actualizadas exitosamente.');
-        this.cargarSuscripciones(); // Recargar la tabla desde el backend
-        this.cerrarModalGestionSuscripcion();
+  // --- MÉTODOS DEL CARRITO DE SUSCRIPCIÓN ---
+  cargarCatalogoTarifas() {
+    this.tarifaService.getCatalogo().subscribe({
+      next: (res) => {
+        this.catalogoTarifas = res;
       },
       error: (err) => {
-        this.toastService.error('Error al guardar las tarifas de la empresa.');
+        console.error('Error al cargar catálogo de tarifas', err);
+      }
+    });
+  }
+
+  abrirCarritoSuscripcion(suscripcion: SuscripcionEmpresa) {
+    this.suscripcionEnEdicion = suscripcion;
+    this.selectedTipoEmpresa = suscripcion.tipoEmpresa || 'Ventas';
+    this.iaByokActivo = suscripcion.iaByokActivo || false;
+    this.iaByokProveedor = suscripcion.iaByokProveedor || 'gemini';
+    this.iaByokModelo = suscripcion.iaByokModelo || 'gemini-3.5-flash-lite';
+    this.iaByokKey = '';
+    this.iaByokKeyExists = suscripcion.iaByokKeyExists || false;
+    this.activeTabCarrito = 'plan_base';
+    
+    // Inicializar selección del catálogo
+    this.cartItemsSelect = {};
+    for (let item of this.catalogoTarifas) {
+      const activeItem = (suscripcion.cartItems || []).find((c: any) => c.id === item.id);
+      this.cartItemsSelect[item.id] = {
+        active: !!activeItem,
+        cantidad: activeItem ? activeItem.cantidad : 1
+      };
+    }
+    
+    this.editandoSuscripcion = true;
+  }
+
+  cerrarCarritoSuscripcion() {
+    this.suscripcionEnEdicion = null;
+    this.editandoSuscripcion = false;
+  }
+
+  get subtotalSuscripcion(): number {
+    let sub = 0;
+    for (let item of this.catalogoTarifas) {
+      const cartItem = this.cartItemsSelect[item.id];
+      if (cartItem && cartItem.active) {
+        if (item.mecanismo === 'fijo') {
+          sub += Number(item.valor);
+        } else if (item.mecanismo === 'por_usuario') {
+          sub += Number(item.valor) * cartItem.cantidad;
+        }
+      }
+    }
+    return sub;
+  }
+
+  get descuentoSuscripcion(): number {
+    let sub = this.subtotalSuscripcion;
+    let descPct = 0;
+    for (let item of this.catalogoTarifas) {
+      const cartItem = this.cartItemsSelect[item.id];
+      if (cartItem && cartItem.active && item.tipo === 'descuento') {
+        descPct += Number(item.valor);
+      }
+    }
+    return sub * (descPct / 100);
+  }
+
+  get totalSuscripcion(): number {
+    return Math.max(0, this.subtotalSuscripcion - this.descuentoSuscripcion);
+  }
+
+  guardandoSuscripcion = false;
+
+  guardarCarritoSuscripcion() {
+    if (!this.suscripcionEnEdicion) return;
+
+    // Regla de Negocio: Validar que si tiene módulos especiales, el tipo de negocio base esté seleccionado
+    const hasBasePackage = ['Ventas', 'Servicios', 'Ventas y Servicios'].includes(this.selectedTipoEmpresa);
+    
+    const itemsPayload = [];
+    for (let item of this.catalogoTarifas) {
+      const cartItem = this.cartItemsSelect[item.id];
+      
+      // Auto-seleccionar addon de BYOK si está activo
+      if (item.id === 'addon_byok_ia') {
+        cartItem.active = this.iaByokActivo;
+      }
+      
+      // Apagar cobros de IA Simple/Avanzado si usa BYOK
+      if (this.iaByokActivo && (item.id === 'ia_simple' || item.id === 'ia_avanzada')) {
+        cartItem.active = false;
+      }
+
+      if (cartItem && cartItem.active) {
+        if (item.tipo === 'modulo_adicional' && !hasBasePackage) {
+          this.toastService.error('Debe seleccionar un paquete base (Ventas, Servicios o Mixto) antes de agregar módulos adicionales.');
+          return;
+        }
+        itemsPayload.push({
+          id: item.id,
+          cantidad: cartItem.cantidad
+        });
+      }
+    }
+
+    const hasPlanSelected = itemsPayload.some(payloadItem => {
+      const catItem = this.catalogoTarifas.find(c => c.id === payloadItem.id);
+      return catItem && catItem.tipo === 'plan';
+    });
+
+    if (!hasPlanSelected) {
+      this.toastService.error('Debe seleccionar un Plan de Suscripción (Ej: Plan Básico, Profesional o Empresarial) para poder continuar.');
+      return;
+    }
+
+    const payload = {
+      tipo_empresa: this.selectedTipoEmpresa,
+      items: itemsPayload,
+      ia_byok_activo: this.iaByokActivo,
+      ia_byok_proveedor: this.iaByokProveedor,
+      ia_byok_key: this.iaByokKey,
+      ia_byok_modelo: this.iaByokModelo
+    };
+
+    this.guardandoSuscripcion = true;
+    const id = this.suscripcionEnEdicion.empresaId || this.suscripcionEnEdicion.id;
+    this.empresaService.updateTarifas(id, payload).subscribe({
+      next: () => {
+        this.toastService.success('Suscripción y tarifas de la empresa actualizadas exitosamente.');
+        this.guardandoSuscripcion = false;
+        this.cargarSuscripciones();
+        this.cerrarCarritoSuscripcion();
+      },
+      error: (err) => {
+        this.guardandoSuscripcion = false;
+        const errMsg = err?.error?.error || 'Error al guardar la suscripción de la empresa.';
+        this.toastService.error(errMsg);
         console.error(err);
       }
     });
+  }
+
+  deseleccionarOtrosPlanes(selectedId: string) {
+    for (let item of this.catalogoTarifas) {
+      if (item.tipo === 'plan' && item.id !== selectedId) {
+        if (this.cartItemsSelect[item.id]) {
+          this.cartItemsSelect[item.id].active = false;
+        }
+      }
+    }
   }
 
   suspenderMockSuscripcion(suscripcionId: number) {
@@ -417,7 +525,8 @@ export class SaasAdminComponent implements OnInit {
     }
 
     this.modulosService.getCatalogoModulos().subscribe(catalog => {
-      this.paquetesModulos = catalog.filter((p: any) => p.id !== 'default');
+      // Clonar profundamente para evitar fugas de estado globales (bugfix: evitar que se muestre todo abierto)
+      this.paquetesModulos = JSON.parse(JSON.stringify(catalog)).filter((p: any) => p.id !== 'default');
     });
 
     if (typeof window !== 'undefined') {
@@ -426,6 +535,7 @@ export class SaasAdminComponent implements OnInit {
       this.cargarTicketsSoporte();
       this.cargarLeads();
       this.cargarSuscripciones();
+      this.cargarCatalogoTarifas();
       this.cargarTarifas();
       this.cargarSystemStats();
     }
@@ -487,6 +597,42 @@ export class SaasAdminComponent implements OnInit {
 
   cambiarVista(vista: string) {
     this.router.navigate(['/saas-admin', vista]);
+    if (vista === 'contratos') {
+      this.cargarContratos();
+    }
+  }
+
+  // --- MÉTODOS PARA CONTRATOS SAAS ---
+  cargarContratos() {
+    this.http.get('/api/saas/contratos', { headers: this.getHeaders() }).subscribe({
+      next: (res: any) => {
+        this.contratosHistory = res;
+      },
+      error: (err) => console.error('Error cargando contratos', err)
+    });
+  }
+
+  guardarNuevoContrato() {
+    if (!this.nuevoContrato.contenido || !this.nuevoContrato.version) {
+      this.toastService.warning('La versión y el contenido son obligatorios');
+      return;
+    }
+
+    this.isGuardandoContrato = true;
+    this.http.post('/api/saas/contratos', this.nuevoContrato, { headers: this.getHeaders() }).subscribe({
+      next: (res: any) => {
+        this.toastService.success(res.message || 'Contrato publicado y gerentes notificados.');
+        this.isGuardandoContrato = false;
+        this.nuevoContrato.version = '';
+        this.nuevoContrato.contenido = '';
+        this.cargarContratos();
+      },
+      error: (err) => {
+        console.error(err);
+        this.toastService.error('Error al publicar el contrato.');
+        this.isGuardandoContrato = false;
+      }
+    });
   }
 
   // --- MÉTODOS PARA CONTROL DE IA ---
@@ -1183,8 +1329,13 @@ export class SaasAdminComponent implements OnInit {
       color_secundario: empresa.color_secundario || '#1e293b',
       color_fondo: empresa.color_fondo || '#4c808a',
       color_texto: empresa.color_texto || '#f8fafc',
-      nombre_gerente: empresa.nombre_gerente || '',
-      apellido_gerente: empresa.apellido_gerente || ''
+      nombre_gerente: empresa.gerente?.primer_nombre || '',
+      apellido_gerente: empresa.gerente?.primer_apellido || '',
+      primer_nombre_gerente: empresa.gerente?.primer_nombre || '',
+      segundo_nombre_gerente: empresa.gerente?.segundo_nombre || '',
+      primer_apellido_gerente: empresa.gerente?.primer_apellido || '',
+      segundo_apellido_gerente: empresa.gerente?.segundo_apellido || '',
+      tipo_documento_gerente: empresa.tipo_documento_gerente || 'CC'
     };
     this.showModal = true;
   }
@@ -1358,6 +1509,11 @@ export class SaasAdminComponent implements OnInit {
     }
 
     if (this.empresaSeleccionadaId) {
+      // Limpiar el estado UI antes de cargar la nueva empresa para evitar cruce de datos
+      this.paquetesModulos.forEach(p => {
+        p.activo = false;
+        p.submodulos.forEach((s: any) => s.activo = false);
+      });
       this.cargarModulosDeEmpresa(this.empresaSeleccionadaId);
     }
   }

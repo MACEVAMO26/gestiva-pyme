@@ -1,8 +1,10 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { CajaService, Caja, CajaMovimiento } from '../../../../../services/caja.service';
+import { PrefacturacionService, CotizacionPedido } from '../../../../../services/prefacturacion.service';
 import { ToastService } from '../../../../../services/toast.service';
-// import { PrefacturacionService } from '../../../../../services/prefacturacion.service'; // Descomentar si se usa para el backend
+import { timeout } from 'rxjs';
 
 @Component({
   selector: 'app-prefacturacion',
@@ -12,50 +14,91 @@ import { ToastService } from '../../../../../services/toast.service';
   styleUrl: './prefacturacion.component.scss'
 })
 export class PrefacturacionComponent implements OnInit {
+  private cajaService = inject(CajaService);
+  private prefacturacionService = inject(PrefacturacionService);
   private toast = inject(ToastService);
 
   activeTab: string = 'caja';
-  
-  // Variables Caja
+
+  cajas: Caja[] = [];
+  cajaActiva: Caja | null = null;
   cajaAbierta: boolean = false;
   showModalApertura: boolean = false;
   montoApertura: number = 0;
-  
+
   totalIngresos: number = 0;
   totalEgresos: number = 0;
   saldoActual: number = 0;
-  
+
   showModalCierre: boolean = false;
-  
+
   tipoMovimiento: string = 'ingreso';
   montoMovimiento: number = 0;
   conceptoMovimiento: string = '';
-  movimientos: any[] = [];
-  
-  // Variables Prefacturas
-  prefacturas: any[] = [];
-  
-  // Estado global
+  movimientos: CajaMovimiento[] = [];
+
+  prefacturas: CotizacionPedido[] = [];
+
   guardando: boolean = false;
-  
-  // Toast
-  showToast: boolean = false;
-  toastType: string = 'success';
-  toastMessage: string = '';
+  cargando = false;
 
   ngOnInit() {
-    this.cargarDatosDemo();
+    this.cargarCajas();
+    this.cargarPrefacturas();
   }
 
-  cargarDatosDemo() {
-    this.prefacturas = [
-      { id: 1, consecutivo: 'PRE-1001', cliente: 'Carlos Vargas', fecha: '2023-11-20', total: 150000, estado: 'Pendiente' },
-      { id: 2, consecutivo: 'PRE-1002', cliente: 'Empresa XYZ', fecha: '2023-11-21', total: 450000, estado: 'Procesada' }
-    ];
+  cargarCajas() {
+    this.cajaService.getCajas().pipe(timeout(8000)).subscribe({
+      next: (res) => {
+        this.cajas = res;
+        const abierta = res.find(c => c.estado === 'abierta');
+        if (abierta) {
+          this.cajaActiva = abierta;
+          this.cajaAbierta = true;
+          this.totalIngresos = abierta.total_ingresos || 0;
+          this.totalEgresos = abierta.total_egresos || 0;
+          this.saldoActual = (abierta.base_inicial || 0) + this.totalIngresos - this.totalEgresos;
+          this.cargarMovimientos(abierta.id!);
+        }
+      },
+      error: () => {
+        this.cajas = [];
+      }
+    });
+  }
+
+  cargarMovimientos(cajaId: number) {
+    this.cajaService.getMovimientos(cajaId).pipe(timeout(8000)).subscribe({
+      next: (res) => {
+        this.movimientos = res;
+        this.totalIngresos = res.filter(m => m.tipo === 'ingreso' || m.tipo === 'apertura').reduce((a, m) => a + m.monto, 0);
+        this.totalEgresos = res.filter(m => m.tipo === 'egreso').reduce((a, m) => a + m.monto, 0);
+        this.saldoActual = (this.cajaActiva?.base_inicial || 0) + this.totalIngresos - this.totalEgresos;
+      },
+      error: () => {
+        this.movimientos = [];
+      }
+    });
+  }
+
+  cargarPrefacturas() {
+    this.cargando = true;
+    this.prefacturacionService.getCotizaciones().pipe(timeout(8000)).subscribe({
+      next: (res) => {
+        this.prefacturas = res;
+        this.cargando = false;
+      },
+      error: () => {
+        this.prefacturas = [];
+        this.cargando = false;
+      }
+    });
   }
 
   switchTab(tab: string) {
     this.activeTab = tab;
+    if (tab === 'caja') this.cargarCajas();
+    if (tab === 'prefacturas') this.cargarPrefacturas();
   }
 
   abrirCajaModal() {
@@ -69,19 +112,21 @@ export class PrefacturacionComponent implements OnInit {
 
   confirmarApertura() {
     this.guardando = true;
-    setTimeout(() => {
-      this.cajaAbierta = true;
-      this.saldoActual = this.montoApertura;
-      this.movimientos.unshift({
-        fecha: new Date().toLocaleTimeString(),
-        tipo: 'apertura',
-        concepto: 'Base inicial de caja',
-        monto: this.montoApertura
-      });
-      this.guardando = false;
-      this.cerrarCajaModal();
-      this.mostrarToast('Caja abierta correctamente', 'success');
-    }, 1000);
+    this.cajaService.crearCaja(this.montoApertura || 0).pipe(timeout(8000)).subscribe({
+      next: (caja) => {
+        this.cajaActiva = caja;
+        this.cajaAbierta = true;
+        this.saldoActual = caja.base_inicial;
+        this.guardando = false;
+        this.cerrarCajaModal();
+        this.toast.success('Caja abierta correctamente');
+        this.cargarMovimientos(caja.id!);
+      },
+      error: () => {
+        this.guardando = false;
+        this.toast.error('Error al abrir la caja');
+      }
+    });
   }
 
   abrirCierreModal() {
@@ -93,68 +138,99 @@ export class PrefacturacionComponent implements OnInit {
   }
 
   confirmarCierre() {
+    if (!this.cajaActiva?.id) return;
     this.guardando = true;
-    setTimeout(() => {
-      this.cajaAbierta = false;
-      this.saldoActual = 0;
-      this.totalIngresos = 0;
-      this.totalEgresos = 0;
-      this.movimientos = [];
-      this.guardando = false;
-      this.cerrarCierreModal();
-      this.mostrarToast('Caja cerrada correctamente', 'success');
-    }, 1500);
+    this.cajaService.cerrarCaja(this.cajaActiva.id, this.saldoActual).pipe(timeout(8000)).subscribe({
+      next: () => {
+        this.cajaAbierta = false;
+        this.cajaActiva = null;
+        this.totalIngresos = 0;
+        this.totalEgresos = 0;
+        this.saldoActual = 0;
+        this.movimientos = [];
+        this.guardando = false;
+        this.cerrarCierreModal();
+        this.toast.success('Caja cerrada correctamente');
+      },
+      error: () => {
+        this.guardando = false;
+        this.toast.error('Error al cerrar la caja');
+      }
+    });
   }
 
   registrarMovimiento() {
     if (!this.conceptoMovimiento || this.montoMovimiento <= 0) {
-      this.mostrarToast('Complete el monto y concepto', 'warning');
+      this.toast.warning('Complete el monto y concepto');
+      return;
+    }
+    if (!this.cajaActiva?.id) {
+      this.toast.error('No hay caja abierta');
       return;
     }
 
-    if (this.tipoMovimiento === 'egreso' && this.montoMovimiento > this.saldoActual) {
-      this.mostrarToast('Saldo insuficiente en caja', 'error');
-      return;
-    }
+    this.guardando = true;
+    const movimiento: CajaMovimiento = {
+      caja_id: this.cajaActiva.id,
+      tipo: this.tipoMovimiento as any,
+      monto: this.montoMovimiento,
+      concepto: this.conceptoMovimiento
+    };
 
-    this.movimientos.unshift({
-      fecha: new Date().toLocaleTimeString(),
-      tipo: this.tipoMovimiento,
-      concepto: this.conceptoMovimiento,
-      monto: this.montoMovimiento
+    this.cajaService.registrarMovimiento(movimiento).pipe(timeout(8000)).subscribe({
+      next: () => {
+        this.guardando = false;
+        this.montoMovimiento = 0;
+        this.conceptoMovimiento = '';
+        this.toast.success('Movimiento registrado');
+        this.cargarMovimientos(this.cajaActiva!.id!);
+      },
+      error: () => {
+        this.guardando = false;
+        this.toast.error('Error al registrar movimiento');
+      }
     });
-
-    if (this.tipoMovimiento === 'ingreso') {
-      this.totalIngresos += this.montoMovimiento;
-      this.saldoActual += this.montoMovimiento;
-    } else {
-      this.totalEgresos += this.montoMovimiento;
-      this.saldoActual -= this.montoMovimiento;
-    }
-
-    this.montoMovimiento = 0;
-    this.conceptoMovimiento = '';
-    this.mostrarToast('Movimiento registrado', 'success');
   }
 
   getBadgeClass(estado: string): string {
-    if (estado === 'Procesada') return 'badge-aprobada';
-    if (estado === 'Rechazada') return 'badge-rechazada';
+    if (estado === 'aprobado' || estado === 'Procesada') return 'badge-aprobada';
+    if (estado === 'rechazado' || estado === 'Rechazada') return 'badge-rechazada';
     return 'badge-pendiente';
   }
 
-  generarDocumento(id: number) {
-    const pref = this.prefacturas.find(p => p.id === id);
-    if (pref) {
-      pref.estado = 'Procesada';
-      this.mostrarToast('Factura generada', 'success');
-    }
+  fechaMovimiento(mov: any): string {
+    return mov.fecha_hora || mov.created_at || mov.fecha || '';
   }
 
-  mostrarToast(mensaje: string, tipo: 'success' | 'warning' | 'error') {
-    this.toastMessage = mensaje;
-    this.toastType = tipo;
-    this.showToast = true;
-    setTimeout(() => this.showToast = false, 3000);
+  nombreClientePref(pref: any): string {
+    if (pref.cliente?.razon_social) return pref.cliente.razon_social;
+    if (pref.cliente?.nombre) return pref.cliente.nombre;
+    if (pref.cliente?.primer_nombre) return `${pref.cliente.primer_nombre} ${pref.cliente.primer_apellido || ''}`;
+    return '-';
+  }
+
+  consecutivoPref(pref: any): string {
+    return pref.consecutivo || `PRE-${String(pref.id).padStart(4, '0')}`;
+  }
+
+  fechaPref(pref: any): string {
+    return pref.fecha_hora || pref.fecha || '';
+  }
+
+  estadoPref(pref: any): string {
+    return pref.estado || 'Pendiente';
+  }
+
+  generarDocumento(id?: number) {
+    if (!id) return;
+    this.prefacturacionService.cambiarEstado(id, 'aprobado').pipe(timeout(8000)).subscribe({
+      next: () => {
+        this.toast.success('Factura generada');
+        this.cargarPrefacturas();
+      },
+      error: () => {
+        this.toast.error('Error al procesar la factura');
+      }
+    });
   }
 }

@@ -20,7 +20,8 @@ class Role extends Model
         'nombre',
         'descripcion',
         'activo',
-        'es_base'
+        'es_base',
+        'inactive_at'
     ];
        
     // --- RELACIONES ---

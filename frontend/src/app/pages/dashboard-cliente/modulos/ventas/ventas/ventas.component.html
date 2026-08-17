@@ -133,8 +133,8 @@
 
             <div class="form-group" style="margin-bottom: 2rem;">
               <label>Método de Pago</label>
-              <select class="input-neumorphic">
-                <option value="efectivo" selected>Efectivo</option>
+              <select class="input-neumorphic" [(ngModel)]="metodoPago">
+                <option value="efectivo">Efectivo</option>
                 <option value="tarjeta">Tarjeta de Crédito / Débito</option>
                 <option value="transferencia">Transferencia Bancaria</option>
               </select>
@@ -179,7 +179,7 @@
             <tbody>
               @for(venta of ventasFiltradas; track venta.id) {
                 <tr>
-                  <td><strong>{{venta.numero_factura}}</strong></td>
+                  <td><strong>{{numeroFactura(venta)}}</strong></td>
                   <td>{{venta.cliente?.nombres}} {{venta.cliente?.apellidos}}</td>
                   <td>{{venta.created_at | date:'shortDate'}}</td>
                   <td>{{venta.total | currency:'COP':'symbol':'1.0-0'}}</td>
@@ -234,7 +234,7 @@
       <i class="fas fa-exclamation-triangle icon-danger"></i>
     </div>
     <div class="modal-body">
-      <h1 class="modal-title">¿Anular Venta {{ventaSeleccionada.factura}}?</h1>
+      <h1 class="modal-title">¿Anular Venta {{numeroFactura(ventaSeleccionada)}}?</h1>
       <p class="text-muted" style="margin-bottom: 1rem;">
         Esta acción es irreversible. Se regresarán los productos al inventario y el monto no se contabilizará en caja.
       </p>
@@ -251,28 +251,6 @@
         </button>
       </div>
     </div>
-  </div>
-</div>
-}
-
-<!-- HTML TOAST NOTIFICATION -->
-@if(showToast) {
-<div class="toast-container fade-in">
-  <div class="toast-card" [ngClass]="'toast-' + toastType">
-    <div class="toast-icon">
-      @if(toastType === 'success') { <i class="fas fa-check-circle"></i> }
-      @if(toastType === 'warning') { <i class="fas fa-exclamation-triangle"></i> }
-      @if(toastType === 'error') { <i class="fas fa-times-circle"></i> }
-    </div>
-    <div class="toast-content">
-      <h4 class="toast-title">
-        @if(toastType === 'success') { Éxito }
-        @if(toastType === 'warning') { Advertencia }
-        @if(toastType === 'error') { Error }
-      </h4>
-      <p class="toast-message">{{toastMessage}}</p>
-    </div>
-    <button class="toast-close" (click)="showToast = false">&times;</button>
   </div>
 </div>
 }

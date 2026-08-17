@@ -27,7 +27,8 @@ export const routes: Routes = [
                     { path: 'roles', loadComponent: () => import('./pages/dashboard-cliente/modulos/base/administracion/admin-roles/admin-roles').then(m => m.AdminRoles) },
                     { path: 'estructura', loadComponent: () => import('./pages/dashboard-cliente/modulos/base/administracion/admin-estructura/admin-estructura').then(m => m.AdminEstructura) },
                     { path: 'soporte', loadComponent: () => import('./pages/dashboard-cliente/modulos/base/administracion/admin-soporte/admin-soporte').then(m => m.AdminSoporteComponent) },
-                    { path: 'auditoria', loadComponent: () => import('./pages/dashboard-cliente/modulos/base/administracion/admin-auditoria/admin-auditoria').then(m => m.AdminAuditoria) }
+                    { path: 'auditoria', loadComponent: () => import('./pages/dashboard-cliente/modulos/base/administracion/admin-auditoria/admin-auditoria').then(m => m.AdminAuditoria) },
+                    { path: 'contrato', loadComponent: () => import('./pages/dashboard-cliente/modulos/base/administracion/administracion.component').then(m => m.AdministracionComponent) }
                 ]
             },
             { path: 'gestion-de-tareas', loadComponent: () => import('./pages/dashboard-cliente/modulos/base/gestion-de-tareas/gestion-de-tareas.component').then(m => m.GestionDeTareasComponent) },

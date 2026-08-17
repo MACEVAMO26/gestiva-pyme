@@ -52,19 +52,19 @@
             <tbody>
               @for(orden of ordenesFiltradas; track orden.id) {
                 <tr>
-                  <td><strong>{{orden.numero_orden}}</strong></td>
-                  <td>{{orden.proveedor?.nombre}}</td>
+                  <td><strong>{{numeroOrden(orden)}}</strong></td>
+                  <td>{{nombreProveedor(orden)}}</td>
                   <td>{{orden.created_at | date:'shortDate'}}</td>
                   <td>{{orden.total | currency:'COP':'symbol':'1.0-0'}}</td>
                   <td>
-                    <span class="badge" [ngClass]="getBadgeClass(orden.estado)">
-                      {{orden.estado}}
+                    <span class="badge" [ngClass]="getBadgeClass(estadoOrden(orden))">
+                      {{estadoOrden(orden)}}
                     </span>
                   </td>
 <td>
                     <div class="acciones-fila">
                       <button class="btn-icon" title="Ver Detalle"><i class="fas fa-eye"></i></button>
-                      <button class="btn-icon text-danger" title="Anular" *ngIf="orden.estado === 'Pendiente'"><i class="fas fa-ban"></i></button>
+                      <button class="btn-icon text-danger" title="Anular" *ngIf="estadoOrden(orden) === 'Pendiente'"><i class="fas fa-ban"></i></button>
                     </div>
                   </td>
                 </tr>
@@ -95,8 +95,8 @@
               <select class="input-neumorphic" [(ngModel)]="ordenSeleccionadaRecepcion">
                 <option value="null" disabled selected>Buscar orden...</option>
                 @for(o of ordenes; track o.id) {
-                  @if(o.estado === 'Pendiente') {
-                    <option [value]="o.id">{{o.numero_orden}} - {{o.proveedor?.nombre}}</option>
+                  @if(estadoOrden(o) === 'Pendiente') {
+                    <option [value]="o.id">{{numeroOrden(o)}} - {{nombreProveedor(o)}}</option>
                   }
                 }
               </select>
@@ -129,21 +129,21 @@
               </tr>
             </thead>
             <tbody>
-              @for(r of ordenes; track r.id) {
-                @if(r.estado === 'Recibido') {
-                  <tr>
-                    <td>{{ r.updated_at | date:'shortDate' }}</td>
-                    <td>{{ r.numero_orden }}</td>
-                    <td>{{ r.proveedor?.nombre }}</td>
-                    <td>
-                      <span class="badge badge-success">Ingresado</span>
-                    </td>
-                  </tr>
-                }
+              @for(r of recepciones; track r.id) {
+                <tr>
+                  <td>{{ r.fecha_recepcion | date:'shortDate' }}</td>
+                  <td>{{ numeroOrden(r.orden_compra) }}</td>
+                  <td>{{ nombreProveedor(r.orden_compra) }}</td>
+                  <td>
+                    <span class="badge badge-success">Ingresado</span>
+                  </td>
+                </tr>
               }
-<tr>
-                <td colspan="4" class="tabla-vacia">Consulte el historial de órdenes recibidas.</td>
-              </tr>
+              @if(recepciones.length === 0) {
+                <tr>
+                  <td colspan="4" class="tabla-vacia">No hay recepciones registradas.</td>
+                </tr>
+              }
             </tbody>
           </table>
         </div>
@@ -166,7 +166,7 @@
         <select class="input-neumorphic" [(ngModel)]="formOrden.proveedor">
           <option value="" disabled selected>Seleccione un proveedor</option>
           @for(prov of proveedoresDisponibles; track prov.id) {
-            <option [value]="prov.id">{{prov.nombre}} ({{prov.nit}})</option>
+            <option [value]="prov.id">{{prov.razon_social}} ({{prov.nit}})</option>
           }
         </select>
       </div>
@@ -250,28 +250,6 @@
         </button>
       </div>
     </div>
-  </div>
-</div>
-}
-
-<!-- HTML TOAST NOTIFICACION -->
-@if(showToast) {
-<div class="toast-container fade-in">
-  <div class="toast-card" [ngClass]="'toast-' + toastType">
-    <div class="toast-icon">
-      @if(toastType === 'success') { <i class="fas fa-check-circle"></i> }
-      @if(toastType === 'warning') { <i class="fas fa-exclamation-triangle"></i> }
-      @if(toastType === 'error') { <i class="fas fa-times-circle"></i> }
-    </div>
-    <div class="toast-content">
-      <h4 class="toast-title">
-        @if(toastType === 'success') { Éxito }
-        @if(toastType === 'warning') { Advertencia }
-        @if(toastType === 'error') { Error }
-      </h4>
-      <p class="toast-message">{{toastMessage}}</p>
-    </div>
-    <button class="toast-close" (click)="showToast = false">&times;</button>
   </div>
 </div>
 }

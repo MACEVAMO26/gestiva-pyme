@@ -106,7 +106,7 @@
                     <tbody>
                       @for(mov of movimientos; track $index) {
                         <tr>
-                          <td>{{mov.fecha}}</td>
+                          <td>{{fechaMovimiento(mov) | date:'short'}}</td>
                           <td>
                             @if(mov.tipo === 'ingreso' || mov.tipo === 'apertura') {
                               <span class="badge badge-success">{{mov.tipo}}</span>
@@ -152,24 +152,29 @@
             <tbody>
               @for(pref of prefacturas; track pref.id) {
                 <tr>
-                  <td><strong>{{pref.consecutivo}}</strong></td>
-                  <td>{{pref.cliente}}</td>
-                  <td>{{pref.fecha}}</td>
+                  <td><strong>{{consecutivoPref(pref)}}</strong></td>
+                  <td>{{nombreClientePref(pref)}}</td>
+                  <td>{{fechaPref(pref)}}</td>
                   <td>{{pref.total | currency:'COP':'symbol':'1.0-0'}}</td>
                   <td>
-                    <span class="badge" [ngClass]="getBadgeClass(pref.estado)">
-                      {{pref.estado}}
+                    <span class="badge" [ngClass]="getBadgeClass(estadoPref(pref))">
+                      {{estadoPref(pref)}}
                     </span>
                   </td>
                   <td style="text-align: center;">
-                    @if(pref.estado === 'Pendiente') {
-                      <button class="btn-save btn-pill btn-xs" (click)="generarDocumento(pref.id)">
+                    @if(estadoPref(pref) === 'borrador' || estadoPref(pref) === 'enviado' || estadoPref(pref) === 'Pendiente') {
+                      <button class="btn-save btn-pill btn-xs" (click)="generarDocumento(pref.id!)">
                         <i class="fas fa-file-invoice"></i> Generar Factura
                       </button>
                     } @else {
                       <span class="text-muted" style="font-size: 0.8rem;"><i class="fas fa-check"></i> Procesada</span>
                     }
                   </td>
+                </tr>
+              }
+              @if(prefacturas.length === 0 && !cargando) {
+                <tr>
+                  <td colspan="6" class="tabla-vacia">No hay prefacturas registradas.</td>
                 </tr>
               }
             </tbody>
@@ -233,28 +238,6 @@
         </button>
       </div>
     </div>
-  </div>
-</div>
-}
-
-<!-- HTML TOAST NOTIFICATION -->
-@if(showToast) {
-<div class="toast-container fade-in">
-  <div class="toast-card" [ngClass]="'toast-' + toastType">
-    <div class="toast-icon">
-      @if(toastType === 'success') { <i class="fas fa-check-circle"></i> }
-      @if(toastType === 'warning') { <i class="fas fa-exclamation-triangle"></i> }
-      @if(toastType === 'error') { <i class="fas fa-times-circle"></i> }
-    </div>
-    <div class="toast-content">
-      <h4 class="toast-title">
-        @if(toastType === 'success') { Éxito }
-        @if(toastType === 'warning') { Advertencia }
-        @if(toastType === 'error') { Error }
-      </h4>
-      <p class="toast-message">{{toastMessage}}</p>
-    </div>
-    <button class="toast-close" (click)="showToast = false">&times;</button>
   </div>
 </div>
 }

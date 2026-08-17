@@ -2,7 +2,9 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ClienteService, Cliente } from '../../../../../services/cliente.service';
+import { LeadService, Lead } from '../../../../../services/lead.service';
 import { ToastService } from '../../../../../services/toast.service';
+import { timeout } from 'rxjs';
 
 @Component({
   selector: 'app-clientes',
@@ -13,6 +15,7 @@ import { ToastService } from '../../../../../services/toast.service';
 })
 export class ClientesComponent implements OnInit {
   private clienteService = inject(ClienteService);
+  private leadService = inject(LeadService);
   private toast = inject(ToastService);
 
   // Tabs
@@ -23,7 +26,7 @@ export class ClientesComponent implements OnInit {
   clientesFiltrados: any[] = [];
   searchTerm: string = '';
   tipoFiltro: string = '';
-  
+
   // State (Leads Kanban)
   todosLosLeads: any[] = [];
   leadsPendientes: any[] = [];
@@ -43,35 +46,45 @@ export class ClientesComponent implements OnInit {
   leadActual: any = this.resetLeadActual();
 
   ngOnInit() {
-    this.cargarDatosDemo();
+    this.cargarClientes();
+    this.cargarLeads();
   }
 
-  cargarDatosDemo() {
+  cargarClientes() {
     this.cargando = true;
-    
-    // Demo Clientes
-    this.clientesOriginales = [
-      { id: 1, nombres: 'Carlos', apellidos: 'Pérez', documento: '10203040', telefono: '3001234567', email: 'carlos@mail.com', tipo_cliente: 'Particular', membresia: 'VIP', pedidos_activos: 2, estado_pedido: 'En camino', estado_financiero: 'Al dia', comentarios: 'Cliente frecuente' },
-      { id: 2, nombres: 'Tech', apellidos: 'Solutions SAS', documento: '900800700', telefono: '3119876543', email: 'contacto@tech.com', tipo_cliente: 'Empresa', membresia: 'Corporate', pedidos_activos: 0, estado_pedido: 'Entregado', estado_financiero: 'Pendiente', comentarios: 'Pagan a 30 días' }
-    ];
-    this.filtrarClientes();
+    this.clienteService.getClientes().pipe(timeout(8000)).subscribe({
+      next: (res) => {
+        this.clientesOriginales = res;
+        this.filtrarClientes();
+        this.cargando = false;
+      },
+      error: () => {
+        this.clientesOriginales = [];
+        this.clientesFiltrados = [];
+        this.toast.error('Error al cargar los clientes');
+        this.cargando = false;
+      }
+    });
+  }
 
-    // Demo Leads
-    this.todosLosLeads = [
-      { id: 1, nombre: 'Ana Gómez', telefono: '3200000000', correo: 'ana@mail.com', horario_llamada: 'Tardes', estado: 'pendiente', mensaje: 'Interesada en plan mensual' },
-      { id: 2, nombre: 'Luis Martínez', telefono: '3151112233', correo: 'luis@mail.com', horario_llamada: 'Mañana', estado: 'contactado', mensaje: 'Pidió cotización por 50 unidades' },
-      { id: 3, nombre: 'Empresa Falsa', telefono: '3009998877', correo: 'fake@mail.com', horario_llamada: '', estado: 'archivado', mensaje: 'No responden' }
-    ];
-    this.actualizarColumnasLeads();
-    
-    this.cargando = false;
+  cargarLeads() {
+    this.leadService.getLeads().pipe(timeout(8000)).subscribe({
+      next: (res) => {
+        this.todosLosLeads = res;
+        this.actualizarColumnasLeads();
+      },
+      error: () => {
+        this.todosLosLeads = [];
+        this.actualizarColumnasLeads();
+      }
+    });
   }
 
   // --- LOGICA CLIENTES (DIRECTORIO) ---
   filtrarClientes() {
     this.clientesFiltrados = this.clientesOriginales.filter(c => {
-      const matchSearch = (c.nombres + ' ' + c.apellidos).toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-                          c.documento?.includes(this.searchTerm);
+      const matchSearch = (c.nombres + ' ' + (c.apellidos || '')).toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+                          (c.documento || '').includes(this.searchTerm);
       const matchType = this.tipoFiltro ? c.tipo_cliente === this.tipoFiltro : true;
       return matchSearch && matchType;
     });
@@ -105,37 +118,62 @@ export class ClientesComponent implements OnInit {
 
   resetClienteActual() {
     return {
-      id: null, nombres: '', apellidos: '', documento: '', email: '', 
-      telefono: '', tipo_cliente: 'Particular', ciudad: '', direccion: '', 
-      membresia: '', comentarios: ''
+      id: null, nombres: '', apellidos: '', documento: '', email: '',
+      telefono: '', tipo_cliente: 'Particular', ciudad: '', direccion: '',
+      membresia: '', comentarios: '', activo: true
     };
   }
 
   guardarCliente() {
+    if (!this.clienteActual.nombres || !this.clienteActual.documento) {
+      this.toast.warning('Nombre y documento son obligatorios');
+      return;
+    }
     this.isSaving = true;
-    setTimeout(() => {
-      if (this.isEditMode) {
-        const idx = this.clientesOriginales.findIndex(c => c.id === this.clienteActual.id);
-        if (idx !== -1) this.clientesOriginales[idx] = { ...this.clienteActual };
-      } else {
-        this.clienteActual.id = Math.floor(Math.random() * 1000) + 10;
-        this.clientesOriginales.push({ ...this.clienteActual });
-      }
-      this.filtrarClientes();
-      this.toast.success(this.isEditMode ? 'Cliente actualizado' : 'Cliente creado exitosamente');
-      this.cerrarModal();
-      this.isSaving = false;
-    }, 800);
+    const payload: Cliente = { ...this.clienteActual };
+
+    if (this.isEditMode && this.clienteActual.id) {
+      this.clienteService.actualizarCliente(this.clienteActual.id, payload).pipe(timeout(8000)).subscribe({
+        next: () => {
+          this.toast.success('Cliente actualizado');
+          this.cargarClientes();
+          this.cerrarModal();
+          this.isSaving = false;
+        },
+        error: () => {
+          this.toast.error('Error al actualizar el cliente');
+          this.isSaving = false;
+        }
+      });
+    } else {
+      this.clienteService.crearCliente(payload).pipe(timeout(8000)).subscribe({
+        next: () => {
+          this.toast.success('Cliente creado exitosamente');
+          this.cargarClientes();
+          this.cerrarModal();
+          this.isSaving = false;
+        },
+        error: () => {
+          this.toast.error('Error al crear el cliente');
+          this.isSaving = false;
+        }
+      });
+    }
   }
 
   eliminarCliente(id: number) {
     this.deletingId = id;
-    setTimeout(() => {
-      this.clientesOriginales = this.clientesOriginales.filter(c => c.id !== id);
-      this.filtrarClientes();
-      this.toast.success('Cliente eliminado');
-      this.deletingId = null;
-    }, 1000);
+    this.clienteService.eliminarCliente(id).pipe(timeout(8000)).subscribe({
+      next: () => {
+        this.toast.success('Cliente eliminado');
+        this.cargarClientes();
+        this.deletingId = null;
+      },
+      error: () => {
+        this.toast.error('Error al eliminar el cliente');
+        this.deletingId = null;
+      }
+    });
   }
 
   // --- LOGICA LEADS (KANBAN) ---
@@ -166,29 +204,51 @@ export class ClientesComponent implements OnInit {
   }
 
   guardarLead() {
+    if (!this.leadActual.nombre || !this.leadActual.correo || !this.leadActual.telefono) {
+      this.toast.warning('Nombre, correo y teléfono son obligatorios');
+      return;
+    }
     this.isSaving = true;
-    setTimeout(() => {
-      if (this.isEditMode) {
-        const idx = this.todosLosLeads.findIndex(l => l.id === this.leadActual.id);
-        if (idx !== -1) this.todosLosLeads[idx] = { ...this.leadActual };
-      } else {
-        this.leadActual.id = Math.floor(Math.random() * 1000) + 100;
-        this.todosLosLeads.push({ ...this.leadActual });
-      }
-      this.actualizarColumnasLeads();
-      this.toast.success(this.isEditMode ? 'Lead actualizado' : 'Lead registrado');
-      this.cerrarModalLead();
-      this.isSaving = false;
-    }, 800);
+    const payload: Lead = { ...this.leadActual };
+
+    if (this.isEditMode && this.leadActual.id) {
+      this.leadService.actualizarLead(this.leadActual.id, payload).pipe(timeout(8000)).subscribe({
+        next: () => {
+          this.toast.success('Lead actualizado');
+          this.cargarLeads();
+          this.cerrarModalLead();
+          this.isSaving = false;
+        },
+        error: () => {
+          this.toast.error('Error al actualizar el lead');
+          this.isSaving = false;
+        }
+      });
+    } else {
+      this.leadService.crearLead(payload).pipe(timeout(8000)).subscribe({
+        next: () => {
+          this.toast.success('Lead registrado');
+          this.cargarLeads();
+          this.cerrarModalLead();
+          this.isSaving = false;
+        },
+        error: () => {
+          this.toast.error('Error al registrar el lead');
+          this.isSaving = false;
+        }
+      });
+    }
   }
 
   cambiarEstadoLead(lead: any, nuevoEstado: string) {
-    const idx = this.todosLosLeads.findIndex(l => l.id === lead.id);
-    if (idx !== -1) {
-      this.todosLosLeads[idx].estado = nuevoEstado;
-      this.actualizarColumnasLeads();
-      this.toast.success('Estado del lead actualizado');
-    }
+    this.leadService.actualizarLead(lead.id, { estado: nuevoEstado }).pipe(timeout(8000)).subscribe({
+      next: () => {
+        lead.estado = nuevoEstado;
+        this.actualizarColumnasLeads();
+        this.toast.success('Estado del lead actualizado');
+      },
+      error: () => this.toast.error('Error al actualizar el estado del lead')
+    });
   }
 
   convertirLeadACliente(lead: any) {
@@ -196,7 +256,7 @@ export class ClientesComponent implements OnInit {
     this.clienteActual.nombres = lead.nombre;
     this.clienteActual.telefono = lead.telefono;
     this.clienteActual.email = lead.correo;
-    this.clienteActual.comentarios = `Viene del Lead ID: ${lead.id}. Notas: ${lead.mensaje}`;
+    this.clienteActual.comentarios = `Viene del Lead ID: ${lead.id}. Notas: ${lead.mensaje || ''}`;
     this.toast.success('Lead trasladado a formulario de Cliente');
   }
 }

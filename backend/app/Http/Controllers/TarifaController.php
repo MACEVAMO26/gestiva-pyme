@@ -22,4 +22,10 @@ class TarifaController extends Controller
         $tarifa->update($request->only(['plan_mensual', 'modulo_extra', 'addon_extra']));
         return response()->json(['message' => 'Tarifas actualizadas', 'tarifa' => $tarifa]);
     }
+
+    public function catalogo()
+    {
+        $catalogo = \App\Models\TarifaCatalogo::where('activo', true)->get();
+        return response()->json($catalogo);
+    }
 }

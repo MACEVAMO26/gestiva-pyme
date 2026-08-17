@@ -13,48 +13,53 @@
 
     <div class="neumorphic-panel fade-in">
       <h2 class="subtitulo">Filtros de Reporte</h2>
-      <form>
-        <div class="form-grid" style="align-items: end;">
-          <div class="form-group">
-            <label class="form-label">Desde:</label>
-            <input type="date" class="input-neumorphic">
-          </div>
-          <div class="form-group">
-            <label class="form-label">Hasta:</label>
-            <input type="date" class="input-neumorphic">
-          </div>
-          <div class="form-group" style="padding-bottom: 0.2rem;">
-            <button type="button" class="btn-general-2 btn-pill">Generar Reporte</button>
-          </div>
+      <div class="form-grid" style="align-items: end;">
+        <div class="form-group">
+          <label class="form-label">Desde:</label>
+          <input type="date" class="input-neumorphic" [(ngModel)]="desde">
         </div>
-      </form>
-
-      <div class="mt-4">
-        <h2 class="subtitulo">Métricas Principales</h2>
-        <div class="metrics-grid">
-          
-          <div class="neumorphic-panel-inner text-center">
-            <p class="metric-label">Total de Tickets Atendidos</p>
-            <strong class="metric-value-accent">0</strong>
-          </div>
-
-          <div class="neumorphic-panel-inner text-center">
-            <p class="metric-label">Técnico con más servicios</p>
-            <strong class="metric-value">N/A</strong>
-          </div>
-
-          <div class="neumorphic-panel-inner text-center">
-            <p class="metric-label">Servicio más demandado</p>
-            <strong class="metric-value">N/A</strong>
-          </div>
-
-          <div class="neumorphic-panel-inner text-center">
-            <p class="metric-label">Promedio de tiempo</p>
-            <strong class="metric-value-danger">0 hrs</strong>
-          </div>
-
+        <div class="form-group">
+          <label class="form-label">Hasta:</label>
+          <input type="date" class="input-neumorphic" [(ngModel)]="hasta">
+        </div>
+        <div class="form-group" style="padding-bottom: 0.2rem;">
+          <button type="button" class="btn-general-2 btn-pill" (click)="generarReporte()">Generar Reporte</button>
         </div>
       </div>
+
+      @if(cargando) {
+        <div class="text-center" style="padding: 2rem;">
+          <i class="fas fa-spinner fa-spin" style="font-size: 1.5rem;"></i>
+          <p class="text-muted" style="margin-top: 0.5rem;">Calculando métricas...</p>
+        </div>
+      } @else {
+        <div class="mt-4">
+          <h2 class="subtitulo">Métricas Principales</h2>
+          <div class="metrics-grid">
+
+            <div class="neumorphic-panel-inner text-center">
+              <p class="metric-label">Total de Tickets Atendidos</p>
+              <strong class="metric-value-accent">{{totalAtendidos}}</strong>
+            </div>
+
+            <div class="neumorphic-panel-inner text-center">
+              <p class="metric-label">Técnico con más servicios</p>
+              <strong class="metric-value">{{tecnicoTop}}</strong>
+            </div>
+
+            <div class="neumorphic-panel-inner text-center">
+              <p class="metric-label">Servicio más demandado</p>
+              <strong class="metric-value">{{servicioTop}}</strong>
+            </div>
+
+            <div class="neumorphic-panel-inner text-center">
+              <p class="metric-label">Tasa de Finalización</p>
+              <strong class="metric-value-danger">{{tasaFinalizacion}}%</strong>
+            </div>
+
+          </div>
+        </div>
+      }
     </div>
   </div>
 </div>

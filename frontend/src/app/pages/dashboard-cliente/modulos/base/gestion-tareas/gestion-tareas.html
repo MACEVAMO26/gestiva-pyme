@@ -1,11 +1,94 @@
-  <!-- Botón Volver Inyectado -->
-  <div style="margin-bottom: 1.5rem; display: flex; justify-content: flex-start;">
+<div style="margin-bottom: 1.5rem; display: flex; justify-content: flex-start;">
     <button class="btn-volver btn-pill" onclick="window.history.back()">
       <i class="fas fa-arrow-left"></i> Volver
     </button>
   </div>
 
-<p>gestion-tareas works!</p>
+<div class="module-container">
+  <div class="module-header">
+    <h1>Gestión de Tareas</h1>
+    <div style="display: flex; justify-content: center; padding: 0.25rem 0 0.5rem 0;">
+      <button class="btn-add btn-pill" (click)="abrirModal()">+ Nueva Tarea</button>
+    </div>
+  </div>
 
+  <div class="panel-body">
+    @if(cargando) {
+      <div style="padding: 2rem; text-align: center;">
+        <i class="fas fa-spinner fa-spin" style="font-size: 1.5rem;"></i>
+      </div>
+    } @else {
+      @for(tarea of tareas; track tarea.id) {
+        <div class="tarea-card">
+          <div class="tarea-info">
+            <h3 class="tarea-titulo">{{ tarea.titulo }}</h3>
+            @if(tarea.descripcion) {
+              <p class="tarea-descripcion">{{ tarea.descripcion }}</p>
+            }
+            <div class="tarea-meta">
+              <span><i class="fas fa-user-check"></i> {{ nombreAsignador(tarea) }}</span>
+              <span><i class="fas fa-user-tag"></i> {{ nombreAsignado(tarea) }}</span>
+            </div>
+          </div>
+          <div class="tarea-actions">
+            <span class="tarea-estado" [ngClass]="tarea.estado">{{ estadoTexto(tarea.estado) }}</span>
+            @if(tarea.estado !== 'terminada') {
+              <button class="btn-volver btn-pill" (click)="cambiarEstado(tarea, 'en_proceso')"
+                      [disabled]="tarea.estado === 'en_proceso'">
+                En Proceso
+              </button>
+              <button class="btn-save btn-pill" (click)="cambiarEstado(tarea, 'terminada')">
+                Terminar
+              </button>
+            }
+          </div>
+        </div>
+      } @empty {
+        <div style="padding: 2rem; text-align: center;">
+          <i class="fas fa-tasks" style="font-size: 1.5rem; opacity: 0.5;"></i>
+          <p style="margin: 0;">No tienes tareas asignadas.</p>
+        </div>
+      }
+    }
+  </div>
+</div>
 
-
+<!-- MODAL NUEVA TAREA -->
+@if(showModal) {
+<div class="modal-overlay">
+  <div class="modal-card neumorphic-panel" style="max-width: 450px;">
+    <div class="modal-header">
+      <h1>Nueva Tarea</h1>
+      <button class="btn-close" (click)="cerrarModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label>Título</label>
+        <input type="text" class="input-neumorphic" [(ngModel)]="formTarea.titulo" name="titulo" placeholder="Ej. Preparar informe mensual">
+      </div>
+      <div class="form-group">
+        <label>Descripción</label>
+        <textarea class="input-neumorphic" rows="3" [(ngModel)]="formTarea.descripcion" name="descripcion"></textarea>
+      </div>
+      @if(esGerencia()) {
+        <div class="form-group">
+          <label>Asignar a</label>
+          <select class="input-neumorphic" [(ngModel)]="formTarea.asignado_id" name="asignado">
+            <option [value]="0">Seleccione un usuario</option>
+            @for(u of usuarios; track u.id) {
+              <option [value]="u.id">{{ u.nombres }} {{ u.apellidos }}</option>
+            }
+          </select>
+        </div>
+      }
+      <div class="form-actions">
+        <button type="button" class="btn-volver btn-pill" (click)="cerrarModal()">Cancelar</button>
+        <button type="button" class="btn-save btn-pill" (click)="guardarTarea()" [disabled]="guardando">
+          @if(guardando) { <i class="fas fa-spinner fa-spin"></i> Creando... }
+          @else { Crear Tarea }
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+}

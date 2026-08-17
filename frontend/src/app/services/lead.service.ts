@@ -38,7 +38,7 @@ export class LeadService {
   }
 
   actualizarLead(id: number, data: Partial<Lead>): Observable<Lead> {
-    return this.http.put<Lead>(`${this.apiUrl}/${id}`, data, { headers: this.getHeaders() });
+    return this.http.patch<Lead>(`${this.apiUrl}/${id}`, data, { headers: this.getHeaders() });
   }
 
   eliminarLead(id: number): Observable<any> {

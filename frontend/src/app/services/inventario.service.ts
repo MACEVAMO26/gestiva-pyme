@@ -5,11 +5,11 @@ import { Observable } from 'rxjs';
 export interface Inventario {
   id?: number;
   producto_id: number;
-  cantidad_disponible: number;
-  cantidad_reservada: number;
-  ubicacion?: string;
-  lote?: string;
-  fecha_vencimiento?: string;
+  stock_actual: number;
+  stock_minimo?: number;
+  bodega?: string;
+  estante?: string;
+  posicion?: string;
   producto?: any; // Para mostrar nombre del producto
 }
 

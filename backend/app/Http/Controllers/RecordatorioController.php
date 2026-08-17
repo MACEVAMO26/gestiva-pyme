@@ -45,6 +45,24 @@ class RecordatorioController extends Controller
         return response()->json($recordatorio, 201);
     }
 
+    public function marcarCompletado(Request $request, $id)
+    {
+        $user = $request->user();
+        if (!$user) {
+            return response()->json(['error' => 'No autorizado'], 401);
+        }
+
+        $recordatorio = Recordatorio::where('usuario_id', $user->id)->where('id', $id)->first();
+        if (!$recordatorio) {
+            return response()->json(['error' => 'Recordatorio no encontrado'], 404);
+        }
+
+        $recordatorio->completado = true;
+        $recordatorio->save();
+
+        return response()->json($recordatorio);
+    }
+
     public function destroy(Request $request, $id)
     {
         $user = $request->user();

@@ -1,10 +1,10 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { VentaService, Venta, VentaDetalle } from '../../../../../services/venta.service';
+import { VentaService, Venta } from '../../../../../services/venta.service';
 import { ClienteService, Cliente } from '../../../../../services/cliente.service';
 import { CajaService, Caja } from '../../../../../services/caja.service';
-// Simulamos servicio de producto si no está importado, o usamos un dummy
+import { ProductoService, Producto } from '../../../../../services/producto.service';
 import { ToastService } from '../../../../../services/toast.service';
 import { timeout } from 'rxjs';
 
@@ -19,24 +19,23 @@ export class VentasComponent implements OnInit {
   private ventaService = inject(VentaService);
   private clienteService = inject(ClienteService);
   private cajaService = inject(CajaService);
+  private productoService = inject(ProductoService);
   private toast = inject(ToastService);
 
   activeTab: string = 'pos';
-  
+
   // Variables POS
   clienteSeleccionado: number | '' = '';
   clientesDisponibles: Cliente[] = [];
-  
+
   productoActual: any = '';
-  productosDisponibles: any[] = [
-    { id: 1, nombre: 'Producto Demo A', precio_venta: 15000 },
-    { id: 2, nombre: 'Producto Demo B', precio_venta: 25000 }
-  ];
-  
+  productosDisponibles: Producto[] = [];
+
   cantidadActual: number = 1;
+  metodoPago: string = 'efectivo';
   carrito: any[] = [];
   totalCarrito: number = 0;
-  
+
   guardando: boolean = false;
   cargando: boolean = false;
   cajas: Caja[] = [];
@@ -50,26 +49,25 @@ export class VentasComponent implements OnInit {
   showModalAnular: boolean = false;
   ventaSeleccionada: any = null;
 
-  // Variables Toast (el componente tiene su propio toast en vez de usar el global en HTML)
-  showToast: boolean = false;
-  toastType: string = 'success';
-  toastMessage: string = '';
-
   ngOnInit() {
     this.cargarDatosBase();
-    this.cargarVentasMock(); // Historial
+    this.cargarVentas();
   }
 
   cargarDatosBase() {
     this.cargando = true;
     this.clienteService.getClientes().pipe(timeout(8000)).subscribe({
-      next: (res) => {
-        this.clientesDisponibles = res;
-      },
-      error: () => {
-        this.clientesDisponibles = [];
-      }
+      next: (res) => { this.clientesDisponibles = res; },
+      error: () => { this.clientesDisponibles = []; }
     });
+
+    this.productoService.getProductos().pipe(timeout(8000)).subscribe({
+      next: (res) => {
+        this.productosDisponibles = res.filter(p => p.activo !== false);
+      },
+      error: () => { this.productosDisponibles = []; }
+    });
+
     this.cajaService.getCajas().pipe(timeout(8000)).subscribe({
       next: (res) => {
         this.cajas = res.filter(c => c.estado === 'abierta');
@@ -82,12 +80,31 @@ export class VentasComponent implements OnInit {
     });
   }
 
-  cargarVentasMock() {
-    // Mock para el historial
-    this.ventas = [
-      { id: 1, numero_factura: 'FAC-001', cliente: { nombre: 'Juan', apellido: 'Perez' }, created_at: new Date(), total: 50000, estado: 'Completada', estado_paquete: 'Entregado' }
-    ];
-    this.ventasFiltradas = this.ventas;
+  cargarVentas() {
+    this.ventaService.getVentas().pipe(timeout(8000)).subscribe({
+      next: (res) => {
+        this.ventas = res;
+        this.filtrarVentas();
+      },
+      error: () => {
+        this.ventas = [];
+        this.ventasFiltradas = [];
+        this.toast.error('Error al cargar el historial de ventas');
+      }
+    });
+  }
+
+  filtrarVentas() {
+    const term = this.searchTerm.toLowerCase();
+    this.ventasFiltradas = this.ventas.filter(v =>
+      (v.factura_consecutivo?.toString() || '').includes(term) ||
+      v.cliente?.nombres?.toLowerCase().includes(term) ||
+      v.cliente?.apellidos?.toLowerCase().includes(term)
+    );
+  }
+
+  numeroFactura(venta: any): string {
+    return 'FAC-' + String(venta.factura_consecutivo ?? venta.id ?? '').padStart(3, '0');
   }
 
   switchTab(tab: string) {
@@ -95,24 +112,30 @@ export class VentasComponent implements OnInit {
   }
 
   exportarExcel() {
-    this.mostrarToast('Exportando historial a Excel...', 'success');
+    this.toast.success('Exportando historial a Excel...');
   }
 
   agregarAlCarrito() {
     if (!this.productoActual || this.cantidadActual <= 0) {
-      this.mostrarToast('Seleccione un producto y cantidad válida', 'warning');
+      this.toast.warning('Seleccione un producto y cantidad válida');
       return;
     }
 
     const prod = this.productosDisponibles.find(p => p.id == this.productoActual);
     if (prod) {
-      this.carrito.push({
-        id: prod.id,
-        nombre: prod.nombre,
-        precio_unitario: prod.precio_venta,
-        cantidad: this.cantidadActual,
-        subtotal: prod.precio_venta * this.cantidadActual
-      });
+      const existente = this.carrito.find(item => item.id == prod.id);
+      if (existente) {
+        existente.cantidad += this.cantidadActual;
+        existente.subtotal = existente.precio_unitario * existente.cantidad;
+      } else {
+        this.carrito.push({
+          id: prod.id,
+          nombre: prod.nombre,
+          precio_unitario: prod.precio_venta,
+          cantidad: this.cantidadActual,
+          subtotal: prod.precio_venta * this.cantidadActual
+        });
+      }
       this.calcularTotales();
       this.productoActual = '';
       this.cantidadActual = 1;
@@ -130,22 +153,39 @@ export class VentasComponent implements OnInit {
 
   registrarVenta() {
     if (!this.clienteSeleccionado) {
-      this.mostrarToast('Debe seleccionar un cliente', 'warning');
+      this.toast.warning('Debe seleccionar un cliente');
       return;
     }
     if (this.carrito.length === 0) {
-      this.mostrarToast('El carrito está vacío', 'warning');
+      this.toast.warning('El carrito está vacío');
       return;
     }
 
     this.guardando = true;
-    setTimeout(() => {
-      this.mostrarToast('Venta registrada con éxito', 'success');
-      this.guardando = false;
-      this.carrito = [];
-      this.calcularTotales();
-      this.clienteSeleccionado = '';
-    }, 1500);
+    const payload: any = {
+      cliente_id: this.clienteSeleccionado,
+      metodo_pago: this.metodoPago,
+      productos: this.carrito.map(item => ({
+        id: item.id,
+        cantidad: item.cantidad,
+        precio_unitario: item.precio_unitario
+      }))
+    };
+
+    this.ventaService.registrarVenta(payload).pipe(timeout(15000)).subscribe({
+      next: () => {
+        this.toast.success('Venta registrada con éxito');
+        this.guardando = false;
+        this.carrito = [];
+        this.calcularTotales();
+        this.clienteSeleccionado = '';
+        this.cargarVentas();
+      },
+      error: (err) => {
+        this.guardando = false;
+        this.toast.error(err.error?.message || 'Error al registrar la venta');
+      }
+    });
   }
 
   getBadgeClass(estado: string): string {
@@ -155,8 +195,14 @@ export class VentasComponent implements OnInit {
   }
 
   cambiarEstadoPaquete(venta: any, nuevoEstado: string) {
-    venta.estado_paquete = nuevoEstado;
-    this.mostrarToast('Estado del paquete actualizado', 'success');
+    if (!venta?.id || !venta.cliente_id) return;
+    this.ventaService.updateEstadoPaquete(venta.id, nuevoEstado, venta.cliente_id).pipe(timeout(8000)).subscribe({
+      next: () => {
+        venta.estado_paquete = nuevoEstado;
+        this.toast.success('Estado del paquete actualizado');
+      },
+      error: () => this.toast.error('Error al actualizar el estado del paquete')
+    });
   }
 
   abrirModalAnular(venta: any) {
@@ -170,21 +216,19 @@ export class VentasComponent implements OnInit {
   }
 
   confirmarAnulacion() {
+    if (!this.ventaSeleccionada?.id) return;
     this.guardando = true;
-    setTimeout(() => {
-      if (this.ventaSeleccionada) {
-        this.ventaSeleccionada.estado = 'Anulada';
+    this.ventaService.anularVenta(this.ventaSeleccionada.id).pipe(timeout(15000)).subscribe({
+      next: () => {
+        this.toast.success('Venta anulada correctamente');
+        this.guardando = false;
+        this.cerrarModalAnular();
+        this.cargarVentas();
+      },
+      error: (err) => {
+        this.guardando = false;
+        this.toast.error(err.error?.message || 'Error al anular la venta');
       }
-      this.mostrarToast('Venta anulada correctamente', 'success');
-      this.guardando = false;
-      this.cerrarModalAnular();
-    }, 1500);
-  }
-
-  mostrarToast(mensaje: string, tipo: 'success' | 'warning' | 'error') {
-    this.toastMessage = mensaje;
-    this.toastType = tipo;
-    this.showToast = true;
-    setTimeout(() => this.showToast = false, 3000);
+    });
   }
 }

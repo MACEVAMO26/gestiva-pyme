@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { AccessibilityService } from '../../services/accessibility/accessibility.service';
-import { ModulosService } from '../../services/modulos.service';
+import { ModulosService, MODULOS_BASE_UI, RUTA_MODULO, ICONO_MODULO } from '../../services/modulos.service';
 import { ChangeDetectorRef } from '@angular/core';
 import { GestivaIaTutorialComponent } from '../../shared/components/gestiva-ia-tutorial/gestiva-ia-tutorial.component';
 import { GestivaBotComponent } from '../../shared/components/gestiva-bot/gestiva-bot';
@@ -36,7 +36,7 @@ export class DashboardClienteComponent implements OnInit {
 
   modulosSidebar: ModuloSidebar[] = [];
   isSidebarCollapsed = false;
-  hasNotification = true; // Para demostrar el efecto de la campanita girada y roja
+  hasNotification = false;
 
   constructor() {}
 
@@ -45,183 +45,98 @@ export class DashboardClienteComponent implements OnInit {
     this.construirSidebar();
   }
 
-  // --- LÓGICA DEL SIDEBAR (CATÁLOGO REAL) ---
+  // --- LÓGICA DEL SIDEBAR (CATÁLOGO REAL DESDE LA BD) ---
   private construirSidebar() {
-    this.modulosService.getCatalogoModulos().subscribe({
-      next: (catalogo) => {
-        const botones: { [key: string]: ModuloSidebar } = {};
-        
-        // 1. Agregar los módulos 'default' siempre (Inicio, Administración, Tareas, etc.)
-        const defaultPkg = catalogo.find((p: any) => p.id === 'default');
-        if (defaultPkg && defaultPkg.submodulos) {
-          defaultPkg.submodulos.forEach((sub: any) => {
-            botones[sub.id] = {
-              id: sub.id,
-              nombre: sub.nombre,
-              icono: sub.icono || 'fas fa-circle',
-              ruta: `./${this.slugify(sub.nombre)}`
+    // Módulos base del producto SIEMPRE visibles (Inicio, Administración, etc.)
+    const botones: { [key: string]: ModuloSidebar } = {};
+    MODULOS_BASE_UI.forEach((mod) => {
+      botones[mod.id] = {
+        id: mod.id,
+        nombre: mod.nombre,
+        icono: mod.icono,
+        ruta: `./${mod.ruta}`
+      };
+    });
+
+    // Plan según el tipo de empresa real del usuario
+    const tipoEmpresaUsuario = this.user?.empresa?.tipo_empresa || 'Especial';
+    this.planActual = this.calcularPlan(tipoEmpresaUsuario);
+
+    // Pintar de inmediato los módulos base sin esperar HTTP
+    this.aplicarOrdenamiento(botones);
+
+    // Consultar los módulos reales asignados al usuario (autenticado)
+    if (this.user?.empresa_id) {
+      this.modulosService.getMisModulos().subscribe({
+        next: (resp) => {
+          const modulosEmpresa = resp.modulos || {};
+
+          // --- RECONSTRUIR BOTONES DESDE CERO CON LA VERDAD DE LA BASE DE DATOS ---
+          const botonesReales: { [key: string]: ModuloSidebar } = {};
+          MODULOS_BASE_UI.forEach((mod) => {
+            botonesReales[mod.id] = {
+              id: mod.id,
+              nombre: mod.nombre,
+              icono: mod.icono,
+              ruta: `./${mod.ruta}`
             };
           });
-        }
 
-        // 2. Sembrar al instante con los módulos activos guardados en el login (sin esperar HTTP)
-        const modulosActivos = this.authService.getModulosActivos() || {};
-        const tipoEmpresaUsuario = (this.user?.empresa as any)?.tipo_empresa || 'Mixto';
+          Object.keys(modulosEmpresa).forEach((paqueteId) => {
+            // Forzamos que si es Ventas no cargue Servicios, y viceversa
+            if (tipoEmpresaUsuario === 'Ventas' && paqueteId === 'servicios') return;
+            if (tipoEmpresaUsuario === 'Servicios' && paqueteId === 'ventas') return;
 
-        catalogo.forEach((paquete: any) => {
-          if (paquete.id === 'default') return;
+            const subs = modulosEmpresa[paqueteId] || [];
 
-          // Si el tipo de empresa es estrictamente Ventas o Servicios, ignoramos el otro paquete
-          if (tipoEmpresaUsuario === 'Ventas' && paquete.id === 'servicios') return;
-          if (tipoEmpresaUsuario === 'Servicios' && paquete.id === 'ventas') return;
-
-          if (paquete.id === 'ventas' || paquete.id === 'servicios') {
-            if (paquete.submodulos && Array.isArray(paquete.submodulos)) {
-              paquete.submodulos.forEach((sub: any) => {
-                if (modulosActivos[sub.id]) {
-                  botones[sub.id] = {
-                    id: sub.id,
-                    nombre: sub.nombre,
-                    icono: sub.icono || 'fas fa-circle',
-                    ruta: `./${this.slugify(sub.nombre)}`
-                  };
-                }
-              });
-            }
-          } else if (paquete.id === 'rrhh' || paquete.id === 'finanzas' || paquete.id === 'addons') {
-            const hayActivo = (paquete.submodulos || []).some((sub: any) => modulosActivos[sub.id]);
-            if (hayActivo) {
-              let nombre = paquete.nombre;
-              if (paquete.id === 'rrhh') nombre = 'Gestión Humana';
-              if (paquete.id === 'finanzas') nombre = 'Finanzas';
-
-              botones[paquete.id] = {
-                id: paquete.id,
-                nombre: nombre,
-                icono: paquete.icono || 'fas fa-circle',
-                ruta: `./${this.slugify(nombre)}`
-              };
-            }
-          }
-        });
-
-        // Plan instantáneo según tipo de empresa real
-        if (tipoEmpresaUsuario.includes('Ventas y Servicios') || tipoEmpresaUsuario === 'Mixto') {
-          this.planActual = 'Mixto';
-        } else if (tipoEmpresaUsuario === 'Ventas') {
-          this.planActual = 'Ventas';
-        } else if (tipoEmpresaUsuario === 'Servicios') {
-          this.planActual = 'Servicios';
-        } else {
-          this.planActual = 'Especial';
-        }
-
-        // Pintar de inmediato (base + comprados) sin esperar la llamada HTTP
-        this.aplicarOrdenamiento(botones);
-
-        // 3. Si el usuario pertenece a una empresa, consultar los módulos asignados a esa empresa
-        if (this.user?.empresa_id) {
-          this.modulosService.getModulosPorEmpresa(this.user.empresa_id).subscribe({
-            next: (resp) => {
-              const modulosEmpresa = resp.modulos || {};
-
-              // --- RECONSTRUIR BOTONES DESDE CERO CON LA VERDAD DE LA BASE DE DATOS ---
-              const botonesReales: { [key: string]: ModuloSidebar } = {};
-              
-              // 1. Re-agregar los módulos 'default' siempre
-              if (defaultPkg && defaultPkg.submodulos) {
-                defaultPkg.submodulos.forEach((sub: any) => {
+            if (paqueteId === 'ventas' || paqueteId === 'servicios') {
+              // Desglosar submódulos individuales que estén ACTIVOS en la BD
+              subs.forEach((sub: any) => {
+                if (sub.activo) {
                   botonesReales[sub.id] = {
                     id: sub.id,
                     nombre: sub.nombre,
-                    icono: sub.icono || 'fas fa-circle',
-                    ruta: `./${this.slugify(sub.nombre)}`
+                    icono: ICONO_MODULO[sub.id] || 'fas fa-circle',
+                    ruta: `./${RUTA_MODULO[sub.id] || this.slugify(sub.nombre)}`
                   };
-                });
-              }
-
-              catalogo.forEach((paquete: any) => {
-                if (paquete.id === 'default') return;
-
-                // Forzamos que si es Ventas no cargue Servicios, y viceversa, 
-                // incluso si en la BD quedaron activos residuales.
-                if (tipoEmpresaUsuario === 'Ventas' && paquete.id === 'servicios') return;
-                if (tipoEmpresaUsuario === 'Servicios' && paquete.id === 'ventas') return;
-
-                const estadoPaquete = (modulosEmpresa as any)[paquete.id] || [];
-
-                if (paquete.id === 'ventas' || paquete.id === 'servicios') {
-                  // Desglosar submódulos
-                  if (paquete.submodulos && Array.isArray(paquete.submodulos)) {
-                    paquete.submodulos.forEach((sub: any) => {
-                      // Verificar si está ACTIVO en la BD real
-                      const moduloActivoDb = estadoPaquete.find((s: any) => s.id === sub.id)?.activo;
-                      if (moduloActivoDb) {
-                        botonesReales[sub.id] = {
-                          id: sub.id,
-                          nombre: sub.nombre,
-                          icono: sub.icono || 'fas fa-circle',
-                          ruta: `./${this.slugify(sub.nombre)}`
-                        };
-                      }
-                    });
-                  }
-                } else if (paquete.id === 'rrhh' || paquete.id === 'finanzas' || paquete.id === 'addons') {
-                  // Módulo completo: revisar si tiene algún submódulo ACTIVO en la BD real
-                  const isActivo = estadoPaquete.some((s: any) => s.activo);
-                  if (isActivo) {
-                    let nombre = paquete.nombre;
-                    if (paquete.id === 'rrhh') nombre = 'Gestión Humana';
-                    if (paquete.id === 'finanzas') nombre = 'Finanzas';
-                    
-                    botonesReales[paquete.id] = {
-                      id: paquete.id,
-                      nombre: nombre,
-                      icono: paquete.icono || 'fas fa-circle',
-                      ruta: `./${this.slugify(nombre)}`
-                    };
-                  }
                 }
               });
-
-              // La etiqueta del plan se mantiene igual al tipo de empresa principal
-              if (tipoEmpresaUsuario.includes('Ventas y Servicios') || tipoEmpresaUsuario === 'Mixto') {
-                this.planActual = 'Mixto';
-              } else if (tipoEmpresaUsuario === 'Ventas') {
-                this.planActual = 'Ventas';
-              } else if (tipoEmpresaUsuario === 'Servicios') {
-                this.planActual = 'Servicios';
-              } else {
-                this.planActual = 'Especial';
+            } else if (['rrhh', 'finanzas', 'addons', 'base'].includes(paqueteId)) {
+              // Módulo completo: revisar si tiene algún submódulo ACTIVO en la BD real
+              const isActivo = subs.some((s: any) => s.activo);
+              if (isActivo) {
+                let id = paqueteId;
+                let nombre = paqueteId === 'rrhh' ? 'Gestión Humana' : (paqueteId === 'finanzas' ? 'Finanzas' : (paqueteId === 'addons' ? 'Addons+' : ''));
+                let ruta = `./${this.slugify(nombre)}`;
+                if (paqueteId === 'base') {
+                  // El paquete 'base' de la BD (Recordatorios, Reuniones, etc.) no genera botón propio
+                  return;
+                }
+                botonesReales[id] = {
+                  id,
+                  nombre,
+                  icono: ICONO_MODULO[id] || 'fas fa-circle',
+                  ruta
+                };
               }
-
-              this.aplicarOrdenamiento(botonesReales);
-            },
-            error: () => this.aplicarOrdenamiento(botones) // Si falla, mantener los cacheados
+            }
           });
-        } else {
-          // Si no tiene empresa (caso inusual en cliente), mantener cacheados
-          this.aplicarOrdenamiento(botones);
-        }
-      },
-      error: () => {
-        // Si falla la carga del catálogo completo
-        this.modulosSidebar = [
-          { id: 'd_ini', nombre: 'Inicio', icono: 'fas fa-home', ruta: './inicio' }
-        ];
-      }
-    });
+
+          this.aplicarOrdenamiento(botonesReales);
+        },
+        error: () => this.aplicarOrdenamiento(botones) // Si falla, mantener los módulos base
+      });
+    } else {
+      // Si no tiene empresa (caso inusual en cliente), mantener módulos base
+      this.aplicarOrdenamiento(botones);
+    }
   }
 
-  // Plan según los módulos activos: Mixto = Ventas Y Servicios, Especial = ninguno
-  private calcularPlanDesde(estaActivo: (id: string) => boolean): string {
-    const idsVentas = ['v_pos', 'v_inv', 'v_cxc', 'v_rep', 'v_prov'];
-    const idsServicios = ['s_age', 's_crm', 's_cat', 's_ope', 's_rep'];
-    const tieneVentas = idsVentas.some(id => estaActivo(id));
-    const tieneServicios = idsServicios.some(id => estaActivo(id));
-    if (tieneVentas && tieneServicios) return 'Mixto';
-    if (tieneVentas) return 'Ventas';
-    if (tieneServicios) return 'Servicios';
+  // Plan según el tipo de empresa
+  private calcularPlan(tipoEmpresaUsuario: string): string {
+    if (tipoEmpresaUsuario.includes('Ventas y Servicios') || tipoEmpresaUsuario === 'Mixto') return 'Mixto';
+    if (tipoEmpresaUsuario === 'Ventas') return 'Ventas';
+    if (tipoEmpresaUsuario === 'Servicios') return 'Servicios';
     return 'Especial';
   }
 

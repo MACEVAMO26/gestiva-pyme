@@ -30,7 +30,7 @@ class Producto extends Model
         'unidad_medida',
         'imagen_url',
         'activo', 
-        'fecha_inactivacion'
+        'inactive_at'
     ];
 
     // --- RELACIONES ---

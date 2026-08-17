@@ -32,7 +32,7 @@ export class ProveedorService {
     return this.http.post<Proveedor>(this.apiUrl, proveedor);
   }
 
-  actualizarProveedor(id: number, proveedor: Proveedor): Observable<Proveedor> {
+  actualizarProveedor(id: number, proveedor: Partial<Proveedor>): Observable<Proveedor> {
     return this.http.put<Proveedor>(`${this.apiUrl}/${id}`, proveedor);
   }
 

@@ -14,57 +14,68 @@ use Barryvdh\DomPDF\Facade\Pdf;
 class EmpresaController extends Controller
 {
     // --- GESTIÓN DE EMPRESAS ---
-    // Obtiene la lista de todas las empresas registradas
+    // Obtiene la lista de todas las empresas registradas (incluye el nombre del gerente)
     public function index()
     {
-        return response()->json(Empresa::all());
+        $empresas = Empresa::all();
+
+        // Adjunta el gerente de cada empresa para que el SAAS admin pueda pre-cargar sus datos
+        $empresas->each(function ($empresa) {
+            $rolGerente = \App\Models\Role::where('empresa_id', $empresa->id)
+                ->where('nombre', 'Gerente General')->first();
+            $gerente = null;
+            if ($rolGerente) {
+                $gerente = \App\Models\User::where('empresa_id', $empresa->id)
+                    ->where('rol_id', $rolGerente->id)
+                    ->orderBy('id')->first();
+            }
+            $empresa->gerente = $gerente ? [
+                'id' => $gerente->id,
+                'primer_nombre' => $gerente->primer_nombre,
+                'segundo_nombre' => $gerente->segundo_nombre,
+                'primer_apellido' => $gerente->primer_apellido,
+                'segundo_apellido' => $gerente->segundo_apellido,
+            ] : null;
+        });
+
+        return response()->json($empresas);
     }
 
     // Obtiene las estadísticas de suscripciones y la lista detallada de empresas (MRR, clientes, morosos)
     public function suscripcionesStats()
     {
-        $empresas = Empresa::all();
+        $empresas = Empresa::with('tarifasCatalogo')->get();
         
         $mrr = $empresas->where('activo', 1)->sum('monto_mensual');
         $clientesActivos = $empresas->where('activo', 1)->count();
         $clientesMora = $empresas->where('activo', 1)->where('estado_pago', 'mora')->count();
         
-        // Define el porcentaje de crecimiento (dato estático temporalmente)
         $crecimientoMensual = 12.5;
 
         $lista = $empresas->map(function ($emp) {
-            // Lógica de módulos adicionales
-            $tipo = $emp->tipo_empresa; // 'Ventas', 'Servicios', 'Ventas y Servicios'
-            $paquetesBase = [];
-            if ($tipo === 'Ventas' || $tipo === 'Ventas y Servicios') $paquetesBase[] = 'ventas';
-            if ($tipo === 'Servicios' || $tipo === 'Ventas y Servicios') $paquetesBase[] = 'servicios';
-
-            $modulosActivos = $emp->modulos()->wherePivot('activo', 1)->get();
+            $tipo = $emp->tipo_empresa;
             
-            $transversales = [];
-            $addons = [];
-            foreach ($modulosActivos as $mod) {
-                if (!in_array($mod->paquete, $paquetesBase)) {
-                    if ($mod->paquete === 'addons') {
-                        $addons[] = ['nombre' => $mod->nombre, 'valor' => 10000];
-                    } else {
-                        $transversales[] = $mod->nombre;
-                    }
-                }
-            }
+            // Determinar módulos transversales activos basados en el catálogo
+            $modulosExtra = $emp->tarifasCatalogo->where('tipo', 'modulo_adicional')->count();
             
-            // Add custom addons from JSON column
-            $addonsPersonalizados = is_array($emp->addons_personalizados) ? $emp->addons_personalizados : [];
-            $addons = array_merge($addons, $addonsPersonalizados);
+            // Addons estructurados desde el catálogo
+            $addons = $emp->tarifasCatalogo->where('tipo', 'addon')->map(function ($t) {
+                return ['nombre' => $t->nombre, 'valor' => $t->pivot->valor_aplicado];
+            })->values()->toArray();
 
-            // Handle descuentos
-            $descuentos = is_array($emp->descuentos_aplicados) ? $emp->descuentos_aplicados : [];
-            if (empty($descuentos) && $emp->descuento && $emp->descuento !== 'N/A') {
-                $descuentos[] = ['descripcion' => $emp->descuento, 'porcentaje' => 10];
-            }
+            // Descuentos aplicados desde el catálogo
+            $descuentos = $emp->tarifasCatalogo->where('tipo', 'descuento')->map(function ($t) {
+                return ['descripcion' => $t->nombre, 'porcentaje' => $t->pivot->valor_aplicado];
+            })->values()->toArray();
 
-            // Handle cargos extra
-            $cargosExtra = is_array($emp->cargos_extra) ? $emp->cargos_extra : [];
+            // Desglose del carrito para el frontend
+            $cartItems = $emp->tarifasCatalogo->map(function ($t) {
+                return [
+                    'id' => $t->id,
+                    'cantidad' => $t->pivot->cantidad,
+                    'valor_aplicado' => $t->pivot->valor_aplicado
+                ];
+            })->values()->toArray();
 
             return [
                 'id' => $emp->id,
@@ -72,14 +83,19 @@ class EmpresaController extends Controller
                 'nombreEmpresa' => $emp->razon_social,
                 'fechaInscripcion' => $emp->fecha_inscripcion ? date('d/M/Y', strtotime($emp->fecha_inscripcion)) : date('d/M/Y'),
                 'plan' => $emp->plan_suscripcion ?: 'Mensual',
-                'modulosExtra' => count($transversales),
+                'tipoEmpresa' => $tipo,
+                'modulosExtra' => $modulosExtra,
                 'addonsList' => $addons,
                 'descuentosAplicados' => $descuentos,
-                'cargosExtra' => $cargosExtra,
                 'proximoPagoTotal' => $emp->monto_mensual ?: 0,
                 'fechaProximoPago' => $emp->fecha_proximo_pago ?: date('Y-m-d', strtotime('+30 days')),
                 'estado' => $emp->estado_pago === 'mora' ? 'En Mora' : ($emp->estado_pago === 'suspendido' ? 'Inactiva' : 'Activa'),
-                'renovaciones' => $emp->renovaciones ?: 0
+                'renovaciones' => $emp->renovaciones ?: 0,
+                'cartItems' => $cartItems,
+                'iaByokActivo' => (bool)$emp->ia_byok_activo,
+                'iaByokProveedor' => $emp->ia_byok_proveedor,
+                'iaByokModelo' => $emp->ia_byok_modelo,
+                'iaByokKeyExists' => !empty($emp->ia_byok_key)
             ];
         });
 
@@ -94,18 +110,94 @@ class EmpresaController extends Controller
         ]);
     }
 
-    // Actualiza las tarifas personalizadas de una empresa (descuentos, cargos extra y addons)
+    // Actualiza las tarifas personalizadas de una empresa (Carrito de compras)
     public function updateTarifas(Request $request, $id)
     {
+        $request->validate([
+            'tipo_empresa' => 'required|in:Servicios,Ventas,Ventas y Servicios',
+            'items' => 'required|array',
+            'items.*.id' => 'required|exists:tarifas_catalogo,id',
+            'items.*.cantidad' => 'required|integer|min:1',
+            'ia_byok_activo' => 'required|boolean',
+            'ia_byok_proveedor' => 'nullable|string',
+            'ia_byok_key' => 'nullable|string',
+            'ia_byok_modelo' => 'nullable|string',
+        ]);
+
         $empresa = Empresa::findOrFail($id);
         
-        $empresa->update([
-            'descuentos_aplicados' => $request->descuentosAplicados,
-            'cargos_extra' => $request->cargosExtra,
-            'addons_personalizados' => $request->addonsList,
-        ]);
+        $tipoEmpresa = $request->tipo_empresa;
+        if ($tipoEmpresa === 'Mixto') {
+            $tipoEmpresa = 'Ventas y Servicios';
+        }
+
+        // 1. Regla de Validación de Negocio: Módulos Adicionales sólo con paquete base
+        $hasBasePackage = in_array($tipoEmpresa, ['Ventas', 'Servicios', 'Ventas y Servicios']);
         
-        return response()->json(['message' => 'Tarifas actualizadas correctamente']);
+        $subtotal = 0.00;
+        $descuentoPorcentaje = 0.00;
+        $planSeleccionado = 'Mensual';
+
+        // Detach de las tarifas actuales
+        $empresa->tarifasCatalogo()->detach();
+
+        // 2. Procesar ítems del carrito
+        foreach ($request->items as $itemData) {
+            $tarifa = \App\Models\TarifaCatalogo::findOrFail($itemData['id']);
+
+            // Validar restricción de módulos adicionales
+            if ($tarifa->tipo === 'modulo_adicional' && !$hasBasePackage) {
+                return response()->json([
+                    'error' => 'No se pueden asignar módulos adicionales si el tipo de negocio base no está seleccionado.'
+                ], 422);
+            }
+
+            // Calcular cobro según mecanismo
+            if ($tarifa->mecanismo === 'fijo') {
+                $subtotal += $tarifa->valor;
+            } elseif ($tarifa->mecanismo === 'por_usuario') {
+                $subtotal += ($tarifa->valor * $itemData['cantidad']);
+            } elseif ($tarifa->mecanismo === 'porcentaje') {
+                $descuentoPorcentaje += $tarifa->valor;
+            }
+
+            // Registrar plan base
+            if ($tarifa->tipo === 'plan') {
+                $planSeleccionado = str_replace('Plan ', '', $tarifa->nombre);
+            }
+
+            // Guardar en la tabla pivote
+            $empresa->tarifasCatalogo()->attach($tarifa->id, [
+                'cantidad' => $itemData['cantidad'],
+                'valor_aplicado' => $tarifa->valor
+            ]);
+        }
+
+        // Calcular descuentos
+        $descuentoMonto = $subtotal * ($descuentoPorcentaje / 100);
+        $totalCalculado = max(0, $subtotal - $descuentoMonto);
+
+        // 3. Configuración de API de IA propia (BYOK)
+        $empresa->ia_byok_activo = $request->ia_byok_activo;
+        $empresa->ia_byok_proveedor = $request->ia_byok_proveedor;
+        $empresa->ia_byok_modelo = $request->ia_byok_modelo;
+        if ($request->filled('ia_byok_key')) {
+            $empresa->ia_byok_key = \Illuminate\Support\Facades\Crypt::encryptString($request->ia_byok_key);
+        }
+
+        // 4. Guardar Empresa
+        $empresa->tipo_empresa = $tipoEmpresa;
+        $empresa->plan_suscripcion = $planSeleccionado;
+        $empresa->monto_mensual = $totalCalculado;
+        $empresa->save();
+
+        // 5. Sincronizar Módulos y Áreas según la Suscripción Pagada
+        app(\App\Http\Controllers\ModulosController::class)->sincronizarModulosPorSuscripcion($empresa);
+
+        return response()->json([
+            'message' => 'Suscripción y tarifas actualizadas con éxito.',
+            'monto_mensual' => $totalCalculado
+        ]);
     }
 
     // Calcula y retorna las estadísticas generales del sistema (uptime, última actividad)
@@ -142,7 +234,7 @@ class EmpresaController extends Controller
             'razon_social' => 'required|string|max:255',
             'dominio' => 'required|string|unique:empresa,dominio|max:255',
             'nit' => 'required|string|max:255|unique:empresa',
-            'tipo_empresa' => 'required|in:Servicios,Ventas,Ventas y Servicios,Especial',
+            'tipo_empresa' => 'required|in:Servicios,Ventas,Ventas y Servicios',
             'direccion' => 'nullable|string|max:255',
             'telefono' => 'nullable|string|max:255',
             'email' => 'nullable|email|max:255',
@@ -155,10 +247,10 @@ class EmpresaController extends Controller
             'fecha_inscripcion' => 'nullable|date',
             'descuento' => 'nullable|string|max:255',
             'periodo' => 'nullable|in:Mensual,Anual',
-            'primer_nombre_gerente' => 'nullable|string|max:255',
+            'primer_nombre_gerente' => 'required|string|max:255',
             'segundo_nombre_gerente' => 'nullable|string|max:255',
-            'primer_apellido_gerente' => 'nullable|string|max:255',
-            'segundo_apellido_gerente' => 'nullable|string|max:255',
+            'primer_apellido_gerente' => 'required|string|max:255',
+            'segundo_apellido_gerente' => 'required|string|max:255',
             'tipo_documento_gerente' => 'nullable|string|max:50',
         ]);
 
@@ -273,7 +365,7 @@ class EmpresaController extends Controller
             'razon_social' => 'required|string|max:255',
             'dominio' => ['required', 'string', 'max:255', Rule::unique('empresa')->ignore($empresa->id)],
             'nit' => ['required', 'string', 'max:255', Rule::unique('empresa')->ignore($empresa->id)],
-            'tipo_empresa' => 'required|in:Servicios,Ventas,Ventas y Servicios,Especial',
+            'tipo_empresa' => 'required|in:Servicios,Ventas,Ventas y Servicios',
             'direccion' => 'nullable|string|max:255',
             'telefono' => 'nullable|string|max:255',
             'email' => 'nullable|email|max:255',
@@ -286,6 +378,45 @@ class EmpresaController extends Controller
         ]);
 
         $empresa->update($validatedData);
+
+        // Cambio de gerente desde el SAAS admin: actualiza los nombres del usuario gerente.
+        // Regla: el gerente NO se elimina ni se inactiva; solo se le actualizan sus datos.
+        $gerenteNombres = $request->only([
+            'primer_nombre_gerente', 'segundo_nombre_gerente',
+            'primer_apellido_gerente', 'segundo_apellido_gerente'
+        ]);
+
+        if (array_filter($gerenteNombres)) {
+            $rolGerente = \App\Models\Role::where('empresa_id', $empresa->id)
+                ->where('nombre', 'Gerente General')->first();
+
+            if ($rolGerente) {
+                $gerenteUser = User::where('empresa_id', $empresa->id)
+                    ->where('rol_id', $rolGerente->id)
+                    ->orderBy('id')->first();
+
+                if ($gerenteUser) {
+                    // Mínimo: un nombre y dos apellidos; el segundo nombre es opcional.
+                    $primerNombre = trim($gerenteNombres['primer_nombre_gerente'] ?? '');
+                    $primerApellido = trim($gerenteNombres['primer_apellido_gerente'] ?? '');
+                    $segundoApellido = trim($gerenteNombres['segundo_apellido_gerente'] ?? '');
+
+                    if ($primerNombre === '' || $primerApellido === '' || $segundoApellido === '') {
+                        return response()->json([
+                            'error' => 'Para cambiar el gerente se requieren: un nombre y dos apellidos (el segundo nombre es opcional).'
+                        ], 422);
+                    }
+
+                    $gerenteUser->update([
+                        'primer_nombre' => $primerNombre,
+                        'segundo_nombre' => $gerenteNombres['segundo_nombre_gerente'] ? trim($gerenteNombres['segundo_nombre_gerente']) : null,
+                        'primer_apellido' => $primerApellido,
+                        'segundo_apellido' => $segundoApellido,
+                    ]);
+                }
+            }
+        }
+
         return response()->json($empresa);
     }
 
@@ -294,6 +425,34 @@ class EmpresaController extends Controller
     {
         $empresaId = auth()->user()->empresa_id;
         $empresa = Empresa::findOrFail($empresaId);
+
+        $validatedData = $request->validate([
+            'arl' => 'nullable|string|max:255',
+            'caja_compensacion' => 'nullable|string|max:255',
+        ]);
+
+        $empresa->update($validatedData);
+        return response()->json([
+            'message' => 'Configuración de RRHH actualizada correctamente.',
+            'empresa' => $empresa
+        ]);
+    }
+
+    // Devuelve la configuración RRHH (ARL, Caja de Compensación) de la empresa
+    public function getConfiguracionRRHH($id)
+    {
+        $empresa = Empresa::findOrFail($id);
+        return response()->json([
+            'empresa' => $empresa,
+            'arl' => $empresa->arl,
+            'caja_compensacion' => $empresa->caja_compensacion,
+        ]);
+    }
+
+    // Guarda la configuración RRHH (ARL, Caja de Compensación) de la empresa
+    public function updateConfiguracionRRHH(Request $request, $id)
+    {
+        $empresa = Empresa::findOrFail($id);
 
         $validatedData = $request->validate([
             'arl' => 'nullable|string|max:255',
@@ -385,9 +544,13 @@ class EmpresaController extends Controller
     {
         $empresa = Empresa::findOrFail($id);
         
-        if (!$empresa->contrato_aceptado) {
+        if (!$empresa->contrato_id) {
             return response()->json(['error' => 'El contrato aún no ha sido firmado.'], 403);
         }
+
+        // Obtener la versión específica del contrato que firmó
+        $contrato = \App\Models\SaasContrato::find($empresa->contrato_id);
+        $contenidoContrato = $contrato ? $contrato->contenido : '<p>Contrato no encontrado</p>';
 
         // Obtener al gerente de la empresa
         $gerente = User::where('empresa_id', $empresa->id)
@@ -399,41 +562,64 @@ class EmpresaController extends Controller
         $documentoGerente = $gerente ? $gerente->documento : 'N/A';
 
         // Estructura de datos para la vista del PDF
-        $data = [
-            'empresa' => $empresa,
-            'nombreGerente' => $nombreGerente,
-            'documentoGerente' => $documentoGerente,
-            'fecha' => $empresa->contrato_fecha_aceptacion ? \Carbon\Carbon::parse($empresa->contrato_fecha_aceptacion)->format('d \d\e m \d\e Y, h:i A') : date('d/m/Y'),
-            'ip' => $empresa->contrato_ip_aceptacion
+        $fechaFirmaFormateada = $empresa->fecha_firma ? \Carbon\Carbon::parse($empresa->fecha_firma)->format('d \d\e m \d\e Y, h:i A') : date('d/m/Y');
+        
+        // Obtener detalles de IA
+        $detalleIa = '';
+        if ($empresa->ia_byok_activo) {
+            $detalleIa = 'Servicio IA Habilitado bajo el conector de API propia (BYOK) - Sin límites por GestivaPyme.';
+        } else {
+            $simpleUsers = \DB::table('empresa_tarifas')->where('empresa_id', $empresa->id)->where('tarifa_id', 'ia_simple')->value('cantidad') ?? 0;
+            $advancedUsers = \DB::table('empresa_tarifas')->where('empresa_id', $empresa->id)->where('tarifa_id', 'ia_avanzada')->value('cantidad') ?? 0;
+            $detalleIa = "Modo Simple: {$simpleUsers} usuarios (15 acciones/día); Modo Avanzado: {$advancedUsers} usuarios (bolsa de 2M tokens/mes, exceso a $15.000 COP por millón).";
+        }
+
+        // Mapear los placeholders para reemplazarlos dinámicamente
+        $reemplazos = [
+            '{CLIENTE_RAZON_SOCIAL}' => $empresa->razon_social,
+            '{CLIENTE_NIT}' => $empresa->nit,
+            '{CLIENTE_DIRECCION}' => $empresa->direccion ?: 'N/A',
+            '{CLIENTE_CIUDAD}' => $empresa->ciudad ?: 'N/A',
+            '{CLIENTE_GERENTE}' => $nombreGerente,
+            '{CLIENTE_GERENTE_DOC}' => $documentoGerente,
+            '{PLAN_CONTRATADO}' => $empresa->plan_suscripcion ?: 'Básico',
+            '{TARIFA_MENSUAL}' => '$' . number_format($empresa->monto_mensual) . ' COP',
+            '{FECHA_FIRMA}' => $fechaFirmaFormateada,
+            '{DETALLE_IA}' => $detalleIa,
+            
+            // Datos del proveedor por defecto
+            '{PROVEEDOR_NOMBRE}' => 'GestivaPyme S.A.S',
+            '{PROVEEDOR_NIT}' => '901.456.789-0',
+            '{PROVEEDOR_REPRESENTANTE}' => 'Representante Legal de GestivaPyme S.A.S',
+            '{PROVEEDOR_DIRECCION}' => 'Calle 100 #15-30, Bogotá D.C.',
+            '{PROVEEDOR_PAIS}' => 'Colombia'
         ];
 
-        // Crear una vista HTML básica para el PDF (se puede mover a un archivo Blade más adelante)
+        // Reemplazar marcadores en el contenido
+        $contenidoContrato = str_replace(array_keys($reemplazos), array_values($reemplazos), $contenidoContrato);
+
+        $firmaSrc = $empresa->firma_gerente_url; // Base64 desde frontend
+
+        // Crear una vista HTML para el PDF usando el texto dinámico procesado
         $html = '
         <div style="font-family: Helvetica, sans-serif; padding: 20px;">
-            <div style="text-align: center; margin-bottom: 30px;">
-                <h2>CONTRATO DE LICENCIA Y PRESTACIÓN DE SERVICIOS SAAS</h2>
-                <h3>GESTIVAPYME</h3>
+            <div style="margin-bottom: 20px; text-align: right; color: #666; font-size: 11px;">
+                Versión del Documento: v' . ($contrato ? $contrato->version : '1.0') . '<br>
+                Fecha de Aceptación: ' . $fechaFirmaFormateada . '
             </div>
             
-            <p>Entre los suscritos a saber, de una parte <strong>GestivaPyme S.A.S</strong>, actuando como el PRESTADOR, y de otra parte <strong>' . $empresa->razon_social . '</strong> identificada con NIT <strong>' . $empresa->nit . '</strong>, representada legalmente por <strong>' . $nombreGerente . '</strong> con documento <strong>' . $documentoGerente . '</strong>, quien en adelante se denominará EL CLIENTE, hemos convenido celebrar el presente contrato:</p>
+            <div style="text-align: justify; line-height: 1.5; font-size: 12px; color: #1e293b;">
+                ' . $contenidoContrato . '
+            </div>
             
-            <h4>CLÁUSULA PRIMERA: OBJETO</h4>
-            <p>El PRESTADOR otorga al CLIENTE el derecho de uso no exclusivo de la plataforma de gestión empresarial GestivaPyme, en su modalidad SaaS (Software as a Service) bajo el plan de suscripción <strong>' . ($empresa->plan_suscripcion ?: 'Básico') . '</strong>.</p>
-            
-            <h4>CLÁUSULA SEGUNDA: OBLIGACIONES Y USO</h4>
-            <p>El CLIENTE se compromete a hacer un uso lícito de la herramienta, protegiendo sus credenciales de acceso. El PRESTADOR garantizará un uptime del 99.9% y respaldos regulares de la información.</p>
-            
-            <h4>CLÁUSULA TERCERA: PRIVACIDAD DE DATOS</h4>
-            <p>Toda la información ingresada por EL CLIENTE será tratada con estricta confidencialidad y alojada en servidores seguros, cumpliendo con las normativas vigentes de protección de datos (Habeas Data).</p>
-            
-            <hr style="margin-top: 50px; margin-bottom: 30px;">
+            <hr style="margin-top: 50px; margin-bottom: 30px; border: 0; border-top: 1px solid #cbd5e1;">
             <div style="text-align: center;">
-                <p>Aceptado digitalmente el <strong>' . $data['fecha'] . '</strong> desde la IP <strong>' . $data['ip'] . '</strong>.</p>
+                <p style="font-size: 11px; color: #64748b;">Aceptado digitalmente el <strong>' . $fechaFirmaFormateada . '</strong>.</p>
                 <div style="margin-top: 20px;">
-                    ' . (extension_loaded('gd') && $empresa->contrato_firma_path ? '<img src="' . $empresa->contrato_firma_path . '" style="max-width: 250px; max-height: 150px; border-bottom: 1px solid #000; padding-bottom: 10px;">' : '<div style="width: 250px; height: 60px; border-bottom: 1px solid #000; margin: 0 auto;"></div>') . '
+                    ' . ($firmaSrc ? '<img src="' . $firmaSrc . '" style="max-width: 250px; max-height: 100px; border-bottom: 1px solid #000; padding-bottom: 5px;">' : '<div style="width: 250px; height: 60px; border-bottom: 1px solid #000; margin: 0 auto;"></div>') . '
                 </div>
-                <p style="margin-top: 10px;"><strong>' . $nombreGerente . '</strong></p>
-                <p>Representante Legal - ' . $empresa->razon_social . '</p>
+                <p style="margin-top: 10px; font-size: 13px; font-weight: bold; color: #0f172a;"><strong>' . $nombreGerente . '</strong></p>
+                <p style="font-size: 11px; color: #475569;">Representante Legal - ' . $empresa->razon_social . '</p>
             </div>
         </div>';
 

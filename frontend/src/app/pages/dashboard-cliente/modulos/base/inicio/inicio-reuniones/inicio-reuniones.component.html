@@ -1,41 +1,97 @@
 <!-- HTML MÓDULO REUNIONES -->
 <div class="module-container">
-<div class="module-header">
+  <div class="module-header">
     <h1>Próximas Reuniones</h1>
     <div style="display: flex; justify-content: center; padding: 0.25rem 0 0.5rem 0;">
-      <button class="btn-add btn-pill">+ Nueva Reunión</button>
+      <button class="btn-add btn-pill" (click)="abrirModal()">+ Nueva Reunión</button>
     </div>
   </div>
 
   <div class="panel-body">
-    <!-- Lista de tarjetas de reuniones -->
-    <div class="reunion-card">
-      <div class="reunion-date">
-        <span class="day">15</span>
-        <span class="month">AGO</span>
+    @if(cargando) {
+      <div class="text-center" style="padding: 2rem;">
+        <i class="fas fa-spinner fa-spin" style="font-size: 1.5rem;"></i>
       </div>
-      <div class="reunion-info">
-        <h3 class="reunion-motive">Presentación de Resultados</h3>
-        <p class="reunion-detail">Responsable: Juan Pérez</p>
-        <p class="reunion-detail">Hora: 10:00 AM | Virtual</p>
-      </div>
+    } @else {
+      @for(r of reuniones; track r.id) {
+        <div class="reunion-card">
+          <div class="reunion-date">
+            <span class="day">{{diaReunion(r)}}</span>
+            <span class="month">{{mesReunion(r)}}</span>
+          </div>
+          <div class="reunion-info">
+            <h3 class="reunion-motive">{{r.titulo}}</h3>
+            <p class="reunion-detail">Responsable: {{organizadorReunion(r)}}</p>
+            <p class="reunion-detail">Hora: {{horaReunion(r)}} | {{r.tipo_encuentro === 'virtual' ? 'Virtual' : 'Presencial'}}</p>
+            @if(r.descripcion) {
+              <p class="reunion-detail" style="font-size: 0.85rem; opacity: 0.7;">{{r.descripcion}}</p>
+            }
+          </div>
+        </div>
+      } @empty {
+        <div style="padding: 2rem; text-align: center;">
+          <i class="fas fa-calendar-times mb-2" style="font-size: 1.5rem; opacity: 0.5;"></i>
+          <p style="margin: 0;">No tienes reuniones programadas.</p>
+        </div>
+      }
+    }
+  </div>
+</div>
+
+<!-- MODAL NUEVA REUNIÓN -->
+@if(showModal) {
+<div class="modal-overlay">
+  <div class="modal-card neumorphic-panel" style="max-width: 450px;">
+    <div class="modal-header">
+      <h1>Nueva Reunión</h1>
+      <button class="btn-close" (click)="cerrarModal()">×</button>
     </div>
-    
-    <div class="reunion-card">
-      <div class="reunion-date">
-        <span class="day">18</span>
-        <span class="month">AGO</span>
+    <div class="modal-body">
+      <div class="form-group">
+        <label>Título</label>
+        <input type="text" class="input-neumorphic" [(ngModel)]="formReunion.titulo" name="titulo" placeholder="Ej. Comité Directivo">
       </div>
-      <div class="reunion-info">
-        <h3 class="reunion-motive">Comité Directivo</h3>
-        <p class="reunion-detail">Responsable: María Gómez</p>
-        <p class="reunion-detail">Hora: 02:00 PM | Presencial</p>
+      <div class="form-group">
+        <label>Descripción</label>
+        <textarea class="input-neumorphic" rows="2" [(ngModel)]="formReunion.descripcion" name="descripcion"></textarea>
+      </div>
+      <div class="form-fila" style="display: flex; gap: 1rem;">
+        <div class="form-group" style="flex: 1;">
+          <label>Fecha</label>
+          <input type="date" class="input-neumorphic" [(ngModel)]="formReunion.fecha" name="fecha">
+        </div>
+        <div class="form-group" style="flex: 1;">
+          <label>Hora</label>
+          <input type="time" class="input-neumorphic" [(ngModel)]="formReunion.hora" name="hora">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Tipo de encuentro</label>
+        <select class="input-neumorphic" [(ngModel)]="formReunion.tipo_encuentro" name="tipo">
+          <option value="virtual">Virtual</option>
+          <option value="presencial">Presencial</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Audiencia</label>
+        <select class="input-neumorphic" [(ngModel)]="formReunion.audiencia" name="audiencia">
+          <option value="todos">Todos</option>
+          <option value="gerencia">Solo Gerencia</option>
+          <option value="area">Mi Área</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Enlace / Lugar</label>
+        <input type="text" class="input-neumorphic" [(ngModel)]="formReunion.enlace_lugar" name="enlace" placeholder="URL de meet o dirección">
+      </div>
+      <div class="form-actions">
+        <button type="button" class="btn-volver btn-pill" (click)="cerrarModal()">Cancelar</button>
+        <button type="button" class="btn-save btn-pill" (click)="guardarReunion()" [disabled]="guardando">
+          @if(guardando) { <i class="fas fa-spinner fa-spin"></i> Creando... }
+          @else { Agendar Reunión }
+        </button>
       </div>
     </div>
   </div>
 </div>
-
-
-
-
-
+}

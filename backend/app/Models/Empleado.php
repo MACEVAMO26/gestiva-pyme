@@ -29,4 +29,14 @@ class Empleado extends Model
     {
         return $this->belongsTo(User::class, 'usuario_id');
     }
+
+    public function area()
+    {
+        return $this->belongsTo(Area::class, 'area_id');
+    }
+
+    public function cargo()
+    {
+        return $this->belongsTo(Cargo::class, 'cargo_id');
+    }
 }

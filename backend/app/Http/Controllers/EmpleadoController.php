@@ -107,7 +107,7 @@ class EmpleadoController extends Controller
                 Notificacion::create([
                     'usuario_id' => $gerente->id,
                     'titulo' => 'Solicitud de Baja de Empleado',
-                    'mensaje' => 'Gestión Humana ha solicitado la inactivación del empleado ' . $empleado->usuario->nombres . ' ' . $empleado->usuario->apellidos . '. Motivo: ' . $request->motivo,
+                    'descripcion' => 'Gestión Humana ha solicitado la inactivación del empleado ' . $empleado->usuario->nombres . ' ' . $empleado->usuario->apellidos . '. Motivo: ' . $request->motivo,
                     'leida' => false
                 ]);
             }

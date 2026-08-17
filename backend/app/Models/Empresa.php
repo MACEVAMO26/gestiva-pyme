@@ -50,14 +50,36 @@ class Empresa extends Model
         'cargos_extra',
         'addons_personalizados',
         'arl',
-        'caja_compensacion'
+        'caja_compensacion',
+        'contrato_id',
+        'fecha_firma',
+        'firma_gerente_url',
+        'contrato_pdf_url',
+        'ia_byok_activo',
+        'ia_byok_proveedor',
+        'ia_byok_key',
+        'ia_byok_modelo'
     ];
 
     protected $casts = [
         'descuentos_aplicados' => 'array',
         'cargos_extra' => 'array',
         'addons_personalizados' => 'array',
+        'fecha_firma' => 'datetime',
+        'ia_byok_activo' => 'boolean'
     ];
+
+    public function contratoSaas()
+    {
+        return $this->belongsTo(SaasContrato::class, 'contrato_id');
+    }
+
+    public function tarifasCatalogo()
+    {
+        return $this->belongsToMany(TarifaCatalogo::class, 'empresa_tarifas', 'empresa_id', 'tarifa_id')
+                    ->withPivot('cantidad', 'valor_aplicado')
+                    ->withTimestamps();
+    }
 
     public function modulos()
     {

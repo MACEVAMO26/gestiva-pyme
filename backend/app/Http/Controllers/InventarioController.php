@@ -11,7 +11,12 @@ class InventarioController extends Controller
     // Obtiene la lista de inventario incluyendo los detalles del producto asociado
     public function index()
     {
-        return Inventario::with('producto')->get();
+        $empresaId = auth()->user()?->empresa_id;
+        return Inventario::with('producto')
+            ->whereHas('producto', function ($q) use ($empresaId) {
+                $q->where('empresa_id', $empresaId);
+            })
+            ->get();
     }
 
     // Registra una nueva entrada en el inventario inicializando cantidades
@@ -19,13 +24,12 @@ class InventarioController extends Controller
     {
         $validatedData = $request->validate([
             'producto_id' => 'required|integer|exists:productos,id',
-            'cantidad_disponible' => 'required|integer|min:0',
-            'cantidad_reservada' => 'nullable|integer|min:0',
-            'ubicacion' => 'nullable|string|max:255',
-            'lote' => 'nullable|string|max:255',
-            'fecha_vencimiento' => 'nullable|date',
+            'stock_actual' => 'required|integer|min:0',
+            'stock_minimo' => 'nullable|integer|min:0',
+            'bodega' => 'nullable|string|max:255',
+            'estante' => 'nullable|string|max:255',
+            'posicion' => 'nullable|string|max:255',
         ]);
-        $validatedData['cantidad_reservada'] = $validatedData['cantidad_reservada'] ?? 0;
 
         $inventario = Inventario::create($validatedData);
         return response()->json($inventario, 201);
@@ -44,11 +48,11 @@ class InventarioController extends Controller
 
         $validatedData = $request->validate([
             'producto_id' => 'required|integer|exists:productos,id',
-            'cantidad_disponible' => 'required|integer|min:0',
-            'cantidad_reservada' => 'nullable|integer|min:0',
-            'ubicacion' => 'nullable|string|max:255',
-            'lote' => 'nullable|string|max:255',
-            'fecha_vencimiento' => 'nullable|date',
+            'stock_actual' => 'required|integer|min:0',
+            'stock_minimo' => 'nullable|integer|min:0',
+            'bodega' => 'nullable|string|max:255',
+            'estante' => 'nullable|string|max:255',
+            'posicion' => 'nullable|string|max:255',
         ]);
 
         $inventario->update($validatedData);

@@ -54,9 +54,9 @@ class ProductoController extends Controller
         // Crear registro en inventario inicial
         Inventario::create([
             'producto_id' => $producto->id,
-            'cantidad_disponible' => $producto->stock_inicial,
-            'cantidad_reservada' => 0,
-            'ubicacion' => 'Principal',
+            'stock_actual' => $producto->stock_inicial,
+            'stock_minimo' => 0,
+            'bodega' => 'Principal',
         ]);
 
         return response()->json([
@@ -103,7 +103,7 @@ class ProductoController extends Controller
     {
         $producto = Producto::findOrFail($id);
         $producto->activo = false;
-        $producto->fecha_inactivacion = now();
+        $producto->inactive_at = now();
         $producto->save();
 
         return response()->json(['message' => 'Producto eliminado correctamente']);

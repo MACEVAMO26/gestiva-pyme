@@ -66,7 +66,7 @@ class RoleController extends Controller
         }
 
         $role->activo = !$role->activo;
-        $role->fecha_inactivacion = $role->activo ? null : now();
+        $role->inactive_at = $role->activo ? null : now();
 
         $role->save();
 

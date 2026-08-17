@@ -281,6 +281,18 @@
           }
         </a>
 
+        <!-- CONTRATOS SAAS -->
+        <a
+          class="nav-item"
+          [class.active]="currentView === 'contratos'"
+          (click)="cambiarVista('contratos')"
+        >
+          <svg class="icon" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
+          </svg>
+          <span class="nav-text">Contratos</span>
+        </a>
+
         <!-- SEGURIDAD Y PERFIL -->
         <a
           class="nav-item mt-auto border-t border-gray-800 pt-2"
@@ -841,6 +853,7 @@
           </div>
 
           <div class="bg-[#0f172a] rounded-2xl p-6 shadow-inner border border-gray-800 w-full overflow-x-auto">
+            @if (!editandoSuscripcion) {
             <h3 class="panel-title mb-6">Métricas Financieras (MRR)</h3>
 
             <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
@@ -916,56 +929,40 @@
                         </div>
                       </td>
                       <td class="p-4 text-center whitespace-nowrap">
-                        <span class="px-3 py-1 rounded-full font-semibold uppercase bg-blue-500/20 text-blue-400">
+                        <span class="px-3 py-1 rounded-full font-bold uppercase text-[10px] bg-blue-900/30 text-blue-400">
                           {{ sus.plan }}
                         </span>
                       </td>
                       <td class="p-4 text-center whitespace-nowrap">
-                        @if (sus.modulosExtra > 0 || sus.addonsList.length > 0 || sus.iaMode === 'avanzado') {
-                          <div class="flex flex-col gap-1 items-center">
-                            @if (sus.modulosExtra > 0) {
-                              <span class="text-emerald-400">+{{ sus.modulosExtra }} Transversales</span>
-                            }
-                            @if (sus.addonsList.length > 0) {
-                              <span class="text-indigo-400">+{{ sus.addonsList.length }} Add-ons</span>
-                            }
-                            @if (sus.iaMode === 'avanzado') {
-                              <span class="text-purple-400 font-semibold">+ IA Avanzada (Tokens)</span>
-                            }
-                          </div>
-                        } @else {
-                          <span class="text-gray-500">Ninguno</span>
-                        }
+                        <div class="text-gray-300 font-semibold">
+                          {{ sus.tipoEmpresa }}
+                          <span class="text-blue-400 text-[10px] block" *ngIf="sus.modulosExtra > 0">
+                            +{{ sus.modulosExtra }} Especiales
+                          </span>
+                        </div>
                       </td>
                       <td class="p-4 text-center whitespace-nowrap">
-                        @if (sus.descuentosAplicados.length > 0) {
-                          <div class="flex flex-col gap-1 items-center">
-                            @for (desc of sus.descuentosAplicados; track desc.descripcion) {
-                              <span class="text-yellow-400 font-medium">{{ desc.descripcion }} (-{{ desc.porcentaje }}%)</span>
-                            }
-                          </div>
-                        } @else {
-                          <span class="text-gray-500">N/A</span>
-                        }
+                        <div class="space-y-1">
+                          @for (desc of sus.descuentosAplicados; track $index) {
+                            <div class="text-yellow-400 font-semibold text-[11px] bg-yellow-950/20 px-2 py-0.5 rounded inline-block">
+                              {{ desc.descripcion }} (-{{ desc.porcentaje }}%)
+                            </div>
+                          }
+                          @if (sus.descuentosAplicados.length === 0) {
+                            <span class="text-gray-500 italic">Ninguno</span>
+                          }
+                        </div>
                       </td>
                       <td class="p-4 text-center whitespace-nowrap">
-                        @if (sus.cargosExtra.length > 0) {
-                          <div class="flex flex-col gap-1 items-center">
-                            @for (cargo of sus.cargosExtra; track cargo.descripcion) {
-                              <span class="font-bold text-orange-400">+${{ cargo.valor | number: '1.0-0' }} <span class="font-normal">({{cargo.descripcion}})</span></span>
-                            }
-                          </div>
-                        } @else {
-                          <span class="text-gray-500">$0</span>
-                        }
-                      </td>
-                      <td class="p-4 text-center whitespace-nowrap">
-                        <span class="font-bold text-emerald-400">
-                          ${{ sus.proximoPagoTotal | number: '1.0-0' }}
+                        <span class="text-gray-300 font-inter">
+                          {{ sus.iaByokActivo ? 'BYOK Activa' : 'SaaS Standard' }}
                         </span>
                       </td>
-                      <td class="p-4 text-gray-300 font-medium whitespace-nowrap text-center">
-                        {{ sus.fechaProximoPago | date: 'mediumDate' }}
+                      <td class="p-4 text-center font-bold text-white font-inter whitespace-nowrap">
+                        ${{ sus.proximoPagoTotal | number: '1.0-0' }} COP
+                      </td>
+                      <td class="p-4 text-center text-gray-400 whitespace-nowrap">
+                        {{ sus.fechaProximoPago }}
                       </td>
                       <td class="p-4 text-center whitespace-nowrap">
                         @if (sus.estado === 'Activa') {
@@ -984,7 +981,7 @@
                       </td>
                       <td class="p-4 text-center whitespace-nowrap">
                         <div class="flex justify-center gap-3">
-                          <button (click)="abrirModalGestionSuscripcion(sus)" class="w-10 h-10 rounded-full glass-btn-gray flex items-center justify-center transition-colors hover:border-gray-500/30" title="Gestionar Tarifas">
+                          <button (click)="abrirCarritoSuscripcion(sus)" class="w-10 h-10 rounded-full glass-btn-gray flex items-center justify-center transition-colors hover:border-gray-500/30" title="Gestionar Tarifas">
                             <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
                               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
@@ -1010,6 +1007,321 @@
           } @else {
             <div class="empty-state">No hay datos de suscripciones para mostrar.</div>
           }
+        } @else {
+          <!-- CARRITO DE SUSCRIPCIONES INLINE -->
+          <div class="w-full text-white font-inter">
+            <div class="flex justify-between items-center mb-6 pb-4 border-b border-gray-800">
+              <h2 class="text-[16px] font-bold text-emerald-400 uppercase tracking-wider">
+                Carrito de Suscripción: {{ suscripcionEnEdicion?.nombreEmpresa }}
+              </h2>
+              <button (click)="cerrarCarritoSuscripcion()" class="text-gray-400 hover:text-white transition-colors">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+              </button>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              
+              <!-- PARTE IZQUIERDA: CONFIGURADOR (CARRO) - 2 COLUMNAS -->
+              <div class="lg:col-span-2 space-y-6">
+                
+                <!-- PESTAÑAS (TABS) DEL CONFIGURADOR -->
+                <div class="flex border-b border-gray-800 gap-2 mb-4 overflow-x-auto pb-1">
+                  <button (click)="activeTabCarrito = 'plan_base'" 
+                          [class.border-emerald-500]="activeTabCarrito === 'plan_base'"
+                          [class.text-emerald-400]="activeTabCarrito === 'plan_base'"
+                          class="px-4 py-2 border-b-2 border-transparent font-semibold text-xs uppercase tracking-wider text-gray-400 hover:text-white transition-colors whitespace-nowrap">
+                    1. Plan & Base
+                  </button>
+                  <button (click)="activeTabCarrito = 'modulos'" 
+                          [class.border-emerald-500]="activeTabCarrito === 'modulos'"
+                          [class.text-emerald-400]="activeTabCarrito === 'modulos'"
+                          class="px-4 py-2 border-b-2 border-transparent font-semibold text-xs uppercase tracking-wider text-gray-400 hover:text-white transition-colors whitespace-nowrap">
+                    2. Módulos Adicionales
+                  </button>
+                  <button (click)="activeTabCarrito = 'ia'" 
+                          [class.border-emerald-500]="activeTabCarrito === 'ia'"
+                          [class.text-emerald-400]="activeTabCarrito === 'ia'"
+                          class="px-4 py-2 border-b-2 border-transparent font-semibold text-xs uppercase tracking-wider text-gray-400 hover:text-white transition-colors whitespace-nowrap">
+                    3. Inteligencia Artificial
+                  </button>
+                  <button (click)="activeTabCarrito = 'addons'" 
+                          [class.border-emerald-500]="activeTabCarrito === 'addons'"
+                          [class.text-emerald-400]="activeTabCarrito === 'addons'"
+                          class="px-4 py-2 border-b-2 border-transparent font-semibold text-xs uppercase tracking-wider text-gray-400 hover:text-white transition-colors whitespace-nowrap">
+                    4. Conectores (Add-ons)
+                  </button>
+                  <button (click)="activeTabCarrito = 'descuentos'" 
+                          [class.border-emerald-500]="activeTabCarrito === 'descuentos'"
+                          [class.text-emerald-400]="activeTabCarrito === 'descuentos'"
+                          class="px-4 py-2 border-b-2 border-transparent font-semibold text-xs uppercase tracking-wider text-gray-400 hover:text-white transition-colors whitespace-nowrap">
+                    5. Descuentos
+                  </button>
+                </div>
+
+                <!-- TAB 1: PLAN BASE & TIPO EMPRESA -->
+                <div *ngIf="activeTabCarrito === 'plan_base'" class="space-y-4 bg-gray-800/40 p-4 rounded-xl border border-gray-800">
+                  <div>
+                    <label class="block text-xs uppercase tracking-wider text-gray-400 font-semibold mb-2">Tipo de Empresa (Paquete Base)</label>
+                    <select [(ngModel)]="selectedTipoEmpresa" class="neu-dark-input text-xs w-full !p-2">
+                      <option value="Ventas">Ventas (Incluye Ventas, Inventario, Clientes, Compras, Proveedores)</option>
+                      <option value="Servicios">Servicios (Incluye Agenda, CRM, Catálogo, Operarios, Reportes)</option>
+                      <option value="Ventas y Servicios">Ventas y Servicios (Mixto - Incluye todos los anteriores)</option>
+                    </select>
+                  </div>
+
+                  <hr class="border-gray-800 my-4">
+
+                  <div>
+                    <label class="block text-xs uppercase tracking-wider text-gray-400 font-semibold mb-2">Seleccionar Plan de Suscripción</label>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                      <ng-container *ngFor="let item of catalogoTarifas">
+                        <div *ngIf="item.tipo === 'plan'" 
+                             (click)="cartItemsSelect[item.id].active = true; deseleccionarOtrosPlanes(item.id)"
+                             [class.border-emerald-500]="cartItemsSelect[item.id]?.active"
+                             [class.bg-emerald-950/20]="cartItemsSelect[item.id]?.active"
+                             class="p-4 rounded-xl border border-gray-800 hover:border-gray-700 transition-all cursor-pointer text-center relative">
+                          <span *ngIf="cartItemsSelect[item.id]?.active" class="absolute top-2 right-2 text-emerald-400 text-xs">✓ Seleccionado</span>
+                          <div class="font-bold text-sm text-white mb-1">{{ item.nombre }}</div>
+                          <div class="text-xs text-emerald-400 font-bold font-inter">${{ item.valor | number: '1.0-0' }} COP / mes</div>
+                        </div>
+                      </ng-container>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- TAB 2: MÓDULOS ADICIONALES (ESPECIALES) -->
+                <div *ngIf="activeTabCarrito === 'modulos'" class="space-y-4">
+                  <!-- Regla de Validación de Negocio visual -->
+                  <div *ngIf="!['Ventas', 'Servicios', 'Ventas y Servicios'].includes(selectedTipoEmpresa)" class="bg-yellow-950/20 border border-yellow-800/50 p-4 rounded-xl text-yellow-300 text-xs flex items-center gap-3">
+                    <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                    <span>Debe seleccionar un paquete base (Ventas, Servicios o Mixto) en la pestaña 1 para poder agregar módulos adicionales.</span>
+                  </div>
+
+                  <div *ngIf="['Ventas', 'Servicios', 'Ventas y Servicios'].includes(selectedTipoEmpresa)" class="bg-gray-800/40 p-4 rounded-xl border border-gray-800 space-y-3">
+                    <label class="block text-xs uppercase tracking-wider text-gray-400 font-semibold mb-2">Habilitar Módulos Especiales (Transversales)</label>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      <ng-container *ngFor="let item of catalogoTarifas">
+                        <div *ngIf="item.tipo === 'modulo_adicional'" 
+                             (click)="cartItemsSelect[item.id].active = !cartItemsSelect[item.id].active"
+                             [class.border-emerald-500]="cartItemsSelect[item.id]?.active"
+                             [class.bg-emerald-950/20]="cartItemsSelect[item.id]?.active"
+                             class="p-3 rounded-xl border border-gray-800 hover:border-gray-700 transition-all cursor-pointer flex justify-between items-center relative">
+                          <div>
+                            <div class="font-semibold text-xs text-white">{{ item.nombre }}</div>
+                            <div class="text-[10px] text-gray-400 mt-1">+${{ item.valor | number: '1.0-0' }} COP / mes</div>
+                          </div>
+                          <input type="checkbox" [checked]="cartItemsSelect[item.id]?.active" class="rounded text-emerald-500 border-gray-700 bg-gray-900 pointer-events-none" />
+                        </div>
+                      </ng-container>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- TAB 3: INTELIGENCIA ARTIFICIAL (GEMINI FLASH) -->
+                <div *ngIf="activeTabCarrito === 'ia'" class="space-y-4 bg-gray-800/40 p-4 rounded-xl border border-gray-800">
+                  
+                  <!-- Toggle de API Propia (BYOK) -->
+                  <div class="flex items-center justify-between p-3 bg-gray-900 rounded-xl border border-gray-800">
+                    <div>
+                      <div class="font-bold text-xs text-white">Traer propia API Key (BYOK)</div>
+                      <div class="text-[10px] text-gray-400 mt-1">El cliente provee su credencial y paga su consumo directo. Cobro de conector fijo mensual.</div>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                      <input type="checkbox" [(ngModel)]="iaByokActivo" class="sr-only peer">
+                      <div class="w-9 h-5 bg-gray-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-gray-400 after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-500"></div>
+                    </label>
+                  </div>
+
+                  <hr class="border-gray-800 my-4">
+
+                  <!-- Opción A: Cobro SaaS por usuarios de IA -->
+                  <div *ngIf="!iaByokActivo" class="space-y-4">
+                    <label class="block text-xs uppercase tracking-wider text-gray-400 font-semibold mb-2">Configurar Usuarios de IA (Gestiva AI)</label>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <!-- IA Simple -->
+                      <div class="p-4 bg-gray-900 rounded-xl border border-gray-800">
+                        <div class="flex items-center justify-between mb-3">
+                          <label class="flex items-center gap-2 cursor-pointer font-bold text-xs text-white">
+                            <input type="checkbox" [(ngModel)]="cartItemsSelect['ia_simple'].active" class="rounded text-emerald-500 border-gray-700 bg-gray-900" />
+                            Modo Simple (Límite 15 acciones/día)
+                          </label>
+                          <span class="text-xs text-emerald-400 font-bold font-inter">$6.000 / mes</span>
+                        </div>
+                        <div class="flex items-center justify-between gap-3 mt-4" *ngIf="cartItemsSelect['ia_simple'].active">
+                          <span class="text-[11px] text-gray-400">Cantidad de usuarios:</span>
+                          <input type="number" [(ngModel)]="cartItemsSelect['ia_simple'].cantidad" class="neu-dark-input text-xs w-20 text-center !p-1.5" min="1">
+                        </div>
+                      </div>
+
+                      <!-- IA Avanzada -->
+                      <div class="p-4 bg-gray-900 rounded-xl border border-gray-800">
+                        <div class="flex items-center justify-between mb-3">
+                          <label class="flex items-center gap-2 cursor-pointer font-bold text-xs text-white">
+                            <input type="checkbox" [(ngModel)]="cartItemsSelect['ia_avanzada'].active" class="rounded text-emerald-500 border-gray-700 bg-gray-900" />
+                            Modo Avanzado (Bolsa de 2M tokens/mes)
+                          </label>
+                          <span class="text-xs text-emerald-400 font-bold font-inter">$18.000 / mes</span>
+                        </div>
+                        <div class="flex items-center justify-between gap-3 mt-4" *ngIf="cartItemsSelect['ia_avanzada'].active">
+                          <span class="text-[11px] text-gray-400">Cantidad de usuarios:</span>
+                          <input type="number" [(ngModel)]="cartItemsSelect['ia_avanzada'].cantidad" class="neu-dark-input text-xs w-20 text-center !p-1.5" min="1">
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Opción B: Formulario BYOK -->
+                  <div *ngIf="iaByokActivo" class="space-y-4">
+                    <label class="block text-xs uppercase tracking-wider text-gray-400 font-semibold mb-2">Credenciales API Propia del Cliente</label>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label class="block text-[11px] text-gray-400 mb-1">Proveedor de IA</label>
+                        <select [(ngModel)]="iaByokProveedor" class="neu-dark-input text-xs w-full !p-1.5">
+                          <option value="gemini">Google Gemini</option>
+                          <option value="openai">OpenAI (GPT)</option>
+                          <option value="claude">Anthropic Claude</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label class="block text-[11px] text-gray-400 mb-1">Modelo Específico</label>
+                        <input type="text" [(ngModel)]="iaByokModelo" class="neu-dark-input text-xs w-full !p-1.5" placeholder="Ej: gemini-3.5-flash">
+                      </div>
+                      <div class="md:col-span-2">
+                        <label class="block text-[11px] text-gray-400 mb-1">API Key</label>
+                        <input type="password" [(ngModel)]="iaByokKey" class="neu-dark-input text-xs w-full !p-1.5" placeholder="{{ iaByokKeyExists ? '●●●●●●●● (Ya guardada. Deja en blanco para no cambiar)' : 'Ingresa la API Key de la empresa' }}">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- TAB 4: ADD-ONS (CONECTORES) -->
+                <div *ngIf="activeTabCarrito === 'addons'" class="bg-gray-800/40 p-4 rounded-xl border border-gray-800 space-y-3">
+                  <label class="block text-xs uppercase tracking-wider text-gray-400 font-semibold mb-2">Seleccionar Conectores e Integraciones Externas</label>
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <ng-container *ngFor="let item of catalogoTarifas">
+                      <div *ngIf="item.tipo === 'addon' && item.id !== 'addon_byok_ia'" 
+                           (click)="cartItemsSelect[item.id].active = !cartItemsSelect[item.id].active"
+                           [class.border-emerald-500]="cartItemsSelect[item.id]?.active"
+                           [class.bg-emerald-950/20]="cartItemsSelect[item.id]?.active"
+                           class="p-3 rounded-xl border border-gray-800 hover:border-gray-700 transition-all cursor-pointer flex justify-between items-center relative">
+                        <div>
+                          <div class="font-semibold text-xs text-white">{{ item.nombre }}</div>
+                          <div class="text-[10px] text-gray-400 mt-1">+${{ item.valor | number: '1.0-0' }} COP / mes</div>
+                        </div>
+                        <input type="checkbox" [checked]="cartItemsSelect[item.id]?.active" class="rounded text-emerald-500 border-gray-700 bg-gray-900 pointer-events-none" />
+                      </div>
+                    </ng-container>
+                  </div>
+                </div>
+
+                <!-- TAB 5: DESCUENTOS -->
+                <div *ngIf="activeTabCarrito === 'descuentos'" class="bg-gray-800/40 p-4 rounded-xl border border-gray-800 space-y-3">
+                  <label class="block text-xs uppercase tracking-wider text-gray-400 font-semibold mb-2">Seleccionar Descuentos Aplicados</label>
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <ng-container *ngFor="let item of catalogoTarifas">
+                      <div *ngIf="item.tipo === 'descuento'" 
+                           (click)="cartItemsSelect[item.id].active = !cartItemsSelect[item.id].active"
+                           [class.border-emerald-500]="cartItemsSelect[item.id]?.active"
+                           [class.bg-emerald-950/20]="cartItemsSelect[item.id]?.active"
+                           class="p-3 rounded-xl border border-gray-800 hover:border-gray-700 transition-all cursor-pointer flex justify-between items-center relative">
+                        <div>
+                          <div class="font-semibold text-xs text-white">{{ item.nombre }}</div>
+                          <div class="text-[10px] text-yellow-400 mt-1">-{{ item.valor }}% de descuento</div>
+                        </div>
+                        <input type="checkbox" [checked]="cartItemsSelect[item.id]?.active" class="rounded text-yellow-500 border-gray-700 bg-gray-900 pointer-events-none" />
+                      </div>
+                    </ng-container>
+                  </div>
+                </div>
+
+              </div>
+
+              <!-- PARTE DERECHA: RESUMEN DE COMPRA (INLINE CHECKOUT) - 1 COLUMNA -->
+              <div class="space-y-6">
+                <div class="bg-gray-800/70 p-5 rounded-xl border border-gray-700 shadow-lg space-y-4">
+                  <h3 class="text-xs uppercase tracking-wider text-gray-400 font-semibold border-b border-gray-700 pb-2">Resumen de Suscripción</h3>
+                  
+                  <!-- Datos de Empresa -->
+                  <div>
+                    <div class="text-[10px] text-gray-500">CLIENTE</div>
+                    <div class="font-bold text-white text-sm">{{ suscripcionEnEdicion?.nombreEmpresa }}</div>
+                    <div class="text-[10px] text-gray-400 mt-1">Paquete Base: <span class="text-emerald-400 font-semibold">{{ selectedTipoEmpresa }}</span></div>
+                  </div>
+
+                  <hr class="border-gray-700">
+
+                  <!-- Detalle del Carrito -->
+                  <div class="space-y-2 max-h-[30vh] overflow-y-auto pr-1">
+                    <div class="text-[10px] text-gray-500">CONCEPTOS DE COBRO</div>
+                    
+                    <ng-container *ngFor="let item of catalogoTarifas">
+                      <div *ngIf="cartItemsSelect[item.id]?.active && item.tipo !== 'descuento' && item.id !== 'addon_byok_ia'" class="flex justify-between items-start text-xs text-gray-300">
+                        <span class="flex-1 pr-2">
+                          {{ item.nombre }}
+                          <span *ngIf="item.mecanismo === 'por_usuario'" class="text-[10px] text-gray-500 block">
+                            ({{ cartItemsSelect[item.id].cantidad }} usuarios x ${{ item.valor | number: '1.0-0' }})
+                          </span>
+                        </span>
+                        <span class="font-inter font-semibold text-gray-200">
+                          ${{ (item.mecanismo === 'fijo' ? item.valor : item.valor * cartItemsSelect[item.id].cantidad) | number: '1.0-0' }}
+                        </span>
+                      </div>
+                    </ng-container>
+
+                    <!-- Add-on BYOK si aplica -->
+                    <div *ngIf="iaByokActivo" class="flex justify-between items-start text-xs text-gray-300">
+                      <span class="flex-1 pr-2">Conector API de IA Propia (BYOK)</span>
+                      <span class="font-inter font-semibold text-gray-200">$25.000</span>
+                    </div>
+                  </div>
+
+                  <hr class="border-gray-700">
+
+                  <!-- Subtotal y Descuentos -->
+                  <div class="space-y-1.5 text-xs text-gray-300">
+                    <div class="flex justify-between">
+                      <span>Subtotal:</span>
+                      <span class="font-inter font-semibold">${{ subtotalSuscripcion | number: '1.0-0' }} COP</span>
+                    </div>
+
+                    <div class="flex justify-between text-yellow-400" *ngIf="descuentoSuscripcion > 0">
+                      <span>Ajuste por Descuento:</span>
+                      <span class="font-inter font-semibold">-${{ descuentoSuscripcion | number: '1.0-0' }} COP</span>
+                    </div>
+                  </div>
+
+                  <hr class="border-gray-700">
+
+                  <!-- Gran Total MRR -->
+                  <div class="bg-gray-900/60 p-3 rounded-lg border border-gray-800 flex justify-between items-center">
+                    <div>
+                      <div class="text-[10px] text-gray-400 uppercase tracking-wider block">Total Mensual (MRR)</div>
+                      <span class="text-xs text-gray-500">(Calculado automáticamente)</span>
+                    </div>
+                    <span class="text-xl font-bold font-inter text-green-400">
+                      ${{ totalSuscripcion | number: '1.0-0' }}
+                    </span>
+                  </div>
+
+                  <!-- Botones de Acción -->
+                  <div class="pt-4 flex flex-col gap-2">
+                    <button (click)="guardarCarritoSuscripcion()" [disabled]="guardandoSuscripcion" class="w-full py-2.5 bg-[#066810] hover:bg-[#05570d] text-white text-xs font-bold uppercase rounded-full shadow-md transition-colors text-center disabled:opacity-50 flex items-center justify-center gap-2">
+                      <span *ngIf="guardandoSuscripcion" class="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                      {{ guardandoSuscripcion ? 'Guardando...' : 'Guardar Suscripción' }}
+                    </button>
+                    <button (click)="cerrarCarritoSuscripcion()" class="w-full py-2.5 bg-[#de3737] hover:bg-[#c62828] text-white text-xs font-bold uppercase rounded-full shadow-md transition-colors text-center">
+                      Volver
+                    </button>
+                  </div>
+
+                </div>
+              </div>
+
+            </div>
+          </div>
+        }
           </div>
         </div>
       }
@@ -1636,6 +1948,100 @@
           </div>
         </div>
       }
+      @if (currentView === 'contratos') {
+        <!-- VISTA DE CONTRATOS SAAS -->
+        <div class="glass-panel mt-2rem font-inter">
+          <div class="mb-8">
+            <h2 class="text-[16px] font-bold text-white tracking-wide text-center uppercase mb-2">
+              Contratos Legales y Términos SAAS
+            </h2>
+            <p class="text-gray-400 text-center text-sm mb-6">
+              Redacta y actualiza el contrato maestro que firmarán todas las empresas. Al publicar una nueva versión, se notificará a los gerentes.
+            </p>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Izquierda: Redactor -->
+            <div class="bg-[#0f172a] rounded-2xl p-6 shadow-inner border border-gray-800 flex flex-col h-full">
+              <h3 class="text-white font-bold text-[13px] mb-4 flex items-center gap-2">
+                <svg class="w-5 h-5 text-fuchsia-400" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
+                </svg>
+                Redactor del Contrato
+              </h3>
+              
+              <div class="flex-1 flex flex-col gap-4">
+                <div>
+                  <label class="text-xs font-semibold text-gray-400 uppercase tracking-wide">Versión (Ej: 1.0)</label>
+                  <input type="text" [(ngModel)]="nuevoContrato.version" class="bg-gray-900 border border-gray-700 text-white rounded-lg px-4 py-2 mt-1 w-full focus:outline-none focus:border-blue-500 transition-colors" placeholder="1.0">
+                </div>
+                
+                <div class="flex-1 flex flex-col">
+                  <label class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Contenido Legal</label>
+                  <textarea [(ngModel)]="nuevoContrato.contenido" class="bg-gray-900 border border-gray-700 text-gray-300 rounded-lg px-4 py-3 w-full h-full min-h-[300px] resize-none focus:outline-none focus:border-blue-500 transition-colors text-sm font-mono leading-relaxed" placeholder="Escribe aquí los términos legales..."></textarea>
+                  <p class="text-xs text-gray-500 mt-2">Puedes usar etiquetas HTML básicas como &lt;b&gt;, &lt;br&gt;, &lt;h1&gt; para dar formato.</p>
+                </div>
+              </div>
+
+              <div class="mt-6 flex justify-end">
+                <button (click)="guardarNuevoContrato()" [disabled]="isGuardandoContrato" class="glass-btn-blue text-white font-bold py-2.5 px-6 rounded-lg transition-colors flex items-center gap-2">
+                  @if (isGuardandoContrato) {
+                    <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                    Publicando...
+                  } @else {
+                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5" />
+                    </svg>
+                    Publicar y Notificar
+                  }
+                </button>
+              </div>
+            </div>
+
+            <!-- Derecha: Historial -->
+            <div class="bg-[#0f172a] rounded-2xl p-6 shadow-inner border border-gray-800">
+              <h3 class="text-white font-bold text-[13px] mb-4 flex items-center gap-2">
+                <svg class="w-5 h-5 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 0 0 2.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 0 0-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25ZM6.75 12h.008v.008H6.75V12Zm0 3h.008v.008H6.75V15Zm0 3h.008v.008H6.75V18Z" />
+                </svg>
+                Historial de Versiones
+              </h3>
+
+              <div class="overflow-x-auto">
+                <table class="saas-table w-full text-left border-collapse text-sm">
+                  <thead>
+                    <tr class="bg-gray-900/50 text-gray-300 tracking-wider uppercase border-b border-gray-700">
+                      <th class="p-3 font-semibold">Versión</th>
+                      <th class="p-3 font-semibold">Fecha Publicación</th>
+                      <th class="p-3 font-semibold text-center">Estado</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-gray-800/50">
+                    @for (contrato of contratosHistory; track contrato.id) {
+                      <tr class="hover:bg-gray-700/30 transition-colors">
+                        <td class="p-3 font-bold text-white">v{{ contrato.version }}</td>
+                        <td class="p-3 text-gray-400">{{ contrato.created_at | date:'dd/MM/yyyy HH:mm' }}</td>
+                        <td class="p-3 text-center">
+                          @if (contrato.es_activo) {
+                            <span class="px-2 py-1 rounded text-xs font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">ACTIVO</span>
+                          } @else {
+                            <span class="px-2 py-1 rounded text-xs font-bold bg-gray-500/20 text-gray-400 border border-gray-500/30">HISTÓRICO</span>
+                          }
+                        </td>
+                      </tr>
+                    }
+                    @if (contratosHistory.length === 0) {
+                      <tr>
+                        <td colspan="3" class="p-6 text-center text-gray-500">No hay historial de contratos.</td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      }
     </main>
   </div>
 
@@ -2227,103 +2633,7 @@
 
 
 
-  <!-- Modal Gestión Manual de Suscripción -->
-  @if (showGestionSuscripcionModal && suscripcionEnEdicion) {
-    <div class="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 backdrop-blur-sm" (click)="cerrarModalGestionSuscripcion()">
-      <div class="bg-gray-900 border border-gray-700 rounded-xl shadow-2xl p-6 w-full max-w-2xl text-white font-inter" (click)="$event.stopPropagation()">
-        
-        <div class="flex justify-between items-center mb-6 border-b border-gray-800 pb-4">
-          <h2 class="text-[16px] font-bold text-emerald-400">
-            Gestionar Tarifas: {{ suscripcionEnEdicion.nombreEmpresa }}
-          </h2>
-          <button (click)="cerrarModalGestionSuscripcion()" class="text-gray-400 hover:text-white transition-colors">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-          </button>
-        </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-h-[60vh] overflow-y-auto custom-scrollbar pr-2">
-          
-          <!-- SECCIÓN DESCUENTOS -->
-          <div class="bg-gray-800/50 p-4 rounded-lg border border-gray-700">
-            <div class="flex justify-between items-center mb-3">
-              <h3 class="font-semibold text-yellow-400 text-sm uppercase tracking-wider">Descuentos</h3>
-              <button (click)="agregarDescuento()" class="text-xs bg-yellow-900/50 hover:bg-yellow-800/50 text-yellow-300 border border-yellow-800 px-2 py-1 rounded transition-colors">+ Añadir</button>
-            </div>
-            
-            <div class="space-y-3">
-              @for (desc of suscripcionEnEdicion.descuentosAplicados; track $index) {
-                <div class="flex items-center gap-2 bg-gray-900 p-2 rounded border border-gray-700">
-                  <select [(ngModel)]="desc.descripcion" class="neu-dark-input text-xs flex-1 !p-1.5" (change)="desc.porcentaje = (desc.descripcion === 'Referido 10%') ? 10 : (desc.descripcion === 'Mes Gratis' ? 8.33 : 0)">
-                    <option value="N/A">Seleccionar...</option>
-                    <option value="Referido 10%">Referido 10%</option>
-                    <option value="Mes Gratis">Mes Gratis</option>
-                  </select>
-                  <input type="number" [(ngModel)]="desc.porcentaje" class="neu-dark-input text-xs w-16 !p-1.5 text-center" placeholder="%" disabled />
-                  <button (click)="eliminarDescuento($index)" class="text-red-400 hover:text-red-300"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
-                </div>
-              }
-              @if (suscripcionEnEdicion.descuentosAplicados.length === 0) {
-                <p class="text-xs text-gray-500 italic">No hay descuentos aplicados.</p>
-              }
-            </div>
-          </div>
-
-          <!-- SECCIÓN CARGOS EXTRA (SOPORTE) -->
-          <div class="bg-gray-800/50 p-4 rounded-lg border border-gray-700">
-            <div class="flex justify-between items-center mb-3">
-              <h3 class="font-semibold text-orange-400 text-sm uppercase tracking-wider">Cargos Extra</h3>
-              <button (click)="agregarCargoExtra()" class="text-xs bg-orange-900/50 hover:bg-orange-800/50 text-orange-300 border border-orange-800 px-2 py-1 rounded transition-colors">+ Añadir</button>
-            </div>
-            
-            <div class="space-y-3">
-              @for (cargo of suscripcionEnEdicion.cargosExtra; track $index) {
-                <div class="flex items-center gap-2 bg-gray-900 p-2 rounded border border-gray-700">
-                  <input type="text" [(ngModel)]="cargo.descripcion" class="neu-dark-input text-xs flex-1 !p-1.5" placeholder="Motivo (Ej. Soporte)" />
-                  <input type="number" [(ngModel)]="cargo.valor" class="neu-dark-input text-xs w-24 !p-1.5 text-right" placeholder="$" />
-                  <button (click)="eliminarCargoExtra($index)" class="text-red-400 hover:text-red-300"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
-                </div>
-              }
-              @if (suscripcionEnEdicion.cargosExtra.length === 0) {
-                <p class="text-xs text-gray-500 italic">No hay cargos extra.</p>
-              }
-            </div>
-          </div>
-
-          <!-- SECCIÓN ADD-ONS -->
-          <div class="bg-gray-800/50 p-4 rounded-lg border border-gray-700 md:col-span-2">
-            <div class="flex justify-between items-center mb-3">
-              <h3 class="font-semibold text-indigo-400 text-sm uppercase tracking-wider">Add-ons (Conectores Externos)</h3>
-              <button (click)="agregarSuscripcionAddon()" class="text-xs bg-indigo-900/50 hover:bg-indigo-800/50 text-indigo-300 border border-indigo-800 px-2 py-1 rounded transition-colors">+ Añadir</button>
-            </div>
-            
-            <div class="space-y-3">
-              @for (addon of suscripcionEnEdicion.addonsList; track $index) {
-                <div class="flex items-center gap-2 bg-gray-900 p-2 rounded border border-gray-700">
-                  <input type="text" [(ngModel)]="addon.nombre" class="neu-dark-input text-xs flex-1 !p-1.5" placeholder="Nombre Conector" />
-                  <input type="number" [(ngModel)]="addon.valor" class="neu-dark-input text-xs w-28 !p-1.5 text-right" placeholder="$" />
-                  <button (click)="eliminarSuscripcionAddon($index)" class="text-red-400 hover:text-red-300"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
-                </div>
-              }
-              @if (suscripcionEnEdicion.addonsList.length === 0) {
-                <p class="text-xs text-gray-500 italic">No hay add-ons aplicados.</p>
-              }
-            </div>
-          </div>
-
-        </div>
-
-        <div class="mt-8 flex justify-end gap-3 pt-4 border-t border-gray-800">
-          <button (click)="cerrarModalGestionSuscripcion()" class="px-4 py-2 glass-btn-gray text-white rounded-md transition-colors text-sm font-semibold">
-            Cancelar
-          </button>
-          <button (click)="guardarGestionSuscripcion()" class="px-4 py-2 glass-btn-green text-white rounded-md transition-colors text-sm font-semibold">
-            Guardar Cambios
-          </button>
-        </div>
-
-      </div>
-    </div>
-  }
   <!-- MODAL DE TARIFAS GLOBALES -->
   @if (modalTarifasGlobalesVisible) {
     <div class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">

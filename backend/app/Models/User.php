@@ -39,12 +39,14 @@ class User extends Authenticatable
         'password_hash',
         'avatar_url',
         'activo',
+        'inactive_at',
         'telegram_chat_id',
         'telefono',
         'direccion',
         'perfil_formalizado',
         'debe_cambiar_clave',
-        'last_activity_at'
+        'last_activity_at',
+        'ia_modo'
     ];
 
     // Nombres completos calculados a partir de las columnas reales

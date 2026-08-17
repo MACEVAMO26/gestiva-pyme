@@ -10,12 +10,45 @@ export interface Submodulo {
 }
 
 export interface PaquetesRespuesta {
+  base?: Submodulo[];
   ventas?: Submodulo[];
   servicios?: Submodulo[];
   finanzas?: Submodulo[];
   rrhh?: Submodulo[];
   addons?: Submodulo[];
+  [paqueteId: string]: Submodulo[] | undefined;
 }
+
+export interface ModuloBaseUi {
+  id: string;
+  nombre: string;
+  icono: string;
+  ruta: string;
+}
+
+// Catálogo UI del producto: módulos base siempre visibles en el sidebar del cliente
+// (No son datos de negocio: son estructura de navegación del aplicativo).
+export const MODULOS_BASE_UI: ModuloBaseUi[] = [
+  { id: 'd_ini', nombre: 'Inicio', icono: 'fas fa-home', ruta: 'inicio' },
+  { id: 'd_adm', nombre: 'Administración', icono: 'fas fa-cog', ruta: 'administracion' },
+  { id: 'd_tar', nombre: 'Gestión de Tareas', icono: 'fas fa-tasks', ruta: 'gestion-de-tareas' },
+  { id: 'd_gia', nombre: 'Gestiva IA', icono: 'fas fa-robot', ruta: 'gestiva-ia' },
+  { id: 'd_aut', nombre: 'Autogestión', icono: 'fas fa-user-circle', ruta: 'autogestion' },
+];
+
+// Rutas del router para cada submódulo de negocio (ventas/servicios). Los nombres en BD
+// no siempre coinciden con la ruta (ej: "Agenda y Calendario" -> /agenda).
+export const RUTA_MODULO: Record<string, string> = {
+  v_pos: 'ventas', v_inv: 'inventario', v_cxc: 'clientes', v_rep: 'compras', v_prov: 'proveedores',
+  s_age: 'agenda', s_crm: 'gestion-de-clientes', s_cat: 'servicios', s_ope: 'gestion-de-operarios', s_rep: 'reportes',
+};
+
+export const ICONO_MODULO: Record<string, string> = {
+  v_pos: 'fas fa-store', v_inv: 'fas fa-boxes', v_cxc: 'fas fa-address-book',
+  v_rep: 'fas fa-shopping-basket', v_prov: 'fas fa-truck',
+  s_age: 'fas fa-calendar-check', s_crm: 'fas fa-handshake', s_cat: 'fas fa-list',
+  s_ope: 'fas fa-user-cog', s_rep: 'fas fa-chart-line',
+};
 
 @Injectable({
   providedIn: 'root'
@@ -34,6 +67,10 @@ export class ModulosService {
     return this.http.get<{ modulos: PaquetesRespuesta }>(`${this.apiUrl}/empresas/${empresaId}/modulos`, this.getHeaders());
   }
 
+  getMisModulos(): Observable<{ modulos: PaquetesRespuesta }> {
+    return this.http.get<{ modulos: PaquetesRespuesta }>(`${this.apiUrl}/mis-modulos`, this.getHeaders());
+  }
+
   toggleModulo(empresaId: string | number, moduloId: string): Observable<any> {
     return this.http.post(`${this.apiUrl}/empresas/${empresaId}/modulos/${moduloId}/toggle`, {}, this.getHeaders());
   }
@@ -42,90 +79,10 @@ export class ModulosService {
     return this.http.post(`${this.apiUrl}/empresas/${empresaId}/modulos/paquete`, { modulos: modulosState }, this.getHeaders());
   }
 
-  // Obtenemos el catálogo base de módulos (listo para conectarse a un API externa de catálogo)
+  // Catálogo UI del producto para la gestión global de módulos del SAAS admin.
+  // Los estados activo/asignado SIEMPRE provienen de la BD (actualizarUIModulos).
   getCatalogoModulos(): Observable<any[]> {
-    // Simula una respuesta de API con el catálogo de módulos
-    const mockCatalogo = [
-      {
-        id: 'default',
-        nombre: 'Módulos Por Defecto',
-        descripcion: 'Módulos esenciales que siempre están activos.',
-        icono: 'fas fa-home',
-        color: 'gray',
-        activo: true,
-        submodulos: [
-          { id: 'd_ini', nombre: 'Inicio', activo: true, icono: 'fas fa-home' },
-          { id: 'd_adm', nombre: 'Administración', activo: true, icono: 'fas fa-cog' },
-          { id: 'd_tar', nombre: 'Gestión de Tareas', activo: true, icono: 'fas fa-tasks' },
-          { id: 'd_gia', nombre: 'Gestiva IA', activo: true, icono: 'fas fa-robot' },
-          { id: 'd_aut', nombre: 'Autogestión', activo: true, icono: 'fas fa-user-circle' },
-        ],
-      },
-      {
-        id: 'ventas',
-        nombre: 'Paquete VENTAS',
-        descripcion: 'Para comercios y tiendas de productos físicos.',
-        icono: 'fas fa-shopping-cart',
-        color: 'blue',
-        activo: false,
-        submodulos: [
-          { id: 'v_pos', nombre: 'Ventas', activo: false, icono: 'fas fa-store' },
-          { id: 'v_inv', nombre: 'Inventario', activo: false, icono: 'fas fa-boxes' },
-          { id: 'v_cxc', nombre: 'Clientes', activo: false, icono: 'fas fa-address-book' },
-          { id: 'v_rep', nombre: 'Compras', activo: false, icono: 'fas fa-shopping-basket' },
-          { id: 'v_prov', nombre: 'Proveedores', activo: false, icono: 'fas fa-truck' },
-        ],
-      },
-      {
-        id: 'servicios',
-        nombre: 'Paquete SERVICIOS',
-        descripcion: 'Para agendas, barberías, consultorios y talleres.',
-        icono: 'fas fa-calendar-alt',
-        color: 'purple',
-        activo: false,
-        submodulos: [
-          { id: 's_age', nombre: 'Agenda', activo: false, icono: 'fas fa-calendar-check' },
-          { id: 's_crm', nombre: 'Gestión de Clientes', activo: false, icono: 'fas fa-handshake' },
-          { id: 's_cat', nombre: 'Servicios', activo: false, icono: 'fas fa-list' },
-          { id: 's_ope', nombre: 'Gestión de Operarios', activo: false, icono: 'fas fa-user-cog' },
-          { id: 's_rep', nombre: 'Reportes', activo: false, icono: 'fas fa-chart-line' },
-        ],
-      },
-      {
-        id: 'finanzas',
-        nombre: 'FINANZAS',
-        descripcion: 'Registro de pagos y cobro por servicios o productos.',
-        icono: 'fas fa-cash-register',
-        color: 'yellow',
-        activo: false,
-        submodulos: [{ id: 'f_caja', nombre: 'Caja y Pre-facturación', activo: false, icono: 'fas fa-cash-register' }],
-      },
-      {
-        id: 'rrhh',
-        nombre: 'GESTIÓN HUMANA',
-        descripcion: 'Gestión de empleados, turnos y vacaciones. Disponible para todos.',
-        icono: 'fas fa-users',
-        color: 'indigo',
-        activo: false,
-        submodulos: [
-          { id: 'r_tur', nombre: 'Horarios y Turnos', activo: false, icono: 'fas fa-clock' },
-          { id: 'r_aus', nombre: 'Horas Extras y Ausencias', activo: false, icono: 'fas fa-user-clock' },
-          { id: 'r_vac', nombre: 'Gestión de Vacaciones', activo: false, icono: 'fas fa-umbrella-beach' }
-        ],
-      },
-      {
-        id: 'addons',
-        nombre: 'Addons+',
-        descripcion: 'Conectores y herramientas extra que se cobran por separado.',
-        icono: 'fas fa-plug',
-        color: 'green',
-        activo: false,
-        submodulos: [
-          { id: 'a_contable', nombre: 'Conector Contable', activo: false, icono: 'fas fa-file-invoice-dollar' },
-        ],
-      },
-    ];
-    return of(mockCatalogo);
+    return of(CATALOGO_MODULOS_UI);
   }
 
   // CRUD Global de Módulos (Catálogo)
@@ -141,3 +98,65 @@ export class ModulosService {
     return this.http.delete(`${this.apiUrl}/modulos/${id}`, this.getHeaders());
   }
 }
+
+// Estructura de paquetes del producto (solo UI: nombres, iconos). Sin datos de negocio.
+const CATALOGO_MODULOS_UI: any[] = [
+  {
+    id: 'ventas',
+    nombre: 'Paquete VENTAS',
+    descripcion: 'Para comercios y tiendas de productos físicos.',
+    icono: 'fas fa-shopping-cart',
+    color: 'blue',
+    submodulos: [
+      { id: 'v_pos', nombre: 'Ventas', icono: 'fas fa-store' },
+      { id: 'v_inv', nombre: 'Inventario', icono: 'fas fa-boxes' },
+      { id: 'v_cxc', nombre: 'Clientes', icono: 'fas fa-address-book' },
+      { id: 'v_rep', nombre: 'Compras', icono: 'fas fa-shopping-basket' },
+      { id: 'v_prov', nombre: 'Proveedores', icono: 'fas fa-truck' },
+    ],
+  },
+  {
+    id: 'servicios',
+    nombre: 'Paquete SERVICIOS',
+    descripcion: 'Para agendas, barberías, consultorios y talleres.',
+    icono: 'fas fa-calendar-alt',
+    color: 'purple',
+    submodulos: [
+      { id: 's_age', nombre: 'Agenda', icono: 'fas fa-calendar-check' },
+      { id: 's_crm', nombre: 'Gestión de Clientes', icono: 'fas fa-handshake' },
+      { id: 's_cat', nombre: 'Servicios', icono: 'fas fa-list' },
+      { id: 's_ope', nombre: 'Gestión de Operarios', icono: 'fas fa-user-cog' },
+      { id: 's_rep', nombre: 'Reportes', icono: 'fas fa-chart-line' },
+    ],
+  },
+  {
+    id: 'finanzas',
+    nombre: 'FINANZAS',
+    descripcion: 'Registro de pagos y cobro por servicios o productos.',
+    icono: 'fas fa-cash-register',
+    color: 'yellow',
+    submodulos: [{ id: 'f_caja', nombre: 'Caja y Pre-facturación', icono: 'fas fa-cash-register' }],
+  },
+  {
+    id: 'rrhh',
+    nombre: 'GESTIÓN HUMANA',
+    descripcion: 'Gestión de empleados, turnos y vacaciones. Disponible para todos.',
+    icono: 'fas fa-users',
+    color: 'indigo',
+    submodulos: [
+      { id: 'r_tur', nombre: 'Horarios y Turnos', icono: 'fas fa-clock' },
+      { id: 'r_aus', nombre: 'Horas Extras y Ausencias', icono: 'fas fa-user-clock' },
+      { id: 'r_vac', nombre: 'Gestión de Vacaciones', icono: 'fas fa-umbrella-beach' }
+    ],
+  },
+  {
+    id: 'addons',
+    nombre: 'Addons+',
+    descripcion: 'Conectores y herramientas extra que se cobran por separado.',
+    icono: 'fas fa-plug',
+    color: 'green',
+    submodulos: [
+      { id: 'a_contable', nombre: 'Conector Contable', icono: 'fas fa-file-invoice-dollar' },
+    ],
+  },
+];

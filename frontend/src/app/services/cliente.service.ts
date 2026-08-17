@@ -19,6 +19,7 @@ export interface Cliente {
   estado_financiero?: string;
   comentarios?: string;
   activo: boolean;
+  created_at?: string;
 }
 
 @Injectable({

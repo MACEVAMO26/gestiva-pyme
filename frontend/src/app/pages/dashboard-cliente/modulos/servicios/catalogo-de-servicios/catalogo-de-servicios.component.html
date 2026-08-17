@@ -39,7 +39,7 @@
             <select class="input-neumorphic" [(ngModel)]="formTicket.servicio">
               <option value="">Seleccione un servicio...</option>
               @for(cat of catalogo; track cat.id) {
-                <option [value]="cat.nombre">{{cat.nombre}} - {{cat.tarifaBase | currency:'COP':'symbol':'1.0-0'}}</option>
+                <option [value]="cat.nombre">{{cat.nombre}} - {{cat.tarifa | currency:'COP':'symbol':'1.0-0'}}</option>
               }
             </select>
           </div>
@@ -82,8 +82,8 @@
                 @for(tk of tickets; track tk.id) {
                   <tr>
                     <td><strong>{{tk.consecutivo}}</strong></td>
-                    <td>{{tk.cliente}}</td>
-                    <td>{{tk.servicio}}</td>
+                    <td>{{tk.cliente_nombre}}</td>
+                    <td>{{tk.servicio_requerido}}</td>
                     <td><span class="badge" [ngClass]="getBadgeEstado(tk.estado)">{{tk.estado}}</span></td>
                   </tr>
                 }
@@ -115,9 +115,9 @@
               @for(tk of ticketsPendientes; track tk.id) {
                 <tr>
                   <td><strong>{{tk.consecutivo}}</strong></td>
-                  <td>{{tk.cliente}}<br><span class="text-muted text-xs">📍 {{tk.direccion}}</span></td>
-                  <td>{{tk.fechaSol}} a las {{tk.horaSol}}</td>
-                  <td class="text-azul" style="font-weight: bold;">{{tk.tecnico || 'Sin Asignar'}}</td>
+                  <td>{{tk.cliente_nombre}}<br><span class="text-muted text-xs">📍 {{tk.direccion}}</span></td>
+                  <td>{{tk.fecha_solicitada}} a las {{tk.hora_sugerida}}</td>
+                  <td class="text-azul" style="font-weight: bold;">{{nombreTecnico(tk.tecnico_id)}}</td>
                   <td><span class="badge" [ngClass]="getBadgeEstado(tk.estado)">{{tk.estado}}</span></td>
                   <td style="text-align: center;">
                     <button class="btn-add btn-pill btn-xs" (click)="abrirAsignacion(tk)">
@@ -148,9 +148,9 @@
                   <h3 style="margin: 0;">{{tk.consecutivo}}</h3>
                   <span class="badge" [ngClass]="getBadgeEstado(tk.estado)">{{tk.estado}}</span>
                 </div>
-                <p class="ticket-dato"><strong>Cliente:</strong> {{tk.cliente}}</p>
-                <p class="ticket-dato"><strong>Servicio:</strong> {{tk.servicio}}</p>
-                <p class="ticket-dato"><strong>Técnico:</strong> {{tk.tecnico}}</p>
+                <p class="ticket-dato"><strong>Cliente:</strong> {{tk.cliente_nombre}}</p>
+                <p class="ticket-dato"><strong>Servicio:</strong> {{tk.servicio_requerido}}</p>
+                <p class="ticket-dato"><strong>Técnico:</strong> {{nombreTecnico(tk.tecnico_id)}}</p>
                 
                 <button class="btn-general-5 btn-pill btn-block" style="margin-top: 1rem;" (click)="abrirEjecucion(tk)">
                   <i class="fas fa-tools"></i> Registrar Ejecución
@@ -173,7 +173,7 @@
             @for(tec of tecnicos; track tec.id) {
               <div class="tech-card neumorphic-panel" [class.tech-card-active]="tecnicoDashboard?.id === tec.id" (click)="seleccionarTecnicoRender(tec)">
                 <strong>{{tec.nombre}}</strong>
-                <div class="text-muted text-xs">Citas Cumplidas: {{tec.rendimiento.cumplidas}}</div>
+                <div class="text-muted text-xs">{{tec.cargo}}</div>
               </div>
             } @empty {
               <div class="empty-state">
@@ -188,18 +188,18 @@
         <div class="rendimiento-dashboard neumorphic-panel">
           @if(tecnicoDashboard) {
             <h1 class="rendimiento-titulo">Rendimiento: <span class="text-azul">{{tecnicoDashboard.nombre}}</span></h1>
-            <p class="text-muted" style="margin-bottom: 2rem;">Métricas en vivo de cumplimiento de citas, satisfacción de cliente y control de quejas basadas en el Field Service.</p>
+            <p class="text-muted" style="margin-bottom: 2rem;">Métricas en vivo de servicios finalizados, satisfacción de cliente y control de quejas basadas en el Field Service.</p>
             
             <div class="chart-container">
               
               <!-- HTML BARRA CITAS CUMPLIDAS -->
               <div class="bar-row">
                 <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
-                  <span class="bar-label">Citas Cumplidas (Mensual)</span>
-                  <span class="valor-ok">{{tecnicoDashboard.rendimiento.cumplidas}} / 100</span>
+                  <span class="bar-label">Servicios Finalizados</span>
+                  <span class="valor-ok">{{tecnicoDashboard.rendimiento.cumplidas}} / {{tecnicoDashboard.rendimiento.total}}</span>
                 </div>
                 <div class="progress-bg">
-                  <div class="progress-fill progress-fill-ok" [style.width]="getPorcentaje(tecnicoDashboard.rendimiento.cumplidas) + '%'"></div>
+                  <div class="progress-fill progress-fill-ok" [style.width]="getPorcentaje(tecnicoDashboard.rendimiento.cumplidas, tecnicoDashboard.rendimiento.total) + '%'"></div>
                 </div>
               </div>
 
@@ -256,10 +256,10 @@
             <tbody>
               @for(cat of catalogo; track cat.id) {
                 <tr>
-                  <td><strong>{{cat.codigo}}</strong></td>
+                  <td><strong>{{codigoServicio(cat.id)}}</strong></td>
                   <td>{{cat.nombre}}</td>
-                  <td><i class="fas fa-clock"></i> {{cat.duracionEst}}</td>
-                  <td class="text-positivo">{{cat.tarifaBase | currency:'COP':'symbol':'1.0-0'}}</td>
+                  <td><i class="fas fa-clock"></i> {{cat.tiempo_estimado || 'N/D'}}</td>
+                  <td class="text-positivo">{{cat.tarifa | currency:'COP':'symbol':'1.0-0'}}</td>
                 </tr>
               }
             </tbody>
@@ -282,14 +282,14 @@
       <button class="btn-close" (click)="cerrarAsignacion()">&times;</button>
     </div>
     <div class="modal-body">
-      <p class="text-muted" style="margin-bottom: 1rem;">Ticket: <strong>{{ticketSeleccionado.consecutivo}}</strong> ({{ticketSeleccionado.servicio}})</p>
+      <p class="text-muted" style="margin-bottom: 1rem;">Ticket: <strong>{{ticketSeleccionado.consecutivo}}</strong> ({{ticketSeleccionado.servicio_requerido}})</p>
       
       <div class="form-group">
         <label>Seleccione Técnico Disponible</label>
         <select class="input-neumorphic" [(ngModel)]="tecnicoSeleccionado">
           <option value="">-- Seleccionar --</option>
           @for(tec of tecnicos; track tec.id) {
-            <option [value]="tec.nombre">{{tec.nombre}}</option>
+            <option [value]="tec.id">{{tec.nombre}}</option>
           }
         </select>
       </div>
@@ -325,7 +325,7 @@
             <select class="input-neumorphic" [(ngModel)]="materialSeleccionado">
               <option value="">Seleccionar...</option>
               @for(inv of inventario; track inv.id) {
-                <option [value]="inv.nombre">{{inv.nombre}} (Stock: {{inv.stock}})</option>
+                <option [value]="inv.producto_id">{{nombreProducto(inv.producto_id)}} (Stock: {{stockProducto(inv.producto_id)}})</option>
               }
             </select>
           </div>
@@ -339,8 +339,8 @@
         <!-- HTML LISTA MATERIALES DESCONTAR -->
         @if(materialesUsados.length > 0) {
           <ul class="text-muted text-xs" style="padding-left: 1.5rem; margin: 0;">
-            @for(mat of materialesUsados; track mat.id) {
-              <li>{{mat.cantidad}}x {{mat.nombre}}</li>
+            @for(mat of materialesUsados; track mat.producto_id) {
+              <li>{{mat.cantidad}}x {{nombreProducto(mat.producto_id)}}</li>
             }
           </ul>
         }
@@ -356,28 +356,6 @@
         @else { Firmar y Finalizar Servicio }
       </button>
     </div>
-  </div>
-</div>
-}
-
-<!-- HTML TOAST NOTIFICATION -->
-@if(showToast) {
-<div class="toast-container fade-in">
-  <div class="toast-card" [ngClass]="'toast-' + toastType">
-    <div class="toast-icon">
-      @if(toastType === 'success') { <i class="fas fa-check-circle"></i> }
-      @if(toastType === 'warning') { <i class="fas fa-exclamation-triangle"></i> }
-      @if(toastType === 'error') { <i class="fas fa-times-circle"></i> }
-    </div>
-    <div class="toast-content">
-      <h4 class="toast-title">
-        @if(toastType === 'success') { Éxito }
-        @if(toastType === 'warning') { Advertencia }
-        @if(toastType === 'error') { Error }
-      </h4>
-      <p class="toast-message">{{toastMessage}}</p>
-    </div>
-    <button class="toast-close" (click)="showToast = false">&times;</button>
   </div>
 </div>
 }

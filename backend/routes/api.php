@@ -141,6 +141,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('empresas/stats/system', [EmpresaController::class, 'systemStats']);
     Route::patch('empresas/{id}/tarifas', [EmpresaController::class, 'updateTarifas']);
     Route::put('empresas/rrhh/settings', [EmpresaController::class, 'updateRRHHSettings']);
+    Route::get('empresas/{id}/configuracion-rrhh', [EmpresaController::class, 'getConfiguracionRRHH']);
+    Route::post('empresas/{id}/configuracion-rrhh', [EmpresaController::class, 'updateConfiguracionRRHH']);
     Route::apiResource('empresas', EmpresaController::class);
     Route::patch('empresas/{id}/status', [EmpresaController::class, 'changeStatus']);
     Route::patch('empresas/{id}/renovar', [EmpresaController::class, 'registrarRenovacion']);
@@ -171,6 +173,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('proveedores', ProveedorController::class);
     Route::apiResource('productos', ProductoController::class);
     Route::apiResource('servicios', ServicioController::class);
+
+    // Cuentas por pagar
+    Route::get('cuentas-por-pagar', [\App\Http\Controllers\CuentaPorPagarController::class, 'index']);
+    Route::post('cuentas-por-pagar', [\App\Http\Controllers\CuentaPorPagarController::class, 'store']);
+    Route::post('cuentas-por-pagar/{id}/abonos', [\App\Http\Controllers\CuentaPorPagarController::class, 'registrarAbono']);
+    Route::delete('cuentas-por-pagar/{id}', [\App\Http\Controllers\CuentaPorPagarController::class, 'destroy']);
 
 
     // --- OPERACIONES COMERCIALES ---
@@ -240,7 +248,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/notificaciones', [\App\Http\Controllers\NotificacionController::class, 'index']);
     Route::post('/notificaciones', [\App\Http\Controllers\NotificacionController::class, 'store']);
-    Route::delete('/notificaciones/{id}/leida', [\App\Http\Controllers\NotificacionController::class, 'marcarLeida']);
+    Route::put('/notificaciones/{id}/leer', [\App\Http\Controllers\NotificacionController::class, 'marcarLeida']);
 
     Route::post('/usuarios/tutorial-visto', [\App\Http\Controllers\UserController::class, 'marcarTutorialVisto']);
     Route::get('/ia/sugerencias', [\App\Http\Controllers\IaController::class, 'getSugerencias']);
@@ -263,6 +271,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/recordatorios', [\App\Http\Controllers\RecordatorioController::class, 'index']);
     Route::post('/recordatorios', [\App\Http\Controllers\RecordatorioController::class, 'store']);
     Route::delete('/recordatorios/{id}', [\App\Http\Controllers\RecordatorioController::class, 'destroy']);
+    Route::put('/recordatorios/{id}/completado', [\App\Http\Controllers\RecordatorioController::class, 'marcarCompletado']);
 
     // --- REUNIONES ---
     Route::get('/reuniones', [\App\Http\Controllers\ReunionController::class, 'index']);
@@ -272,6 +281,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/ventas', [\App\Http\Controllers\VentaController::class, 'index']);
     Route::post('/ventas', [\App\Http\Controllers\VentaController::class, 'store']);
     Route::patch('/ventas/{id}/estado-paquete', [\App\Http\Controllers\VentaController::class, 'updateEstadoPaquete']);
+    Route::post('/ventas/{id}/anular', [\App\Http\Controllers\VentaController::class, 'anularVenta']);
 
     // Soporte Tickets
     Route::get('/soporte', [\App\Http\Controllers\SoporteTicketController::class, 'index']);
@@ -284,6 +294,13 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/saas/ia-config', [\App\Http\Controllers\IaConfigController::class, 'store']);
     Route::post('/ia/procesar-tarea', [\App\Http\Controllers\GestivaIaController::class, 'procesarTarea']);
     
+    // --- CONTRATO SAAS ---
+    Route::get('/saas/contratos', [\App\Http\Controllers\SaasContratoController::class, 'index']);
+    Route::post('/saas/contratos', [\App\Http\Controllers\SaasContratoController::class, 'store']);
+    Route::get('/saas/contratos/activo', [\App\Http\Controllers\SaasContratoController::class, 'activo']);
+    Route::post('/saas/contratos/firmar', [\App\Http\Controllers\SaasContratoController::class, 'firmar']);
+    Route::get('/saas/tarifas/catalogo', [\App\Http\Controllers\TarifaController::class, 'catalogo']);
+
     }); // Fin del middleware 'formalizado'
 
 });

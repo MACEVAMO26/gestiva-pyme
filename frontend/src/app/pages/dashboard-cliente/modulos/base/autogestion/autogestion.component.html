@@ -259,11 +259,7 @@
                 <button type="button" class="btn-save btn-pill btn-cert" (click)="descargarCertificado()">
                   <i class="fas fa-file-pdf"></i> Certificado Laboral
                 </button>
-                @if (user?.rol?.nombre?.includes('Gerente') && user?.empresa?.contrato_aceptado) {
-                  <button type="button" class="btn-save btn-pill btn-contract" (click)="descargarContrato()">
-                    <i class="fas fa-file-contract"></i> Contrato SaaS
-                  </button>
-                }
+
                 @if (formAfiliacion.estado === 'aprobado' || formAfiliacion.estado === 'rechazado') {
                   <p class="nota-estado">Nota: Si cambia sus afiliaciones actuales, volverán al estado <strong>Pendiente de Aprobación</strong> por RRHH.</p>
                 }

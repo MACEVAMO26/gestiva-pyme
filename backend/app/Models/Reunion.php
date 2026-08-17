@@ -33,6 +33,6 @@ class Reunion extends Model
 
     public function organizador()
     {
-        return $this->belongsTo(Usuario::class, 'organizador_id');
+        return $this->belongsTo(User::class, 'organizador_id');
     }
 }

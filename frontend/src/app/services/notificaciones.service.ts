@@ -6,7 +6,8 @@ export interface Notificacion {
   id?: number;
   usuario_id?: number;
   titulo: string;
-  mensaje: string;
+  mensaje?: string;
+  descripcion?: string;
   leida: boolean;
   created_at?: string;
 }
