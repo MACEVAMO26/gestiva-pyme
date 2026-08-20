@@ -3,12 +3,13 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { OperariosTicketsService, ServicioTicket } from '../../../../../services/operarios-tickets.service';
 import { ToastService } from '../../../../../services/toast.service';
+import { SolicitudInactivacionComponent } from '../../../../../shared/components/solicitud-inactivacion/solicitud-inactivacion.component';
 import { timeout } from 'rxjs';
 
 @Component({
   selector: 'app-gestion-de-operarios',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, SolicitudInactivacionComponent],
   templateUrl: './gestion-de-operarios.component.html',
   styleUrl: './gestion-de-operarios.component.scss'
 })

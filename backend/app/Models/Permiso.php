@@ -21,7 +21,7 @@ class Permiso extends Model
     
     protected $fillable = [
         'rol_id',
-        'modulo',
+        'modulo_id',
         'puede_ver',
         'puede_crear',
         'puede_editar',

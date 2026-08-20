@@ -74,6 +74,7 @@
                   <th>Fecha Sugerida</th>
                   <th>Estado</th>
                   <th>Técnico Asignado</th>
+                  <th style="text-align: center;">ACCIÓN</th>
                 </tr>
               </thead>
               <tbody>
@@ -86,9 +87,13 @@
                     <span class="badge" [ngClass]="getBadgeEstado(t.estado)">{{ t.estado }}</span>
                   </td>
                   <td>{{ t.tecnico_id || 'Sin Asignar' }}</td>
+                  <td style="text-align: center;">
+                    <app-solicitud-inactivacion [area]="'s_ope'" [entidad]="'tickets'" [entidadId]="t.id"
+                      [nombreEntidad]="'Ticket ' + (t.consecutivo || t.id)" label="Solicitar cancelación"></app-solicitud-inactivacion>
+                  </td>
                 </tr>
                 <tr *ngIf="tickets.length === 0">
-                  <td colspan="6" class="text-center">No hay tickets activos en este momento.</td>
+                  <td colspan="7" class="text-center">No hay tickets activos en este momento.</td>
                 </tr>
               </tbody>
             </table>

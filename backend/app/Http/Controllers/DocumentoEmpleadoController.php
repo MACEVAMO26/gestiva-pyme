@@ -32,6 +32,7 @@ class DocumentoEmpleadoController extends Controller
     {
         $request->validate([
             'nombre' => 'required|string|max:255',
+            'categoria' => 'nullable|string|max:255',
             'archivo' => 'required|file|max:10240' // Max 10MB
         ]);
 
@@ -57,6 +58,7 @@ class DocumentoEmpleadoController extends Controller
             $documento = DocumentoEmpleado::create([
                 'empleado_id' => $empleado->id,
                 'nombre' => $request->nombre,
+                'categoria' => $request->categoria ?: 'Otros',
                 'tipo_archivo' => $tipo,
                 'cloudinary_url' => $uploadedFileUrl->getSecurePath(),
                 'cloudinary_public_id' => $uploadedFileUrl->getPublicId(),

@@ -19,7 +19,7 @@ class PermisoController extends Controller
     {
         $validatedData = $request->validate([
             'rol_id' => 'required|integer|exists:roles,id',
-            'modulo' => 'required|string|max:255',
+            'modulo_id' => 'required|string|max:255',
             'puede_ver' => 'required|boolean',
             'puede_crear' => 'required|boolean',
             'puede_editar' => 'required|boolean',
@@ -44,7 +44,7 @@ class PermisoController extends Controller
         $permiso = Permiso::findOrFail($id);
         $validatedData = $request->validate([
             'rol_id' => 'required|integer|exists:roles,id',
-            'modulo' => 'required|string|max:255',
+            'modulo_id' => 'required|string|max:255',
             'puede_ver' => 'required|boolean',
             'puede_crear' => 'required|boolean',
             'puede_editar' => 'required|boolean',

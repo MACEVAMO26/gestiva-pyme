@@ -1,15 +1,17 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
 import { ProveedorService, Proveedor } from '../../../../../services/proveedor.service';
 import { CuentasPagarService, CuentaPorPagar } from '../../../../../services/cuentas-pagar.service';
 import { ToastService } from '../../../../../services/toast.service';
+import { SolicitudInactivacionComponent } from '../../../../../shared/components/solicitud-inactivacion/solicitud-inactivacion.component';
 import { timeout } from 'rxjs';
 
 @Component({
   selector: 'app-proveedores',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, SolicitudInactivacionComponent],
   templateUrl: './proveedores.component.html',
   styleUrl: './proveedores.component.scss'
 })
@@ -17,6 +19,7 @@ export class ProveedoresComponent implements OnInit {
   private proveedorService = inject(ProveedorService);
   private cuentasPagarService = inject(CuentasPagarService);
   private toast = inject(ToastService);
+  private http = inject(HttpClient);
 
   proveedores: Proveedor[] = [];
   proveedoresFiltrados: Proveedor[] = [];
@@ -40,7 +43,6 @@ export class ProveedoresComponent implements OnInit {
 
   activeTab: string = 'directorio';
 
-  // Datos mock para otras pestañas
   cuentasPorPagar: any[] = [];
   totalDeuda: number = 0;
   contratos: any[] = [];
@@ -112,7 +114,20 @@ export class ProveedoresComponent implements OnInit {
   }
 
   exportarExcel() {
-    this.toast.success('Exportando proveedores...');
+    this.toast.success('Generando archivo Excel...');
+    const headers = { 'Authorization': `Bearer ${sessionStorage.getItem('auth_token')}` };
+    this.http.get('/api/export/proveedores', { headers, responseType: 'blob' }).subscribe({
+      next: (blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `proveedores_${new Date().toISOString().slice(0, 10)}.xlsx`;
+        a.click();
+        window.URL.revokeObjectURL(url);
+        this.toast.success('Excel de proveedores descargado');
+      },
+      error: () => this.toast.error('Error al exportar. Intenta nuevamente.')
+    });
   }
 
   proveedorVacio(): Proveedor {

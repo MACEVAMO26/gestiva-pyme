@@ -119,6 +119,17 @@
           </div>
         }
 
+        @if (!isHR && !moduloRRHH && vecesModificadas >= 2) {
+          <div class="alert-box error">
+            <strong>Límite alcanzado.</strong> Tus afiliaciones solo pueden modificarse 2 veces. Contacta a Gestión Humana o Gerencia para más cambios.
+          </div>
+        } @else if (!isHR && !moduloRRHH) {
+          <div class="alert-box warning">
+            Tu empresa no tiene el módulo Gestión Humana: tus afiliaciones pueden modificarse hasta
+            <strong>{{ 2 - vecesModificadas }} vez/veces más</strong> ({{ vecesModificadas }}/2 usadas). Con Gestión Humana, el cambio es ilimitado y lo revisa RRHH.
+          </div>
+        }
+
         <form (ngSubmit)="guardarAfiliaciones()" class="grid-form">
           <div class="form-group">
             <label>EPS</label>
@@ -179,6 +190,13 @@
               <option value="FNA">Fondo Nacional del Ahorro (FNA)</option>
             </select>
           </div>
+          @if (!isHR) {
+            <div class="form-group">
+              <label>Documento de soporte del cambio {{ !moduloRRHH ? '*' : '' }}</label>
+              <input type="file" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx" (change)="onAfiliacionFileSelected($event)" class="file-input">
+              <small class="hint-text">Adjunta el formulario de traslado EPS/Pensión (obligatorio sin Gestión Humana).</small>
+            </div>
+          }
           @if (isHR) {
             <hr class="separator-line">
             <h4 class="section-title">Gestión Interna (Exclusivo RRHH)</h4>
@@ -246,7 +264,7 @@
               </button>
             } @else {
               @if (formAfiliacion.estado !== 'pendiente') {
-                <button type="submit" class="btn-save btn-pill" [disabled]="isSaving">
+                <button type="submit" class="btn-save btn-pill" [disabled]="isSaving || !puedeModificarAfiliaciones">
                   <span *ngIf="!isSaving">{{ formAfiliacion.estado === 'nuevo' ? 'Guardar Afiliaciones' : 'Actualizar Afiliaciones' }}</span>
                   <span *ngIf="isSaving" class="loading-text">
                     <svg class="icon-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">

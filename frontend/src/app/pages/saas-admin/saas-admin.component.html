@@ -205,7 +205,7 @@
               d="M13.5 16.875h3.375m0 0h3.375m-3.375 0V13.5m0 3.375v3.375M6 10.5h2.25a2.25 2.25 0 0 0 2.25-2.25V6a2.25 2.25 0 0 0-2.25-2.25H6A2.25 2.25 0 0 0 3.75 6v2.25A2.25 2.25 0 0 0 6 10.5Zm0 9.75h2.25A2.25 2.25 0 0 0 10.5 18v-2.25a2.25 2.25 0 0 0-2.25-2.25H6a2.25 2.25 0 0 0-2.25 2.25V18A2.25 2.25 0 0 0 6 20.25Zm9.75-9.75H18a2.25 2.25 0 0 0 2.25-2.25V6A2.25 2.25 0 0 0 18 3.75h-2.25A2.25 2.25 0 0 0 13.5 6v2.25a2.25 2.25 0 0 0 2.25 2.25Z"
             />
           </svg>
-          <span class="nav-text">Áreas</span>
+          <span class="nav-text">Paquetes</span>
         </a>
         <a
           class="nav-item"
@@ -358,22 +358,22 @@
               <table class="saas-table w-full text-left border-collapse">
                 <thead>
                   <tr class="bg-gray-900/50 text-gray-300 text-sm tracking-wider uppercase border-b border-gray-700">
-                    <th class="p-4 font-semibold">ID</th>
-                    <th class="p-4 font-semibold">Empresa</th>
-                    <th class="p-4 font-semibold">Asunto</th>
-                    <th class="p-4 font-semibold">Prioridad</th>
-                    <th class="p-4 font-semibold">Estado</th>
-                    <th class="p-4 font-semibold">Fecha</th>
-                    <th class="p-4 font-semibold text-center">Acciones</th>
+                    <th class="px-2 py-4 font-semibold">ID</th>
+                    <th class="px-2 py-4 font-semibold">Empresa</th>
+                    <th class="px-2 py-4 font-semibold">Asunto</th>
+                    <th class="px-2 py-4 font-semibold">Prioridad</th>
+                    <th class="px-2 py-4 font-semibold">Estado</th>
+                    <th class="px-2 py-4 font-semibold">Fecha</th>
+                    <th class="px-2 py-4 font-semibold text-center">Acciones</th>
                   </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-800/50">
                   @for (ticket of ticketsSoporte; track ticket.id) {
                     <tr class="hover:bg-gray-700/30 transition-colors duration-200">
-                      <td class="p-4 text-gray-400 text-sm">#{{ ticket.id }}</td>
-                      <td class="p-4 font-medium text-white">{{ ticket.empresa?.razon_social || 'Desconocida' }}</td>
-                      <td class="p-4 text-gray-300">{{ ticket.asunto }}</td>
-                      <td class="p-4">
+                      <td class="px-2 py-4 text-gray-400 text-sm">#{{ ticket.id }}</td>
+                      <td class="px-2 py-4 font-medium text-white">{{ ticket.empresa?.razon_social || 'Desconocida' }}</td>
+                      <td class="px-2 py-4 text-gray-300">{{ ticket.asunto }}</td>
+                      <td class="px-2 py-4">
                         <span class="px-3 py-1 rounded-full text-xs font-semibold
                           {{ ticket.prioridad === 'Alta' ? 'bg-red-500/20 text-red-400 border border-red-500/30' : 
                              ticket.prioridad === 'Media' ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30' : 
@@ -381,7 +381,7 @@
                           {{ ticket.prioridad }}
                         </span>
                       </td>
-                      <td class="p-4">
+                      <td class="px-2 py-4">
                         <span class="px-3 py-1 rounded-full text-xs font-semibold
                           {{ ticket.estado === 'Abierto' ? 'bg-orange-500/20 text-orange-400 border border-orange-500/30' : 
                              ticket.estado === 'En progreso' ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30' : 
@@ -389,8 +389,8 @@
                           {{ ticket.estado }}
                         </span>
                       </td>
-                      <td class="p-4 text-gray-400 text-sm">{{ ticket.created_at | date:'dd/MM/yyyy HH:mm' }}</td>
-                      <td class="p-4 text-center">
+                      <td class="px-2 py-4 text-gray-400 text-sm">{{ ticket.created_at | date:'dd/MM/yyyy HH:mm' }}</td>
+                      <td class="px-2 py-4 text-center">
                         <button
                           (click)="abrirTicket(ticket)"
                           class="bg-indigo-500/20 hover:bg-indigo-500/40 text-indigo-400 border border-indigo-500/30 px-3 py-1.5 rounded text-sm font-semibold transition-all mr-2"
@@ -541,15 +541,15 @@
             <table class="data-table text-sm">
               <thead>
                 <tr>
-                  <th class="p-4 font-semibold uppercase tracking-wider">ID</th>
-                  <th class="p-4 font-semibold uppercase tracking-wider text-center">Razón Social</th>
-                  <th class="p-4 font-semibold uppercase tracking-wider text-center min-w-[150px] whitespace-nowrap">NIT</th>
-                  <th class="p-4 font-semibold uppercase tracking-wider text-center">Fecha Inscripción</th>
-                  <th class="p-4 font-semibold uppercase tracking-wider text-center max-w-[120px]">Áreas Asignadas</th>
-                  <th class="p-4 font-semibold uppercase tracking-wider text-center">Meses Pagados</th>
-                  <th class="p-4 font-semibold uppercase tracking-wider text-center">Ganancia Histórica</th>
-                  <th class="p-4 font-semibold uppercase tracking-wider text-center min-w-[130px]">Estado</th>
-                  <th class="p-4 font-semibold uppercase tracking-wider text-center min-w-[160px] pl-6">Acciones</th>
+                  <th class="px-2 py-4 font-semibold uppercase tracking-wider">ID</th>
+                  <th class="px-2 py-4 font-semibold uppercase tracking-wider text-center min-w-[90px] whitespace-normal">Razón Social</th>
+                  <th class="px-2 py-4 font-semibold uppercase tracking-wider text-center min-w-[80px] whitespace-nowrap">NIT</th>
+                  <th class="px-2 py-4 font-semibold uppercase tracking-wider text-center min-w-[100px] whitespace-normal">Fecha Inscripción</th>
+                  <th class="px-2 py-4 font-semibold uppercase tracking-wider text-center max-w-[80px] whitespace-normal">Tipo de Plan</th>
+                  <th class="px-2 py-4 font-semibold uppercase tracking-wider text-center min-w-[90px] whitespace-normal">Meses Pagados</th>
+                  <th class="px-2 py-4 font-semibold uppercase tracking-wider text-center min-w-[100px] whitespace-normal">Ganancia Histórica</th>
+                  <th class="px-2 py-4 font-semibold uppercase tracking-wider text-center min-w-[130px] whitespace-nowrap">Estado</th>
+                  <th class="px-2 py-4 font-semibold uppercase tracking-wider text-center min-w-[160px] pl-6">Acciones</th>
                 </tr>
               </thead>
               <tbody>
@@ -560,7 +560,7 @@
                     <td class="whitespace-nowrap">{{ empresa.nit }}</td>
                     <td class="text-center">{{ empresa.fecha_inscripcion ? (empresa.fecha_inscripcion | date:'mediumDate') : 'No registrada' }}</td>
                     <td class="text-center">
-                      <span class="badge-modulos">{{ empresa.tipo_empresa }}</span>
+                      <span class="badge-modulos">{{ empresa.plan_suscripcion || 'Emprendedor' }}</span>
                     </td>
                     <td class="text-center font-bold text-emerald-400">
                       {{ empresa.meses_activos }} meses
@@ -579,6 +579,17 @@
                     </td>
                     <td class="actions text-center">
                       <div class="flex items-center gap-1.5 justify-center">
+                        <!-- Ir a Suscripción (carga el precio según el plan) -->
+                        <button
+                          (click)="abrirSuscripcionDeEmpresa(empresa)"
+                          class="w-10 h-10 rounded-full glass-btn-gray flex items-center justify-center transition-colors hover:border-emerald-500/30"
+                          title="Suscripción / Plan"
+                        >
+                          <svg fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-emerald-500">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                          </svg>
+                        </button>
+
                         <!-- Activar (Check) -->
                         <button
                           (click)="cambiarEstadoEmpresa(empresa, 'activar')"
@@ -852,7 +863,7 @@
             <p class="text-gray-400 text-center text-sm mb-6">Control financiero, métricas de retención mensual (MRR) y gestión de pagos.</p>
           </div>
 
-          <div class="bg-[#0f172a] rounded-2xl p-6 shadow-inner border border-gray-800 w-full overflow-x-auto">
+          <div class="bg-[#0f172a] rounded-2xl p-6 shadow-inner border border-gray-800 w-full">
             @if (!editandoSuscripcion) {
             <h3 class="panel-title mb-6">Métricas Financieras (MRR)</h3>
 
@@ -861,7 +872,7 @@
               <span class="text-xs text-gray-400 uppercase tracking-wider block mb-1"
                 >MRR (Ingreso Mensual)</span
               >
-              <span class="text-2xl text-green-400 font-bold font-inter"
+              <span class="text-xl text-green-400 font-medium font-inter"
                 >${{ statsSuscripciones.mrr | number: '1.0-0' }}</span
               >
             </div>
@@ -869,7 +880,7 @@
               <span class="text-xs text-gray-400 uppercase tracking-wider block mb-1"
                 >Clientes Activos</span
               >
-              <span class="text-2xl text-blue-400 font-bold font-inter">{{
+              <span class="text-xl text-blue-400 font-medium font-inter">{{
                 statsSuscripciones.clientesActivos
               }}</span>
             </div>
@@ -877,7 +888,7 @@
               <span class="text-xs text-gray-400 uppercase tracking-wider block mb-1"
                 >Clientes en Mora</span
               >
-              <span class="text-2xl text-red-400 font-bold font-inter">{{
+              <span class="text-xl text-red-400 font-medium font-inter">{{
                 statsSuscripciones.clientesMora
               }}</span>
             </div>
@@ -885,7 +896,7 @@
               <span class="text-xs text-gray-400 uppercase tracking-wider block mb-1"
                 >Crecimiento (Mes)</span
               >
-              <span class="text-2xl text-purple-400 font-bold font-inter"
+              <span class="text-xl text-purple-400 font-medium font-inter"
                 >+{{ statsSuscripciones.crecimientoMensual }}%</span
               >
             </div>
@@ -899,88 +910,92 @@
             </button>
           </div>
           @if (suscripcionesList.length > 0) {
-            <div class="table-responsive">
+            <div class="table-responsive overflow-x-auto">
               <table class="data-table font-inter text-xs w-full text-center">
                 <thead>
                   <tr class="bg-gray-800 text-gray-400">
-                    <th class="p-4 font-semibold uppercase tracking-wider text-center whitespace-nowrap">ID</th>
-                    <th class="p-4 font-semibold uppercase tracking-wider text-center min-w-[220px] whitespace-nowrap">Empresa / Detalles</th>
-                    <th class="p-4 font-semibold uppercase tracking-wider text-center whitespace-nowrap">Plan Adquirido</th>
-                    <th class="p-4 font-semibold uppercase tracking-wider text-center min-w-[140px] whitespace-nowrap">Extras</th>
-                    <th class="p-4 font-semibold uppercase tracking-wider text-center min-w-[150px] whitespace-nowrap">Descuentos</th>
-                    <th class="p-4 font-semibold uppercase tracking-wider text-center min-w-[140px] whitespace-nowrap">Soporte Técnico</th>
-                    <th class="p-4 font-semibold uppercase tracking-wider text-center whitespace-nowrap">Próximo Pago Total</th>
-                    <th class="p-4 font-semibold uppercase tracking-wider text-center whitespace-nowrap">Fecha</th>
-                    <th class="p-4 font-semibold uppercase tracking-wider text-center whitespace-nowrap">Estado</th>
-                    <th class="p-4 font-semibold uppercase tracking-wider text-center min-w-[160px] whitespace-nowrap">Acciones</th>
+                    <th class="px-2 py-4 font-semibold uppercase tracking-wider text-center whitespace-nowrap">ID</th>
+                    <th class="px-2 py-4 font-semibold uppercase tracking-wider text-center min-w-[140px] whitespace-nowrap">Empresa</th>
+                    <th class="px-2 py-4 font-semibold uppercase tracking-wider text-center min-w-[90px] whitespace-normal">Plan Adquirido</th>
+                    <th class="px-2 py-4 font-semibold uppercase tracking-wider text-center whitespace-nowrap">Paquetes</th>
+                    <th class="px-2 py-4 font-semibold uppercase tracking-wider text-center min-w-[100px] whitespace-normal">Paquetes Adicionales</th>
+                    <th class="px-2 py-4 font-semibold uppercase tracking-wider text-center min-w-[90px] whitespace-nowrap">Descuentos</th>
+                    <th class="px-2 py-4 font-semibold uppercase tracking-wider text-center min-w-[90px] whitespace-nowrap">Extras</th>
+                    <th class="px-2 py-4 font-semibold uppercase tracking-wider text-center min-w-[100px] whitespace-normal">Próximo Pago Total</th>
+                    <th class="px-2 py-4 font-semibold uppercase tracking-wider text-center whitespace-nowrap">Fecha</th>
+                    <th class="px-2 py-4 font-semibold uppercase tracking-wider text-center whitespace-nowrap">Estado</th>
+                    <th class="px-2 py-4 font-semibold uppercase tracking-wider text-center min-w-[110px] whitespace-nowrap">Acciones</th>
                   </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-700">
                   @for (sus of suscripcionesList; track sus.id) {
                     <tr class="hover:bg-gray-800/50 transition-colors">
-                      <td class="p-4 text-center text-gray-300 font-medium whitespace-nowrap">
+                      <td class="px-2 py-4 text-center text-gray-300 font-medium whitespace-nowrap">
                         {{ sus.id }}
                       </td>
-                      <td class="p-4 text-center whitespace-nowrap">
+                      <td class="px-2 py-4 text-center whitespace-nowrap">
                         <div class="font-bold text-white">{{ sus.nombreEmpresa }}</div>
-                        <div class="text-gray-400 mt-1">
-                          Inscripción: {{ sus.fechaInscripcion }}<br/>
-                          Renovaciones: <span class="text-blue-300 font-semibold">{{ sus.renovaciones }}</span>
-                        </div>
                       </td>
-                      <td class="p-4 text-center whitespace-nowrap">
-                        <span class="px-3 py-1 rounded-full font-bold uppercase text-[10px] bg-blue-900/30 text-blue-400">
+                      <td class="px-2 py-4 text-center whitespace-nowrap">
+                        <span class="px-2 py-0.5 rounded-full font-bold uppercase text-[10px] bg-blue-900/30 text-blue-400">
                           {{ sus.plan }}
                         </span>
                       </td>
-                      <td class="p-4 text-center whitespace-nowrap">
+                      <td class="px-2 py-4 text-center whitespace-nowrap">
                         <div class="text-gray-300 font-semibold">
-                          {{ sus.tipoEmpresa }}
-                          <span class="text-blue-400 text-[10px] block" *ngIf="sus.modulosExtra > 0">
-                            +{{ sus.modulosExtra }} Especiales
+                          {{ sus.tipoEmpresa === 'Ventas y Servicios' ? 'Mixto' : sus.tipoEmpresa }}
+                        </div>
+                      </td>
+                      <td class="px-2 py-4 text-center whitespace-nowrap">
+                        @if (sus.paquetesAdicionales !== 'Ninguno') {
+                          <div class="space-y-1">
+                            @for (paq of sus.paquetesAdicionales.split(', '); track $index) {
+                              <div class="text-emerald-400 font-semibold text-[11px] bg-emerald-950/20 px-2 py-0.5 rounded inline-block">
+                                {{ paq }}
+                              </div>
+                            }
+                          </div>
+                        } @else {
+                          <span class="text-gray-500 italic">Ninguno</span>
+                        }
+                      </td>
+                      <td class="px-2 py-4 text-center whitespace-nowrap">
+                        @if (sus.descuentos !== 'Ninguno') {
+                          <span class="text-yellow-400 font-semibold text-[11px] bg-yellow-950/20 px-2 py-0.5 rounded inline-block">
+                            {{ sus.descuentos }}
                           </span>
-                        </div>
+                        } @else {
+                          <span class="text-gray-500 italic">Ninguno</span>
+                        }
                       </td>
-                      <td class="p-4 text-center whitespace-nowrap">
-                        <div class="space-y-1">
-                          @for (desc of sus.descuentosAplicados; track $index) {
-                            <div class="text-yellow-400 font-semibold text-[11px] bg-yellow-950/20 px-2 py-0.5 rounded inline-block">
-                              {{ desc.descripcion }} (-{{ desc.porcentaje }}%)
-                            </div>
-                          }
-                          @if (sus.descuentosAplicados.length === 0) {
-                            <span class="text-gray-500 italic">Ninguno</span>
-                          }
-                        </div>
-                      </td>
-                      <td class="p-4 text-center whitespace-nowrap">
+                      <td class="px-2 py-4 text-center whitespace-nowrap">
                         <span class="text-gray-300 font-inter">
                           {{ sus.iaByokActivo ? 'BYOK Activa' : 'SaaS Standard' }}
                         </span>
                       </td>
-                      <td class="p-4 text-center font-bold text-white font-inter whitespace-nowrap">
+                      <td class="px-2 py-4 text-center font-bold text-white font-inter whitespace-nowrap">
                         ${{ sus.proximoPagoTotal | number: '1.0-0' }} COP
                       </td>
-                      <td class="p-4 text-center text-gray-400 whitespace-nowrap">
+                      <td class="px-2 py-4 text-center text-gray-400 whitespace-nowrap">
                         {{ sus.fechaProximoPago }}
                       </td>
-                      <td class="p-4 text-center whitespace-nowrap">
+                      <td class="px-2 py-4 text-center whitespace-nowrap">
                         @if (sus.estado === 'Activa') {
-                          <span class="px-3 py-1 rounded-full font-semibold uppercase bg-green-500/20 text-green-400">
+                          <span class="px-2 py-0.5 rounded-full font-semibold uppercase bg-green-500/20 text-green-400">
                             Activa
                           </span>
                         } @else if (sus.estado === 'En Mora') {
-                          <span class="px-3 py-1 rounded-full font-semibold uppercase bg-red-500/20 text-red-400">
+                          <span class="px-2 py-0.5 rounded-full font-semibold uppercase bg-red-500/20 text-red-400">
                             En Mora
                           </span>
                         } @else {
-                          <span class="px-3 py-1 rounded-full font-semibold uppercase bg-gray-500/20 text-gray-400">
+                          <span class="px-2 py-0.5 rounded-full font-semibold uppercase bg-gray-500/20 text-gray-400">
                             Inactiva
                           </span>
                         }
                       </td>
-                      <td class="p-4 text-center whitespace-nowrap">
-                        <div class="flex justify-center gap-3">
+                      <td class="px-2 py-4 text-center whitespace-nowrap">
+                        <div class="flex justify-center gap-1">
                           <button (click)="abrirCarritoSuscripcion(sus)" class="w-10 h-10 rounded-full glass-btn-gray flex items-center justify-center transition-colors hover:border-gray-500/30" title="Gestionar Tarifas">
                             <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
@@ -1050,42 +1065,37 @@
                           class="px-4 py-2 border-b-2 border-transparent font-semibold text-xs uppercase tracking-wider text-gray-400 hover:text-white transition-colors whitespace-nowrap">
                     4. Conectores (Add-ons)
                   </button>
-                  <button (click)="activeTabCarrito = 'descuentos'" 
-                          [class.border-emerald-500]="activeTabCarrito === 'descuentos'"
-                          [class.text-emerald-400]="activeTabCarrito === 'descuentos'"
-                          class="px-4 py-2 border-b-2 border-transparent font-semibold text-xs uppercase tracking-wider text-gray-400 hover:text-white transition-colors whitespace-nowrap">
-                    5. Descuentos
-                  </button>
                 </div>
 
-                <!-- TAB 1: PLAN BASE & TIPO EMPRESA -->
+                <!-- TAB 1: PLAN BASE & TIPO EMPRESA (SOLO LECTURA: definidos en el módulo Empresas) -->
                 <div *ngIf="activeTabCarrito === 'plan_base'" class="space-y-4 bg-gray-800/40 p-4 rounded-xl border border-gray-800">
                   <div>
-                    <label class="block text-xs uppercase tracking-wider text-gray-400 font-semibold mb-2">Tipo de Empresa (Paquete Base)</label>
-                    <select [(ngModel)]="selectedTipoEmpresa" class="neu-dark-input text-xs w-full !p-2">
-                      <option value="Ventas">Ventas (Incluye Ventas, Inventario, Clientes, Compras, Proveedores)</option>
-                      <option value="Servicios">Servicios (Incluye Agenda, CRM, Catálogo, Operarios, Reportes)</option>
-                      <option value="Ventas y Servicios">Ventas y Servicios (Mixto - Incluye todos los anteriores)</option>
-                    </select>
+                    <label class="block text-xs uppercase tracking-wider text-gray-400 font-semibold mb-2">Tipo de Empresa</label>
+                    <div class="text-sm font-bold text-white">
+                      {{ selectedTipoEmpresa === 'Ventas y Servicios' ? 'Ventas y Servicios (Mixto)' : selectedTipoEmpresa }}
+                    </div>
+                    <div class="text-[10px] text-gray-500 mt-1">Definido en el módulo Empresas</div>
                   </div>
 
                   <hr class="border-gray-800 my-4">
 
                   <div>
-                    <label class="block text-xs uppercase tracking-wider text-gray-400 font-semibold mb-2">Seleccionar Plan de Suscripción</label>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-                      <ng-container *ngFor="let item of catalogoTarifas">
-                        <div *ngIf="item.tipo === 'plan'" 
-                             (click)="cartItemsSelect[item.id].active = true; deseleccionarOtrosPlanes(item.id)"
-                             [class.border-emerald-500]="cartItemsSelect[item.id]?.active"
-                             [class.bg-emerald-950/20]="cartItemsSelect[item.id]?.active"
-                             class="p-4 rounded-xl border border-gray-800 hover:border-gray-700 transition-all cursor-pointer text-center relative">
-                          <span *ngIf="cartItemsSelect[item.id]?.active" class="absolute top-2 right-2 text-emerald-400 text-xs">✓ Seleccionado</span>
-                          <div class="font-bold text-sm text-white mb-1">{{ item.nombre }}</div>
-                          <div class="text-xs text-emerald-400 font-bold font-inter">${{ item.valor | number: '1.0-0' }} COP / mes</div>
-                        </div>
-                      </ng-container>
+                    <label class="block text-xs uppercase tracking-wider text-gray-400 font-semibold mb-2">Plan Adquirido</label>
+                    <div class="text-sm font-bold text-blue-400 uppercase">{{ suscripcionEnEdicion?.plan }}</div>
+                    <div class="text-[10px] text-gray-500 mt-1">Definido en el módulo Empresas</div>
+                  </div>
+
+                  <hr class="border-gray-800 my-4">
+
+                  <div>
+                    <label class="block text-xs uppercase tracking-wider text-gray-400 font-semibold mb-2">Descuentos Aplicados</label>
+                    <div *ngIf="suscripcionEnEdicion?.descuentos && suscripcionEnEdicion?.descuentos !== 'Ninguno'" class="text-sm font-semibold text-yellow-400">
+                      {{ suscripcionEnEdicion?.descuentos }}
                     </div>
+                    <div *ngIf="!suscripcionEnEdicion?.descuentos || suscripcionEnEdicion?.descuentos === 'Ninguno'" class="text-sm text-gray-500 italic">
+                      Ninguno
+                    </div>
+                    <div class="text-[10px] text-gray-500 mt-1">Definido en el módulo Empresas</div>
                   </div>
                 </div>
 
@@ -1216,26 +1226,6 @@
                   </div>
                 </div>
 
-                <!-- TAB 5: DESCUENTOS -->
-                <div *ngIf="activeTabCarrito === 'descuentos'" class="bg-gray-800/40 p-4 rounded-xl border border-gray-800 space-y-3">
-                  <label class="block text-xs uppercase tracking-wider text-gray-400 font-semibold mb-2">Seleccionar Descuentos Aplicados</label>
-                  <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    <ng-container *ngFor="let item of catalogoTarifas">
-                      <div *ngIf="item.tipo === 'descuento'" 
-                           (click)="cartItemsSelect[item.id].active = !cartItemsSelect[item.id].active"
-                           [class.border-emerald-500]="cartItemsSelect[item.id]?.active"
-                           [class.bg-emerald-950/20]="cartItemsSelect[item.id]?.active"
-                           class="p-3 rounded-xl border border-gray-800 hover:border-gray-700 transition-all cursor-pointer flex justify-between items-center relative">
-                        <div>
-                          <div class="font-semibold text-xs text-white">{{ item.nombre }}</div>
-                          <div class="text-[10px] text-yellow-400 mt-1">-{{ item.valor }}% de descuento</div>
-                        </div>
-                        <input type="checkbox" [checked]="cartItemsSelect[item.id]?.active" class="rounded text-yellow-500 border-gray-700 bg-gray-900 pointer-events-none" />
-                      </div>
-                    </ng-container>
-                  </div>
-                </div>
-
               </div>
 
               <!-- PARTE DERECHA: RESUMEN DE COMPRA (INLINE CHECKOUT) - 1 COLUMNA -->
@@ -1282,12 +1272,12 @@
                   <!-- Subtotal y Descuentos -->
                   <div class="space-y-1.5 text-xs text-gray-300">
                     <div class="flex justify-between">
-                      <span>Subtotal:</span>
+                      <span>Sin descuento:</span>
                       <span class="font-inter font-semibold">${{ subtotalSuscripcion | number: '1.0-0' }} COP</span>
                     </div>
 
-                    <div class="flex justify-between text-yellow-400" *ngIf="descuentoSuscripcion > 0">
-                      <span>Ajuste por Descuento:</span>
+                    <div class="flex justify-between text-yellow-400" *ngIf="descuentoEmpresaPct > 0">
+                      <span>Descuento ({{ descuentoEmpresaPct }}%):</span>
                       <span class="font-inter font-semibold">-${{ descuentoSuscripcion | number: '1.0-0' }} COP</span>
                     </div>
                   </div>
@@ -1342,8 +1332,8 @@
                 <div class="flex flex-col">
                   <span class="text-xs text-gray-400 uppercase tracking-wider">Servidor Principal</span>
                   <div class="flex items-center gap-2 mt-1">
-                    <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-                    <span class="text-sm text-green-400 font-bold">En Línea (Estable)</span>
+                    <span [class]="serverStatus.dbConnection === 'Caída' ? 'w-2 h-2 rounded-full bg-red-500 animate-pulse' : 'w-2 h-2 rounded-full bg-green-500 animate-pulse'"></span>
+                    <span [class]="serverStatus.dbConnection === 'Caída' ? 'text-sm text-red-400 font-bold' : 'text-sm text-green-400 font-bold'">{{ serverStatus.dbConnection === 'Caída' ? 'Sin conexión' : 'En Línea' }}</span>
                   </div>
                 </div>
               </div>
@@ -1425,6 +1415,31 @@
                   <span class="text-gray-300 font-inter font-medium text-base"
                     >Gestión de Accesos y Roles</span
                   >
+                  <span class="text-xs font-bold text-green-500">Módulo Base</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- MÓDULO FORMALIZACIÓN DE USUARIOS (POR DEFECTO) -->
+            <div class="soft-ui-card">
+              <div class="flex items-center justify-between gap-4 mb-6">
+                <div class="flex items-center gap-4">
+                  <div class="soft-ui-icon-box text-cyan-400">
+                    <svg class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M15 9h3.75M15 12h3.75M15 15h3.75M4.5 19.5h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5zm6-10.125a1.875 1.875 0 11-3.75 0 1.875 1.875 0 013.75 0zm1.294 6.336a6.721 6.721 0 01-3.17.789 6.721 6.721 0 01-3.168-.789 3.376 3.376 0 016.338 0z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h4 class="text-white font-inter font-bold text-lg">Módulo FORMALIZACIÓN DE USUARIOS</h4>
+                    <p class="text-sm text-gray-400 mt-1">
+                      Completa el perfil laboral de los empleados creados por Gerencia.
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="space-y-3">
+                <div class="soft-ui-row">
+                  <span class="text-gray-300 font-inter font-medium text-base">Formalización de Empleados</span>
                   <span class="text-xs font-bold text-green-500">Módulo Base</span>
                 </div>
               </div>
@@ -1607,11 +1622,11 @@
                 </div>
 
                 <div class="space-y-3">
-                  @for (sub of paquete.submodulos; track sub.id) {
+                  @for (sub of paquete.modulos; track sub.id) {
                     <div class="soft-ui-row">
                       <span class="text-gray-300 font-inter font-medium text-base">{{ sub.nombre }}</span>
                       <button
-                        (click)="toggleSubmodulo(paquete.id, sub.id)"
+                        (click)="toggleModulo(paquete.id, sub.id)"
                         [class]="'soft-ui-toggle ' + (sub.activo ? 'active' : 'inactive')"
                       >
                         <div class="soft-ui-toggle-thumb"></div>
@@ -1719,7 +1734,7 @@
                     <th class="py-3 px-2 font-bold uppercase tracking-wider text-center">Nombre</th>
                     <th class="py-3 px-2 font-bold uppercase tracking-wider text-center">Teléfono</th>
                     <th class="py-3 px-2 font-bold uppercase tracking-wider text-center">Correo</th>
-                    <th class="py-3 px-2 font-bold uppercase tracking-wider text-center">Horario Ideal</th>
+                    <th class="py-3 px-2 font-bold uppercase tracking-wider text-center min-w-[80px] whitespace-normal">Horario Ideal</th>
                     <th class="py-3 px-2 font-bold uppercase tracking-wider text-center">Mensaje</th>
                     <th class="py-3 px-2 font-bold uppercase tracking-wider text-center">Estado</th>
                     <th class="py-3 px-2 font-bold uppercase tracking-wider text-center">Acciones</th>
@@ -2011,17 +2026,17 @@
                 <table class="saas-table w-full text-left border-collapse text-sm">
                   <thead>
                     <tr class="bg-gray-900/50 text-gray-300 tracking-wider uppercase border-b border-gray-700">
-                      <th class="p-3 font-semibold">Versión</th>
-                      <th class="p-3 font-semibold">Fecha Publicación</th>
-                      <th class="p-3 font-semibold text-center">Estado</th>
+                      <th class="px-2 py-3 font-semibold">Versión</th>
+                      <th class="px-2 py-3 font-semibold whitespace-normal">Fecha Publicación</th>
+                      <th class="px-2 py-3 font-semibold text-center">Estado</th>
                     </tr>
                   </thead>
                   <tbody class="divide-y divide-gray-800/50">
                     @for (contrato of contratosHistory; track contrato.id) {
                       <tr class="hover:bg-gray-700/30 transition-colors">
-                        <td class="p-3 font-bold text-white">v{{ contrato.version }}</td>
-                        <td class="p-3 text-gray-400">{{ contrato.created_at | date:'dd/MM/yyyy HH:mm' }}</td>
-                        <td class="p-3 text-center">
+                        <td class="px-2 py-3 font-bold text-white">v{{ contrato.version }}</td>
+                        <td class="px-2 py-3 text-gray-400">{{ contrato.created_at | date:'dd/MM/yyyy HH:mm' }}</td>
+                        <td class="px-2 py-3 text-center">
                           @if (contrato.es_activo) {
                             <span class="px-2 py-1 rounded text-xs font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">ACTIVO</span>
                           } @else {
@@ -2196,17 +2211,16 @@
           />
         </div>
         <div class="saas-form-group">
-          <label class="saas-label">Plan / Áreas</label>
+          <label class="saas-label">Tipo de Plan</label>
           <select
-            [(ngModel)]="nuevaEmpresa.tipo_empresa"
-            name="tipo_empresa"
+            [(ngModel)]="nuevaEmpresa.plan_suscripcion"
+            name="plan_suscripcion"
             required
             class="saas-select"
           >
-            <option value="Servicios" class="saas-option">Servicios</option>
-            <option value="Ventas" class="saas-option">Ventas</option>
-            <option value="Ventas y Servicios" class="saas-option">Ventas y Servicios</option>
-            <option value="Especial" class="saas-option">Especial</option>
+            <option value="Emprendedor" class="saas-option">Emprendedor</option>
+            <option value="Pyme" class="saas-option">Pyme</option>
+            <option value="Empresarial" class="saas-option">Empresarial</option>
           </select>
         </div>
 
@@ -2426,11 +2440,47 @@
           }
 
           @if (solicitudSeleccionada.tipo === 'migracion') {
-            <div class="bg-red-500/10 border-l-4 border-red-500 p-4 rounded mt-4">
-              <p class="text-red-400 font-medium m-0">
-                Esta empresa está solicitando sus datos para migrar a otra plataforma. Si apruebas,
-                deberás generar el respaldo de BD manualmente y enviarlo al cliente.
+            <div class="mb-4">
+              <strong class="text-white">Base de Datos Recibida (Onboarding):</strong>
+              <p class="text-gray-300 text-sm mt-1">
+                La empresa subió su información histórica (Excel) para migrarla a GestivaPyme.
+                Descarga el archivo, corrígelo si es necesario y vuelve a subirlo para importar los datos a su cuenta.
+                Al importar, los datos aparecerán en Clientes, Proveedores, Inventario, Servicios y Gestión Humana.
               </p>
+
+              <div class="mt-3 flex flex-wrap gap-3">
+                <button (click)="descargarArchivoMigracion()" class="px-4 py-2 glass-btn-blue text-white rounded-lg font-bold flex items-center gap-2 transition-colors">
+                  <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" /></svg>
+                  Descargar Archivo Subido
+                </button>
+
+                @if (solicitudSeleccionada.estado === 'pendiente') {
+                  <label class="px-4 py-2 glass-btn-cyan text-white rounded-lg font-bold flex items-center gap-2 cursor-pointer transition-colors">
+                    <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" /></svg>
+                    {{ archivoMigracionCorregido ? archivoMigracionCorregido.name : 'Seleccionar Archivo Corregido' }}
+                    <input type="file" accept=".xlsx,.xls,.csv" class="hidden" (change)="onArchivoMigracionSeleccionado($event)" />
+                  </label>
+                  <button
+                    (click)="importarMigracion()"
+                    [disabled]="!archivoMigracionCorregido || importandoMigracion"
+                    class="px-4 py-2 glass-btn-green text-white rounded-lg font-bold flex items-center gap-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    @if (importandoMigracion) {
+                      <svg class="animate-spin w-5 h-5" viewBox="0 0 24 24" fill="none"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                      Importando...
+                    } @else {
+                      <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 8.25H7.5a2.25 2.25 0 0 0-2.25 2.25v9a2.25 2.25 0 0 0 2.25 2.25h9a2.25 2.25 0 0 0 2.25-2.25v-9a2.25 2.25 0 0 0-2.25-2.25H15m0-3-3-3m0 0-3 3m3-3V15" /></svg>
+                      Importar Base de Datos
+                    }
+                  </button>
+                }
+              </div>
+
+              @if (solicitudSeleccionada.notas_propietaria) {
+                <div class="mt-4 bg-emerald-500/10 border border-emerald-500/40 rounded p-3">
+                  <p class="text-emerald-300 text-sm font-medium m-0">{{ solicitudSeleccionada.notas_propietaria }}</p>
+                </div>
+              }
             </div>
           }
         </div>
@@ -2637,45 +2687,39 @@
   <!-- MODAL DE TARIFAS GLOBALES -->
   @if (modalTarifasGlobalesVisible) {
     <div class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div class="bg-[#0f172a] rounded-2xl w-full max-w-md border border-gray-800 shadow-2xl overflow-hidden font-inter relative">
+      <div class="bg-[#0f172a] rounded-2xl w-full max-w-3xl border border-gray-800 shadow-2xl overflow-hidden font-inter relative max-h-[92vh] flex flex-col">
         <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-500 to-indigo-500"></div>
-        <div class="p-6">
+        <div class="p-6 overflow-y-auto">
           <h2 class="text-[16px] font-bold text-white mb-2 flex items-center gap-2">
             <svg class="w-6 h-6 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-            Configuración de Precios Base
+            Catálogo de Precios Base
           </h2>
-          <p class="text-gray-400 text-sm mb-6">Establece los valores base (COP) con los que el sistema calculará las mensualidades automáticamente para cada tipo de servicio.</p>
+          <p class="text-gray-400 text-sm mb-6">Establece los valores (COP) que el sistema cobrará. Los porcentajes se aplican como descuento.</p>
 
-          <div class="space-y-4">
-            <div>
-              <label class="block text-gray-300 text-sm font-semibold mb-1">Plan Básico (Cualquier Área Base)</label>
-              <div class="relative">
-                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-bold">$</span>
-                <input type="number" [(ngModel)]="tarifaConfig.plan_mensual" class="neu-dark-input w-full pl-8 font-bold text-lg text-emerald-300" />
+          @for (grupo of gruposTarifas; track grupo.titulo) {
+            <div class="mb-5">
+              <h3 class="text-xs uppercase tracking-wider text-gray-500 font-semibold mb-3 border-b border-gray-800 pb-2">{{ grupo.titulo }}</h3>
+              <div class="space-y-2">
+                @for (item of grupo.items; track item.id) {
+                  <div class="flex items-center justify-between gap-3 bg-gray-900 rounded-lg px-4 py-2 border border-gray-800">
+                    <label class="flex-1 text-sm text-gray-300">{{ item.nombre }}</label>
+                    <div class="relative w-44">
+                      <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-xs font-semibold">{{ item.tipo === 'descuento' ? '%' : '$' }}</span>
+                      <input type="number" [(ngModel)]="item.valor" [disabled]="!item.activo"
+                             class="neu-dark-input w-full pl-8 pr-3 py-1.5 text-xs text-right" />
+                    </div>
+                  </div>
+                }
               </div>
             </div>
-            <div>
-              <label class="block text-gray-300 text-sm font-semibold mb-1">Costo por Área Transversal Adicional</label>
-              <div class="relative">
-                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-bold">$</span>
-                <input type="number" [(ngModel)]="tarifaConfig.modulo_extra" class="neu-dark-input w-full pl-8 font-bold text-lg text-indigo-300" />
-              </div>
-            </div>
-            <div>
-              <label class="block text-gray-300 text-sm font-semibold mb-1">Costo por Conector / Add-on Externo</label>
-              <div class="relative">
-                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-bold">$</span>
-                <input type="number" [(ngModel)]="tarifaConfig.addon_extra" class="neu-dark-input w-full pl-8 font-bold text-lg text-rose-300" />
-              </div>
-            </div>
-          </div>
+          }
+        </div>
 
-          <div class="mt-8 flex justify-end gap-3 pt-4 border-t border-gray-800">
-            <button (click)="cerrarModalTarifasGlobales()" class="px-4 py-2 glass-btn-gray text-white rounded-md transition-colors text-sm font-semibold">Cancelar</button>
-            <button (click)="guardarTarifas()" class="px-4 py-2 glass-btn-green text-white rounded-md transition-colors text-sm font-semibold">
-              Actualizar Tarifas
-            </button>
-          </div>
+        <div class="flex justify-end gap-3 pt-4 border-t border-gray-800 p-6 bg-[#0f172a]">
+          <button (click)="cerrarModalTarifasGlobales()" class="px-4 py-2 glass-btn-gray text-white rounded-md transition-colors text-sm font-semibold">Cancelar</button>
+          <button (click)="guardarTarifasCatalogo()" class="px-4 py-2 glass-btn-green text-white rounded-md transition-colors text-sm font-semibold">
+            Actualizar Tarifas
+          </button>
         </div>
       </div>
     </div>

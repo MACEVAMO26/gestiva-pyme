@@ -6,12 +6,13 @@ import { OperariosTicketsService, ServicioTicket, ServicioMaterial } from '../..
 import { InventarioService, Inventario } from '../../../../../services/inventario.service';
 import { EmpleadoService } from '../../../../../services/empleado.service';
 import { ToastService } from '../../../../../services/toast.service';
+import { SolicitudInactivacionComponent } from '../../../../../shared/components/solicitud-inactivacion/solicitud-inactivacion.component';
 import { timeout } from 'rxjs';
 
 @Component({
   selector: 'app-catalogo-de-servicios',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, SolicitudInactivacionComponent],
   templateUrl: './catalogo-de-servicios.component.html',
   styleUrl: './catalogo-de-servicios.component.scss'
 })

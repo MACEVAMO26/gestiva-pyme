@@ -27,31 +27,76 @@ class AutogestionController extends Controller
     {
         $user = $request->user();
         $afiliacion = DB::table('afiliaciones')->where('user_id', $user->id)->first();
-        
+
         return response()->json([
-            'afiliacion' => $afiliacion
+            'afiliacion' => $afiliacion,
+            'modulo_rrhh_activo' => $this->empresaTieneRRHH($user),
         ]);
     }
 
-    // Guarda o actualiza las afiliaciones del empleado asignándoles estado pendiente
+    // ¿La empresa del usuario tiene activo el módulo Gestión Humana?
+    private function empresaTieneRRHH($user)
+    {
+        if (!$user || !$user->empresa_id) {
+            return false;
+        }
+        return DB::table('empresa_modulo')
+            ->join('modulos', 'modulos.id', '=', 'empresa_modulo.modulo_id')
+            ->where('empresa_modulo.empresa_id', $user->empresa_id)
+            ->where('empresa_modulo.activo', true)
+            ->where('modulos.paquete', 'rrhh')
+            ->exists();
+    }
+
+    // Guarda o actualiza las afiliaciones del empleado. El documento es obligatorio para el cambio.
     public function guardarAfiliaciones(Request $request)
     {
         $request->validate([
             'eps' => 'nullable|string|max:255',
             'afondo_pension' => 'nullable|string|max:255',
             'fondo_cesantias' => 'nullable|string|max:255',
+            'documento_soporte' => 'nullable|file|max:10240',
         ]);
 
         $user = $request->user();
         $existe = DB::table('afiliaciones')->where('user_id', $user->id)->first();
 
-        // Limita la actualización a datos básicos, excluyendo fechas reservadas para RRHH
+        // Con Gestión Humana activa, RRHH aprueba el cambio (estado pendiente).
+        // Sin Gestión Humana, el empleado solo puede modificarlas hasta 2 veces en total.
+        if (!$this->empresaTieneRRHH($user)) {
+            $veces = $existe ? (int) $existe->veces_modificada : 0;
+            if ($veces >= 2) {
+                return response()->json([
+                    'message' => 'Límite alcanzado. Tus afiliaciones solo pueden modificarse 2 veces. Contacta a Gestión Humana o Gerencia para más cambios.',
+                ], 403);
+            }
+        }
+
+        // Subir el documento de soporte si se adjuntó
+        $documentoUrl = $existe?->documento_soporte_url ?? null;
+        if ($request->hasFile('documento_soporte')) {
+            try {
+                $uploaded = cloudinary()->upload($request->file('documento_soporte')->getRealPath(), [
+                    'folder' => 'gestivapyme/afiliaciones',
+                    'resource_type' => 'raw',
+                ]);
+                $documentoUrl = $uploaded->getSecurePath();
+            } catch (\Exception $e) {
+                return response()->json(['message' => 'Error al subir el documento: ' . $e->getMessage()], 500);
+            }
+        }
+
+        $nuevasVeces = ($existe ? (int) $existe->veces_modificada : 0) + 1;
+
         if ($existe) {
             DB::table('afiliaciones')->where('user_id', $user->id)->update([
                 'eps' => $request->eps,
                 'afondo_pension' => $request->afondo_pension,
                 'fondo_cesantias' => $request->fondo_cesantias,
+                'documento_soporte_url' => $documentoUrl,
                 'estado' => 'pendiente',
+                'veces_modificada' => $nuevasVeces,
+                'notas_rechazo' => null,
                 'updated_at' => now(),
             ]);
         } else {
@@ -60,14 +105,16 @@ class AutogestionController extends Controller
                 'eps' => $request->eps,
                 'afondo_pension' => $request->afondo_pension,
                 'fondo_cesantias' => $request->fondo_cesantias,
+                'documento_soporte_url' => $documentoUrl,
                 'estado' => 'pendiente',
+                'veces_modificada' => $nuevasVeces,
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
         }
 
         return response()->json([
-            'message' => 'Tus datos de afiliación han sido guardados y enviados para aprobación.'
+            'message' => 'Tus datos de afiliación fueron enviados para aprobación.',
         ]);
     }
 
@@ -87,6 +134,7 @@ class AutogestionController extends Controller
             'eps' => 'nullable|string|max:255',
             'afondo_pension' => 'nullable|string|max:255',
             'fondo_cesantias' => 'nullable|string|max:255',
+            'documento_soporte' => 'nullable|file|max:10240',
             'estado' => 'required|in:aprobado,rechazado,pendiente',
             'notas_rechazo' => 'nullable|string',
             'fecha_contratacion' => 'nullable|date',
@@ -95,12 +143,25 @@ class AutogestionController extends Controller
         ]);
 
         $existe = DB::table('afiliaciones')->where('user_id', $id)->first();
+        $documentoUrl = $existe?->documento_soporte_url ?? null;
+        if ($request->hasFile('documento_soporte')) {
+            try {
+                $uploaded = cloudinary()->upload($request->file('documento_soporte')->getRealPath(), [
+                    'folder' => 'gestivapyme/afiliaciones',
+                    'resource_type' => 'raw',
+                ]);
+                $documentoUrl = $uploaded->getSecurePath();
+            } catch (\Exception $e) {
+                return response()->json(['message' => 'Error al subir el documento: ' . $e->getMessage()], 500);
+            }
+        }
 
         if ($existe) {
             DB::table('afiliaciones')->where('user_id', $id)->update([
                 'eps' => $request->eps,
                 'afondo_pension' => $request->afondo_pension,
                 'fondo_cesantias' => $request->fondo_cesantias,
+                'documento_soporte_url' => $documentoUrl,
                 'estado' => $request->estado,
                 'notas_rechazo' => $request->notas_rechazo,
                 'fecha_contratacion' => $request->fecha_contratacion,
@@ -114,6 +175,7 @@ class AutogestionController extends Controller
                 'eps' => $request->eps,
                 'afondo_pension' => $request->afondo_pension,
                 'fondo_cesantias' => $request->fondo_cesantias,
+                'documento_soporte_url' => $documentoUrl,
                 'estado' => $request->estado,
                 'notas_rechazo' => $request->notas_rechazo,
                 'fecha_contratacion' => $request->fecha_contratacion,

@@ -4,6 +4,7 @@ import { LoadingSpinnerComponent } from '../../../../../shared/components/loadin
 import { FormsModule } from '@angular/forms';
 import { TareaService, Tarea } from '../../../../../services/tarea.service';
 import { EmpleadoService } from '../../../../../services/empleado.service';
+import { AuthService } from '../../../../../services/auth.service';
 import { ToastService } from '../../../../../services/toast.service';
 import { timeout } from 'rxjs';
 
@@ -17,13 +18,30 @@ import { timeout } from 'rxjs';
 export class GestionDeTareasComponent implements OnInit {
   private tareaService = inject(TareaService);
   private empleadoService = inject(EmpleadoService);
+  private authService = inject(AuthService);
   private toast = inject(ToastService);
 
   tareas: Tarea[] = [];
   empleados: any[] = [];
+  areas: any[] = [];
+  user: any = null;
   cargando = false;
   guardando = false;
   activeTab: string = 'asignacion';
+
+  constructor() {
+    this.user = this.authService.getUser();
+  }
+
+  get esGerenteOjefe(): boolean {
+    const rol = this.user?.rol?.nombre || '';
+    return rol === 'Gerente General' || rol === 'Gerente' || rol === 'Jefe de Área';
+  }
+
+  get esOperario(): boolean {
+    const rol = this.user?.rol?.nombre || '';
+    return rol === 'Operario' || (!!this.user?.id && !this.esGerenteOjefe);
+  }
 
   switchTab(tab: string) {
     this.activeTab = tab;
@@ -41,12 +59,15 @@ export class GestionDeTareasComponent implements OnInit {
   nuevaTarea: Tarea = {
     titulo: '',
     descripcion: '',
-    asignado_id: 0
+    asignado_id: 0,
+    tipo: 'individual',
+    area_id: undefined
   };
 
   ngOnInit(): void {
     this.cargarTareas();
     this.cargarEmpleados();
+    this.cargarAreas();
   }
 
   cargarTareas() {
@@ -56,7 +77,7 @@ export class GestionDeTareasComponent implements OnInit {
         this.tareas = res;
         this.cargando = false;
       },
-      error: (err) => {
+      error: () => {
         this.tareas = [];
         this.cargando = false;
       }
@@ -74,9 +95,34 @@ export class GestionDeTareasComponent implements OnInit {
     });
   }
 
+  cargarAreas() {
+    this.empleadoService.getAreas().pipe(timeout(8000)).subscribe({
+      next: (res) => {
+        this.areas = res;
+      },
+      error: () => {
+        this.areas = [];
+      }
+    });
+  }
+
+  setTipo(tipo: string) {
+    this.nuevaTarea.tipo = tipo as 'individual' | 'cooperativa';
+  }
+
   crearTarea() {
+    if (this.esOperario) {
+      // El operario solo puede asignarse tareas a sí mismo (individual)
+      this.nuevaTarea.tipo = 'individual';
+      this.nuevaTarea.asignado_id = this.user?.id;
+    }
+
     if (!this.nuevaTarea.titulo || !this.nuevaTarea.asignado_id) {
       this.toast.warning('Complete los campos obligatorios (Título y Asignado)');
+      return;
+    }
+    if (this.nuevaTarea.tipo === 'cooperativa' && !this.nuevaTarea.area_id) {
+      this.toast.warning('Seleccione el área para la tarea cooperativa');
       return;
     }
 
@@ -86,17 +132,17 @@ export class GestionDeTareasComponent implements OnInit {
         this.guardando = false;
         this.toast.success('Tarea asignada con éxito');
         this.cargarTareas();
-        this.nuevaTarea = { titulo: '', descripcion: '', asignado_id: 0 };
+        this.nuevaTarea = { titulo: '', descripcion: '', asignado_id: this.esOperario ? (this.user?.id || 0) : 0, tipo: 'individual', area_id: undefined };
       },
       error: (err) => {
         this.guardando = false;
-        this.toast.error('No se pudo guardar la tarea');
+        this.toast.error(err.error?.message || 'No se pudo guardar la tarea');
       }
     });
   }
 
   actualizarEstado(id: number | undefined, nuevoEstado: string) {
-    if (!id) return;
+    if (!id || !nuevoEstado) return;
     this.tareaService.actualizarEstado(id, nuevoEstado).subscribe({
       next: () => {
         this.toast.success('Estado actualizado');
@@ -106,5 +152,46 @@ export class GestionDeTareasComponent implements OnInit {
         this.toast.error('Error al actualizar estado');
       }
     });
+  }
+
+  // --- AYUDAS DE RENDERIZADO ---
+  nombreUsuario(u: any): string {
+    if (!u) return '—';
+    return [u.primer_nombre, u.segundo_nombre, u.primer_apellido, u.segundo_apellido].filter(Boolean).join(' ');
+  }
+
+  nombreArea(t: Tarea): string {
+    return (t as any)?.area?.nombre || '—';
+  }
+
+  etiquetaEstado(estado?: string): string {
+    const mapa: any = {
+      notificada: 'Notificada',
+      vista: 'Vista',
+      en_proceso: 'En Proceso',
+      con_dificultades: 'Con Dificultades',
+      terminada: 'Terminada'
+    };
+    return mapa[estado || ''] || estado || '—';
+  }
+
+  claseEstado(estado?: string): string {
+    const mapa: any = {
+      notificada: 'badge-notificada',
+      vista: 'badge-vista',
+      en_proceso: 'badge-proceso',
+      con_dificultades: 'badge-dificultades',
+      terminada: 'badge-terminada'
+    };
+    return mapa[estado || ''] || '';
+  }
+
+  puedeEditarEstado(t: Tarea): boolean {
+    if (!this.user) return false;
+    return t.asignado_id === this.user.id || t.asignador_id === this.user.id;
+  }
+
+  esCooperativa(t: Tarea): boolean {
+    return t.tipo === 'cooperativa';
   }
 }

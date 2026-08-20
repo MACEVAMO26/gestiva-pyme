@@ -322,3 +322,57 @@ $btn-gen-6: #A38B6D;
   width: auto;
   padding: 0.5rem;
 }
+
+/* --- 11. ESTADOS DE TAREA --- */
+.td-desc {
+  font-size: 10px;
+  color: $text-muted;
+  margin-top: 0.25rem;
+}
+
+.tipo-tarea-opciones {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.tipo-tarea-opciones .tab-neu-inactive {
+  font-size: 10px;
+  padding: 0.6rem 1rem;
+}
+
+.badge-notificada { color: #7C6FA6; border: 1px solid rgba(124, 111, 166, 0.3); }
+.badge-vista { color: #45a1ae; border: 1px solid rgba(69, 161, 174, 0.3); }
+.badge-proceso { color: #C9A227; border: 1px solid rgba(201, 162, 39, 0.3); }
+.badge-dificultades { color: #de3737; border: 1px solid rgba(222, 55, 55, 0.3); }
+.badge-terminada { color: #066810; border: 1px solid rgba(6, 104, 16, 0.3); }
+
+.badge-cooperativa { color: #8E5B75; border: 1px solid rgba(142, 91, 117, 0.3); }
+.badge-individual { color: #6B8F71; border: 1px solid rgba(107, 143, 113, 0.3); }
+
+.banner {
+  padding: 1rem;
+  border-radius: 8px;
+  margin: 1rem 0;
+  text-align: center;
+}
+
+.banner-aviso {
+  background: rgba(201, 162, 39, 0.1);
+  text-align: left;
+}
+
+.banner-text {
+  margin: 0;
+  font-size: 12px;
+  color: $text-dark;
+}
+
+.banner-aviso .banner-text {
+  color: $btn-gen-3;
+}
+
+.text-muted {
+  color: $text-muted;
+  font-size: 10px;
+}

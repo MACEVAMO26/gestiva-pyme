@@ -125,18 +125,22 @@ export class GestionTareas implements OnInit {
   }
 
   nombreAsignado(tarea: Tarea): string {
-    if (tarea.asignado?.nombres) return `${tarea.asignado.nombres} ${tarea.asignado.apellidos || ''}`;
+    const a = tarea.asignado;
+    if (a?.primer_nombre) return [a.primer_nombre, a.segundo_nombre, a.primer_apellido, a.segundo_apellido].filter(Boolean).join(' ');
     return '—';
   }
 
   nombreAsignador(tarea: Tarea): string {
-    if (tarea.asignador?.nombres) return `${tarea.asignador.nombres} ${tarea.asignador.apellidos || ''}`;
+    const a = tarea.asignador;
+    if (a?.primer_nombre) return [a.primer_nombre, a.segundo_nombre, a.primer_apellido, a.segundo_apellido].filter(Boolean).join(' ');
     return '—';
   }
 
   estadoTexto(estado?: string): string {
     switch (estado) {
+      case 'vista': return 'Vista';
       case 'en_proceso': return 'En Proceso';
+      case 'con_dificultades': return 'Con Dificultades';
       case 'terminada': return 'Terminada';
       default: return 'Notificada';
     }

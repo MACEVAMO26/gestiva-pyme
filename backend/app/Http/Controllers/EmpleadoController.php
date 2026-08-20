@@ -43,6 +43,7 @@ class EmpleadoController extends Controller
             'cargo_id' => 'required|integer|exists:cargos,id',
             'tipo_contrato' => 'required|string',
             'fecha_contratacion' => 'required|date',
+            'fecha_fin_contrato' => 'nullable|date|after_or_equal:fecha_contratacion',
             'salario' => 'nullable|numeric'
         ]);
 
@@ -62,6 +63,7 @@ class EmpleadoController extends Controller
             'cargo_id' => $request->cargo_id,
             'tipo_contrato' => $request->tipo_contrato,
             'fecha_contratacion' => $request->fecha_contratacion,
+            'fecha_fin_contrato' => $request->fecha_fin_contrato,
             'salario' => $request->salario,
             'estado' => 'activo'
         ]);
@@ -78,6 +80,29 @@ class EmpleadoController extends Controller
             'message' => 'Empleado formalizado exitosamente. Acceso concedido al sistema.',
             'empleado' => $empleado
         ]);
+    }
+
+    // Actualiza los datos del contrato de un empleado (tipo, fechas, salario)
+    public function updateContrato(Request $request, $id)
+    {
+        $request->validate([
+            'tipo_contrato' => 'required|string',
+            'fecha_contratacion' => 'required|date',
+            'fecha_fin_contrato' => 'nullable|date|after_or_equal:fecha_contratacion',
+            'salario' => 'nullable|numeric'
+        ]);
+
+        $empresaId = auth()->user()->empresa_id;
+        $empleado = Empleado::where('id', $id)->where('empresa_id', $empresaId)->firstOrFail();
+
+        $empleado->update([
+            'tipo_contrato' => $request->tipo_contrato,
+            'fecha_contratacion' => $request->fecha_contratacion,
+            'fecha_fin_contrato' => $request->fecha_fin_contrato,
+            'salario' => $request->salario,
+        ]);
+
+        return response()->json(['message' => 'Contrato actualizado correctamente', 'empleado' => $empleado]);
     }
 
     // Solicita la baja de un empleado (GH -> Gerente)
@@ -118,19 +143,20 @@ class EmpleadoController extends Controller
 
     public function generarCertificado($id)
     {
-        $empleado = Empleado::with(['usuario.empresa', 'cargo'])->findOrFail($id);
+        $empresaId = auth()->user()->empresa_id;
+        $empleado = Empleado::with(['usuario.empresa', 'cargo'])->where('id', $id)->where('empresa_id', $empresaId)->firstOrFail();
 
         if (!$empleado->usuario) {
             return response()->json(['message' => 'Empleado sin usuario asociado'], 404);
         }
 
         $data = [
-            'nombre' => $empleado->usuario->nombre . ' ' . $empleado->usuario->apellido,
-            'cedula' => $empleado->usuario->identificacion,
+            'nombre' => $empleado->usuario->nombres . ' ' . $empleado->usuario->apellidos,
+            'cedula' => $empleado->usuario->documento,
             'cargo' => $empleado->cargo ? $empleado->cargo->nombre : 'Sin cargo especificado',
-            'salario' => $empleado->salario_base ?? 0,
-            'fecha_ingreso' => $empleado->created_at->format('Y-m-d'),
-            'tipo_contrato' => 'Término Indefinido',
+            'salario' => $empleado->salario ?? 0,
+            'fecha_ingreso' => $empleado->fecha_contratacion ?? $empleado->created_at->format('Y-m-d'),
+            'tipo_contrato' => $empleado->tipo_contrato ?? 'Término Indefinido',
             'empresa' => $empleado->usuario->empresa ? $empleado->usuario->empresa->razon_social : 'GestivaPyme',
             'nit' => $empleado->usuario->empresa ? $empleado->usuario->empresa->nit : 'N/A',
             'fecha_actual' => now()->format('Y-m-d'),
@@ -138,7 +164,7 @@ class EmpleadoController extends Controller
 
         $pdf = Pdf::loadView('pdfs.certificado_laboral', $data);
 
-        return $pdf->download('certificado_laboral_' . $empleado->usuario->identificacion . '.pdf');
+        return $pdf->download('certificado_laboral_' . $empleado->usuario->documento . '.pdf');
     }
 
     // Aprueba la baja (Gerente -> Empleado)

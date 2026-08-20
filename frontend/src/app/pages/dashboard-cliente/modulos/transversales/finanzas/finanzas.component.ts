@@ -3,12 +3,13 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CajaService, Caja, CajaMovimiento } from '../../../../../services/caja.service';
 import { PrefacturacionService, CotizacionPedido } from '../../../../../services/prefacturacion.service';
+import { SolicitudInactivacionComponent } from '../../../../../shared/components/solicitud-inactivacion/solicitud-inactivacion.component';
 import { timeout } from 'rxjs';
 
 @Component({
   selector: 'app-finanzas',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, SolicitudInactivacionComponent],
   templateUrl: './finanzas.component.html',
   styleUrl: './finanzas.component.scss'
 })

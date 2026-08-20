@@ -77,6 +77,16 @@ class EmpresaController extends Controller
                 ];
             })->values()->toArray();
 
+            // Paquetes adicionales (Gestión Humana, Finanzas, Addons) según el catálogo de tarifas
+            $tarifasTipos = $emp->tarifasCatalogo->pluck('tipo', 'id');
+            $paquetesAdicionales = [];
+            if ($tarifasTipos->has('modulo_rrhh')) $paquetesAdicionales[] = 'Gestión Humana';
+            if ($tarifasTipos->has('modulo_finanzas')) $paquetesAdicionales[] = 'Finanzas';
+            if ($tarifasTipos->where('tipo', 'addon')->count() > 0) $paquetesAdicionales[] = 'Addons';
+
+            // Descuentos definidos desde el formulario de Empresa
+            $descuentoEmpresa = ($emp->descuento && $emp->descuento !== 'N/A') ? $emp->descuento : 'Ninguno';
+
             return [
                 'id' => $emp->id,
                 'empresaId' => $emp->id,
@@ -87,6 +97,8 @@ class EmpresaController extends Controller
                 'modulosExtra' => $modulosExtra,
                 'addonsList' => $addons,
                 'descuentosAplicados' => $descuentos,
+                'paquetesAdicionales' => count($paquetesAdicionales) ? implode(', ', $paquetesAdicionales) : 'Ninguno',
+                'descuentos' => $descuentoEmpresa,
                 'proximoPagoTotal' => $emp->monto_mensual ?: 0,
                 'fechaProximoPago' => $emp->fecha_proximo_pago ?: date('Y-m-d', strtotime('+30 days')),
                 'estado' => $emp->estado_pago === 'mora' ? 'En Mora' : ($emp->estado_pago === 'suspendido' ? 'Inactiva' : 'Activa'),
@@ -214,10 +226,17 @@ class EmpresaController extends Controller
             $lastActivityDiff = \Carbon\Carbon::parse($lastActivityUser->last_activity_at)->diffForHumans();
         }
 
+        try {
+            \Illuminate\Support\Facades\DB::select('select 1');
+            $dbConnection = 'Estable';
+        } catch (\Throwable $e) {
+            $dbConnection = 'Caída';
+        }
+
         return response()->json([
-            'generalUptime' => '99.9%',
-            'dbConnection' => 'Estable',
-            'lastBackup' => 'Hace 2 horas',
+            'generalUptime' => '—',
+            'dbConnection' => $dbConnection,
+            'lastBackup' => 'Sin respaldo registrado',
             'lastActivity' => $lastActivityDiff
         ]);
     }
@@ -234,7 +253,8 @@ class EmpresaController extends Controller
             'razon_social' => 'required|string|max:255',
             'dominio' => 'required|string|unique:empresa,dominio|max:255',
             'nit' => 'required|string|max:255|unique:empresa',
-            'tipo_empresa' => 'required|in:Servicios,Ventas,Ventas y Servicios',
+            'tipo_empresa' => 'nullable|in:Servicios,Ventas,Ventas y Servicios',
+            'plan_suscripcion' => 'nullable|in:Emprendedor,Pyme,Empresarial',
             'direccion' => 'nullable|string|max:255',
             'telefono' => 'nullable|string|max:255',
             'email' => 'nullable|email|max:255',
@@ -261,6 +281,10 @@ class EmpresaController extends Controller
             if (empty($validatedData['fecha_inscripcion'])) {
                 $validatedData['fecha_inscripcion'] = date('Y-m-d');
             }
+            // El formulario ya no define el tipo de negocio: los paquetes se gestionan en Suscripciones.
+            // Se deja un valor por defecto para que la inicialización de módulos base siga funcionando.
+            $validatedData['tipo_empresa'] = $validatedData['tipo_empresa'] ?? 'Ventas y Servicios';
+            $validatedData['plan_suscripcion'] = $validatedData['plan_suscripcion'] ?? 'Emprendedor';
             $empresa = Empresa::create($validatedData);
 
             // Construye el correo máscara institucional usando el dominio
@@ -274,24 +298,57 @@ class EmpresaController extends Controller
                 'activo' => 1
             ]);
 
-            // Asigna todos los permisos al rol Gerente
+            // Asigna todos los permisos al rol Gerente (inserción masiva para evitar N+1 round-trips)
             $modulos = \Illuminate\Support\Facades\DB::table('modulos')->pluck('id');
+            $permisosGerente = [];
             foreach ($modulos as $modId) {
-                \App\Models\Permiso::create([
+                $permisosGerente[] = [
                     'rol_id' => $rolGerente->id,
-                    'area' => $modId,
-                    'puede_ver' => 1,
-                    'puede_crear' => 1,
-                    'puede_editar' => 1,
-                    'puede_inactivar' => 1
-                ]);
+                    'modulo_id' => $modId,
+                    'puede_ver' => true,
+                    'puede_crear' => true,
+                    'puede_editar' => true,
+                    'puede_inactivar' => true,
+                ];
             }
+            \Illuminate\Support\Facades\DB::table('permisos')->insert($permisosGerente);
 
             // Crea el Área por defecto "Gerencia"
             $areaGerencia = \App\Models\Area::create([
                 'empresa_id' => $empresa->id,
                 'nombre' => 'Gerencia',
                 'descripcion' => 'Área administrativa y de dirección general',
+                'activo' => 1
+            ]);
+
+            // Crea el rol "Operario" (personal operativo, sin poder inactivar/eliminar)
+            $rolOperario = \App\Models\Role::create([
+                'empresa_id' => $empresa->id,
+                'nombre' => 'Operario',
+                'descripcion' => 'Personal operativo. No inactiva ni elimina; solicita al Jefe de Área.',
+                'activo' => 1
+            ]);
+
+            // Permisos base del Operario: solo ver, editable luego por el Gerente (inserción masiva)
+            $permisosOperario = [];
+            foreach ($modulos as $modId) {
+                $permisosOperario[] = [
+                    'rol_id' => $rolOperario->id,
+                    'modulo_id' => $modId,
+                    'puede_ver' => true,
+                    'puede_crear' => false,
+                    'puede_editar' => false,
+                    'puede_inactivar' => false,
+                ];
+            }
+            \Illuminate\Support\Facades\DB::table('permisos')->insert($permisosOperario);
+
+            // Crea el Cargo "Operario" ligado al rol
+            \App\Models\Cargo::create([
+                'empresa_id' => $empresa->id,
+                'rol_id' => $rolOperario->id,
+                'nombre' => 'Operario',
+                'descripcion' => 'Ejecuta tareas operativas del negocio',
                 'activo' => 1
             ]);
 
@@ -365,7 +422,8 @@ class EmpresaController extends Controller
             'razon_social' => 'required|string|max:255',
             'dominio' => ['required', 'string', 'max:255', Rule::unique('empresa')->ignore($empresa->id)],
             'nit' => ['required', 'string', 'max:255', Rule::unique('empresa')->ignore($empresa->id)],
-            'tipo_empresa' => 'required|in:Servicios,Ventas,Ventas y Servicios',
+            'tipo_empresa' => 'nullable|in:Servicios,Ventas,Ventas y Servicios',
+            'plan_suscripcion' => 'nullable|in:Emprendedor,Pyme,Empresarial',
             'direccion' => 'nullable|string|max:255',
             'telefono' => 'nullable|string|max:255',
             'email' => 'nullable|email|max:255',

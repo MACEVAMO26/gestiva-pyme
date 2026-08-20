@@ -15,6 +15,7 @@ return Application::configure(basePath: dirname(__DIR__))
     $middleware->alias([
         'auth' => \App\Http\Middleware\Authenticate::class,
         'formalizado' => \App\Http\Middleware\CheckFormalizado::class,
+        'permiso' => \App\Http\Middleware\CheckPermiso::class,
     ]);
     $middleware->api(append: [
         // \App\Http\Middleware\UpdateLastActivity::class,

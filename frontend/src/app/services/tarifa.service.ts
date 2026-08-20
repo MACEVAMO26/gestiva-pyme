@@ -16,15 +16,11 @@ export class TarifaService {
     });
   }
 
-  getTarifas(): Observable<any> {
-    return this.http.get(this.apiUrl, { headers: this.getHeaders() });
-  }
-
-  updateTarifas(id: number, data: any): Observable<any> {
-    return this.http.put(`${this.apiUrl}/${id}`, data, { headers: this.getHeaders() });
-  }
-
   getCatalogo(): Observable<any> {
     return this.http.get('/api/saas/tarifas/catalogo', { headers: this.getHeaders() });
+  }
+
+  updateCatalogo(items: any[]): Observable<any> {
+    return this.http.put('/api/saas/tarifas/catalogo', { items }, { headers: this.getHeaders() });
   }
 }

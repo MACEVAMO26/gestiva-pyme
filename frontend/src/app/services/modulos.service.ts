@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 
-export interface Submodulo {
+export interface Modulo {
   id: string;
   nombre: string;
   activo: boolean;
@@ -10,13 +10,13 @@ export interface Submodulo {
 }
 
 export interface PaquetesRespuesta {
-  base?: Submodulo[];
-  ventas?: Submodulo[];
-  servicios?: Submodulo[];
-  finanzas?: Submodulo[];
-  rrhh?: Submodulo[];
-  addons?: Submodulo[];
-  [paqueteId: string]: Submodulo[] | undefined;
+  base?: Modulo[];
+  ventas?: Modulo[];
+  servicios?: Modulo[];
+  finanzas?: Modulo[];
+  rrhh?: Modulo[];
+  addons?: Modulo[];
+  [paqueteId: string]: Modulo[] | undefined;
 }
 
 export interface ModuloBaseUi {
@@ -32,11 +32,12 @@ export const MODULOS_BASE_UI: ModuloBaseUi[] = [
   { id: 'd_ini', nombre: 'Inicio', icono: 'fas fa-home', ruta: 'inicio' },
   { id: 'd_adm', nombre: 'Administración', icono: 'fas fa-cog', ruta: 'administracion' },
   { id: 'd_tar', nombre: 'Gestión de Tareas', icono: 'fas fa-tasks', ruta: 'gestion-de-tareas' },
+  { id: 'd_for', nombre: 'Formalización de usuarios', icono: 'fas fa-id-badge', ruta: 'formalizacion' },
   { id: 'd_gia', nombre: 'Gestiva IA', icono: 'fas fa-robot', ruta: 'gestiva-ia' },
   { id: 'd_aut', nombre: 'Autogestión', icono: 'fas fa-user-circle', ruta: 'autogestion' },
 ];
 
-// Rutas del router para cada submódulo de negocio (ventas/servicios). Los nombres en BD
+// Rutas del router para cada módulo de negocio (ventas/servicios). Los nombres en BD
 // no siempre coinciden con la ruta (ej: "Agenda y Calendario" -> /agenda).
 export const RUTA_MODULO: Record<string, string> = {
   v_pos: 'ventas', v_inv: 'inventario', v_cxc: 'clientes', v_rep: 'compras', v_prov: 'proveedores',
@@ -107,7 +108,7 @@ const CATALOGO_MODULOS_UI: any[] = [
     descripcion: 'Para comercios y tiendas de productos físicos.',
     icono: 'fas fa-shopping-cart',
     color: 'blue',
-    submodulos: [
+    Modulos: [
       { id: 'v_pos', nombre: 'Ventas', icono: 'fas fa-store' },
       { id: 'v_inv', nombre: 'Inventario', icono: 'fas fa-boxes' },
       { id: 'v_cxc', nombre: 'Clientes', icono: 'fas fa-address-book' },
@@ -121,7 +122,7 @@ const CATALOGO_MODULOS_UI: any[] = [
     descripcion: 'Para agendas, barberías, consultorios y talleres.',
     icono: 'fas fa-calendar-alt',
     color: 'purple',
-    submodulos: [
+    Modulos: [
       { id: 's_age', nombre: 'Agenda', icono: 'fas fa-calendar-check' },
       { id: 's_crm', nombre: 'Gestión de Clientes', icono: 'fas fa-handshake' },
       { id: 's_cat', nombre: 'Servicios', icono: 'fas fa-list' },
@@ -135,7 +136,7 @@ const CATALOGO_MODULOS_UI: any[] = [
     descripcion: 'Registro de pagos y cobro por servicios o productos.',
     icono: 'fas fa-cash-register',
     color: 'yellow',
-    submodulos: [{ id: 'f_caja', nombre: 'Caja y Pre-facturación', icono: 'fas fa-cash-register' }],
+    Modulos: [{ id: 'f_caja', nombre: 'Caja y Pre-facturación', icono: 'fas fa-cash-register' }],
   },
   {
     id: 'rrhh',
@@ -143,7 +144,7 @@ const CATALOGO_MODULOS_UI: any[] = [
     descripcion: 'Gestión de empleados, turnos y vacaciones. Disponible para todos.',
     icono: 'fas fa-users',
     color: 'indigo',
-    submodulos: [
+    Modulos: [
       { id: 'r_tur', nombre: 'Horarios y Turnos', icono: 'fas fa-clock' },
       { id: 'r_aus', nombre: 'Horas Extras y Ausencias', icono: 'fas fa-user-clock' },
       { id: 'r_vac', nombre: 'Gestión de Vacaciones', icono: 'fas fa-umbrella-beach' }
@@ -155,7 +156,7 @@ const CATALOGO_MODULOS_UI: any[] = [
     descripcion: 'Conectores y herramientas extra que se cobran por separado.',
     icono: 'fas fa-plug',
     color: 'green',
-    submodulos: [
+    Modulos: [
       { id: 'a_contable', nombre: 'Conector Contable', icono: 'fas fa-file-invoice-dollar' },
     ],
   },

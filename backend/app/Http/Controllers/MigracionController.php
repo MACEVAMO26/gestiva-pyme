@@ -43,9 +43,9 @@ class MigracionController extends Controller
         \App\Models\AdminRequest::create([
             "empresa_id" => $user->empresa_id,
             "tipo" => "migracion",
-            "comprobante" => $path, // Reusamos el campo comprobante u otro para guardar el path
+            "comprobante_path" => $path, // Guardamos el path del archivo para que el equipo lo procese
             "estado" => "Pendiente",
-            "datos_nuevos" => "Solicitud de importación masiva de datos (Excel)"
+            "datos_nuevos" => json_encode(["mensaje" => "Solicitud de importación masiva de datos (Excel)"])
         ]);
 
         return response()->json(["message" => "Archivo subido correctamente. El equipo técnico de GestivaPyme procesará la migración pronto."]);

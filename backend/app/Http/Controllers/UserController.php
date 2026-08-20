@@ -142,7 +142,7 @@ class UserController extends Controller
                 foreach ($modulosRRHH as $modRRHH) {
                     \App\Models\Permiso::firstOrCreate([
                         'rol_id' => $roleJefe->id,
-                        'area' => $modRRHH
+                        'modulo_id' => $modRRHH
                     ], [
                         'puede_ver' => 1,
                         'puede_crear' => 1,

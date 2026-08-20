@@ -1,6 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
 import { AdminEstructura } from '../../base/administracion/admin-estructura/admin-estructura';
 import { EmpleadoService } from '../../../../../services/empleado.service';
 import { VacacionService, Vacacion } from '../../../../../services/vacacion.service';
@@ -18,6 +19,7 @@ export class GestionHumanaComponent implements OnInit {
   private empleadoService = inject(EmpleadoService);
   private vacacionService = inject(VacacionService);
   private toast = inject(ToastService);
+  private http = inject(HttpClient);
 
   currentTab: string = 'pendientes';
 
@@ -25,7 +27,6 @@ export class GestionHumanaComponent implements OnInit {
   areas: any[] = [];
   cargos: any[] = [];
   roles: any[] = [];
-  pendientes: any[] = [];
   vacacionesPendientes: any[] = [];
   empleadosActivos: any[] = [];
   empleadosInactivos: any[] = [];
@@ -43,10 +44,6 @@ export class GestionHumanaComponent implements OnInit {
   isCargoModalOpen: boolean = false;
   cargoForm: any = {};
 
-  isFormalizarModalOpen: boolean = false;
-  formalizarForm: any = {};
-  usuarioAFormalizar: any = null;
-
   isBajaModalOpen: boolean = false;
   empleadoABaja: any = null;
   showConfirmDialog: boolean = true;
@@ -59,27 +56,22 @@ export class GestionHumanaComponent implements OnInit {
   // Detalle empleado
   empleadoExpandido: any = null;
   nombreDocumento: string = '';
+  categoriaDocumento: string = 'Otros';
   archivoSeleccionado: any = null;
   documentosEmpleado: any[] = [];
+
+  categoriasDocumento: string[] = ['Hoja de Vida', 'Contrato', 'Cédula', 'Seguridad Social', 'Estudios', 'Certificaciones', 'Otros'];
 
   // Configuración
   configuracionRRHH: any = { arl: '', caja_compensacion: '' };
 
   ngOnInit(): void {
-    this.cargarPendientes();
     this.cargarEmpleados();
     this.cargarVacaciones();
     this.cargarAreas();
     this.cargarCargos();
     this.cargarRoles();
     this.cargarConfiguracion();
-  }
-
-  cargarPendientes() {
-    this.empleadoService.getPendientes().pipe(timeout(8000)).subscribe({
-      next: (res) => { this.pendientes = res; },
-      error: () => { this.pendientes = []; }
-    });
   }
 
   cargarEmpleados() {
@@ -214,45 +206,23 @@ export class GestionHumanaComponent implements OnInit {
   }
 
   // --- Header Actions ---
-  exportarExcel() {}
-  abrirModuloTiempo() {}
-
-  // --- Formalizar ---
-  abrirModalFormalizar(p: any) {
-    this.usuarioAFormalizar = p;
-    this.formalizarForm = { area_id: '', cargo_id: '', tipo_contrato: '', fecha_contratacion: '', salario: null };
-    this.isFormalizarModalOpen = true;
-  }
-  cerrarModalFormalizar() {
-    this.isFormalizarModalOpen = false;
-  }
-  submitFormalizar() {
-    if (!this.formalizarForm.area_id || !this.formalizarForm.cargo_id || !this.formalizarForm.tipo_contrato || !this.formalizarForm.fecha_contratacion) {
-      this.toast.warning('Complete los datos organizacionales y laborales');
-      return;
-    }
-    if (!this.usuarioAFormalizar?.id) return;
-    this.isSubmitting = true;
-    this.empleadoService.formalizarEmpleado(this.usuarioAFormalizar.id, {
-      area_id: this.formalizarForm.area_id,
-      cargo_id: this.formalizarForm.cargo_id,
-      tipo_contrato: this.formalizarForm.tipo_contrato,
-      fecha_contratacion: this.formalizarForm.fecha_contratacion,
-      salario: this.formalizarForm.salario
-    }).pipe(timeout(8000)).subscribe({
-      next: (res) => {
-        this.isSubmitting = false;
-        this.cerrarModalFormalizar();
-        this.toast.success(res.message || 'Empleado formalizado');
-        this.cargarPendientes();
-        this.cargarEmpleados();
+  exportarExcel() {
+    this.toast.success('Generando archivo Excel...');
+    const headers = { 'Authorization': `Bearer ${sessionStorage.getItem('auth_token')}` };
+    this.http.get('/api/export/empleados', { headers, responseType: 'blob' }).subscribe({
+      next: (blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `empleados_${new Date().toISOString().slice(0, 10)}.xlsx`;
+        a.click();
+        window.URL.revokeObjectURL(url);
+        this.toast.success('Excel de empleados descargado');
       },
-      error: (err) => {
-        this.isSubmitting = false;
-        this.toast.error(err.error?.error || 'Error al formalizar el empleado');
-      }
+      error: () => this.toast.error('Error al exportar. Intenta nuevamente.')
     });
   }
+  abrirModuloTiempo() {}
 
   // --- Empleados Activos ---
   verDetalles(emp: any) {
@@ -283,11 +253,13 @@ export class GestionHumanaComponent implements OnInit {
     const formData = new FormData();
     formData.append('archivo', this.archivoSeleccionado);
     formData.append('nombre', this.nombreDocumento || this.archivoSeleccionado.name || 'Documento');
+    formData.append('categoria', this.categoriaDocumento || 'Otros');
     this.empleadoService.uploadDocumento(this.empleadoExpandido.id, formData).pipe(timeout(15000)).subscribe({
       next: () => {
         this.isUploading = false;
         this.archivoSeleccionado = null;
         this.nombreDocumento = '';
+        this.categoriaDocumento = 'Otros';
         this.toast.success('Documento subido');
         this.cargarDocumentos(this.empleadoExpandido!.id);
       },
@@ -296,6 +268,30 @@ export class GestionHumanaComponent implements OnInit {
         this.toast.error('Error al subir el documento');
       }
     });
+  }
+
+  // --- EXPEDIENTE DIGITAL POR CATEGORÍAS ---
+  get categoriasConDocumentos(): { categoria: string, docs: any[] }[] {
+    const grupos: { [cat: string]: any[] } = {};
+    this.documentosEmpleado.forEach((d) => {
+      const cat = d.categoria || 'Otros';
+      if (!grupos[cat]) grupos[cat] = [];
+      grupos[cat].push(d);
+    });
+    const orden = this.categoriasDocumento;
+    return Object.keys(grupos)
+      .sort((a, b) => {
+        const ia = orden.indexOf(a);
+        const ib = orden.indexOf(b);
+        return (ia === -1 ? 99 : ia) - (ib === -1 ? 99 : ib);
+      })
+      .map((cat) => ({ categoria: cat, docs: grupos[cat] }));
+  }
+
+  abrirDocumento(doc: any) {
+    if (doc.cloudinary_url) {
+      window.open(doc.cloudinary_url, '_blank');
+    }
   }
   eliminarDocumento(id: number) {
     this.empleadoService.deleteDocumento(id).pipe(timeout(8000)).subscribe({
@@ -387,6 +383,125 @@ export class GestionHumanaComponent implements OnInit {
       error: () => {
         this.isConfigSubmitting = false;
         this.toast.error('Error al guardar la configuración');
+      }
+    });
+  }
+
+  // --- CONTRATOS Y ALERTAS ---
+  get todosEmpleados(): any[] {
+    return [...this.empleadosActivos, ...this.empleadosInactivos];
+  }
+
+  get alertasContratos(): number {
+    return this.todosEmpleados.filter(e => ['por_vencer', 'vencido'].includes(this.estadoContrato(e))).length;
+  }
+
+  estadoContrato(emp: any): string {
+    if (!emp) return 'sin_fin';
+    const tipo = (emp.tipo_contrato || '').toLowerCase();
+    if (tipo.includes('indefinido')) return 'indefinido';
+    if (!emp.fecha_fin_contrato) return 'sin_fin';
+    const hoy = new Date(); hoy.setHours(0,0,0,0);
+    const fin = new Date(emp.fecha_fin_contrato + 'T00:00:00');
+    const diffDias = Math.ceil((fin.getTime() - hoy.getTime()) / 86400000);
+    if (diffDias < 0) return 'vencido';
+    if (diffDias <= 30) return 'por_vencer';
+    return 'vigente';
+  }
+
+  diasParaVencimiento(emp: any): number {
+    if (!emp?.fecha_fin_contrato) return 0;
+    const hoy = new Date(); hoy.setHours(0,0,0,0);
+    const fin = new Date(emp.fecha_fin_contrato + 'T00:00:00');
+    return Math.ceil((fin.getTime() - hoy.getTime()) / 86400000);
+  }
+
+  etiquetaContrato(emp: any): string {
+    const st = this.estadoContrato(emp);
+    const mapa: any = {
+      indefinido: 'Indefinido',
+      sin_fin: 'Sin fecha fin',
+      vigente: 'Vigente',
+      por_vencer: `Vence en ${this.diasParaVencimiento(emp)} día(s)`,
+      vencido: 'Vencido'
+    };
+    return mapa[st];
+  }
+
+  claseContrato(emp: any): string {
+    const mapa: any = {
+      indefinido: 'badge-indefinido',
+      sin_fin: 'badge-sinfin',
+      vigente: 'badge-vigente',
+      por_vencer: 'badge-porvencer',
+      vencido: 'badge-vencido'
+    };
+    return mapa[this.estadoContrato(emp)] || '';
+  }
+
+  nombreCompletoUsuario(u: any): string {
+    if (!u) return '—';
+    return [u.primer_nombre, u.segundo_nombre, u.primer_apellido, u.segundo_apellido].filter(Boolean).join(' ');
+  }
+
+  // --- MODAL EDITAR CONTRATO ---
+  isContratoModalOpen: boolean = false;
+  contratoForm: any = {};
+  empleadoContrato: any = null;
+
+  abrirModalContrato(emp: any) {
+    this.empleadoContrato = emp;
+    this.contratoForm = {
+      tipo_contrato: emp.tipo_contrato || '',
+      fecha_contratacion: emp.fecha_contratacion || '',
+      fecha_fin_contrato: emp.fecha_fin_contrato || '',
+      salario: emp.salario ?? null
+    };
+    this.isContratoModalOpen = true;
+  }
+  cerrarModalContrato() {
+    this.isContratoModalOpen = false;
+  }
+  guardarContrato() {
+    if (!this.contratoForm.tipo_contrato || !this.contratoForm.fecha_contratacion) {
+      this.toast.warning('El tipo de contrato y la fecha de contratación son obligatorios');
+      return;
+    }
+    if (!this.empleadoContrato?.id) return;
+    this.isSubmitting = true;
+    this.empleadoService.updateContrato(this.empleadoContrato.id, {
+      tipo_contrato: this.contratoForm.tipo_contrato,
+      fecha_contratacion: this.contratoForm.fecha_contratacion,
+      fecha_fin_contrato: this.contratoForm.fecha_fin_contrato || null,
+      salario: this.contratoForm.salario
+    }).pipe(timeout(8000)).subscribe({
+      next: (res) => {
+        this.isSubmitting = false;
+        this.cerrarModalContrato();
+        this.toast.success(res.message || 'Contrato actualizado');
+        this.cargarEmpleados();
+      },
+      error: (err) => {
+        this.isSubmitting = false;
+        this.toast.error(err.error?.error || 'Error al actualizar el contrato');
+      }
+    });
+  }
+
+  // --- CERTIFICADO LABORAL ---
+  descargarCertificado(emp: any) {
+    if (!emp?.id) return;
+    this.empleadoService.descargarCertificado(emp.id).pipe(timeout(20000)).subscribe({
+      next: (blob: any) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `certificado_laboral_${emp.codigo_empleado || emp.id}.pdf`;
+        a.click();
+        window.URL.revokeObjectURL(url);
+      },
+      error: () => {
+        this.toast.error('No se pudo generar el certificado');
       }
     });
   }

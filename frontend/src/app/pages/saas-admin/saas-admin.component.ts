@@ -24,6 +24,8 @@ export interface SuscripcionEmpresa {
   modulosExtra: number;
   addonsList: any[];
   descuentosAplicados: any[];
+  paquetesAdicionales: string;
+  descuentos: string;
   cargosExtra: any[];
   proximoPagoTotal?: number;
   fechaProximoPago: any;
@@ -93,7 +95,7 @@ export class SaasAdminComponent implements OnInit {
     dominio: '',
     nit: '',
     email: '',
-    tipo_empresa: 'Servicios',
+    plan_suscripcion: 'Emprendedor',
     color_primario: '#6366f1',
     color_secundario: '#1e293b',
     color_fondo: '#4c808a',
@@ -118,52 +120,6 @@ export class SaasAdminComponent implements OnInit {
   };
   isUpdatingProfile = false;
 
-
-  // --- MOCK DATOS SUSCRIPCIONES ---
-  mockSuscripciones: SuscripcionEmpresa[] = [
-    {
-      id: 1,
-      empresaId: 101, // Mock
-      nombreEmpresa: 'Empresa Ventas Demo',
-      fechaInscripcion: '12/Ene/2026',
-      plan: 'Mensual',
-      modulosExtra: 1,
-      addonsList: [{ nombre: 'Conector Factura Electrónica', valor: 10000 }],
-      descuentosAplicados: [],
-      cargosExtra: [],
-      fechaProximoPago: new Date('2026-08-12'),
-      estado: 'Activa',
-      renovaciones: 6
-    },
-    {
-      id: 2,
-      empresaId: 102,
-      nombreEmpresa: 'Empresa Servicios Demo',
-      fechaInscripcion: '05/Mar/2026',
-      plan: 'Anual',
-      modulosExtra: 0,
-      addonsList: [],
-      descuentosAplicados: [{ descripcion: 'Referido 10%', porcentaje: 10 }],
-      cargosExtra: [],
-      fechaProximoPago: new Date('2027-03-05'),
-      estado: 'Activa',
-      renovaciones: 0
-    },
-    {
-      id: 3,
-      empresaId: 103,
-      nombreEmpresa: 'Empresa Mixta Demo',
-      fechaInscripcion: '20/Abr/2026',
-      plan: 'Mensual',
-      modulosExtra: 0,
-      addonsList: [],
-      descuentosAplicados: [],
-      cargosExtra: [{ descripcion: 'Soporte técnico 3 hrs', valor: 15000 }],
-      fechaProximoPago: new Date('2026-07-20'),
-      estado: 'En Mora',
-      renovaciones: 2
-    }
-  ];
 
   // --- VARIABLES PARA GESTIÓN DE SUSCRIPCIÓN (CARRITO) ---
   editandoSuscripcion = false;
@@ -201,65 +157,6 @@ export class SaasAdminComponent implements OnInit {
 
 
 
-  calcularTotalSuscripcion(suscripcion: SuscripcionEmpresa): number {
-    let subtotal = 0;
-    
-    if (suscripcion.plan === 'Mensual') {
-      subtotal += 70000;
-      subtotal += (suscripcion.modulosExtra * 20000);
-    } else if (suscripcion.plan === 'Anual') {
-      subtotal += 770000; // 11 meses base
-      subtotal += (suscripcion.modulosExtra * 220000); // 11 meses de transversales
-    }
-    
-    // Sumar todos los porcentajes de descuento
-    let porcentajeTotalDesc = 0;
-    suscripcion.descuentosAplicados.forEach(desc => {
-      porcentajeTotalDesc += desc.porcentaje;
-    });
-
-    // El descuento aplica sobre el subtotal (plan base + transversales)
-    let total = subtotal;
-    if (porcentajeTotalDesc > 0) {
-      total = total - (total * (porcentajeTotalDesc / 100));
-    }
-    
-    // Los addons y el soporte no tienen descuento
-    suscripcion.addonsList.forEach(addon => {
-      total += addon.valor;
-    });
-
-    suscripcion.cargosExtra.forEach(cargo => {
-      // El soporte es gratuito si la empresa tiene plan Anual
-      if (suscripcion.plan !== 'Anual') {
-        total += cargo.valor;
-      }
-    });
-    
-    return total;
-  }
-
-  renovarMockSuscripcion(suscripcionId: number) {
-    const sub = this.mockSuscripciones.find(s => s.id === suscripcionId);
-    if (!sub) return;
-    
-    // Lógica para adelantar la fecha
-    const nuevaFecha = new Date(sub.fechaProximoPago);
-    if (sub.plan === 'Mensual') {
-      nuevaFecha.setMonth(nuevaFecha.getMonth() + 1);
-    } else {
-      nuevaFecha.setFullYear(nuevaFecha.getFullYear() + 1);
-    }
-    
-    sub.fechaProximoPago = nuevaFecha;
-    sub.cargosExtra = []; // Se resetean los cargos tras pagar
-    sub.descuentosAplicados = []; // Se resetean los descuentos a un solo uso
-    sub.estado = 'Activa';
-    sub.renovaciones += 1;
-    
-    this.toastService.success(`Suscripción de ${sub.nombreEmpresa} renovada exitosamente hasta el ${nuevaFecha.toLocaleDateString()}.`);
-  }
-
   // --- MÉTODOS DEL CARRITO DE SUSCRIPCIÓN ---
   cargarCatalogoTarifas() {
     this.tarifaService.getCatalogo().subscribe({
@@ -291,6 +188,21 @@ export class SaasAdminComponent implements OnInit {
         cantidad: activeItem ? activeItem.cantidad : 1
       };
     }
+
+    // Auto-seleccionar el plan que la empresa contrató (Tipo de Plan) si aún no tiene plan en el carrito.
+    // Así el precio se carga según el plan elegido en el formulario de Empresa.
+    const hayPlanActivo = this.catalogoTarifas.some(
+      (i: any) => i.tipo === 'plan' && this.cartItemsSelect[i.id]?.active
+    );
+    if (!hayPlanActivo) {
+      const planEmpresa = (suscripcion.plan || '').replace('Plan ', '').trim().toLowerCase();
+      const tarifaPlan = this.catalogoTarifas.find(
+        (i: any) => i.tipo === 'plan' && i.nombre.replace('Plan ', '').trim().toLowerCase() === planEmpresa
+      );
+      if (tarifaPlan) {
+        this.cartItemsSelect[tarifaPlan.id] = { active: true, cantidad: 1 };
+      }
+    }
     
     this.editandoSuscripcion = true;
   }
@@ -300,9 +212,23 @@ export class SaasAdminComponent implements OnInit {
     this.editandoSuscripcion = false;
   }
 
+  // Desde la tabla de Empresas: navega a Suscripciones y abre el carrito con el plan
+  // que la empresa contrató, cargando el precio correspondiente.
+  abrirSuscripcionDeEmpresa(empresa: any) {
+    const sus = this.suscripcionesList.find((s: any) => s.empresaId === empresa.id);
+    if (!sus) {
+      this.toastService.warning('No se encontró la suscripción de la empresa. Revisa la pestaña Suscripciones.');
+      return;
+    }
+    this.currentView = 'suscripciones';
+    localStorage.setItem('saas_current_view', 'suscripciones');
+    this.abrirCarritoSuscripcion(sus);
+  }
+
   get subtotalSuscripcion(): number {
     let sub = 0;
     for (let item of this.catalogoTarifas) {
+      if (item.tipo === 'descuento') continue;
       const cartItem = this.cartItemsSelect[item.id];
       if (cartItem && cartItem.active) {
         if (item.mecanismo === 'fijo') {
@@ -315,16 +241,20 @@ export class SaasAdminComponent implements OnInit {
     return sub;
   }
 
-  get descuentoSuscripcion(): number {
-    let sub = this.subtotalSuscripcion;
-    let descPct = 0;
-    for (let item of this.catalogoTarifas) {
-      const cartItem = this.cartItemsSelect[item.id];
-      if (cartItem && cartItem.active && item.tipo === 'descuento') {
-        descPct += Number(item.valor);
-      }
+  // Porcentaje de descuento definido en el módulo Empresas (Referido 10%, Mes gratis...)
+  get descuentoEmpresaPct(): number {
+    if (!this.suscripcionEnEdicion?.descuentos || this.suscripcionEnEdicion.descuentos === 'Ninguno') return 0;
+    let pct = 0;
+    for (const d of this.suscripcionEnEdicion.descuentos.split(',')) {
+      const t = d.trim().toLowerCase();
+      if (t.includes('referido')) pct += 10;
+      else if (t.includes('mes gratis')) pct += 8.33;
     }
-    return sub * (descPct / 100);
+    return pct;
+  }
+
+  get descuentoSuscripcion(): number {
+    return this.subtotalSuscripcion * (this.descuentoEmpresaPct / 100);
   }
 
   get totalSuscripcion(): number {
@@ -371,7 +301,7 @@ export class SaasAdminComponent implements OnInit {
     });
 
     if (!hasPlanSelected) {
-      this.toastService.error('Debe seleccionar un Plan de Suscripción (Ej: Plan Básico, Profesional o Empresarial) para poder continuar.');
+      this.toastService.error('Debe seleccionar un Plan de Suscripción (Ej: Plan Emprendedor, Pyme o Empresarial) para poder continuar.');
       return;
     }
 
@@ -402,23 +332,6 @@ export class SaasAdminComponent implements OnInit {
     });
   }
 
-  deseleccionarOtrosPlanes(selectedId: string) {
-    for (let item of this.catalogoTarifas) {
-      if (item.tipo === 'plan' && item.id !== selectedId) {
-        if (this.cartItemsSelect[item.id]) {
-          this.cartItemsSelect[item.id].active = false;
-        }
-      }
-    }
-  }
-
-  suspenderMockSuscripcion(suscripcionId: number) {
-    const sub = this.mockSuscripciones.find(s => s.id === suscripcionId);
-    if (sub) {
-      sub.estado = 'Inactiva';
-      this.toastService.success(`Suscripción de ${sub.nombreEmpresa} ha sido suspendida.`);
-    }
-  }
   solicitudes: any[] = [];
   solicitudesPendientes: number = 0;
   ticketsSoporte: any[] = [];
@@ -434,9 +347,9 @@ export class SaasAdminComponent implements OnInit {
   suscripcionesList: any[] = [];
   serverStatus: any = {
     status: 'online',
-    generalUptime: '99.9%',
-    dbConnection: 'Estable',
-    lastBackup: 'Hace 2 horas',
+    generalUptime: '—',
+    dbConnection: '—',
+    lastBackup: '—',
     lastActivity: 'Desconocida',
   };
   empresaSeleccionadaId: string | null = null;
@@ -454,6 +367,8 @@ export class SaasAdminComponent implements OnInit {
   isModalSolicitudOpen = false;
   solicitudSeleccionada: any = null;
   mensajeRespuesta: string = '';
+  archivoMigracionCorregido: File | null = null;
+  importandoMigracion = false;
 
   // Soporte tickets variables
   isModalTicketOpen = false;
@@ -465,7 +380,6 @@ export class SaasAdminComponent implements OnInit {
   public toastService = inject(ToastService);
   private empresaService = inject(EmpresaService);
   private tarifaService = inject(TarifaService);
-  tarifaConfig: any = null;
   private cdr = inject(ChangeDetectorRef);
 
   constructor(
@@ -536,7 +450,6 @@ export class SaasAdminComponent implements OnInit {
       this.cargarLeads();
       this.cargarSuscripciones();
       this.cargarCatalogoTarifas();
-      this.cargarTarifas();
       this.cargarSystemStats();
     }
   }
@@ -1028,6 +941,70 @@ export class SaasAdminComponent implements OnInit {
   cerrarModalSolicitud() {
     this.isModalSolicitudOpen = false;
     this.solicitudSeleccionada = null;
+    this.archivoMigracionCorregido = null;
+  }
+
+  descargarArchivoMigracion() {
+    if (!this.solicitudSeleccionada) return;
+    const token = sessionStorage.getItem('auth_token');
+    const headers = { Authorization: `Bearer ${token}` };
+    this.toastService.info('Descargando archivo subido por la empresa...');
+    this.http.get(`/api/admin-requests/${this.solicitudSeleccionada.id}/archivo`, { headers, responseType: 'blob' as 'json' }).subscribe({
+      next: (data: any) => {
+        const blob = new Blob([data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `base_datos_empresa_${this.solicitudSeleccionada.empresa_id}.xlsx`;
+        a.click();
+        window.URL.revokeObjectURL(url);
+        this.toastService.success('Archivo descargado.');
+      },
+      error: () => this.toastService.error('Error al descargar el archivo.')
+    });
+  }
+
+  onArchivoMigracionSeleccionado(event: Event) {
+    const input = event.target as HTMLInputElement;
+    this.archivoMigracionCorregido = input.files?.[0] ?? null;
+  }
+
+  importarMigracion() {
+    if (!this.solicitudSeleccionada) return;
+    if (!this.archivoMigracionCorregido) {
+      this.toastService.warning('Selecciona el archivo corregido para importar.');
+      return;
+    }
+    const ext = this.archivoMigracionCorregido.name.split('.').pop()?.toLowerCase() ?? '';
+    if (!['xlsx', 'xls', 'csv'].includes(ext)) {
+      this.toastService.error('Formato no válido. Use .xlsx, .xls o .csv.');
+      return;
+    }
+
+    this.importandoMigracion = true;
+    const token = sessionStorage.getItem('auth_token');
+    const headers = { Authorization: `Bearer ${token}` };
+    const formData = new FormData();
+    formData.append('archivo', this.archivoMigracionCorregido);
+
+    this.http.post(`/api/admin-requests/${this.solicitudSeleccionada.id}/importar`, formData, { headers }).subscribe({
+      next: (res: any) => {
+        this.importandoMigracion = false;
+        const resumen = res.resumen
+          ? ` Clientes: ${res.resumen.clientes} · Proveedores: ${res.resumen.proveedores} · Productos: ${res.resumen.productos} · Servicios: ${res.resumen.servicios} · Empleados: ${res.resumen.empleados} · Omitidas: ${res.resumen.omitidos}`
+          : '';
+        this.toastService.success(res.message + resumen);
+        this.solicitudSeleccionada = res.solicitud;
+        this.archivoMigracionCorregido = null;
+        this.cargarSolicitudes();
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        this.importandoMigracion = false;
+        console.error(err);
+        this.toastService.error(err.error?.message || 'Error al importar la base de datos.');
+      }
+    });
   }
 
   procesarSolicitud(accion: string) {
@@ -1108,12 +1085,7 @@ export class SaasAdminComponent implements OnInit {
     this.empresaService.getEmpresas().subscribe({
       next: (data) => {
         this.isLoadingEmpresas = false;
-        this.empresas = data.map((emp: any) => {
-          if (emp.tipo_empresa?.includes('Ventas y Servicios')) emp.tipo_empresa = 'Mixto';
-          else if (emp.tipo_empresa?.includes('Ventas')) emp.tipo_empresa = 'Ventas';
-          else if (emp.tipo_empresa?.includes('Servicios')) emp.tipo_empresa = 'Servicios';
-          return emp;
-        });
+        this.empresas = data;
         this.empresasEnMora = data.filter((e: any) => e.activo && e.estado_pago === 'mora').length;
         this.cdr.detectChanges();
       },
@@ -1135,19 +1107,15 @@ export class SaasAdminComponent implements OnInit {
     }
   }
 
-  cargarTarifas() {
-    this.tarifaService.getTarifas().subscribe({
-      next: (data) => {
-        this.tarifaConfig = data;
-        this.cdr.detectChanges();
-      },
-      error: (err) => console.error('Error al cargar tarifas', err)
-    });
+  noRenovarSuscripcion(id: number) {
+    if (confirm('¿Estás seguro de NO renovar esta suscripción? El cliente pasará a Inactivo.')) {
+      this.empresaService.noRenovarSuscripcion(id).subscribe({
+        next: () => this.cargarSuscripciones(),
+        error: (err) => console.error('Error al cancelar', err)
+      });
+    }
   }
 
-
-
-  // --- VARIABLES Y MÉTODOS PARA MODAL DE CONFIRMACIÓN ---
   confirmModalVisible = false;
   confirmModalTitle = '';
   confirmModalMessage = '';
@@ -1182,25 +1150,30 @@ export class SaasAdminComponent implements OnInit {
     this.modalTarifasGlobalesVisible = false;
   }
 
-  guardarTarifas() {
-    if (!this.tarifaConfig) return;
-    this.tarifaService.updateTarifas(this.tarifaConfig.id, this.tarifaConfig).subscribe({
+  guardarTarifasCatalogo() {
+    const items = this.catalogoTarifas.map((t: any) => ({ id: t.id, valor: Number(t.valor) }));
+    this.tarifaService.updateCatalogo(items).subscribe({
       next: () => {
-        this.toastService.success('Tarifas actualizadas correctamente.');
-        this.cargarSuscripciones(); // Recalcular
-          this.cerrarModalTarifasGlobales();
+        this.toastService.success('Catálogo de tarifas actualizado correctamente.');
+        this.cerrarModalTarifasGlobales();
+        this.cargarCatalogoTarifas();
+        this.cargarSuscripciones();
       },
-      error: (err) => console.error('Error guardando tarifas', err)
+      error: (err) => console.error('Error guardando catálogo de tarifas', err)
     });
   }
 
-  noRenovarSuscripcion(id: number) {
-    if (confirm('¿Estás seguro de NO renovar esta suscripción? El cliente pasará a Inactivo.')) {
-      this.empresaService.noRenovarSuscripcion(id).subscribe({
-        next: () => this.cargarSuscripciones(),
-        error: (err) => console.error('Error al cancelar', err)
-      });
-    }
+  get gruposTarifas() {
+    const orden: { titulo: string; tipo: string }[] = [
+      { titulo: 'Planes', tipo: 'plan' },
+      { titulo: 'Paquetes Adicionales', tipo: 'modulo_adicional' },
+      { titulo: 'Inteligencia Artificial', tipo: 'ia_plan' },
+      { titulo: 'Conectores / Add-ons', tipo: 'addon' },
+      { titulo: 'Descuentos', tipo: 'descuento' },
+    ];
+    return orden
+      .map(g => ({ titulo: g.titulo, items: this.catalogoTarifas.filter((t: any) => t.tipo === g.tipo) }))
+      .filter(g => g.items.length > 0);
   }
 
   cargarSuscripciones() {
@@ -1232,7 +1205,7 @@ export class SaasAdminComponent implements OnInit {
       razon_social: '', 
       dominio: '',
       nit: '', 
-      tipo_empresa: 'Servicios', 
+      plan_suscripcion: 'Emprendedor', 
       fecha_inscripcion: '', 
       periodo: 'Mensual', 
       descuento: 'N/A',
@@ -1296,7 +1269,7 @@ export class SaasAdminComponent implements OnInit {
       razon_social: '', 
       dominio: '',
       nit: '', 
-      tipo_empresa: 'Servicios', 
+      plan_suscripcion: 'Emprendedor', 
       fecha_inscripcion: '', 
       periodo: 'Mensual', 
       descuento: 'N/A',
@@ -1314,14 +1287,12 @@ export class SaasAdminComponent implements OnInit {
     this.isEditMode = true;
     this.editingId = empresa.id;
     this.listaDescuentosEmpresa = (empresa.descuento && empresa.descuento !== 'N/A') ? empresa.descuento.split(',').map((d: string) => d.trim()) : [];
-    // La lista muestra 'Mixto' pero la BD/backend guarda 'Ventas y Servicios'
-    const tipoEmpresa = empresa.tipo_empresa === 'Mixto' ? 'Ventas y Servicios' : empresa.tipo_empresa;
     this.nuevaEmpresa = {
       razon_social: empresa.razon_social,
       dominio: empresa.dominio || '',
       nit: empresa.nit,
       email: empresa.email || '',
-      tipo_empresa: tipoEmpresa,
+      plan_suscripcion: empresa.plan_suscripcion || 'Emprendedor',
       fecha_inscripcion: empresa.fecha_inscripcion ? empresa.fecha_inscripcion.substring(0, 10) : '',
       periodo: empresa.periodo || 'Mensual',
       descuento: empresa.descuento || 'N/A',
@@ -1371,7 +1342,7 @@ export class SaasAdminComponent implements OnInit {
         next: () => {
           const addonsPaquete = this.paquetesModulos.find(p => p.id === 'addons');
           if (addonsPaquete) {
-            addonsPaquete.submodulos = addonsPaquete.submodulos.filter((s: any) => s.id !== id);
+            addonsPaquete.modulos = addonsPaquete.modulos.filter((s: any) => s.id !== id);
           }
           this.toastService.success(`Conector eliminado exitosamente.`);
           
@@ -1396,7 +1367,7 @@ export class SaasAdminComponent implements OnInit {
     if (this.editingAddonId) {
       this.modulosService.editarModuloGlobal(this.editingAddonId, this.nombreNuevoAddon.trim()).subscribe({
         next: () => {
-          const sub = addonsPaquete.submodulos.find((s: any) => s.id === this.editingAddonId);
+          const sub = addonsPaquete.modulos.find((s: any) => s.id === this.editingAddonId);
           if (sub) {
             sub.nombre = this.nombreNuevoAddon.trim();
           }
@@ -1414,7 +1385,7 @@ export class SaasAdminComponent implements OnInit {
       
       this.modulosService.crearModuloGlobal(newId, this.nombreNuevoAddon.trim(), 'addons').subscribe({
         next: () => {
-          addonsPaquete.submodulos.push({
+          addonsPaquete.modulos.push({
             id: newId,
             nombre: this.nombreNuevoAddon.trim(),
             activo: false
@@ -1432,17 +1403,17 @@ export class SaasAdminComponent implements OnInit {
     }
   }
 
-  toggleSubmodulo(paqueteId: string, submoduloId: string) {
+  toggleModulo(paqueteId: string, moduloId: string) {
     if (!this.empresaSeleccionadaId) {
       this.toastService.warning('Por favor selecciona una empresa primero.');
       return;
     }
     const paquete = this.paquetesModulos.find((p) => p.id === paqueteId);
     if (paquete) {
-      const sub = paquete.submodulos.find((s: any) => s.id === submoduloId);
+      const sub = paquete.modulos.find((s: any) => s.id === moduloId);
       if (sub) {
         sub.activo = !sub.activo;
-        paquete.activo = paquete.submodulos.some((s: any) => s.activo);
+        paquete.activo = paquete.modulos.some((s: any) => s.activo);
       }
     }
   }
@@ -1455,7 +1426,7 @@ export class SaasAdminComponent implements OnInit {
     const paquete = this.paquetesModulos.find((p) => p.id === paqueteId);
     if (paquete) {
       paquete.activo = activar;
-      paquete.submodulos.forEach((sub: any) => {
+      paquete.modulos.forEach((sub: any) => {
         if (sub.activo !== activar) {
           sub.activo = activar;
         }
@@ -1475,7 +1446,7 @@ export class SaasAdminComponent implements OnInit {
     const empresaId: string = this.empresaSeleccionadaId;
     const paquete = this.paquetesModulos.find((p) => p.id === paqueteId);
     if (paquete) {
-      const modulosState = paquete.submodulos.map((sub: any) => ({
+      const modulosState = paquete.modulos.map((sub: any) => ({
         id: sub.id,
         activo: sub.activo
       }));
@@ -1512,7 +1483,7 @@ export class SaasAdminComponent implements OnInit {
       // Limpiar el estado UI antes de cargar la nueva empresa para evitar cruce de datos
       this.paquetesModulos.forEach(p => {
         p.activo = false;
-        p.submodulos.forEach((s: any) => s.activo = false);
+        p.modulos.forEach((s: any) => s.activo = false);
       });
       this.cargarModulosDeEmpresa(this.empresaSeleccionadaId);
     }
@@ -1539,7 +1510,7 @@ export class SaasAdminComponent implements OnInit {
         const subsDB = modulosBD[paqueteClave];
         
         subsDB.forEach((sDB: any) => {
-          const subUI = paqueteUI.submodulos.find((sUI: any) => sUI.id === sDB.id);
+          const subUI = paqueteUI.modulos.find((sUI: any) => sUI.id === sDB.id);
           
           if (subUI) {
             subUI.activo = sDB.activo;
@@ -1547,7 +1518,7 @@ export class SaasAdminComponent implements OnInit {
               subUI.nombre = sDB.nombre;
             }
           } else {
-            paqueteUI.submodulos.push({
+            paqueteUI.modulos.push({
               id: sDB.id,
               nombre: sDB.nombre,
               activo: sDB.activo
@@ -1555,7 +1526,7 @@ export class SaasAdminComponent implements OnInit {
           }
         });
 
-        paqueteUI.activo = paqueteUI.submodulos.some((s: any) => s.activo);
+        paqueteUI.activo = paqueteUI.modulos.some((s: any) => s.activo);
       }
     });
     this.cdr.detectChanges();
@@ -1566,7 +1537,7 @@ export class SaasAdminComponent implements OnInit {
     this.isEditMode = false;
     this.editingId = null;
     this.listaDescuentosEmpresa = [];
-    this.nuevaEmpresa = { razon_social: '', dominio: '', nit: '', email: '', tipo_empresa: 'Servicios', fecha_inscripcion: '', periodo: 'Mensual', descuento: 'N/A', nombre_gerente: '', apellido_gerente: '' };
+    this.nuevaEmpresa = { razon_social: '', dominio: '', nit: '', email: '', plan_suscripcion: 'Emprendedor', fecha_inscripcion: '', periodo: 'Mensual', descuento: 'N/A', nombre_gerente: '', apellido_gerente: '' };
   }
 
 
@@ -1588,8 +1559,8 @@ export class SaasAdminComponent implements OnInit {
       this.empresaService.updateEmpresa(this.editingId, payload).subscribe({
         next: () => {
           this.isSubmitting = false;
-          this.sincronizarMockSuscripciones();
           this.cargarEmpresas();
+          this.cargarSuscripciones();
           this.cerrarModal();
         },
         error: (err) => {
@@ -1606,8 +1577,8 @@ export class SaasAdminComponent implements OnInit {
           this.isSubmitting = false;
           this.createdAdminEmail = response.admin_email;
           this.showSuccessModal = true;
-          this.sincronizarMockSuscripciones();
           this.cargarEmpresas();
+          this.cargarSuscripciones();
           this.cerrarModal();
         },
         error: (err) => {
@@ -1618,19 +1589,6 @@ export class SaasAdminComponent implements OnInit {
           console.error(err);
         },
       });
-    }
-  }
-
-  private sincronizarMockSuscripciones() {
-    // Reflejar la realidad de los descuentos de la empresa en la tabla de suscripciones
-    const sub = this.mockSuscripciones.find(s => s.nombreEmpresa === this.nuevaEmpresa.razon_social);
-    if (sub) {
-      sub.descuentosAplicados = this.listaDescuentosEmpresa
-        .filter(d => d !== 'N/A')
-        .map(d => ({
-          descripcion: d,
-          porcentaje: d === 'Mes Gratis' ? 8.33 : (d === 'Referido 10%' ? 10 : 0)
-        } as any));
     }
   }
 

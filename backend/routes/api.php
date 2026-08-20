@@ -54,6 +54,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/export/ventas', [\App\Http\Controllers\ExportController::class, 'exportVentas']);
     Route::get('/export/empleados', [\App\Http\Controllers\ExportController::class, 'exportEmpleados']);
     Route::get('/export/productos', [\App\Http\Controllers\ExportController::class, 'exportProductos']);
+    Route::get('/export/proveedores', [\App\Http\Controllers\ExportController::class, 'exportProveedores']);
 
     // --- SESION ---
     Route::post('/logout', [AuthController::class, 'cerrarSesion']);
@@ -77,9 +78,6 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // --- PERFIL DE EMPLEADO & AUTOGESTION ---
     Route::get('/empleados/pendientes', [\App\Http\Controllers\EmpleadoController::class, 'pendientes']);
-    Route::get('/empleados/{id}', [UserController::class, 'getEmpleado']);
-    Route::put('/empleados/{id}', [UserController::class, 'updateEmpleado']);
-    Route::post('/empleados/{id}/baja', [UserController::class, 'bajaEmpleado']);
     
     // Documentos del Empleado (RRHH)
     Route::get('/empleados/{id}/documentos', [\App\Http\Controllers\DocumentoEmpleadoController::class, 'getDocumentos']);
@@ -104,13 +102,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/permisos/{id}', [PermisoController::class, 'update']);
     Route::delete('/permisos/{id}', [PermisoController::class, 'destroy']);
 
-    Route::apiResource('sedes', \App\Http\Controllers\SedeController::class);
+    Route::apiResource('sedes', \App\Http\Controllers\SedeController::class)->only(['index', 'store', 'update']);
     Route::get('/areas', [\App\Http\Controllers\AreaController::class, 'index']);
     Route::post('/areas', [\App\Http\Controllers\AreaController::class, 'store']);
     Route::put('/areas/{id}', [\App\Http\Controllers\AreaController::class, 'update']);
     Route::patch('/areas/{id}/status', [\App\Http\Controllers\AreaController::class, 'changeStatus']);
 
-    Route::post('/user/avatar', [UserController::class, 'uploadAvatar']);
     Route::apiResource('usuarios', UserController::class);
     Route::patch('usuarios/{id}/status', [UserController::class, 'changeStatus']);
 
@@ -118,6 +115,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/empleados', [\App\Http\Controllers\EmpleadoController::class, 'index']);
     Route::get('/empleados/{id}/certificado', [\App\Http\Controllers\EmpleadoController::class, 'generarCertificado']);
     Route::post('/empleados/{usuarioId}/formalizar', [\App\Http\Controllers\EmpleadoController::class, 'formalizar']);
+    Route::put('/empleados/{id}/contrato', [\App\Http\Controllers\EmpleadoController::class, 'updateContrato']);
     Route::post('/empleados/{id}/solicitar-baja', [\App\Http\Controllers\EmpleadoController::class, 'solicitarBaja']);
     Route::post('/empleados/{id}/aprobar-baja', [\App\Http\Controllers\EmpleadoController::class, 'aprobarBaja']);
 
@@ -130,7 +128,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/autogestion/afiliaciones', [AutogestionController::class, 'guardarAfiliaciones']);
 
 
-    Route::get('/autogestion/empleado/{id}/afiliaciones', [AutogestionController::class, 'obtenerAfiliacionEmpleado']);
     Route::post('/autogestion/empleado/{id}/afiliaciones', [AutogestionController::class, 'gestionarAfiliacionEmpleado']);
 
 
@@ -147,15 +144,16 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::patch('empresas/{id}/status', [EmpresaController::class, 'changeStatus']);
     Route::patch('empresas/{id}/renovar', [EmpresaController::class, 'registrarRenovacion']);
     Route::patch('empresas/{id}/norenovar', [EmpresaController::class, 'noRenovar']);
-    Route::post('empresas/{id}/aceptar-contrato', [EmpresaController::class, 'aceptarContrato']);
     Route::get('empresas/{id}/descargar-contrato', [EmpresaController::class, 'descargarContratoPDF']);
 
-    Route::apiResource('tarifas', \App\Http\Controllers\TarifaController::class);
+    Route::apiResource('tarifas', \App\Http\Controllers\TarifaController::class)->only(['index', 'update']);
 
     Route::get('/admin-requests/my-requests', [\App\Http\Controllers\AdminRequestController::class, 'misSolicitudes']);
     Route::get('/admin-requests', [\App\Http\Controllers\AdminRequestController::class, 'index']);
     Route::post('/admin-requests', [\App\Http\Controllers\AdminRequestController::class, 'store']);
     Route::patch('/admin-requests/{id}/process', [\App\Http\Controllers\AdminRequestController::class, 'process']);
+    Route::get('/admin-requests/{id}/archivo', [\App\Http\Controllers\AdminRequestController::class, 'descargarArchivo']);
+    Route::post('/admin-requests/{id}/importar', [\App\Http\Controllers\AdminRequestController::class, 'importar']);
     
     // --- MIGRACION DE DATOS ---
     Route::get('/migracion/plantilla', [\App\Http\Controllers\MigracionController::class, 'descargarPlantilla']);
@@ -171,29 +169,27 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('categorias', CategoriaController::class);
     Route::apiResource('clientes', ClienteController::class);
     Route::apiResource('proveedores', ProveedorController::class);
-    Route::apiResource('productos', ProductoController::class);
+    Route::apiResource('productos', ProductoController::class)->only(['index', 'store']);
     Route::apiResource('servicios', ServicioController::class);
 
     // Cuentas por pagar
     Route::get('cuentas-por-pagar', [\App\Http\Controllers\CuentaPorPagarController::class, 'index']);
-    Route::post('cuentas-por-pagar', [\App\Http\Controllers\CuentaPorPagarController::class, 'store']);
     Route::post('cuentas-por-pagar/{id}/abonos', [\App\Http\Controllers\CuentaPorPagarController::class, 'registrarAbono']);
-    Route::delete('cuentas-por-pagar/{id}', [\App\Http\Controllers\CuentaPorPagarController::class, 'destroy']);
 
 
     // --- OPERACIONES COMERCIALES ---
 
-    Route::apiResource('ordenes-compra', OrdenCompraController::class);
-    Route::apiResource('recepciones', \App\Http\Controllers\RecepcionController::class);
-    Route::apiResource('cotizaciones-pedidos', CotizacionPedidoController::class);
+    Route::apiResource('ordenes-compra', OrdenCompraController::class)->only(['index', 'store']);
+    Route::apiResource('recepciones', \App\Http\Controllers\RecepcionController::class)->only(['index', 'store']);
+    Route::apiResource('cotizaciones-pedidos', CotizacionPedidoController::class)->only(['index', 'store']);
     Route::put('cotizaciones-pedidos/{id}/estado', [CotizacionPedidoController::class, 'cambiarEstado']);
-    Route::apiResource('movimientos-inventario', MovimientoInventarioController::class);
+    Route::apiResource('movimientos-inventario', MovimientoInventarioController::class)->only(['index', 'store']);
 
 
     // --- INVENTARIO FISICO ---
 
 
-    Route::apiResource('inventario', \App\Http\Controllers\InventarioController::class);
+    Route::apiResource('inventario', \App\Http\Controllers\InventarioController::class)->only(['index']);
    
     // --- CAJA ---
     Route::get('/cajas', [\App\Http\Controllers\CajaController::class, 'index']);
@@ -220,7 +216,6 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/turnos', [\App\Http\Controllers\TurnoController::class, 'index']);
     Route::post('/turnos', [\App\Http\Controllers\TurnoController::class, 'store']);
-    Route::get('/turnos/{id}', [\App\Http\Controllers\TurnoController::class, 'show']);
     Route::put('/turnos/{id}', [\App\Http\Controllers\TurnoController::class, 'update']);
     Route::patch('/turnos/{id}/status', [\App\Http\Controllers\TurnoController::class, 'changeStatus']);
     
@@ -230,7 +225,6 @@ Route::middleware('auth:sanctum')->group(function () {
     // --- VACACIONES ---
     Route::get('/vacaciones', [\App\Http\Controllers\VacacionController::class, 'index']);
     Route::post('/vacaciones', [\App\Http\Controllers\VacacionController::class, 'store']);
-    Route::get('/vacaciones/{id}', [\App\Http\Controllers\VacacionController::class, 'show']);
     Route::put('/vacaciones/{id}', [\App\Http\Controllers\VacacionController::class, 'update']);
     
 
@@ -247,7 +241,6 @@ Route::middleware('auth:sanctum')->group(function () {
     
 
     Route::get('/notificaciones', [\App\Http\Controllers\NotificacionController::class, 'index']);
-    Route::post('/notificaciones', [\App\Http\Controllers\NotificacionController::class, 'store']);
     Route::put('/notificaciones/{id}/leer', [\App\Http\Controllers\NotificacionController::class, 'marcarLeida']);
 
     Route::post('/usuarios/tutorial-visto', [\App\Http\Controllers\UserController::class, 'marcarTutorialVisto']);
@@ -258,14 +251,7 @@ Route::middleware('auth:sanctum')->group(function () {
     
 
     Route::get('/logs', [\App\Http\Controllers\LogAuditoriaController::class, 'index']);
-    Route::get('/logs/{id}', [\App\Http\Controllers\LogAuditoriaController::class, 'show']);
 
-
-    // --- PERMISOS POR ROL ---
-    Route::get('/roles/{id}/permisos', function ($id) {
-        $rol = \App\Models\Role::with('permisos')->findOrFail($id);
-        return $rol->permisos;    
-    });
 
     // --- RECORDATORIOS ---
     Route::get('/recordatorios', [\App\Http\Controllers\RecordatorioController::class, 'index']);
@@ -276,6 +262,14 @@ Route::middleware('auth:sanctum')->group(function () {
     // --- REUNIONES ---
     Route::get('/reuniones', [\App\Http\Controllers\ReunionController::class, 'index']);
     Route::post('/reuniones', [\App\Http\Controllers\ReunionController::class, 'store']);
+
+    // --- SOLICITUDES DE ACCIÓN (OPERARIO -> JEFE DE ÁREA) ---
+    Route::get('/solicitudes', [\App\Http\Controllers\SolicitudController::class, 'index']);
+    Route::get('/solicitudes/bandeja', [\App\Http\Controllers\SolicitudController::class, 'bandeja']);
+    Route::post('/solicitudes', [\App\Http\Controllers\SolicitudController::class, 'store']);
+    Route::post('/solicitudes/{id}/responder', [\App\Http\Controllers\SolicitudController::class, 'responder']);
+    Route::post('/solicitudes/{id}/aprobar', [\App\Http\Controllers\SolicitudController::class, 'aprobar']);
+    Route::post('/solicitudes/{id}/rechazar', [\App\Http\Controllers\SolicitudController::class, 'rechazar']);
 
     // Ventas
     Route::get('/ventas', [\App\Http\Controllers\VentaController::class, 'index']);
@@ -300,6 +294,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/saas/contratos/activo', [\App\Http\Controllers\SaasContratoController::class, 'activo']);
     Route::post('/saas/contratos/firmar', [\App\Http\Controllers\SaasContratoController::class, 'firmar']);
     Route::get('/saas/tarifas/catalogo', [\App\Http\Controllers\TarifaController::class, 'catalogo']);
+    Route::put('/saas/tarifas/catalogo', [\App\Http\Controllers\TarifaController::class, 'catalogoUpdate']);
 
     }); // Fin del middleware 'formalizado'
 

@@ -17,6 +17,8 @@ class Tarea extends Model
         'asignador_id',
         'asignado_id',
         'estado',
+        'tipo',
+        'area_id',
         'empresa_id',
     ];
 
@@ -28,6 +30,11 @@ class Tarea extends Model
     public function asignado()
     {
         return $this->belongsTo(User::class, 'asignado_id');
+    }
+
+    public function area()
+    {
+        return $this->belongsTo(Area::class, 'area_id');
     }
 
     public function empresa()

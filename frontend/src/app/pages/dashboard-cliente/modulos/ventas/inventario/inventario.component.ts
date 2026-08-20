@@ -1,6 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
 import { ProductoService, Producto, Categoria } from '../../../../../services/producto.service';
 import { InventarioService, Inventario, MovimientoInventario } from '../../../../../services/inventario.service';
 import { ToastService } from '../../../../../services/toast.service';
@@ -17,6 +18,7 @@ export class InventarioComponent implements OnInit {
   private productoService = inject(ProductoService);
   private inventarioService = inject(InventarioService);
   private toast = inject(ToastService);
+  private http = inject(HttpClient);
 
   activeTab: string = 'catalogo';
 
@@ -41,16 +43,20 @@ export class InventarioComponent implements OnInit {
   productoKardex: any = '';
   kardexFilas: any[] = [];
 
+  // --- CATEGORÍAS ---
+  showModalCategoria: boolean = false;
+  editandoCategoria: boolean = false;
+  categoriaEditandoId: number | null = null;
+  formCategoria: any = { nombre: '', descripcion: '', tipo: 'ventas' };
+  guardandoCategoria = false;
+
   ngOnInit() {
     this.cargarDatos();
   }
 
   cargarDatos() {
     this.cargando = true;
-    this.productoService.getCategorias().pipe(timeout(8000)).subscribe({
-      next: (res) => { this.categorias = res; },
-      error: () => { this.categorias = []; }
-    });
+    this.cargarCategorias();
 
     this.productoService.getProductos().pipe(timeout(8000)).subscribe({
       next: (res) => {
@@ -152,7 +158,20 @@ export class InventarioComponent implements OnInit {
   }
 
   exportarExcel() {
-    this.toast.success('Exportando catálogo a Excel...');
+    this.toast.success('Generando archivo Excel...');
+    const headers = { 'Authorization': `Bearer ${sessionStorage.getItem('auth_token')}` };
+    this.http.get('/api/export/productos', { headers, responseType: 'blob' }).subscribe({
+      next: (blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `inventario_${new Date().toISOString().slice(0, 10)}.xlsx`;
+        a.click();
+        window.URL.revokeObjectURL(url);
+        this.toast.success('Excel de inventario descargado');
+      },
+      error: () => this.toast.error('Error al exportar. Intenta nuevamente.')
+    });
   }
 
   filtrarProductos() {
@@ -185,6 +204,10 @@ export class InventarioComponent implements OnInit {
   stockMinimoProducto(producto: any): number {
     const inv = this.inventario.find(i => i.producto_id === producto.id);
     return inv?.stock_minimo ?? 0;
+  }
+
+  productosPorCategoria(categoriaId: number | undefined): number {
+    return this.productosOriginales.filter(p => p.categoria_id === categoriaId).length;
   }
 
   // --- MOVIMIENTOS (entradas/salidas) ---
@@ -284,5 +307,99 @@ export class InventarioComponent implements OnInit {
   nombreKardexProducto(id: number): string {
     const p = this.productosOriginales.find(prod => prod.id === id);
     return p?.nombre || 'Producto #' + id;
+  }
+
+  // --- CATEGORÍAS (CRUD) ---
+  abrirModalCategoria() {
+    this.editandoCategoria = false;
+    this.categoriaEditandoId = null;
+    this.formCategoria = { nombre: '', descripcion: '', tipo: 'ventas' };
+    this.showModalCategoria = true;
+  }
+
+  abrirModalEditarCategoria(cat: any) {
+    this.editandoCategoria = true;
+    this.categoriaEditandoId = cat.id;
+    this.formCategoria = {
+      nombre: cat.nombre,
+      descripcion: cat.descripcion || '',
+      tipo: cat.tipo || 'ventas'
+    };
+    this.showModalCategoria = true;
+  }
+
+  cerrarModalCategoria() {
+    this.showModalCategoria = false;
+  }
+
+  guardarCategoria() {
+    if (!this.formCategoria.nombre) {
+      this.toast.warning('El nombre de la categoría es obligatorio');
+      return;
+    }
+    this.guardandoCategoria = true;
+    const payload: Categoria = {
+      nombre: this.formCategoria.nombre,
+      descripcion: this.formCategoria.descripcion || '',
+      tipo: this.formCategoria.tipo,
+      activo: true
+    };
+
+    if (this.editandoCategoria && this.categoriaEditandoId) {
+      this.productoService.actualizarCategoria(this.categoriaEditandoId, payload).pipe(timeout(8000)).subscribe({
+        next: () => {
+          this.toast.success('Categoría actualizada exitosamente');
+          this.cerrarModalCategoria();
+          this.guardandoCategoria = false;
+          this.cargarCategorias();
+        },
+        error: () => {
+          this.toast.error('Error al actualizar la categoría');
+          this.guardandoCategoria = false;
+        }
+      });
+    } else {
+      this.productoService.crearCategoria(payload).pipe(timeout(8000)).subscribe({
+        next: () => {
+          this.toast.success('Categoría creada exitosamente');
+          this.cerrarModalCategoria();
+          this.guardandoCategoria = false;
+          this.cargarCategorias();
+        },
+        error: () => {
+          this.toast.error('Error al crear la categoría');
+          this.guardandoCategoria = false;
+        }
+      });
+    }
+  }
+
+  eliminarCategoria(cat: any) {
+    if (!confirm(`¿Desea eliminar la categoría "${cat.nombre}"? Los productos asociados quedarán sin categoría.`)) {
+      return;
+    }
+    this.productoService.eliminarCategoria(cat.id).pipe(timeout(8000)).subscribe({
+      next: () => {
+        this.toast.success('Categoría eliminada');
+        this.cargarCategorias();
+      },
+      error: () => {
+        this.toast.error('Error al eliminar la categoría');
+      }
+    });
+  }
+
+  private cargarCategorias() {
+    this.productoService.getCategorias().pipe(timeout(8000)).subscribe({
+      next: (res) => { this.categorias = res; },
+      error: () => { this.categorias = []; }
+    });
+  }
+
+  tipoCategoria(cat: any): string {
+    const t = cat.tipo || 'ventas';
+    if (t === 'servicios') return 'Servicios';
+    if (t === 'ventas y servicios') return 'Ventas y Servicios';
+    return 'Ventas';
   }
 }

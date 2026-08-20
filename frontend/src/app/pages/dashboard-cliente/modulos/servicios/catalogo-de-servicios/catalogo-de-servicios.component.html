@@ -251,6 +251,7 @@
                 <th>NOMBRE DEL SERVICIO</th>
                 <th>DURACIÓN ESTIMADA</th>
                 <th>TARIFA BASE</th>
+                <th style="text-align: center;">ACCIÓN</th>
               </tr>
             </thead>
             <tbody>
@@ -260,6 +261,10 @@
                   <td>{{cat.nombre}}</td>
                   <td><i class="fas fa-clock"></i> {{cat.tiempo_estimado || 'N/D'}}</td>
                   <td class="text-positivo">{{cat.tarifa | currency:'COP':'symbol':'1.0-0'}}</td>
+                  <td style="text-align: center;">
+                    <app-solicitud-inactivacion [area]="'s_cat'" [entidad]="'servicios'" [entidadId]="cat.id"
+                      [nombreEntidad]="cat.nombre"></app-solicitud-inactivacion>
+                  </td>
                 </tr>
               }
             </tbody>

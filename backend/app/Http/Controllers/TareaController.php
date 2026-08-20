@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Tarea;
+use App\Models\Notificacion;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -13,10 +14,13 @@ class TareaController extends Controller
     {
         $user = Auth::user();
         $rolNombre = $user->rol->nombre ?? '';
+        $user->load('empleado');
+        $areaId = $user->empleado ? $user->empleado->area_id : null;
 
         $query = Tarea::with([
-            'asignador:id,nombres,apellidos',
-            'asignado:id,nombres,apellidos'
+            'asignador:id,primer_nombre,segundo_nombre,primer_apellido,segundo_apellido',
+            'asignado:id,primer_nombre,segundo_nombre,primer_apellido,segundo_apellido',
+            'area:id,nombre'
         ])->where('empresa_id', $user->empresa_id);
 
         if (in_array($rolNombre, ['Gerente General', 'Jefe de Área'])) {
@@ -25,10 +29,21 @@ class TareaController extends Controller
                   ->orWhere('asignado_id', $user->id);
             });
         } else {
-            $query->where('asignado_id', $user->id);
+            // Empleado/Operario: ve sus tareas individuales + las cooperativas de su área
+            $query->where(function ($q) use ($user, $areaId) {
+                $q->where('asignado_id', $user->id)
+                  ->orWhere(function ($sub) use ($areaId) {
+                      $sub->where('tipo', 'cooperativa');
+                      if ($areaId) {
+                          $sub->where('area_id', $areaId);
+                      } else {
+                          $sub->whereRaw('1 = 0');
+                      }
+                  });
+            });
         }
 
-        return response()->json($query->get());
+        return response()->json($query->orderBy('id', 'desc')->get());
     }
 
     // Para asignar una nueva tarea
@@ -48,13 +63,19 @@ class TareaController extends Controller
             'titulo' => 'required|string|max:255',
             'descripcion' => 'nullable|string',
             'asignado_id' => 'required|exists:usuarios,id',
+            'tipo' => 'nullable|in:individual,cooperativa',
+            'area_id' => 'nullable|integer|exists:areas,id',
         ]);
+
+        $tipo = $request->tipo ?? 'individual';
 
         $tarea = Tarea::create([
             'titulo' => $request->titulo,
             'descripcion' => $request->descripcion,
             'asignador_id' => $user->id,
             'asignado_id' => $request->asignado_id,
+            'tipo' => $tipo,
+            'area_id' => ($tipo === 'cooperativa') ? ($request->area_id ?? null) : null,
             'empresa_id' => $user->empresa_id,
         ]);
 
@@ -72,12 +93,22 @@ class TareaController extends Controller
         }
 
         $request->validate([
-            'estado' => 'required|in:notificada,en_proceso,terminada',
+            'estado' => 'required|in:notificada,vista,en_proceso,con_dificultades,terminada',
         ]);
 
         $tarea->update([
             'estado' => $request->estado,
         ]);
+
+        // Si la tarea entra en dificultades, notificar al asignador (gerente/jefe de área)
+        if ($request->estado === 'con_dificultades' && $tarea->asignador_id !== $user->id) {
+            Notificacion::create([
+                'usuario_id' => $tarea->asignador_id,
+                'titulo' => 'Tarea con dificultades',
+                'descripcion' => "La tarea \"{$tarea->titulo}\" fue marcada con dificultades. Revísala y da respuesta.",
+                'leida' => false,
+            ]);
+        }
 
         return response()->json(['message' => 'Estado actualizado', 'tarea' => $tarea]);
     }

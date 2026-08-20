@@ -30,4 +30,12 @@ export class RolesService {
   changeStatus(id: number): Observable<any> {
     return this.http.patch<any>(`${this.apiUrl}/${id}/status`, {});
   }
+
+  getPermisos(): Observable<any[]> {
+    return this.http.get<any[]>('/api/permisos');
+  }
+
+  batchPermisos(permisos: any[]): Observable<any> {
+    return this.http.post<any>('/api/permisos/batch', { permisos });
+  }
 }

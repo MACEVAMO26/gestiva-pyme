@@ -16,7 +16,7 @@ class TarifasCatalogoSeeder extends Seeder
             // Planes Base
             [
                 'id' => 'plan_basico',
-                'nombre' => 'Plan Básico',
+                'nombre' => 'Plan Emprendedor',
                 'tipo' => 'plan',
                 'mecanismo' => 'fijo',
                 'valor' => 70000.00,
@@ -24,7 +24,7 @@ class TarifasCatalogoSeeder extends Seeder
             ],
             [
                 'id' => 'plan_profesional',
-                'nombre' => 'Plan Profesional',
+                'nombre' => 'Plan Pyme',
                 'tipo' => 'plan',
                 'mecanismo' => 'fijo',
                 'valor' => 150000.00,

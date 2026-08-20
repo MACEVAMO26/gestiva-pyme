@@ -38,6 +38,14 @@ export class ProductoService {
     return this.http.post<Categoria>('/api/categorias', categoria);
   }
 
+  actualizarCategoria(id: number, categoria: Partial<Categoria>): Observable<Categoria> {
+    return this.http.put<Categoria>(`/api/categorias/${id}`, categoria);
+  }
+
+  eliminarCategoria(id: number): Observable<any> {
+    return this.http.delete(`/api/categorias/${id}`);
+  }
+
   getProductos(): Observable<Producto[]> {
     return this.http.get<Producto[]>('/api/productos');
   }

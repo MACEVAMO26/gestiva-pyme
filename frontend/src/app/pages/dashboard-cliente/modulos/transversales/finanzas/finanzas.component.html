@@ -60,6 +60,13 @@
               <button class="btn-volver btn-pill btn-cierre btn-pill" (click)="abrirCierreModal()">
                 <i class="fas fa-lock"></i> Realizar Cierre de Caja
               </button>
+
+              @if (cajaActiva?.id) {
+                <div style="margin-top: 0.5rem;">
+                  <app-solicitud-inactivacion [area]="'f_caja'" [entidad]="'cajas'" [entidadId]="cajaActiva?.id"
+                    [nombreEntidad]="'Caja (ID ' + (cajaActiva?.id ?? '') + ')'" label="Solicitar cierre de caja"></app-solicitud-inactivacion>
+                </div>
+              }
             </div>
 
             <!-- REGISTRO DE MOVIMIENTOS Y TABLA -->

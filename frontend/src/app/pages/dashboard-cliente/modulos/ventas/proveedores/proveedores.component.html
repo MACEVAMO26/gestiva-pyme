@@ -84,6 +84,8 @@
                     <td>
                       <div class="acciones-fila">
                         <button class="btn-icon" (click)="abrirModal(proveedor)" title="Editar">✏️</button>
+                        <app-solicitud-inactivacion [area]="'v_prov'" [entidad]="'proveedores'" [entidadId]="proveedor.id"
+                          [nombreEntidad]="proveedor.razon_social"></app-solicitud-inactivacion>
                         <button class="btn-icon text-danger" (click)="eliminarProveedor(proveedor.id)" title="Eliminar" [disabled]="deletingId === proveedor.id">
                           @if(deletingId === proveedor.id) {
                             <i class="fas fa-spinner fa-spin"></i>

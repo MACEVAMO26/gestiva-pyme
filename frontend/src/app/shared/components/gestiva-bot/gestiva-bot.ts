@@ -5,6 +5,7 @@ import { Router, NavigationEnd } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { filter, Subscription } from 'rxjs';
 import { IaStateService } from '../../../services/ia-state/ia-state.service';
+import { AuthService } from '../../../services/auth.service';
 
 @Component({
   selector: 'app-gestiva-bot',
@@ -17,6 +18,7 @@ export class GestivaBotComponent implements OnInit, OnDestroy {
   private router = inject(Router);
   private http = inject(HttpClient);
   private iaStateService = inject(IaStateService);
+  private authService = inject(AuthService);
   private routerSub!: Subscription;
 
   // Estados visuales
@@ -134,11 +136,10 @@ export class GestivaBotComponent implements OnInit, OnDestroy {
     this.userMessage = '';
     this.isLoading = true;
 
-    // Aquí se asume que empresa_id = 1 para pruebas (en producción viene del Auth/JWT backend)
     const payload = {
       prompt: prompt,
       modo: this.isAdvancedMode ? 'avanzado' : 'basico',
-      empresa_id: 1 
+      empresa_id: this.authService.getUser()?.empresa_id
     };
 
     this.http.post('/api/ia/procesar-tarea', payload).subscribe({

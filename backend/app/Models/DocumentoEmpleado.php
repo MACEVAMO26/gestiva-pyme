@@ -11,6 +11,7 @@ class DocumentoEmpleado extends Model
     protected $fillable = [
         'empleado_id',
         'nombre',
+        'categoria',
         'tipo_archivo',
         'cloudinary_url',
         'cloudinary_public_id',

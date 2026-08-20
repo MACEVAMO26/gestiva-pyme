@@ -4,12 +4,13 @@ import { FormsModule } from '@angular/forms';
 import { ClienteService, Cliente } from '../../../../../services/cliente.service';
 import { OperariosTicketsService, ServicioTicket } from '../../../../../services/operarios-tickets.service';
 import { ToastService } from '../../../../../services/toast.service';
+import { SolicitudInactivacionComponent } from '../../../../../shared/components/solicitud-inactivacion/solicitud-inactivacion.component';
 import { timeout } from 'rxjs';
 
 @Component({
   selector: 'app-crm-gestion-de-clientes',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, SolicitudInactivacionComponent],
   templateUrl: './crm-gestion-de-clientes.component.html',
   styleUrl: './crm-gestion-de-clientes.component.scss'
 })

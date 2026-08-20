@@ -1,6 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
 import { VentaService, Venta } from '../../../../../services/venta.service';
 import { ClienteService, Cliente } from '../../../../../services/cliente.service';
 import { CajaService, Caja } from '../../../../../services/caja.service';
@@ -21,6 +22,7 @@ export class VentasComponent implements OnInit {
   private cajaService = inject(CajaService);
   private productoService = inject(ProductoService);
   private toast = inject(ToastService);
+  private http = inject(HttpClient);
 
   activeTab: string = 'pos';
 
@@ -112,7 +114,20 @@ export class VentasComponent implements OnInit {
   }
 
   exportarExcel() {
-    this.toast.success('Exportando historial a Excel...');
+    this.toast.success('Generando archivo Excel...');
+    const headers = { 'Authorization': `Bearer ${sessionStorage.getItem('auth_token')}` };
+    this.http.get('/api/export/ventas', { headers, responseType: 'blob' }).subscribe({
+      next: (blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `ventas_${new Date().toISOString().slice(0, 10)}.xlsx`;
+        a.click();
+        window.URL.revokeObjectURL(url);
+        this.toast.success('Excel de ventas descargado');
+      },
+      error: () => this.toast.error('Error al exportar. Intenta nuevamente.')
+    });
   }
 
   agregarAlCarrito() {

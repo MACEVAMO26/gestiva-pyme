@@ -28,4 +28,20 @@ class TarifaController extends Controller
         $catalogo = \App\Models\TarifaCatalogo::where('activo', true)->get();
         return response()->json($catalogo);
     }
+
+    public function catalogoUpdate(Request $request)
+    {
+        $request->validate([
+            'items' => 'required|array',
+            'items.*.id' => 'required|string|exists:tarifas_catalogo,id',
+            'items.*.valor' => 'required|numeric|min:0',
+        ]);
+
+        foreach ($request->items as $item) {
+            \App\Models\TarifaCatalogo::where('id', $item['id'])->update(['valor' => $item['valor']]);
+        }
+
+        $catalogo = \App\Models\TarifaCatalogo::where('activo', true)->get();
+        return response()->json(['message' => 'Catálogo de tarifas actualizado', 'catalogo' => $catalogo]);
+    }
 }

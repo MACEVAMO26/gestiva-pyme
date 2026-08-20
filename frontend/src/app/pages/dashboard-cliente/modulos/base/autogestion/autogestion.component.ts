@@ -35,6 +35,8 @@ export class AutogestionComponent implements OnInit {
   isSaving = false;
   isSavingAdmin = false;
   cantidadRenovaciones = 0;
+  moduloRRHH = false;
+  archivoAfiliacion: File | null = null;
 
   // Vacaciones
   misVacaciones: any[] = [];
@@ -67,8 +69,7 @@ export class AutogestionComponent implements OnInit {
     
     this.cargarVacaciones();
     this.cargarDocumentos();
-    // Aquí cargarías las afiliaciones del empleado si existiera el endpoint:
-    // this.cargarAfiliacion();
+    this.cargarAfiliacion();
   }
 
   // --- AVATAR ---
@@ -94,23 +95,111 @@ export class AutogestionComponent implements OnInit {
   }
 
   // --- AFILIACIONES ---
+  cargarAfiliacion() {
+    if (!this.usuarioActual) return;
+    this.empleadoService.getMisAfiliaciones().pipe(timeout(8000)).subscribe({
+      next: (res) => {
+        this.afiliacion = res.afiliacion || {};
+        this.moduloRRHH = !!res.modulo_rrhh_activo;
+        const af = this.afiliacion;
+        this.formAfiliacion = {
+          eps: af.eps || '',
+          arl: af.arl || '',
+          afondo_pension: af.afondo_pension || '',
+          fondo_cesantias: af.fondo_cesantias || '',
+          estado: af.estado || 'nuevo',
+          fecha_contratacion: af.fecha_contratacion || '',
+          finalizacion_contrato: af.finalizacion_contrato || '',
+          renovacion_contrato: af.renovacion_contrato || ''
+        };
+        if (this.isHR) this.formAfiliacion.estado = af.estado || 'nuevo';
+      },
+      error: () => {
+        this.afiliacion = {};
+        this.moduloRRHH = false;
+      }
+    });
+  }
+
+  get puedeModificarAfiliaciones(): boolean {
+    if (this.isHR) return true;
+    if (this.moduloRRHH) return true;
+    const veces = this.afiliacion?.veces_modificada || 0;
+    return veces < 2;
+  }
+
+  get vecesModificadas(): number {
+    return this.afiliacion?.veces_modificada || 0;
+  }
+
+  onAfiliacionFileSelected(event: any) {
+    this.archivoAfiliacion = event.target.files[0] || null;
+  }
+
   guardarAfiliaciones() {
+    if (!this.puedeModificarAfiliaciones) {
+      this.toast.warning('Límite alcanzado: las afiliaciones solo pueden modificarse 2 veces. Contacta a Gestión Humana o Gerencia.');
+      return;
+    }
+    if (!this.formAfiliacion.eps || !this.formAfiliacion.afondo_pension) {
+      this.toast.warning('Seleccione EPS y Fondo de Pensión al menos');
+      return;
+    }
+    if (!this.moduloRRHH && !this.archivoAfiliacion) {
+      this.toast.warning('Adjunte un documento de soporte (ej. formulario de traslado) para el cambio.');
+      return;
+    }
+
     this.isSaving = true;
-    setTimeout(() => {
-      this.afiliacion = { ...this.formAfiliacion, estado: 'pendiente' };
-      this.formAfiliacion.estado = 'pendiente';
-      this.isSaving = false;
-      this.toast.success('Afiliaciones enviadas a revisión por RRHH');
-    }, 1000);
+    const formData = new FormData();
+    formData.append('eps', this.formAfiliacion.eps);
+    formData.append('arl', this.formAfiliacion.arl || '');
+    formData.append('afondo_pension', this.formAfiliacion.afondo_pension);
+    formData.append('fondo_cesantias', this.formAfiliacion.fondo_cesantias || '');
+    if (this.archivoAfiliacion) {
+      formData.append('documento_soporte', this.archivoAfiliacion);
+    }
+
+    this.empleadoService.guardarAfiliaciones(formData).pipe(timeout(20000)).subscribe({
+      next: (res) => {
+        this.isSaving = false;
+        this.toast.success(res.message || 'Afiliaciones enviadas a revisión');
+        this.archivoAfiliacion = null;
+        this.cargarAfiliacion();
+      },
+      error: (err) => {
+        this.isSaving = false;
+        this.toast.error(err.error?.message || 'Error al guardar las afiliaciones');
+      }
+    });
   }
 
   gestionarAfiliacionAdmin() {
+    if (!this.usuarioActual?.id) return;
     this.isSavingAdmin = true;
-    setTimeout(() => {
-      this.afiliacion = { ...this.formAfiliacion };
-      this.isSavingAdmin = false;
-      this.toast.success('Gestión de afiliación guardada correctamente');
-    }, 1000);
+    const formData = new FormData();
+    formData.append('eps', this.formAfiliacion.eps || '');
+    formData.append('afondo_pension', this.formAfiliacion.afondo_pension || '');
+    formData.append('fondo_cesantias', this.formAfiliacion.fondo_cesantias || '');
+    formData.append('estado', this.formAfiliacion.estado || 'pendiente');
+    formData.append('notas_rechazo', this.formAfiliacion.notas_rechazo || '');
+    if (this.formAfiliacion.fecha_contratacion) formData.append('fecha_contratacion', this.formAfiliacion.fecha_contratacion);
+    if (this.formAfiliacion.finalizacion_contrato) formData.append('finalizacion_contrato', this.formAfiliacion.finalizacion_contrato);
+    if (this.formAfiliacion.renovacion_contrato) formData.append('renovacion_contrato', this.formAfiliacion.renovacion_contrato);
+    if (this.archivoAfiliacion) formData.append('documento_soporte', this.archivoAfiliacion);
+
+    this.empleadoService.gestionarAfiliacionEmpleado(this.usuarioActual.id, formData).pipe(timeout(20000)).subscribe({
+      next: (res) => {
+        this.isSavingAdmin = false;
+        this.toast.success(res.message || 'Gestión de afiliación guardada');
+        this.archivoAfiliacion = null;
+        this.cargarAfiliacion();
+      },
+      error: (err) => {
+        this.isSavingAdmin = false;
+        this.toast.error(err.error?.message || 'Error al gestionar la afiliación');
+      }
+    });
   }
 
   descargarCertificado() {

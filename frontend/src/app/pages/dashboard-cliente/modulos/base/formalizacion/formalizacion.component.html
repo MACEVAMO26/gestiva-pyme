@@ -1,0 +1,145 @@
+<div class="formalizacion-container fade-in">
+
+  <!-- ENCABEZADO -->
+  <div class="module-header text-center mb-4">
+    <h1 class="titulo-principal">FORMALIZACIÓN DE USUARIOS</h1>
+    <p class="descripcion-general">Completa el perfil laboral de los usuarios creados por Gerencia para desbloquear su acceso al sistema.</p>
+  </div>
+
+  <!-- NAVEGACIÓN TABS -->
+  <div class="tabs-nav-wrapper">
+    <button class="tab-neu-inactive" [class.tab-neu-active]="currentTab === 'pendientes'" (click)="setTab('pendientes')">
+      <span class="icon">⏳</span> Pendientes
+      <span class="badge badge-pendiente" *ngIf="pendientes.length > 0" style="margin-left: 5px;">{{pendientes.length}}</span>
+    </button>
+    <button class="tab-neu-inactive" [class.tab-neu-active]="currentTab === 'formalizados'" (click)="setTab('formalizados')">
+      <span class="icon">✅</span> Formalizados
+    </button>
+  </div>
+
+  <div class="tab-content neumorphic-panel-inner p-4">
+
+    <!-- TAB PENDIENTES -->
+    <div class="neumorphic-panel fade-in" *ngIf="currentTab === 'pendientes'">
+      <h2 class="subtitulo">PENDIENTES DE FORMALIZAR</h2>
+      <div class="banner banner-aviso">
+        <p class="banner-text">
+          Estos usuarios fueron creados por Gerencia y están bloqueados en el sistema hasta que completes su perfil laboral.
+        </p>
+      </div>
+
+      <div class="table-container">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Documento</th>
+              <th>Nombre Completo</th>
+              <th>Correo</th>
+              <th>Fecha Creación</th>
+              <th class="text-center">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let p of pendientes">
+              <td>{{ p.documento }}</td>
+              <td>{{ nombreCompleto(p) }}</td>
+              <td>{{ p.email }}</td>
+              <td>{{ p.created_at | date:'shortDate' }}</td>
+              <td class="text-center">
+                <button class="btn-general-1 btn-pill btn-action" (click)="abrirModalFormalizar(p)">Formalizar</button>
+              </td>
+            </tr>
+            <tr *ngIf="pendientes.length === 0">
+              <td colspan="5" class="text-center" style="padding: 2rem;">No hay usuarios pendientes de formalización.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- TAB FORMALIZADOS -->
+    <div class="neumorphic-panel fade-in" *ngIf="currentTab === 'formalizados'">
+      <h2 class="subtitulo">PERSONAL FORMALIZADO</h2>
+      <div class="table-container">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Documento</th>
+              <th>Nombre Completo</th>
+              <th>Área</th>
+              <th>Cargo</th>
+              <th>Tipo Contrato</th>
+              <th>Fecha Contratación</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let e of formalizados">
+              <td>{{ e.usuario?.documento }}</td>
+              <td>{{ nombreCompleto(e.usuario) }}</td>
+              <td>{{ areaNombre(e) }}</td>
+              <td>{{ cargoNombre(e) }}</td>
+              <td>{{ e.tipo_contrato || '—' }}</td>
+              <td>{{ e.fecha_contratacion | date:'shortDate' }}</td>
+            </tr>
+            <tr *ngIf="formalizados.length === 0">
+              <td colspan="6" class="text-center" style="padding: 2rem;">Aún no hay personal formalizado.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- MODAL FORMALIZAR -->
+  <div class="modal-overlay" *ngIf="isFormalizarModalOpen" (click.self)="cerrarModalFormalizar()">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Formalizar: {{ nombreCompleto(usuarioAFormalizar) }}</h3>
+        <button class="btn-cerrar" (click)="cerrarModalFormalizar()">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Área *</label>
+          <select [(ngModel)]="formalizarForm.area_id" class="form-control">
+            <option value="">Seleccione el área</option>
+            <option *ngFor="let a of areas" [value]="a.id">{{ a.nombre }}</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Cargo *</label>
+          <select [(ngModel)]="formalizarForm.cargo_id" class="form-control">
+            <option value="">Seleccione el cargo</option>
+            <option *ngFor="let c of cargos" [value]="c.id">{{ c.nombre }}</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Tipo de Contrato *</label>
+          <select [(ngModel)]="formalizarForm.tipo_contrato" class="form-control">
+            <option value="">Seleccione el tipo</option>
+            <option value="Indefinido">Indefinido</option>
+            <option value="Fijo">Fijo</option>
+            <option value="Por Obra">Por Obra</option>
+            <option value="Práctica">Práctica</option>
+            <option value="Aprendizaje">Aprendizaje</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Fecha de Contratación *</label>
+          <input type="date" [(ngModel)]="formalizarForm.fecha_contratacion" class="form-control" />
+        </div>
+        <div class="form-group">
+          <label>Salario (opcional)</label>
+          <input type="number" [(ngModel)]="formalizarForm.salario" class="form-control" placeholder="0.00" />
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-general-2 btn-pill" (click)="cerrarModalFormalizar()">Cancelar</button>
+        <button class="btn-general-1 btn-pill" (click)="submitFormalizar()" [disabled]="isSubmitting">
+          {{ isSubmitting ? 'Guardando...' : 'Formalizar' }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+</div>

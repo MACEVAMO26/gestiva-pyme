@@ -21,6 +21,7 @@ export class AdministracionComponent implements OnInit, AfterViewInit {
 
   isLoading = true;
   isSubmitting = false;
+  migrando = false;
   contratoActivo: any = null;
   userEmpresa: any = null;
 
@@ -209,5 +210,69 @@ export class AdministracionComponent implements OnInit, AfterViewInit {
         this.toastService.error('Hubo un error al generar el PDF del contrato.');
       }
     });
+  }
+
+  // --- Migración de Datos (Onboarding SaaS) ---
+  descargarPlantilla() {
+    this.toastService.info('Descargando plantilla de migración...');
+    this.http.get('/api/migracion/plantilla', { ...this.getHeaders(), responseType: 'blob' as 'json' }).subscribe({
+      next: (data: any) => {
+        this.descargarBlob(data, 'Plantilla_Migracion_SaaS.xlsx');
+        this.toastService.success('Plantilla descargada.');
+      },
+      error: () => this.toastService.error('Error al descargar la plantilla.')
+    });
+  }
+
+  descargarBackup() {
+    this.toastService.info('Generando respaldo Excel de su negocio...');
+    this.http.get('/api/migracion/backup', { ...this.getHeaders(), responseType: 'blob' as 'json' }).subscribe({
+      next: (data: any) => {
+        this.descargarBlob(data, `Backup_GestivaPyme_Empresa_${this.userEmpresa?.id || ''}.xlsx`);
+        this.toastService.success('Respaldo descargado.');
+      },
+      error: () => this.toastService.error('Error al generar el respaldo.')
+    });
+  }
+
+  onArchivoMigracionSeleccionado(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (!file) return;
+
+    const ext = file.name.split('.').pop()?.toLowerCase() ?? '';
+    if (!['xlsx', 'xls', 'csv'].includes(ext)) {
+      this.toastService.error('Formato no válido. Use archivos .xlsx, .xls o .csv.');
+      input.value = '';
+      return;
+    }
+
+    this.migrando = true;
+    const formData = new FormData();
+    formData.append('archivo', file);
+
+    this.http.post('/api/migracion/subir', formData, this.getHeaders()).subscribe({
+      next: (res: any) => {
+        this.toastService.success(res.message || 'Archivo subido correctamente.');
+        this.migrando = false;
+        input.value = '';
+      },
+      error: (err) => {
+        console.error(err);
+        this.toastService.error(err.error?.message || 'Error al subir el archivo.');
+        this.migrando = false;
+        input.value = '';
+      }
+    });
+  }
+
+  private descargarBlob(data: any, nombreArchivo: string) {
+    const blob = new Blob([data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = nombreArchivo;
+    a.click();
+    window.URL.revokeObjectURL(url);
   }
 }

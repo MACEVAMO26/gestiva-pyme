@@ -39,6 +39,16 @@ export class EmpleadoService {
     return this.http.post<any>(`${this.apiUrl}/empleados/${usuarioId}/formalizar`, data, this.getHeaders());
   }
 
+  // Actualiza los datos del contrato (tipo, fechas, salario)
+  updateContrato(empleadoId: number, data: any): Observable<any> {
+    return this.http.put<any>(`${this.apiUrl}/empleados/${empleadoId}/contrato`, data, this.getHeaders());
+  }
+
+  // Genera el certificado laboral en PDF
+  descargarCertificado(empleadoId: number): Observable<any> {
+    return this.http.get(`${this.apiUrl}/empleados/${empleadoId}/certificado`, { ...this.getHeaders(), responseType: 'blob' as 'json' });
+  }
+
   // Despide / Da de baja a un empleado
   solicitarBaja(empleadoId: number, motivo: string): Observable<any> {
     return this.http.post(`${this.apiUrl}/empleados/${empleadoId}/solicitar-baja`, { motivo }, this.getHeaders());
@@ -121,5 +131,18 @@ export class EmpleadoService {
   // --- CONFIGURACIÓN RRHH ---
   updateRRHHSettings(data: any): Observable<any> {
     return this.http.put(`${this.apiUrl}/empresas/rrhh/settings`, data, this.getHeaders());
+  }
+
+  // --- AUTOGESTIÓN: AFILIACIONES ---
+  getMisAfiliaciones(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/autogestion/afiliaciones`, this.getHeaders());
+  }
+
+  guardarAfiliaciones(formData: FormData): Observable<any> {
+    return this.http.post(`${this.apiUrl}/autogestion/afiliaciones`, formData, this.getHeaders());
+  }
+
+  gestionarAfiliacionEmpleado(empleadoId: number, formData: FormData): Observable<any> {
+    return this.http.post(`${this.apiUrl}/autogestion/empleado/${empleadoId}/afiliaciones`, formData, this.getHeaders());
   }
 }

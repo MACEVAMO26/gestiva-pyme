@@ -8,11 +8,14 @@ export interface Tarea {
   descripcion: string;
   asignador_id?: number;
   asignado_id: number;
-  estado?: 'notificada' | 'en_proceso' | 'terminada';
+  estado?: 'notificada' | 'vista' | 'en_proceso' | 'con_dificultades' | 'terminada';
+  tipo?: 'individual' | 'cooperativa';
+  area_id?: number;
+  area?: { id: number, nombre: string };
   empresa_id?: number;
   created_at?: string;
-  asignador?: { nombres: string, apellidos: string };
-  asignado?: { nombres: string, apellidos: string };
+  asignador?: { primer_nombre: string, segundo_nombre?: string, primer_apellido: string, segundo_apellido?: string };
+  asignado?: { primer_nombre: string, segundo_nombre?: string, primer_apellido: string, segundo_apellido?: string };
 }
 
 @Injectable({

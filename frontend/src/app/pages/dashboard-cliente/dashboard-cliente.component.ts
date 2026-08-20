@@ -83,10 +83,6 @@ export class DashboardClienteComponent implements OnInit {
           });
 
           Object.keys(modulosEmpresa).forEach((paqueteId) => {
-            // Forzamos que si es Ventas no cargue Servicios, y viceversa
-            if (tipoEmpresaUsuario === 'Ventas' && paqueteId === 'servicios') return;
-            if (tipoEmpresaUsuario === 'Servicios' && paqueteId === 'ventas') return;
-
             const subs = modulosEmpresa[paqueteId] || [];
 
             if (paqueteId === 'ventas' || paqueteId === 'servicios') {
@@ -146,6 +142,7 @@ export class DashboardClienteComponent implements OnInit {
       'd_adm', // Administración
       'd_tar', // Gestión de Tareas
       'd_gia', // Gestiva IA
+      'd_for', // Formalización de usuarios
       'rrhh',  // Gestión Humana
       'v_prov', // Proveedores
       'v_rep',  // Compras
@@ -163,11 +160,21 @@ export class DashboardClienteComponent implements OnInit {
     ];
 
     let itemsOrdenados: ModuloSidebar[] = [];
-    const esGerente = this.user?.rol?.nombre === 'Gerente General' || this.user?.rol?.nombre === 'Gerente';
+    const rolNombre = this.user?.rol?.nombre || '';
+    const esGerente = rolNombre === 'Gerente General' || rolNombre === 'Gerente';
+    const esJefeArea = rolNombre === 'Jefe de Área';
 
     ordenDeseado.forEach(id => {
+      // Gestiva IA (directrices): solo el Gerente
       if (id === 'd_gia' && !esGerente) {
-          // Ocultar Gestiva IA (directrices) a los empleados
+          return;
+      }
+      // Administración: solo el Gerente
+      if (id === 'd_adm' && !esGerente) {
+          return;
+      }
+      // Formalización: solo Jefe de Área y Gerente
+      if (id === 'd_for' && !esGerente && !esJefeArea) {
           return;
       }
       if (botones[id]) {

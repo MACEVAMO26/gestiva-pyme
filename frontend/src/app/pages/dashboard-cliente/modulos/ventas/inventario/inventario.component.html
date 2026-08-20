@@ -24,6 +24,9 @@
     <button class="tab-neu-inactive" 
             [class.tab-neu-active]="activeTab === 'kardex'" 
             (click)="switchTab('kardex')"> <span class="icon">📌</span> Kardex </button>
+    <button class="tab-neu-inactive" 
+            [class.tab-neu-active]="activeTab === 'categorias'" 
+            (click)="switchTab('categorias')"> <span class="icon">📂</span> Categorías </button>
   </div>
 
   <!-- HTML CONTENIDO DE TABS -->
@@ -300,6 +303,61 @@
         </div>
       </div>
     }
+
+<!-- HTML CATEGORÍAS -->
+    @if(activeTab === 'categorias') {
+      <div class="neumorphic-panel fade-in">
+        <div class="action-bar">
+          <p class="descripcion-general" style="margin: 0;">Clasifique sus productos y servicios por categorías.</p>
+          <button class="btn-add btn-pill" (click)="abrirModalCategoria()">
+            <i class="fas fa-plus"></i> Nueva Categoría
+          </button>
+        </div>
+
+        <div class="table-responsive">
+          <table class="premium-table data-table">
+            <thead>
+              <tr>
+                <th>NOMBRE</th>
+                <th>DESCRIPCIÓN</th>
+                <th>TIPO</th>
+                <th>PRODUCTOS</th>
+                <th>ESTADO</th>
+                <th>ACCIONES</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for(cat of categorias; track cat.id) {
+                <tr>
+                  <td><strong>{{cat.nombre}}</strong></td>
+                  <td>{{cat.descripcion || '-'}}</td>
+                  <td>{{tipoCategoria(cat)}}</td>
+                  <td>{{productosPorCategoria(cat.id)}}</td>
+                  <td>
+                    <span class="badge" [class.badge-success]="cat.activo" [class.badge-danger]="!cat.activo">
+                      {{cat.activo ? 'Activa' : 'Inactiva'}}
+                    </span>
+                  </td>
+                  <td>
+                    <div class="acciones-fila">
+                      <button class="btn-icon" title="Editar" (click)="abrirModalEditarCategoria(cat)"><i class="fas fa-edit"></i></button>
+                      <button class="btn-icon text-danger" title="Eliminar" (click)="eliminarCategoria(cat)"><i class="fas fa-trash"></i></button>
+                    </div>
+                  </td>
+                </tr>
+              }
+              @if(categorias.length === 0) {
+                <tr>
+                  <td colspan="6">
+                    <div class="empty-state">No hay categorías registradas. Cree la primera para clasificar sus productos.</div>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    }
   </div>
 </div>
 
@@ -362,6 +420,46 @@
           <i class="fas fa-spinner fa-spin"></i> Guardando...
         } @else {
           Guardar Producto
+        }
+      </button>
+    </div>
+  </div>
+</div>
+}
+
+<!-- HTML MODAL CATEGORÍA -->
+@if(showModalCategoria) {
+<div class="modal-overlay fade-in">
+  <div class="modal-content neumorphic-panel" style="max-width: 480px;">
+    <div class="modal-header">
+      <h1 class="titulo-principal">{{ editandoCategoria ? 'EDITAR CATEGORÍA' : 'NUEVA CATEGORÍA' }}</h1>
+      <button class="btn-close" (click)="cerrarModalCategoria()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label>Nombre *</label>
+        <input type="text" class="input-neumorphic" [(ngModel)]="formCategoria.nombre" placeholder="Ej. Electrónica">
+      </div>
+      <div class="form-group">
+        <label>Descripción</label>
+        <textarea class="input-neumorphic" rows="2" [(ngModel)]="formCategoria.descripcion" placeholder="Descripción breve de la categoría"></textarea>
+      </div>
+      <div class="form-group">
+        <label>Tipo *</label>
+        <select class="input-neumorphic" [(ngModel)]="formCategoria.tipo">
+          <option value="ventas">Ventas</option>
+          <option value="servicios">Servicios</option>
+          <option value="ventas y servicios">Ventas y Servicios</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-footer" style="margin-top: 2rem;">
+      <button class="btn-volver btn-pill" (click)="cerrarModalCategoria()">Volver</button>
+      <button class="btn-save btn-pill" (click)="guardarCategoria()" [disabled]="guardandoCategoria">
+        @if(guardandoCategoria) {
+          <i class="fas fa-spinner fa-spin"></i> Guardando...
+        } @else {
+          Guardar Categoría
         }
       </button>
     </div>

@@ -14,6 +14,7 @@ class Empleado extends Model
         'cargo_id',
         'jerarquia_id',
         'fecha_contratacion',
+        'fecha_fin_contrato',
         'tipo_contrato',
         'salario',
         'eps',

@@ -32,6 +32,7 @@ export const routes: Routes = [
                 ]
             },
             { path: 'gestion-de-tareas', loadComponent: () => import('./pages/dashboard-cliente/modulos/base/gestion-de-tareas/gestion-de-tareas.component').then(m => m.GestionDeTareasComponent) },
+            { path: 'formalizacion', loadComponent: () => import('./pages/dashboard-cliente/modulos/base/formalizacion/formalizacion.component').then(m => m.FormalizacionComponent) },
             { path: 'gestiva-ia', loadComponent: () => import('./pages/dashboard-cliente/modulos/base/gestiva-ia/gestiva-ia.component').then(m => m.GestivaIaComponent) },
             { path: 'autogestion', loadComponent: () => import('./pages/dashboard-cliente/modulos/base/autogestion/autogestion.component').then(m => m.AutogestionComponent) },
             

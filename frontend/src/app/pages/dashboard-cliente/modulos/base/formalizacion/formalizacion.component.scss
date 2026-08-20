@@ -1,0 +1,309 @@
+@use 'sass:color';
+
+/* --- 1. VARIABLES GLOBALES DE COLOR --- */
+$bg-color: #f5f5dc;
+$shadow-light: #ffffff;
+$shadow-dark: #d1d1bc;
+
+$text-dark: #333333;
+$text-muted: #666666;
+
+$btn-add: #45a1ae;
+$btn-volver: #de3737;
+$btn-save: #066810;
+$btn-gen-1: #6B8F71;
+$btn-gen-2: #7C6FA6;
+$btn-gen-3: #C9A227;
+
+/* --- 2. FONDOS Y LAYOUT PRINCIPAL --- */
+.formalizacion-container {
+  padding: 1.5rem;
+  background: $bg-color;
+  font-family: 'Montserrat', sans-serif;
+  color: $text-dark;
+}
+
+/* --- 3. TIPOGRAFIA ESTRICTA --- */
+.titulo-principal {
+  font-size: 16px;
+  font-weight: bold;
+  text-transform: uppercase;
+  text-align: center;
+  margin-bottom: 0.5rem;
+  color: $text-dark;
+}
+
+.subtitulo {
+  font-size: 13px;
+  font-weight: normal;
+  text-transform: uppercase;
+  text-align: left;
+  margin-bottom: 1rem;
+  color: $text-dark;
+}
+
+.descripcion-general {
+  font-size: 10px;
+  text-align: center;
+  color: $text-muted;
+  margin-bottom: 1.5rem;
+}
+
+.text-center { text-align: center !important; }
+
+/* --- 4. PANELES NEUMORFICOS --- */
+.neumorphic-panel {
+  background: $bg-color;
+  border-radius: 16px;
+  box-shadow: 8px 8px 16px $shadow-dark, -8px -8px 16px $shadow-light;
+  padding: 2rem;
+  border: none;
+  margin-bottom: 2rem;
+}
+
+.neumorphic-panel-inner {
+  background: $bg-color;
+  border-radius: 12px;
+  box-shadow: inset 4px 4px 8px $shadow-dark, inset -4px -4px 8px $shadow-light;
+  padding: 1.5rem;
+  border: none;
+}
+
+/* --- 5. TABS DE NAVEGACION --- */
+.tabs-nav-wrapper {
+  background: $bg-color;
+  border-radius: 9999px;
+  box-shadow: inset 4px 4px 8px $shadow-dark, inset -4px -4px 8px $shadow-light;
+  padding: 0.5rem;
+  margin: 0 auto 2rem auto;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+  width: fit-content;
+}
+
+.tab-neu-inactive, .tab-neu-active {
+  padding: 0.6rem 0.8rem;
+  border-radius: 9999px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 10px;
+  font-weight: bold !important;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tab-neu-inactive {
+  background-color: $bg-color;
+  color: $text-muted;
+  box-shadow: 4px 4px 8px $shadow-dark, -4px -4px 8px $shadow-light;
+}
+
+.tab-neu-active {
+  background-color: $bg-color;
+  color: $btn-add;
+  box-shadow: inset 4px 4px 8px $shadow-dark, inset -4px -4px 8px $shadow-light;
+}
+
+/* --- 6. BOTONES --- */
+.btn-pill {
+  border-radius: 9999px;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: bold;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 4px 4px 8px $shadow-dark, -4px -4px 8px $shadow-light;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  outline: none;
+}
+
+.btn-pill:active {
+  box-shadow: inset 4px 4px 8px rgba(0,0,0,0.1), inset -4px -4px 8px rgba(255,255,255,0.5);
+}
+
+.btn-general-1 { background-color: $btn-gen-1; border: 2px solid #4a6850; color: #ffffff; padding: 0.5rem 1.5rem; font-size: 12px; }
+.btn-general-2 { background-color: $btn-gen-2; border: 2px solid #574b7a; color: #ffffff; padding: 0.5rem 1.5rem; font-size: 12px; }
+
+.btn-action {
+  width: 100px;
+  padding: 0.4rem 0 !important;
+  font-size: 10px !important;
+  display: inline-flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  text-align: center !important;
+}
+
+/* --- 7. TABLAS --- */
+.table-container {
+  width: 100%;
+  overflow-x: auto;
+  border-radius: 12px;
+  margin-top: 1rem;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 12px;
+  text-align: left;
+  color: $text-dark;
+}
+
+.data-table th, .data-table td {
+  padding: 1rem;
+  vertical-align: middle;
+}
+
+.data-table th {
+  font-weight: bold !important;
+  text-transform: uppercase;
+  font-size: 10px;
+  border-bottom: 2px solid rgba(0,0,0,0.05);
+}
+
+.data-table tr {
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+
+.data-table tr:hover {
+  background-color: rgba(0,0,0,0.02);
+}
+
+/* --- 8. BADGES --- */
+.badge {
+  padding: 0.4rem 1rem;
+  border-radius: 9999px;
+  font-size: 10px;
+  font-weight: bold;
+  text-transform: uppercase;
+  background: $bg-color;
+  box-shadow: inset 2px 2px 4px $shadow-dark, inset -2px -2px 4px $shadow-light;
+}
+
+.badge-pendiente { color: $btn-gen-3; border: 1px solid rgba(201, 162, 39, 0.2); }
+
+/* --- 9. MODALES --- */
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  width: 90%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+  background: $bg-color;
+  border-radius: 16px;
+  box-shadow: 8px 8px 16px $shadow-dark, -8px -8px 16px $shadow-light;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 2rem;
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+
+.modal-header h3 {
+  font-size: 14px;
+  text-transform: uppercase;
+  margin: 0;
+}
+
+.btn-cerrar {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: $text-muted;
+}
+
+.modal-body {
+  padding: 1.5rem 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.modal-footer {
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  border-top: 1px solid rgba(0,0,0,0.05);
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-group label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #4a4a4a;
+}
+
+.form-control {
+  background: $bg-color;
+  border: none;
+  border-radius: 8px;
+  padding: 0.8rem 1rem;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 12px;
+  color: $text-dark;
+  box-shadow: inset 3px 3px 6px $shadow-dark, inset -3px -3px 6px $shadow-light;
+  outline: none;
+  width: 100%;
+}
+
+.form-control:focus {
+  box-shadow: inset 4px 4px 8px #c2c2a9, inset -4px -4px 8px #ffffff;
+}
+
+/* --- 10. BANNER --- */
+.banner {
+  padding: 1rem;
+  border-radius: 8px;
+  margin: 1rem 0;
+  text-align: center;
+}
+
+.banner-aviso {
+  background: rgba(201, 162, 39, 0.1);
+  margin-bottom: 1rem;
+  text-align: left;
+}
+
+.banner-text {
+  margin: 0;
+  font-size: 12px;
+  color: $text-dark;
+}
+
+.banner-aviso .banner-text {
+  color: $btn-gen-3;
+}
+
+/* --- 11. ANIMACIONES --- */
+.fade-in { animation: fadeIn 0.3s ease-in-out; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
