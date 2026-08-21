@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ChangeDetectorRef } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../services/auth.service';
 import { AccessibilityService, DaltonismMode } from '../../../services/accessibility/accessibility.service';
@@ -35,6 +35,7 @@ export class LoginComponent {
   private authService = inject(AuthService);
   private router = inject(Router);
   public accessibilityService = inject(AccessibilityService);
+  private cdr = inject(ChangeDetectorRef);
 
   // Alterna la visibilidad de la contraseña en el formulario
   togglePasswordVisibility() {

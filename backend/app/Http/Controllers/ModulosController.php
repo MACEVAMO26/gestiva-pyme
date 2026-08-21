@@ -51,14 +51,29 @@ class ModulosController extends Controller
 
         $resultado = [];
 
+        $tipo = $empresa->tipo_empresa;
+        $tarifas = $empresa->tarifasCatalogo()->pluck('tarifas_catalogo.id')->toArray();
+
+        $paquetesPermitidos = ['base'];
+        if ($tipo === 'Ventas' || $tipo === 'Ventas y Servicios') $paquetesPermitidos[] = 'ventas';
+        if ($tipo === 'Servicios' || $tipo === 'Ventas y Servicios') $paquetesPermitidos[] = 'servicios';
+        
+        if (in_array('modulo_rrhh', $tarifas)) $paquetesPermitidos[] = 'rrhh';
+        if (in_array('modulo_finanzas', $tarifas)) $paquetesPermitidos[] = 'finanzas';
+        
+        if (in_array('addon_factura', $tarifas) || in_array('addon_contable', $tarifas)) {
+            $paquetesPermitidos[] = 'addons';
+        }
+
         foreach ($modulosMaster as $modulo) {
             $paquete = $modulo->paquete;
             if (!isset($resultado[$paquete])) {
                 $resultado[$paquete] = [];
             }
             
-            $asignado = $modulosEmpresa->has($modulo->id);
-            $activoParaEmpresa = $asignado ? (bool) $modulosEmpresa[$modulo->id]->activo : false;
+            $asignado = in_array($paquete, $paquetesPermitidos);
+            $enBD = $modulosEmpresa->has($modulo->id);
+            $activoParaEmpresa = ($asignado && $enBD) ? (bool) $modulosEmpresa[$modulo->id]->activo : false;
 
             $resultado[$paquete][] = [
                 'id' => $modulo->id,

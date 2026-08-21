@@ -5,7 +5,11 @@
     <div class="header-left">
       <div class="logo-container">
         <a routerLink="/dashboard/inicio" style="display: flex; align-items: center; text-decoration: none;">
-          <img src="assets/images/Logos/GESTIVAPYME(7).png" alt="GestivaPyme" class="main-logo-img">
+          @if (user?.empresa?.logo_url) {
+            <img [src]="user.empresa.logo_url" alt="{{ user?.empresa?.razon_social || 'Empresa' }}" class="main-logo-img" style="max-height: 40px; object-fit: contain;">
+          } @else {
+            <img src="assets/images/Logos/GESTIVAPYME(7).png" alt="GestivaPyme" class="main-logo-img">
+          }
         </a>
         <span class="badge-plan">{{ planActual }}</span>
       </div>

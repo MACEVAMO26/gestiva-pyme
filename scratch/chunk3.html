@@ -1,0 +1,500 @@
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                            </svg>
+                          </button>
+                          <button (click)="renovarSuscripcion(sus.id)" class="w-10 h-10 rounded-full glass-btn-gray flex items-center justify-center transition-colors hover:border-blue-500/30" title="Renovar">
+                            <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                            </svg>
+                          </button>
+                          <button (click)="noRenovarSuscripcion(sus.id)" class="w-10 h-10 rounded-full glass-btn-gray flex items-center justify-center transition-colors hover:border-red-500/30" title="Suspender">
+                            <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"></path>
+                            </svg>
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          } @else {
+            <div class="empty-state">No hay datos de suscripciones para mostrar.</div>
+          }
+        } @else {
+          <!-- CARRITO DE SUSCRIPCIONES INLINE -->
+          <div class="w-full text-white font-inter">
+            <div class="flex justify-between items-center mb-6 pb-4 border-b border-gray-800">
+              <h2 class="text-[16px] font-bold text-emerald-400 uppercase tracking-wider">
+                Carrito de Suscripción: {{ suscripcionEnEdicion?.nombreEmpresa }}
+              </h2>
+              <button (click)="cerrarCarritoSuscripcion()" class="text-gray-400 hover:text-white transition-colors">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+              </button>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              
+              <!-- PARTE IZQUIERDA: CONFIGURADOR (CARRO) - 2 COLUMNAS -->
+              <div class="lg:col-span-2 space-y-6">
+                
+                <!-- PESTAÑAS (TABS) DEL CONFIGURADOR -->
+                <div class="flex border-b border-gray-800 gap-2 mb-4 overflow-x-auto pb-1">
+                  <button (click)="activeTabCarrito = 'plan_base'" 
+                          [class.border-emerald-500]="activeTabCarrito === 'plan_base'"
+                          [class.text-emerald-400]="activeTabCarrito === 'plan_base'"
+                          class="px-4 py-2 border-b-2 border-transparent font-semibold text-xs uppercase tracking-wider text-gray-400 hover:text-white transition-colors whitespace-nowrap">
+                    1. Plan & Base
+                  </button>
+                  <button (click)="activeTabCarrito = 'modulos'" 
+                          [class.border-emerald-500]="activeTabCarrito === 'modulos'"
+                          [class.text-emerald-400]="activeTabCarrito === 'modulos'"
+                          class="px-4 py-2 border-b-2 border-transparent font-semibold text-xs uppercase tracking-wider text-gray-400 hover:text-white transition-colors whitespace-nowrap">
+                    2. Módulos Adicionales
+                  </button>
+                  <button (click)="activeTabCarrito = 'ia'" 
+                          [class.border-emerald-500]="activeTabCarrito === 'ia'"
+                          [class.text-emerald-400]="activeTabCarrito === 'ia'"
+                          class="px-4 py-2 border-b-2 border-transparent font-semibold text-xs uppercase tracking-wider text-gray-400 hover:text-white transition-colors whitespace-nowrap">
+                    3. Inteligencia Artificial
+                  </button>
+                  <button (click)="activeTabCarrito = 'addons'" 
+                          [class.border-emerald-500]="activeTabCarrito === 'addons'"
+                          [class.text-emerald-400]="activeTabCarrito === 'addons'"
+                          class="px-4 py-2 border-b-2 border-transparent font-semibold text-xs uppercase tracking-wider text-gray-400 hover:text-white transition-colors whitespace-nowrap">
+                    4. Conectores (Add-ons)
+                  </button>
+                </div>
+
+                <!-- TAB 1: PLAN BASE & TIPO EMPRESA (SOLO LECTURA: definidos en el módulo Empresas) -->
+                <div *ngIf="activeTabCarrito === 'plan_base'" class="space-y-4 bg-gray-800/40 p-4 rounded-xl border border-gray-800">
+                  <div>
+                    <label class="block text-xs uppercase tracking-wider text-gray-400 font-semibold mb-2">Tipo de Empresa</label>
+                    <div class="text-sm font-bold text-white">
+                      {{ selectedTipoEmpresa === 'Ventas y Servicios' ? 'Ventas y Servicios (Mixto)' : selectedTipoEmpresa }}
+                    </div>
+                    <div class="text-[10px] text-gray-500 mt-1">Definido en el módulo Empresas</div>
+                  </div>
+
+                  <hr class="border-gray-800 my-4">
+
+                  <div>
+                    <label class="block text-xs uppercase tracking-wider text-gray-400 font-semibold mb-2">Plan Adquirido</label>
+                    <div class="text-sm font-bold text-blue-400 uppercase">{{ suscripcionEnEdicion?.plan }}</div>
+                    <div class="text-[10px] text-gray-500 mt-1">Definido en el módulo Empresas</div>
+                  </div>
+
+                  <hr class="border-gray-800 my-4">
+
+                  <div>
+                    <label class="block text-xs uppercase tracking-wider text-gray-400 font-semibold mb-2">Descuentos Aplicados</label>
+                    <div *ngIf="suscripcionEnEdicion?.descuentos && suscripcionEnEdicion?.descuentos !== 'Ninguno'" class="text-sm font-semibold text-yellow-400">
+                      {{ suscripcionEnEdicion?.descuentos }}
+                    </div>
+                    <div *ngIf="!suscripcionEnEdicion?.descuentos || suscripcionEnEdicion?.descuentos === 'Ninguno'" class="text-sm text-gray-500 italic">
+                      Ninguno
+                    </div>
+                    <div class="text-[10px] text-gray-500 mt-1">Definido en el módulo Empresas</div>
+                  </div>
+                </div>
+
+                <!-- TAB 2: MÓDULOS ADICIONALES (ESPECIALES) -->
+                <div *ngIf="activeTabCarrito === 'modulos'" class="space-y-4">
+                  <!-- Regla de Validación de Negocio visual -->
+                  <div *ngIf="!['Ventas', 'Servicios', 'Ventas y Servicios'].includes(selectedTipoEmpresa)" class="bg-yellow-950/20 border border-yellow-800/50 p-4 rounded-xl text-yellow-300 text-xs flex items-center gap-3">
+                    <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                    <span>Debe seleccionar un paquete base (Ventas, Servicios o Mixto) en la pestaña 1 para poder agregar módulos adicionales.</span>
+                  </div>
+
+                  <div *ngIf="['Ventas', 'Servicios', 'Ventas y Servicios'].includes(selectedTipoEmpresa)" class="bg-gray-800/40 p-4 rounded-xl border border-gray-800 space-y-3">
+                    <label class="block text-xs uppercase tracking-wider text-gray-400 font-semibold mb-2">Habilitar Módulos Especiales (Transversales)</label>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      <ng-container *ngFor="let item of catalogoTarifas">
+                        <div *ngIf="item.tipo === 'modulo_adicional'" 
+                             (click)="cartItemsSelect[item.id].active = !cartItemsSelect[item.id].active"
+                             [class.border-emerald-500]="cartItemsSelect[item.id]?.active"
+                             [class.bg-emerald-950/20]="cartItemsSelect[item.id]?.active"
+                             class="p-3 rounded-xl border border-gray-800 hover:border-gray-700 transition-all cursor-pointer flex justify-between items-center relative">
+                          <div>
+                            <div class="font-semibold text-xs text-white">{{ item.nombre }}</div>
+                            <div class="text-[10px] text-gray-400 mt-1">+${{ item.valor | number: '1.0-0' }} COP / mes</div>
+                          </div>
+                          <input type="checkbox" [checked]="cartItemsSelect[item.id]?.active" class="rounded text-emerald-500 border-gray-700 bg-gray-900 pointer-events-none" />
+                        </div>
+                      </ng-container>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- TAB 3: INTELIGENCIA ARTIFICIAL (GEMINI FLASH) -->
+                <div *ngIf="activeTabCarrito === 'ia'" class="space-y-4 bg-gray-800/40 p-4 rounded-xl border border-gray-800">
+                  
+                  <!-- Toggle de API Propia (BYOK) -->
+                  <div class="flex items-center justify-between p-3 bg-gray-900 rounded-xl border border-gray-800">
+                    <div>
+                      <div class="font-bold text-xs text-white">Traer propia API Key (BYOK)</div>
+                      <div class="text-[10px] text-gray-400 mt-1">El cliente provee su credencial y paga su consumo directo. Cobro de conector fijo mensual.</div>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                      <input type="checkbox" [(ngModel)]="iaByokActivo" class="sr-only peer">
+                      <div class="w-9 h-5 bg-gray-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-gray-400 after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-500"></div>
+                    </label>
+                  </div>
+
+                  <hr class="border-gray-800 my-4">
+
+                  <!-- Opción A: Cobro SaaS por usuarios de IA -->
+                  <div *ngIf="!iaByokActivo" class="space-y-4">
+                    <label class="block text-xs uppercase tracking-wider text-gray-400 font-semibold mb-2">Configurar Usuarios de IA (Gestiva AI)</label>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <!-- IA Simple -->
+                      <div class="p-4 bg-gray-900 rounded-xl border border-gray-800">
+                        <div class="flex items-center justify-between mb-3">
+                          <label class="flex items-center gap-2 cursor-pointer font-bold text-xs text-white">
+                            <input type="checkbox" [(ngModel)]="cartItemsSelect['ia_simple'].active" class="rounded text-emerald-500 border-gray-700 bg-gray-900" />
+                            Modo Simple (Límite 15 acciones/día)
+                          </label>
+                          <span class="text-xs text-emerald-400 font-bold font-inter">$6.000 / mes</span>
+                        </div>
+                        <div class="flex items-center justify-between gap-3 mt-4" *ngIf="cartItemsSelect['ia_simple'].active">
+                          <span class="text-[11px] text-gray-400">Cantidad de usuarios:</span>
+                          <input type="number" [(ngModel)]="cartItemsSelect['ia_simple'].cantidad" class="neu-dark-input text-xs w-20 text-center !p-1.5" min="1">
+                        </div>
+                      </div>
+
+                      <!-- IA Avanzada -->
+                      <div class="p-4 bg-gray-900 rounded-xl border border-gray-800">
+                        <div class="flex items-center justify-between mb-3">
+                          <label class="flex items-center gap-2 cursor-pointer font-bold text-xs text-white">
+                            <input type="checkbox" [(ngModel)]="cartItemsSelect['ia_avanzada'].active" class="rounded text-emerald-500 border-gray-700 bg-gray-900" />
+                            Modo Avanzado (Bolsa de 2M tokens/mes)
+                          </label>
+                          <span class="text-xs text-emerald-400 font-bold font-inter">$18.000 / mes</span>
+                        </div>
+                        <div class="flex items-center justify-between gap-3 mt-4" *ngIf="cartItemsSelect['ia_avanzada'].active">
+                          <span class="text-[11px] text-gray-400">Cantidad de usuarios:</span>
+                          <input type="number" [(ngModel)]="cartItemsSelect['ia_avanzada'].cantidad" class="neu-dark-input text-xs w-20 text-center !p-1.5" min="1">
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Opción B: Formulario BYOK -->
+                  <div *ngIf="iaByokActivo" class="space-y-4">
+                    <label class="block text-xs uppercase tracking-wider text-gray-400 font-semibold mb-2">Credenciales API Propia del Cliente</label>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label class="block text-[11px] text-gray-400 mb-1">Proveedor de IA</label>
+                        <select [(ngModel)]="iaByokProveedor" class="neu-dark-input text-xs w-full !p-1.5">
+                          <option value="gemini">Google Gemini</option>
+                          <option value="openai">OpenAI (GPT)</option>
+                          <option value="claude">Anthropic Claude</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label class="block text-[11px] text-gray-400 mb-1">Modelo Específico</label>
+                        <input type="text" [(ngModel)]="iaByokModelo" class="neu-dark-input text-xs w-full !p-1.5" placeholder="Ej: gemini-3.5-flash">
+                      </div>
+                      <div class="md:col-span-2">
+                        <label class="block text-[11px] text-gray-400 mb-1">API Key</label>
+                        <input type="password" [(ngModel)]="iaByokKey" class="neu-dark-input text-xs w-full !p-1.5" placeholder="{{ iaByokKeyExists ? '●●●●●●●● (Ya guardada. Deja en blanco para no cambiar)' : 'Ingresa la API Key de la empresa' }}">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- TAB 4: ADD-ONS (CONECTORES) -->
+                <div *ngIf="activeTabCarrito === 'addons'" class="bg-gray-800/40 p-4 rounded-xl border border-gray-800 space-y-3">
+                  <label class="block text-xs uppercase tracking-wider text-gray-400 font-semibold mb-2">Seleccionar Conectores e Integraciones Externas</label>
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <ng-container *ngFor="let item of catalogoTarifas">
+                      <div *ngIf="item.tipo === 'addon' && item.id !== 'addon_byok_ia'" 
+                           (click)="cartItemsSelect[item.id].active = !cartItemsSelect[item.id].active"
+                           [class.border-emerald-500]="cartItemsSelect[item.id]?.active"
+                           [class.bg-emerald-950/20]="cartItemsSelect[item.id]?.active"
+                           class="p-3 rounded-xl border border-gray-800 hover:border-gray-700 transition-all cursor-pointer flex justify-between items-center relative">
+                        <div>
+                          <div class="font-semibold text-xs text-white">{{ item.nombre }}</div>
+                          <div class="text-[10px] text-gray-400 mt-1">+${{ item.valor | number: '1.0-0' }} COP / mes</div>
+                        </div>
+                        <input type="checkbox" [checked]="cartItemsSelect[item.id]?.active" class="rounded text-emerald-500 border-gray-700 bg-gray-900 pointer-events-none" />
+                      </div>
+                    </ng-container>
+                  </div>
+                </div>
+
+              </div>
+
+              <!-- PARTE DERECHA: RESUMEN DE COMPRA (INLINE CHECKOUT) - 1 COLUMNA -->
+              <div class="space-y-6">
+                <div class="bg-gray-800/70 p-5 rounded-xl border border-gray-700 shadow-lg space-y-4">
+                  <h3 class="text-xs uppercase tracking-wider text-gray-400 font-semibold border-b border-gray-700 pb-2">Resumen de Suscripción</h3>
+                  
+                  <!-- Datos de Empresa -->
+                  <div>
+                    <div class="text-[10px] text-gray-500">CLIENTE</div>
+                    <div class="font-bold text-white text-sm">{{ suscripcionEnEdicion?.nombreEmpresa }}</div>
+                    <div class="text-[10px] text-gray-400 mt-1">Paquete Base: <span class="text-emerald-400 font-semibold">{{ selectedTipoEmpresa }}</span></div>
+                  </div>
+
+                  <hr class="border-gray-700">
+
+                  <!-- Detalle del Carrito -->
+                  <div class="space-y-2 max-h-[30vh] overflow-y-auto pr-1">
+                    <div class="text-[10px] text-gray-500">CONCEPTOS DE COBRO</div>
+                    
+                    <ng-container *ngFor="let item of catalogoTarifas">
+                      <div *ngIf="cartItemsSelect[item.id]?.active && item.tipo !== 'descuento' && item.id !== 'addon_byok_ia'" class="flex justify-between items-start text-xs text-gray-300">
+                        <span class="flex-1 pr-2">
+                          {{ item.nombre }}
+                          <span *ngIf="item.mecanismo === 'por_usuario'" class="text-[10px] text-gray-500 block">
+                            ({{ cartItemsSelect[item.id].cantidad }} usuarios x ${{ item.valor | number: '1.0-0' }})
+                          </span>
+                        </span>
+                        <span class="font-inter font-semibold text-gray-200">
+                          ${{ (item.mecanismo === 'fijo' ? item.valor : item.valor * cartItemsSelect[item.id].cantidad) | number: '1.0-0' }}
+                        </span>
+                      </div>
+                    </ng-container>
+
+                    <!-- Add-on BYOK si aplica -->
+                    <div *ngIf="iaByokActivo" class="flex justify-between items-start text-xs text-gray-300">
+                      <span class="flex-1 pr-2">Conector API de IA Propia (BYOK)</span>
+                      <span class="font-inter font-semibold text-gray-200">$25.000</span>
+                    </div>
+                  </div>
+
+                  <hr class="border-gray-700">
+
+                  <!-- Subtotal y Descuentos -->
+                  <div class="space-y-1.5 text-xs text-gray-300">
+                    <div class="flex justify-between">
+                      <span>Sin descuento:</span>
+                      <span class="font-inter font-semibold">${{ subtotalSuscripcion | number: '1.0-0' }} COP</span>
+                    </div>
+
+                    <div class="flex justify-between text-yellow-400" *ngIf="descuentoEmpresaPct > 0">
+                      <span>Descuento ({{ descuentoEmpresaPct }}%):</span>
+                      <span class="font-inter font-semibold">-${{ descuentoSuscripcion | number: '1.0-0' }} COP</span>
+                    </div>
+                  </div>
+
+                  <hr class="border-gray-700">
+
+                  <!-- Gran Total MRR -->
+                  <div class="bg-gray-900/60 p-3 rounded-lg border border-gray-800 flex justify-between items-center">
+                    <div>
+                      <div class="text-[10px] text-gray-400 uppercase tracking-wider block">Total Mensual (MRR)</div>
+                      <span class="text-xs text-gray-500">(Calculado automáticamente)</span>
+                    </div>
+                    <span class="text-xl font-bold font-inter text-green-400">
+                      ${{ totalSuscripcion | number: '1.0-0' }}
+                    </span>
+                  </div>
+
+                  <!-- Botones de Acción -->
+                  <div class="pt-4 flex flex-col gap-2">
+                    <button (click)="guardarCarritoSuscripcion()" [disabled]="guardandoSuscripcion" class="w-full py-2.5 bg-[#066810] hover:bg-[#05570d] text-white text-xs font-bold uppercase rounded-full shadow-md transition-colors text-center disabled:opacity-50 flex items-center justify-center gap-2">
+                      <span *ngIf="guardandoSuscripcion" class="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                      {{ guardandoSuscripcion ? 'Guardando...' : 'Guardar Suscripción' }}
+                    </button>
+                    <button (click)="cerrarCarritoSuscripcion()" class="w-full py-2.5 bg-[#de3737] hover:bg-[#c62828] text-white text-xs font-bold uppercase rounded-full shadow-md transition-colors text-center">
+                      Volver
+                    </button>
+                  </div>
+
+                </div>
+              </div>
+
+            </div>
+          </div>
+        }
+          </div>
+        </div>
+      }
+
+      @if (currentView === 'modulos') {
+        <div class="glass-panel mt-2rem">
+          <div class="mb-8">
+            <h2 class="text-[16px] font-bold text-white tracking-wide text-center uppercase mb-2">
+              GESTIÓN DE MÓDULOS POR EMPRESA
+            </h2>
+            <p class="text-gray-400 text-center text-sm mb-6">Asignación estratégica de permisos y configuración de servidores cliente.</p>
+
+            <!-- Monitores de Estado -->
+            <div class="flex flex-wrap justify-center items-center gap-6">
+              
+              <!-- Monitor Global (Siempre visible) -->
+              <div class="bg-gray-800 border border-gray-700 p-3 rounded-lg flex items-center gap-4 shadow-sm">
+                <div class="flex flex-col">
+                  <span class="text-xs text-gray-400 uppercase tracking-wider">Servidor Principal</span>
+                  <div class="flex items-center gap-2 mt-1">
+                    <span [class]="serverStatus.dbConnection === 'Caída' ? 'w-2 h-2 rounded-full bg-red-500 animate-pulse' : 'w-2 h-2 rounded-full bg-green-500 animate-pulse'"></span>
+                    <span [class]="serverStatus.dbConnection === 'Caída' ? 'text-sm text-red-400 font-bold' : 'text-sm text-green-400 font-bold'">{{ serverStatus.dbConnection === 'Caída' ? 'Sin conexión' : 'En Línea' }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Monitor Empresarial (Solo al seleccionar empresa) -->
+              @if (empresaSeleccionadaId) {
+                <div class="bg-[#0f172a] border border-[#1e293b] p-3 rounded-lg flex items-center gap-4 shadow-sm">
+                  <div class="flex flex-col">
+                    <span class="text-xs text-blue-300 uppercase tracking-wider">Servidor Empresarial</span>
+                    <div class="flex items-center gap-2 mt-1">
+                      <span class="w-2 h-2 rounded-full bg-blue-400 animate-pulse"></span>
+                      <span class="text-sm text-blue-400 font-bold">Conectado</span>
+                    </div>
+                  </div>
+                  <div class="h-8 w-px bg-[#1e293b]"></div>
+                  <div class="flex flex-col">
+                    <span class="text-xs text-gray-400 uppercase tracking-wider">Última Actividad</span>
+                    <span class="text-sm text-gray-300 mt-1">{{ serverStatus.lastActivity }}</span>
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+
+          <!-- Selector de Empresas -->
+          <div
+            class="mb-6 bg-gray-900 p-4 rounded-lg border border-gray-700 flex flex-col md:flex-row items-start md:items-center gap-4"
+          >
+            <label class="text-gray-300 font-inter font-bold whitespace-nowrap"
+              >Empresa a gestionar:</label
+            >
+            <select
+              class="form-input bg-gray-800 text-white border-gray-600 focus:border-blue-500 w-full md:w-auto md:max-w-md"
+              (change)="seleccionarEmpresaModulos($event)"
+            >
+              <option value="" disabled selected>Selecciona una empresa</option>
+              @for (emp of empresas; track emp.id) {
+                <option [value]="emp.id">{{ emp.razon_social }} (NIT: {{ emp.nit }})</option>
+              }
+            </select>
+          </div>
+
+          @if (empresaSeleccionadaId) {
+            <div class="grid grid-cols-1 gap-6">
+            <!-- MÓDULOS BASE INCLUIDOS -->
+            <div class="soft-ui-card">
+              <div class="flex items-center gap-3 mb-6 border-b border-gray-700/50 pb-4">
+                <div class="w-8 h-8 rounded-full bg-green-500/20 flex items-center justify-center text-green-400">
+                  <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                </div>
+                <h4 class="text-white font-inter font-bold text-lg">MÓDULOS BASE INCLUIDOS</h4>
+                <span class="ml-auto text-xs font-bold text-green-500 bg-green-500/10 px-3 py-1 rounded-full">Siempre Activos</span>
+              </div>
+              
+              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                
+                <!-- Administración -->
+                <div class="bg-gray-800/40 border border-gray-700/50 p-4 rounded-xl flex items-center gap-4 hover:bg-gray-800/80 transition-colors">
+                  <div class="w-10 h-10 rounded-lg bg-gray-700/50 flex items-center justify-center text-gray-300 shrink-0">
+                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M10.343 3.94c.09-.542.56-.94 1.11-.94h1.093c.55 0 1.02.398 1.11.94l.149.894c.07.424.384.764.78.93.398.164.855.142 1.205-.108l.737-.527a1.125 1.125 0 011.45.12l.773.774c.39.389.44 1.002.12 1.45l-.527.737c-.25.35-.272.806-.107 1.204.165.397.505.71.93.78l.893.15c.543.09.94.56.94 1.109v1.094c0 .55-.397 1.02-.894 1.11l-.894.149c-.424.07-.764.383-.929.78-.165.398-.143.854.107 1.204l.527.738c.32.447.269 1.06-.12 1.45l-.774.773a1.125 1.125 0 01-1.449.12l-.738-.527c-.35-.25-.806-.272-1.203-.107-.398.165-.71.505-.781.929l-.149.894c-.09.542-.56.94-1.11.94h-1.094c-.55 0-1.019-.398-1.11-.94l-.148-.894c-.071-.424-.384-.764-.781-.93-.398-.164-.854-.142-1.204.108l-.738.527c-.447.32-1.06.269-1.45-.12l-.773-.774a1.125 1.125 0 01-.12-1.45l.527-.737c.25-.35.273-.806.108-1.204-.165-.397-.505-.71-.93-.78l-.894-.15c-.542-.09-.94-.56-.94-1.109v-1.094c0-.55.398-1.02.94-1.11l.894-.149c.424-.07.765-.383.93-.78.165-.398.143-.854-.107-1.204l-.527-.738a1.125 1.125 0 01.12-1.45l.773-.773a1.125 1.125 0 011.45-.12l.737.527c.35.25.807.272 1.204.107.397-.165.71-.505.78-.929l.15-.894z" />
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h5 class="text-white font-semibold text-sm">Administración</h5>
+                    <p class="text-xs text-gray-400 mt-0.5">Gestión de Accesos y Roles</p>
+                  </div>
+                </div>
+
+                <!-- Formalización -->
+                <div class="bg-gray-800/40 border border-gray-700/50 p-4 rounded-xl flex items-center gap-4 hover:bg-gray-800/80 transition-colors">
+                  <div class="w-10 h-10 rounded-lg bg-gray-700/50 flex items-center justify-center text-cyan-400 shrink-0">
+                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M15 9h3.75M15 12h3.75M15 15h3.75M4.5 19.5h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5zm6-10.125a1.875 1.875 0 11-3.75 0 1.875 1.875 0 013.75 0zm1.294 6.336a6.721 6.721 0 01-3.17.789 6.721 6.721 0 01-3.168-.789 3.376 3.376 0 016.338 0z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h5 class="text-white font-semibold text-sm">Formalización</h5>
+                    <p class="text-xs text-gray-400 mt-0.5">Perfil laboral de empleados</p>
+                  </div>
+                </div>
+
+                <!-- Autogestión -->
+                <div class="bg-gray-800/40 border border-gray-700/50 p-4 rounded-xl flex items-center gap-4 hover:bg-gray-800/80 transition-colors">
+                  <div class="w-10 h-10 rounded-lg bg-gray-700/50 flex items-center justify-center text-blue-400 shrink-0">
+                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h5 class="text-white font-semibold text-sm">Autogestión</h5>
+                    <p class="text-xs text-gray-400 mt-0.5">Portal de uso personal</p>
+                  </div>
+                </div>
+
+                <!-- Tareas -->
+                <div class="bg-gray-800/40 border border-gray-700/50 p-4 rounded-xl flex items-center gap-4 hover:bg-gray-800/80 transition-colors">
+                  <div class="w-10 h-10 rounded-lg bg-gray-700/50 flex items-center justify-center text-orange-400 shrink-0">
+                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25zM6.75 12h.008v.008H6.75V12zm0 3h.008v.008H6.75V15zm0 3h.008v.008H6.75V18z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h5 class="text-white font-semibold text-sm">Gestión de Tareas</h5>
+                    <p class="text-xs text-gray-400 mt-0.5">Checklist y asignación</p>
+                  </div>
+                </div>
+
+                <!-- Gestiva IA -->
+                <div class="bg-gray-800/40 border border-gray-700/50 p-4 rounded-xl flex items-center gap-4 hover:bg-gray-800/80 transition-colors">
+                  <div class="w-10 h-10 rounded-lg bg-gray-700/50 flex items-center justify-center text-purple-400 shrink-0">
+                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h5 class="text-white font-semibold text-sm">Gestiva AI</h5>
+                    <p class="text-xs text-gray-400 mt-0.5">Asistente de inteligencia</p>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            @for (paquete of paquetesModulos; track paquete.id) {
+              <div class="soft-ui-card">
+                <div class="flex items-center justify-between gap-4 mb-6">
+                  <div class="flex items-center gap-4">
+                    <div class="soft-ui-icon-box text-{{ paquete.color }}-400">
+                      @switch (paquete.id) {
+                        @case ('ventas') {
+                          <svg
+                            class="w-7 h-7"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke-width="1.5"
+                            stroke="currentColor"
+                          >
+                            <path
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941"
+                            />
+                          </svg>
+                        }
+                        @case ('servicios') {
+                          <svg
+                            class="w-7 h-7"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke-width="1.5"
+                            stroke="currentColor"
+                          >
+                            <path
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              d="M11.42 15.17L17.25 21A2.652 2.652 0 0021 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655 5.653a2.548 2.548 0 11-3.586-3.586l6.837-5.63m5.108-.233c.55-.164 1.163-.188 1.743-.14a4.5 4.5 0 004.486-6.336l-3.276 3.277a3.004 3.004 0 01-2.25-2.25l3.276-3.276a4.5 4.5 0 00-6.336 4.486c.091 1.076-.071 2.264-.904 2.95l-.102.085m-1.745 1.437L5.909 7.5H4.5L2.25 3.75l1.5-1.5L7.5 4.5v1.409l4.26 4.26m-1.745 1.437l1.745-1.437m6.615 8.206L15.75 15.75M4.867 19.125h.008v.008h-.008v-.008z"
+                            />
+                          </svg>
+                        }
+                        @case ('rrhh') {
+                          <svg
+                            class="w-7 h-7"

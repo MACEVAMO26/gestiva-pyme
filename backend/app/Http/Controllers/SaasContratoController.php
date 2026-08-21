@@ -57,7 +57,7 @@ class SaasContratoController extends Controller
             // Para GestivaPyme, usaremos una notificación genérica o buscaremos los usuarios:
             $gerentes = \App\Models\User::where('empresa_id', $empresa->id)
                 ->whereHas('rol', function($q) {
-                    $q->where('nombre', 'Gerente');
+                    $q->where('nombre', 'like', '%Gerente%');
                 })->get();
             
             foreach ($gerentes as $gerente) {

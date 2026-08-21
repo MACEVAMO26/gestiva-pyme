@@ -1,0 +1,500 @@
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke-width="1.5"
+                            stroke="currentColor"
+                          >
+                            <path
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"
+                            />
+                          </svg>
+                        }
+                        @case ('contabilidad') {
+                          <svg
+                            class="w-7 h-7"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke-width="1.5"
+                            stroke="currentColor"
+                          >
+                            <path
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"
+                            />
+                          </svg>
+                        }
+                        @default {
+                          <svg
+                            class="w-7 h-7"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke-width="1.5"
+                            stroke="currentColor"
+                          >
+                            <path
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              d="M13.5 16.875h3.375m0 0h3.375m-3.375 0V13.5m0 3.375v3.375M6 10.5h2.25a2.25 2.25 0 002.25-2.25V6a2.25 2.25 0 00-2.25-2.25H6A2.25 2.25 0 003.75 6v2.25A2.25 2.25 0 006 10.5zm0 9.75h2.25A2.25 2.25 0 0010.5 18v-2.25a2.25 2.25 0 00-2.25-2.25H6a2.25 2.25 0 00-2.25 2.25V18A2.25 2.25 0 006 20.25zm9.75-9.75H18a2.25 2.25 0 002.25-2.25V6A2.25 2.25 0 0018 3.75h-2.25A2.25 2.25 0 0013.5 6v2.25a2.25 2.25 0 002.25 2.25z"
+                            />
+                          </svg>
+                        }
+                      }
+                    </div>
+                    <div>
+                      <h4 class="text-white font-inter font-bold text-lg">{{ paquete.nombre }}</h4>
+                      <p class="text-sm text-gray-400 mt-1">{{ paquete.descripcion }}</p>
+                    </div>
+                  </div>
+
+                  <!-- MASTER SWITCH SOFT UI -->
+                  <div class="flex items-center gap-3">
+                    <span class="text-xs text-gray-400 font-bold tracking-wider">TODO</span>
+                    <button
+                      (click)="togglePaqueteCompleto(paquete.id, !paquete.activo)"
+                      [class]="'soft-ui-toggle ' + (paquete.activo ? 'active' : 'inactive')"
+                    >
+                      <div class="soft-ui-toggle-thumb"></div>
+                    </button>
+                  </div>
+                </div>
+
+                <div class="space-y-3">
+                  @for (modulo of paquete.modulos; track modulo.id) {
+                    <div class="soft-ui-row">
+                      <span class="text-gray-300 font-inter font-medium text-base">{{ modulo.nombre }}</span>
+                      <button
+                        (click)="toggleModulo(paquete.id, modulo.id)"
+                        [class]="'soft-ui-toggle ' + (modulo.activo ? 'active' : 'inactive')"
+                      >
+                        <div class="soft-ui-toggle-thumb"></div>
+                      </button>
+                    </div>
+                  }
+                </div>
+
+                <div class="mt-8 flex justify-between items-center">
+                  <div>
+                    @if (paquete.id === 'addons') {
+                      <button (click)="anexarAddon()" class="text-sm text-blue-400 hover:text-blue-300 font-inter font-bold flex items-center gap-1 transition-colors">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                        </svg>
+                        Anexar Módulo
+                      </button>
+                    }
+                  </div>
+                  <button
+                    (click)="guardarPaquete(paquete.id)"
+                    [disabled]="guardandoPaqueteId === paquete.id"
+                    class="soft-ui-btn flex items-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
+                  >
+                    @if (guardandoPaqueteId === paquete.id) {
+                      <svg class="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      Guardando...
+                    } @else {
+                      <svg
+                        class="w-5 h-5"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke-width="2"
+                        stroke="currentColor"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          d="M16.5 3.75V16.5L12 14.25 7.5 16.5V3.75m9 0H18A2.25 2.25 0 0120.25 6v12A2.25 2.25 0 0118 20.25H6A2.25 2.25 0 013.75 18V6A2.25 2.25 0 016 3.75h1.5m9 0h-9"
+                        />
+                      </svg>
+                      Guardar Cambios
+                    }
+                  </button>
+                </div>
+              </div>
+            }
+            </div>
+          } @else {
+            <div class="empty-state mt-8">
+              <svg class="w-12 h-12 mb-4 text-gray-500 mx-auto" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15.042 21.672L13.684 16.6m0 0l-2.51 2.225.141-.141-9.61-7.208 19.152-4.144-6.425 14.54a.75.75 0 01-1.39.066l-2.316-5.34z" />
+              </svg>
+              <p>Por favor selecciona una empresa en el menú de arriba para ver y gestionar sus módulos.</p>
+            </div>
+          }
+        </div>
+      }
+
+      @if (currentView === 'comercial') {
+        <div class="glass-panel mt-2rem">
+          <h2 class="text-[16px] font-bold text-white mb-8 tracking-wide text-center uppercase">
+            Módulo Comercial
+          </h2>
+
+          <div class="bg-[#0f172a] rounded-2xl p-6 shadow-inner border border-gray-800 w-full overflow-x-auto">
+            <div
+            class="mb-8 flex flex-col sm:flex-row justify-center items-center gap-4 border-b border-gray-700 pb-4 relative"
+          >
+            <div class="flex gap-4">
+              <button
+                class="neu-dark-button"
+                [class.active]="comercialTab === 'interesados'"
+                (click)="setComercialTab('interesados')"
+              >
+                Interesados
+              </button>
+              <button
+                class="neu-dark-button"
+                [class.active]="comercialTab === 'correos'"
+                (click)="setComercialTab('correos')"
+              >
+                Enviar Correos Masivos
+              </button>
+            </div>
+
+            @if (comercialTab === 'interesados') {
+              <button
+                (click)="cargarLeads()"
+                class="ml-auto flex items-center gap-2 text-xs font-semibold text-cyan-300 bg-cyan-500/15 hover:bg-cyan-500/25 border border-cyan-500/30 px-4 py-2 rounded-lg transition-colors mt-4 sm:mt-0"
+              >
+                <i class="fas fa-sync-alt"></i> Actualizar lista
+              </button>
+            }
+          </div>
+
+          @if (comercialTab === 'interesados') {
+            <div class="overflow-x-auto">
+              <table class="w-full text-left border-collapse">
+                <thead>
+                  <tr
+                    class="border-b border-gray-700 text-white text-base uppercase tracking-wider"
+                  >
+                    <th class="py-3 px-2 font-bold uppercase tracking-wider text-center">Nombre</th>
+                    <th class="py-3 px-2 font-bold uppercase tracking-wider text-center">Teléfono</th>
+                    <th class="py-3 px-2 font-bold uppercase tracking-wider text-center">Correo</th>
+                    <th class="py-3 px-2 font-bold uppercase tracking-wider text-center min-w-[80px] whitespace-normal">Horario Ideal</th>
+                    <th class="py-3 px-2 font-bold uppercase tracking-wider text-center">Mensaje</th>
+                    <th class="py-3 px-2 font-bold uppercase tracking-wider text-center">Estado</th>
+                    <th class="py-3 px-2 font-bold uppercase tracking-wider text-center">Acciones</th>
+                  </tr>
+                </thead>
+                <tbody class="text-base text-[#cbd5e1]">
+                  @for (lead of leads; track lead.id) {
+                    <tr class="border-b border-gray-800 hover:bg-gray-800/50 transition-colors">
+                      <td class="py-3 px-2 font-medium">{{ lead.nombre }}</td>
+                      <td class="py-3 px-2 text-center">{{ lead.telefono }}</td>
+                      <td class="py-3 px-2 text-center">{{ lead.correo }}</td>
+                      <td class="py-3 px-2 text-center">
+                        {{ lead.horario_llamada || 'Cualquier hora' }}
+                      </td>
+                      <td class="py-3 px-2 max-w-xs truncate" title="{{ lead.mensaje }}">
+                        {{ lead.mensaje || '-' }}
+                      </td>
+                      <td class="py-3 px-2 text-center">
+                        <span
+                          class="px-3 py-1 rounded-full font-semibold uppercase"
+                          [ngClass]="{
+                            'bg-blue-500/20 text-blue-400': lead.estado === 'pendiente',
+                            'bg-green-500/20 text-green-400': lead.estado === 'contactado',
+                            'bg-yellow-500/20 text-yellow-400': lead.estado === 'archivado',
+                          }"
+                          >{{ lead.estado }}</span
+                        >
+                      </td>
+                      <td class="py-3 px-2">
+                        <div class="flex items-center justify-center gap-3">
+                          <button
+                            class="w-10 h-10 rounded-full glass-btn-gray flex items-center justify-center transition-colors hover:border-[#10b981]/30"
+                            title="Marcar Contactado"
+                            (click)="cambiarEstadoLead(lead.id, 'contactado')"
+                          >
+                            <svg
+                              class="w-5 h-5 text-[#10b981]"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                            >
+                              <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M5 13l4 4L19 7"
+                              />
+                            </svg>
+                          </button>
+                          <button
+                            class="w-10 h-10 rounded-full glass-btn-gray flex items-center justify-center transition-colors hover:border-[#f59e0b]/30"
+                            title="No Responde"
+                            (click)="cambiarEstadoLead(lead.id, 'archivado')"
+                          >
+                            <svg
+                              class="w-5 h-5 text-[#f59e0b]"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                            >
+                              <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"
+                              />
+                            </svg>
+                          </button>
+                          <button
+                            class="w-10 h-10 rounded-full glass-btn-gray flex items-center justify-center transition-colors hover:border-[#ef4444]/30"
+                            title="Eliminar"
+                            (click)="eliminarLead(lead.id)"
+                          >
+                            <svg
+                              class="w-5 h-5 text-[#ef4444]"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                            >
+                              <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                              />
+                            </svg>
+                          </button>
+                          <button
+                            class="w-10 h-10 rounded-full glass-btn-gray flex items-center justify-center transition-colors hover:border-[#d946ef]/30"
+                            title="Notas"
+                            (click)="abrirModalNotas(lead)"
+                          >
+                            <svg
+                              class="w-5 h-5 text-[#d946ef]"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                            >
+                              <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                              />
+                            </svg>
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  }
+                  @if (leads.length === 0) {
+                    <tr>
+                      <td colspan="7" class="text-center text-gray-500 py-8">
+                        No hay interesados registrados aún.
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          }
+
+          @if (comercialTab === 'correos') {
+            <div class="soft-ui-panel-dark p-8 animate-fade-in-up mt-6">
+              <div class="flex items-center gap-4 mb-8">
+                <div
+                  class="bg-cyan-500/20 text-cyan-400 w-12 h-12 rounded-full flex items-center justify-center border border-cyan-500/30 shadow-[0_0_15px_rgba(6,182,212,0.3)]"
+                >
+                  <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                    />
+                  </svg>
+                </div>
+                <div>
+                  <h3 class="text-[13px] font-bold text-white tracking-wide mb-1">Campaña de Correo</h3>
+                  <p class="text-sm text-gray-400">
+                    Envía correos masivos a todos los interesados registrados.
+                  </p>
+                </div>
+              </div>
+
+              <div class="space-y-6 max-w-4xl mx-auto">
+                <div class="saas-form-group">
+                  <label class="saas-label text-cyan-50">Asunto del Correo</label>
+                  <input
+                    type="text"
+                    [(ngModel)]="asuntoBrevo"
+                    placeholder="Ej. ¡Descubre nuestras nuevas funciones!"
+                    class="saas-input w-full bg-[#111827] text-white border-gray-700 focus:border-cyan-500"
+                  />
+                </div>
+
+                <div class="saas-form-group">
+                  <label class="saas-label text-cyan-50">Mensaje de la Campaña</label>
+                  <textarea
+                    [(ngModel)]="mensajeBrevo"
+                    rows="8"
+                    placeholder="Redacta el mensaje aquí..."
+                    class="saas-input w-full bg-[#111827] text-white border-gray-700 focus:border-cyan-500 resize-none font-inter text-sm"
+                  ></textarea>
+                </div>
+
+                <div class="saas-form-group">
+                  <label class="saas-label text-cyan-50">Adjuntar Flyer o Imagen (Opcional)</label>
+                  <input
+                    type="file"
+                    (change)="onFileSelected($event)"
+                    accept="image/*,.pdf"
+                    class="saas-input w-full bg-[#111827] text-white border-gray-700 focus:border-cyan-500 font-inter text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-cyan-500/20 file:text-cyan-400 hover:file:bg-cyan-500/30"
+                  />
+                </div>
+
+                <div class="flex justify-center pt-4">
+                  <button
+                    (click)="enviarCampanaBrevo()"
+                    [disabled]="isEnviandoBrevo"
+                    class="px-8 py-3 rounded-full font-bold text-sm tracking-wide transition-all duration-300 flex items-center justify-center gap-2 min-w-[280px] shadow-[0_0_20px_rgba(6,182,212,0.3)]"
+                    [ngClass]="
+                      isEnviandoBrevo
+                        ? 'bg-cyan-600/50 text-white cursor-not-allowed'
+                        : 'bg-cyan-500 hover:bg-cyan-400 text-white hover:-translate-y-1 hover:shadow-[0_0_25px_rgba(6,182,212,0.5)]'
+                    "
+                  >
+                    @if (isEnviandoBrevo) {
+                      <svg
+                        class="animate-spin h-5 w-5 text-white"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          class="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          stroke-width="4"
+                        ></circle>
+                        <path
+                          class="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        ></path>
+                      </svg>
+                      Enviando...
+                    } @else {
+                      <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
+                        />
+                      </svg>
+                      Enviar Campaña a Interesados
+                    }
+                  </button>
+                </div>
+              </div>
+            </div>
+          }
+          </div>
+        </div>
+      }
+      @if (currentView === 'contratos') {
+        <!-- VISTA DE CONTRATOS SAAS -->
+        <div class="glass-panel mt-2rem font-inter">
+          <div class="mb-8">
+            <h2 class="text-[16px] font-bold text-white tracking-wide text-center uppercase mb-2">
+              Contratos Legales y Términos SAAS
+            </h2>
+            <p class="text-gray-400 text-center text-sm mb-6">
+              Redacta y actualiza el contrato maestro que firmarán todas las empresas. Al publicar una nueva versión, se notificará a los gerentes.
+            </p>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Izquierda: Redactor -->
+            <div class="bg-[#0f172a] rounded-2xl p-6 shadow-inner border border-gray-800 flex flex-col h-full">
+              <h3 class="text-white font-bold text-[13px] mb-4 flex items-center gap-2">
+                <svg class="w-5 h-5 text-fuchsia-400" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
+                </svg>
+                Redactor del Contrato
+              </h3>
+              
+              <div class="flex-1 flex flex-col gap-4">
+                <div>
+                  <label class="text-xs font-semibold text-gray-400 uppercase tracking-wide">Versión (Ej: 1.0)</label>
+                  <input type="text" [(ngModel)]="nuevoContrato.version" class="bg-gray-900 border border-gray-700 text-white rounded-lg px-4 py-2 mt-1 w-full focus:outline-none focus:border-blue-500 transition-colors" placeholder="1.0">
+                </div>
+                
+                <div class="flex-1 flex flex-col">
+                  <label class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Contenido Legal</label>
+                  <textarea [(ngModel)]="nuevoContrato.contenido" class="bg-gray-900 border border-gray-700 text-gray-300 rounded-lg px-4 py-3 w-full h-full min-h-[300px] resize-none focus:outline-none focus:border-blue-500 transition-colors text-sm font-mono leading-relaxed" placeholder="Escribe aquí los términos legales..."></textarea>
+                  <p class="text-xs text-gray-500 mt-2">Puedes usar etiquetas HTML básicas como &lt;b&gt;, &lt;br&gt;, &lt;h1&gt; para dar formato.</p>
+                </div>
+              </div>
+
+              <div class="mt-6 flex justify-end">
+                <button (click)="guardarNuevoContrato()" [disabled]="isGuardandoContrato" class="glass-btn-blue text-white font-bold py-2.5 px-6 rounded-lg transition-colors flex items-center gap-2">
+                  @if (isGuardandoContrato) {
+                    <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                    Publicando...
+                  } @else {
+                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5" />
+                    </svg>
+                    Publicar y Notificar
+                  }
+                </button>
+              </div>
+            </div>
+
+            <!-- Derecha: Historial -->
+            <div class="bg-[#0f172a] rounded-2xl p-6 shadow-inner border border-gray-800">
+              <h3 class="text-white font-bold text-[13px] mb-4 flex items-center gap-2">
+                <svg class="w-5 h-5 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 0 0 2.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 0 0-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25ZM6.75 12h.008v.008H6.75V12Zm0 3h.008v.008H6.75V15Zm0 3h.008v.008H6.75V18Z" />
+                </svg>
+                Historial de Versiones
+              </h3>
+
+              <div class="overflow-x-auto">
+                <table class="saas-table w-full text-left border-collapse text-sm">
+                  <thead>
+                    <tr class="bg-gray-900/50 text-gray-300 tracking-wider uppercase border-b border-gray-700">
+                      <th class="px-2 py-3 font-semibold">Versión</th>
+                      <th class="px-2 py-3 font-semibold whitespace-normal">Fecha Publicación</th>
+                      <th class="px-2 py-3 font-semibold text-center">Estado</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-gray-800/50">
+                    @for (contrato of contratosHistory; track contrato.id) {
+                      <tr class="hover:bg-gray-700/30 transition-colors">
+                        <td class="px-2 py-3 font-bold text-white">v{{ contrato.version }}</td>
+                        <td class="px-2 py-3 text-gray-400">{{ contrato.created_at | date:'dd/MM/yyyy HH:mm' }}</td>
+                        <td class="px-2 py-3 text-center">
+                          @if (contrato.es_activo) {
+                            <span class="px-2 py-1 rounded text-xs font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">ACTIVO</span>
+                          } @else {
+                            <span class="px-2 py-1 rounded text-xs font-bold bg-gray-500/20 text-gray-400 border border-gray-500/30">HISTÓRICO</span>
+                          }
+                        </td>
+                      </tr>
+                    }
+                    @if (contratosHistory.length === 0) {
+                      <tr>
+                        <td colspan="3" class="p-6 text-center text-gray-500">No hay historial de contratos.</td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      }

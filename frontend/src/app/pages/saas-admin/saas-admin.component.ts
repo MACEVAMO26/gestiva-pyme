@@ -96,6 +96,8 @@ export class SaasAdminComponent implements OnInit {
     nit: '',
     email: '',
     plan_suscripcion: 'Emprendedor',
+    tipo_empresa: 'Ventas',
+    tipo_identificacion: 'NIT',
     color_primario: '#6366f1',
     color_secundario: '#1e293b',
     color_fondo: '#4c808a',
@@ -104,7 +106,8 @@ export class SaasAdminComponent implements OnInit {
     segundo_nombre_gerente: '',
     primer_apellido_gerente: '',
     segundo_apellido_gerente: '',
-    tipo_documento_gerente: 'CC'
+    tipo_documento_gerente: 'CC',
+    documento_gerente: ''
   };
   listaDescuentosEmpresa: string[] = [];
   currentView = 'dashboard';
@@ -337,6 +340,7 @@ export class SaasAdminComponent implements OnInit {
   ticketsSoporte: any[] = [];
   ticketsSoportePendientes: number = 0;
   paquetesModulos: any[] = [];
+  paquetesExpandidos: { [key: string]: boolean } = {};
   guardandoPaqueteId: string | null = null;
   statsSuscripciones = {
     mrr: 0,
@@ -1270,6 +1274,8 @@ export class SaasAdminComponent implements OnInit {
       dominio: '',
       nit: '', 
       plan_suscripcion: 'Emprendedor', 
+      tipo_empresa: 'Ventas',
+      tipo_identificacion: 'NIT',
       fecha_inscripcion: '', 
       periodo: 'Mensual', 
       descuento: 'N/A',
@@ -1278,7 +1284,8 @@ export class SaasAdminComponent implements OnInit {
       color_fondo: '#4c808a',
       color_texto: '#f8fafc',
       nombre_gerente: '',
-      apellido_gerente: ''
+      apellido_gerente: '',
+      documento_gerente: ''
     };
     this.showModal = true;
   }
@@ -1293,6 +1300,8 @@ export class SaasAdminComponent implements OnInit {
       nit: empresa.nit,
       email: empresa.email || '',
       plan_suscripcion: empresa.plan_suscripcion || 'Emprendedor',
+      tipo_empresa: empresa.tipo_empresa === 'Ventas y Servicios' ? 'Mixto' : (empresa.tipo_empresa || 'Ventas'),
+      tipo_identificacion: empresa.tipo_identificacion || 'NIT',
       fecha_inscripcion: empresa.fecha_inscripcion ? empresa.fecha_inscripcion.substring(0, 10) : '',
       periodo: empresa.periodo || 'Mensual',
       descuento: empresa.descuento || 'N/A',
@@ -1306,7 +1315,8 @@ export class SaasAdminComponent implements OnInit {
       segundo_nombre_gerente: empresa.gerente?.segundo_nombre || '',
       primer_apellido_gerente: empresa.gerente?.primer_apellido || '',
       segundo_apellido_gerente: empresa.gerente?.segundo_apellido || '',
-      tipo_documento_gerente: empresa.tipo_documento_gerente || 'CC'
+      tipo_documento_gerente: empresa.tipo_documento_gerente || 'CC',
+      documento_gerente: empresa.gerente?.documento || ''
     };
     this.showModal = true;
   }
@@ -1434,6 +1444,10 @@ export class SaasAdminComponent implements OnInit {
     }
   }
 
+  togglePaqueteExpanded(paqueteId: string) {
+    this.paquetesExpandidos[paqueteId] = !this.paquetesExpandidos[paqueteId];
+  }
+
   anexarAddon() {
     this.toastService.info('Funcionalidad en desarrollo: Aquí se desplegará el catálogo de conectores externos (Ej. APIs, Software Contable, etc.) de los cuales GestivaPyme ofrece integración.');
   }
@@ -1537,7 +1551,7 @@ export class SaasAdminComponent implements OnInit {
     this.isEditMode = false;
     this.editingId = null;
     this.listaDescuentosEmpresa = [];
-    this.nuevaEmpresa = { razon_social: '', dominio: '', nit: '', email: '', plan_suscripcion: 'Emprendedor', fecha_inscripcion: '', periodo: 'Mensual', descuento: 'N/A', nombre_gerente: '', apellido_gerente: '' };
+    this.nuevaEmpresa = { razon_social: '', dominio: '', nit: '', email: '', plan_suscripcion: 'Emprendedor', fecha_inscripcion: '', periodo: 'Mensual', descuento: 'N/A', nombre_gerente: '', apellido_gerente: '', documento_gerente: '' };
   }
 
 
@@ -1590,6 +1604,23 @@ export class SaasAdminComponent implements OnInit {
         },
       });
     }
+  }
+
+  // Para reenviar las credenciales de acceso al correo de la empresa
+  reenviarCredenciales(empresa: any) {
+    if (!confirm(`¿Reenviar credenciales de acceso a ${empresa.razon_social}? Se generará una nueva contraseña temporal.`)) return;
+    
+    this.http.post(`/api/empresas/${empresa.id}/reenviar-credenciales`, {}, { headers: this.getHeaders() }).subscribe({
+      next: (res: any) => {
+        this.toastService.success(res.message || 'Credenciales reenviadas con éxito.');
+      },
+      error: (err) => {
+        let msg = 'Error al reenviar credenciales.';
+        if (err.error?.message) msg = err.error.message;
+        this.toastService.error(msg);
+        console.error(err);
+      }
+    });
   }
 
   cambiarEstadoEmpresa(empresa: any, accion: string) {

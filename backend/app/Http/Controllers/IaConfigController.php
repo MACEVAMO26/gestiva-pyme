@@ -46,17 +46,33 @@ class IaConfigController extends Controller
 
         $mantenerLlave = $request->boolean('mantener_llave');
 
-        if (!$mantenerLlave && !$request->filled('api_key')) {
+        $modo = $request->input('modo', 'apagado');
+
+        if ($modo !== 'apagado' && !$mantenerLlave && !$request->filled('api_key')) {
             return response()->json([
                 'success' => false,
                 'message' => 'Debes ingresar una API Key para habilitar la IA.'
             ], 422);
         }
 
-        // Desactivamos todas las configuraciones previas
-        IaConfig::where('is_active', true)->update(['is_active' => false]);
+        if ($request->filled('empresa_id')) {
+            $empresa = \App\Models\Empresa::find($request->empresa_id);
+            if ($empresa) {
+                $empresa->ia_byok_activo = ($modo !== 'apagado');
+                $empresa->ia_byok_proveedor = $request->proveedor;
+                if (!$mantenerLlave) {
+                    $empresa->ia_byok_key = $request->filled('api_key') ? Crypt::encryptString($request->api_key) : null;
+                }
+                $empresa->save();
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Configuración de IA para la empresa guardada correctamente.'
+                ]);
+            }
+        }
 
-        $modo = $request->input('modo', 'apagado');
+        // Desactivamos todas las configuraciones previas (Global)
+        IaConfig::where('is_active', true)->update(['is_active' => false]);
 
         // Buscamos si ya existe el proveedor para actualizarlo, si no lo creamos
         $config = IaConfig::where('proveedor', $request->proveedor)->first();
@@ -67,7 +83,7 @@ class IaConfigController extends Controller
         ];
 
         if (!$mantenerLlave) {
-            $data['api_key'] = Crypt::encryptString($request->api_key);
+            $data['api_key'] = $request->filled('api_key') ? Crypt::encryptString($request->api_key) : '';
         }
 
         if ($config) {

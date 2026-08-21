@@ -40,7 +40,7 @@ class LeadController extends Controller
         $lead = Lead::findOrFail($id);
         
         $validated = $request->validate([
-            'estado' => 'sometimes|in:pendiente,contactado,archivado',
+            'estado' => 'sometimes|in:pendiente,contactado,archivado,eliminado',
             'notas' => 'sometimes|array'
         ]);
 

@@ -46,7 +46,7 @@ export class AdminEmpresa implements OnInit {
     this.isLoading = true;
     const currentUser = this.authService.getUser();
     if (currentUser && currentUser.empresa_id) {
-      this.empresaService.getEmpresa(currentUser.empresa_id).pipe(timeout(5000)).subscribe({
+      this.empresaService.getEmpresa(currentUser.empresa_id).subscribe({
         next: (data) => {
           // Aseguramos que data sea un objeto válido
           this.empresaData = data || {};

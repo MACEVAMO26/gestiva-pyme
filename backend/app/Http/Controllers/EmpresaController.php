@@ -17,7 +17,7 @@ class EmpresaController extends Controller
     // Obtiene la lista de todas las empresas registradas (incluye el nombre del gerente)
     public function index()
     {
-        $empresas = Empresa::all();
+        $empresas = Empresa::orderBy('created_at', 'asc')->get();
 
         // Adjunta el gerente de cada empresa para que el SAAS admin pueda pre-cargar sus datos
         $empresas->each(function ($empresa) {
@@ -44,7 +44,7 @@ class EmpresaController extends Controller
     // Obtiene las estadísticas de suscripciones y la lista detallada de empresas (MRR, clientes, morosos)
     public function suscripcionesStats()
     {
-        $empresas = Empresa::with('tarifasCatalogo')->get();
+        $empresas = Empresa::with('tarifasCatalogo')->orderBy('created_at', 'asc')->get();
         
         $mrr = $empresas->where('activo', 1)->sum('monto_mensual');
         $clientesActivos = $empresas->where('activo', 1)->count();
@@ -272,6 +272,7 @@ class EmpresaController extends Controller
             'primer_apellido_gerente' => 'required|string|max:255',
             'segundo_apellido_gerente' => 'required|string|max:255',
             'tipo_documento_gerente' => 'nullable|string|max:50',
+            'documento_gerente' => 'nullable|string|max:255',
         ]);
 
         // Utiliza una transacción para garantizar la creación conjunta de empresa y gerente
@@ -371,7 +372,7 @@ class EmpresaController extends Controller
                 'primer_apellido' => $request->input('primer_apellido_gerente') ?: $empresa->razon_social,
                 'segundo_apellido' => $request->input('segundo_apellido_gerente'),
                 'tipo_documento' => $request->input('tipo_documento_gerente') ?: 'CC',
-                'documento' => $empresa->nit,
+                'documento' => $request->input('documento_gerente') ?: $empresa->nit,
                 'email' => $adminEmail,
                 'password_hash' => Hash::make('Admin_123'),
                 'activo' => 1,
@@ -683,5 +684,39 @@ class EmpresaController extends Controller
 
         $pdf = Pdf::loadHTML($html);
         return $pdf->download('Contrato_GestivaPyme_' . $empresa->nit . '.pdf');
+    }
+
+    public function reenviarCredenciales($id)
+    {
+        $empresa = Empresa::findOrFail($id);
+        
+        // Find the gerente
+        $gerente = \App\Models\User::where('empresa_id', $empresa->id)
+                    ->whereHas('rol', function($q) {
+                        $q->where('nombre', 'Gerente General');
+                    })->first();
+
+        if (!$gerente) {
+            return response()->json(['success' => false, 'message' => 'No se encontró el usuario gerente para esta empresa.'], 404);
+        }
+
+        if (empty($empresa->email)) {
+            return response()->json(['success' => false, 'message' => 'La empresa no tiene un correo de contacto configurado.'], 400);
+        }
+
+        // Generate a new password
+        $tempPassword = 'Admin_' . rand(1000, 9999);
+        
+        $gerente->password_hash = \Illuminate\Support\Facades\Hash::make($tempPassword);
+        $gerente->debe_cambiar_clave = true;
+        $gerente->save();
+
+        try {
+            \Illuminate\Support\Facades\Mail::to($empresa->email)->send(new \App\Mail\CredencialesUsuarioMail($gerente, $tempPassword, $empresa->razon_social));
+            return response()->json(['success' => true, 'message' => 'Credenciales reenviadas al correo de la empresa con éxito.']);
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Error al reenviar credenciales: ' . $e->getMessage(), ['exception' => $e]);
+            return response()->json(['success' => false, 'message' => 'Error al enviar el correo: ' . $e->getMessage()], 500);
+        }
     }
 }

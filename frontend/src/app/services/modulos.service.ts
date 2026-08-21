@@ -108,7 +108,7 @@ const CATALOGO_MODULOS_UI: any[] = [
     descripcion: 'Para comercios y tiendas de productos físicos.',
     icono: 'fas fa-shopping-cart',
     color: 'blue',
-    Modulos: [
+    modulos: [
       { id: 'v_pos', nombre: 'Ventas', icono: 'fas fa-store' },
       { id: 'v_inv', nombre: 'Inventario', icono: 'fas fa-boxes' },
       { id: 'v_cxc', nombre: 'Clientes', icono: 'fas fa-address-book' },
@@ -122,7 +122,7 @@ const CATALOGO_MODULOS_UI: any[] = [
     descripcion: 'Para agendas, barberías, consultorios y talleres.',
     icono: 'fas fa-calendar-alt',
     color: 'purple',
-    Modulos: [
+    modulos: [
       { id: 's_age', nombre: 'Agenda', icono: 'fas fa-calendar-check' },
       { id: 's_crm', nombre: 'Gestión de Clientes', icono: 'fas fa-handshake' },
       { id: 's_cat', nombre: 'Servicios', icono: 'fas fa-list' },
@@ -136,7 +136,7 @@ const CATALOGO_MODULOS_UI: any[] = [
     descripcion: 'Registro de pagos y cobro por servicios o productos.',
     icono: 'fas fa-cash-register',
     color: 'yellow',
-    Modulos: [{ id: 'f_caja', nombre: 'Caja y Pre-facturación', icono: 'fas fa-cash-register' }],
+    modulos: [{ id: 'f_caja', nombre: 'Caja y Pre-facturación', icono: 'fas fa-cash-register' }],
   },
   {
     id: 'rrhh',
@@ -144,7 +144,7 @@ const CATALOGO_MODULOS_UI: any[] = [
     descripcion: 'Gestión de empleados, turnos y vacaciones. Disponible para todos.',
     icono: 'fas fa-users',
     color: 'indigo',
-    Modulos: [
+    modulos: [
       { id: 'r_tur', nombre: 'Horarios y Turnos', icono: 'fas fa-clock' },
       { id: 'r_aus', nombre: 'Horas Extras y Ausencias', icono: 'fas fa-user-clock' },
       { id: 'r_vac', nombre: 'Gestión de Vacaciones', icono: 'fas fa-umbrella-beach' }
@@ -156,7 +156,7 @@ const CATALOGO_MODULOS_UI: any[] = [
     descripcion: 'Conectores y herramientas extra que se cobran por separado.',
     icono: 'fas fa-plug',
     color: 'green',
-    Modulos: [
+    modulos: [
       { id: 'a_contable', nombre: 'Conector Contable', icono: 'fas fa-file-invoice-dollar' },
     ],
   },
