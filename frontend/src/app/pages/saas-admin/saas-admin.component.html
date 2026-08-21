@@ -205,7 +205,7 @@
               d="M13.5 16.875h3.375m0 0h3.375m-3.375 0V13.5m0 3.375v3.375M6 10.5h2.25a2.25 2.25 0 0 0 2.25-2.25V6a2.25 2.25 0 0 0-2.25-2.25H6A2.25 2.25 0 0 0 3.75 6v2.25A2.25 2.25 0 0 0 6 10.5Zm0 9.75h2.25A2.25 2.25 0 0 0 10.5 18v-2.25a2.25 2.25 0 0 0-2.25-2.25H6a2.25 2.25 0 0 0-2.25 2.25V18A2.25 2.25 0 0 0 6 20.25Zm9.75-9.75H18a2.25 2.25 0 0 0 2.25-2.25V6A2.25 2.25 0 0 0 18 3.75h-2.25A2.25 2.25 0 0 0 13.5 6v2.25a2.25 2.25 0 0 0 2.25 2.25Z"
             />
           </svg>
-          <span class="nav-text">Paquetes</span>
+          <span class="nav-text">Módulos</span>
         </a>
         <a
           class="nav-item"
@@ -1378,145 +1378,84 @@
 
           @if (empresaSeleccionadaId) {
             <div class="grid grid-cols-1 gap-6">
-            <!-- MÓDULO ADMINISTRACIÓN (POR DEFECTO) -->
+            <!-- MÓDULOS BASE INCLUIDOS -->
             <div class="soft-ui-card">
-              <div class="flex items-center justify-between gap-4 mb-6">
-                <div class="flex items-center gap-4">
-                  <div class="soft-ui-icon-box text-gray-400">
-                    <svg
-                      class="w-7 h-7"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke-width="1.5"
-                      stroke="currentColor"
-                    >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d="M10.343 3.94c.09-.542.56-.94 1.11-.94h1.093c.55 0 1.02.398 1.11.94l.149.894c.07.424.384.764.78.93.398.164.855.142 1.205-.108l.737-.527a1.125 1.125 0 011.45.12l.773.774c.39.389.44 1.002.12 1.45l-.527.737c-.25.35-.272.806-.107 1.204.165.397.505.71.93.78l.893.15c.543.09.94.56.94 1.109v1.094c0 .55-.397 1.02-.894 1.11l-.894.149c-.424.07-.764.383-.929.78-.165.398-.143.854.107 1.204l.527.738c.32.447.269 1.06-.12 1.45l-.774.773a1.125 1.125 0 01-1.449.12l-.738-.527c-.35-.25-.806-.272-1.203-.107-.398.165-.71.505-.781.929l-.149.894c-.09.542-.56.94-1.11.94h-1.094c-.55 0-1.019-.398-1.11-.94l-.148-.894c-.071-.424-.384-.764-.781-.93-.398-.164-.854-.142-1.204.108l-.738.527c-.447.32-1.06.269-1.45-.12l-.773-.774a1.125 1.125 0 01-.12-1.45l.527-.737c.25-.35.273-.806.108-1.204-.165-.397-.505-.71-.93-.78l-.894-.15c-.542-.09-.94-.56-.94-1.109v-1.094c0-.55.398-1.02.94-1.11l.894-.149c.424-.07.765-.383.93-.78.165-.398.143-.854-.107-1.204l-.527-.738a1.125 1.125 0 01.12-1.45l.773-.773a1.125 1.125 0 011.45-.12l.737.527c.35.25.807.272 1.204.107.397-.165.71-.505.78-.929l.15-.894z"
-                      />
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                      />
+              <div class="flex items-center gap-3 mb-6 border-b border-gray-700/50 pb-4">
+                <div class="w-8 h-8 rounded-full bg-green-500/20 flex items-center justify-center text-green-400">
+                  <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                </div>
+                <h4 class="text-white font-inter font-bold text-lg">MÓDULOS BASE INCLUIDOS</h4>
+                <span class="ml-auto text-xs font-bold text-green-500 bg-green-500/10 px-3 py-1 rounded-full">Siempre Activos</span>
+              </div>
+              
+              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                
+                <!-- Administración -->
+                <div class="bg-gray-800/40 border border-gray-700/50 p-4 rounded-xl flex items-center gap-4 hover:bg-gray-800/80 transition-colors">
+                  <div class="w-10 h-10 rounded-lg bg-gray-700/50 flex items-center justify-center text-gray-300 shrink-0">
+                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M10.343 3.94c.09-.542.56-.94 1.11-.94h1.093c.55 0 1.02.398 1.11.94l.149.894c.07.424.384.764.78.93.398.164.855.142 1.205-.108l.737-.527a1.125 1.125 0 011.45.12l.773.774c.39.389.44 1.002.12 1.45l-.527.737c-.25.35-.272.806-.107 1.204.165.397.505.71.93.78l.893.15c.543.09.94.56.94 1.109v1.094c0 .55-.397 1.02-.894 1.11l-.894.149c-.424.07-.764.383-.929.78-.165.398-.143.854.107 1.204l.527.738c.32.447.269 1.06-.12 1.45l-.774.773a1.125 1.125 0 01-1.449.12l-.738-.527c-.35-.25-.806-.272-1.203-.107-.398.165-.71.505-.781.929l-.149.894c-.09.542-.56.94-1.11.94h-1.094c-.55 0-1.019-.398-1.11-.94l-.148-.894c-.071-.424-.384-.764-.781-.93-.398-.164-.854-.142-1.204.108l-.738.527c-.447.32-1.06.269-1.45-.12l-.773-.774a1.125 1.125 0 01-.12-1.45l.527-.737c.25-.35.273-.806.108-1.204-.165-.397-.505-.71-.93-.78l-.894-.15c-.542-.09-.94-.56-.94-1.109v-1.094c0-.55.398-1.02.94-1.11l.894-.149c.424-.07.765-.383.93-.78.165-.398.143-.854-.107-1.204l-.527-.738a1.125 1.125 0 01.12-1.45l.773-.773a1.125 1.125 0 011.45-.12l.737.527c.35.25.807.272 1.204.107.397-.165.71-.505.78-.929l.15-.894z" />
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                     </svg>
                   </div>
                   <div>
-                    <h4 class="text-white font-inter font-bold text-lg">Módulo ADMINISTRACIÓN</h4>
-                    <p class="text-sm text-gray-400 mt-1">
-                      Configuración y gestión de roles (Administrador).
-                    </p>
+                    <h5 class="text-white font-semibold text-sm">Administración</h5>
+                    <p class="text-xs text-gray-400 mt-0.5">Gestión de Accesos y Roles</p>
                   </div>
                 </div>
-              </div>
-              <div class="space-y-3">
-                <div class="soft-ui-row">
-                  <span class="text-gray-300 font-inter font-medium text-base"
-                    >Gestión de Accesos y Roles</span
-                  >
-                  <span class="text-xs font-bold text-green-500">Módulo Base</span>
-                </div>
-              </div>
-            </div>
 
-            <!-- MÓDULO FORMALIZACIÓN DE USUARIOS (POR DEFECTO) -->
-            <div class="soft-ui-card">
-              <div class="flex items-center justify-between gap-4 mb-6">
-                <div class="flex items-center gap-4">
-                  <div class="soft-ui-icon-box text-cyan-400">
-                    <svg class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                <!-- Formalización -->
+                <div class="bg-gray-800/40 border border-gray-700/50 p-4 rounded-xl flex items-center gap-4 hover:bg-gray-800/80 transition-colors">
+                  <div class="w-10 h-10 rounded-lg bg-gray-700/50 flex items-center justify-center text-cyan-400 shrink-0">
+                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" d="M15 9h3.75M15 12h3.75M15 15h3.75M4.5 19.5h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5zm6-10.125a1.875 1.875 0 11-3.75 0 1.875 1.875 0 013.75 0zm1.294 6.336a6.721 6.721 0 01-3.17.789 6.721 6.721 0 01-3.168-.789 3.376 3.376 0 016.338 0z" />
                     </svg>
                   </div>
                   <div>
-                    <h4 class="text-white font-inter font-bold text-lg">Módulo FORMALIZACIÓN DE USUARIOS</h4>
-                    <p class="text-sm text-gray-400 mt-1">
-                      Completa el perfil laboral de los empleados creados por Gerencia.
-                    </p>
+                    <h5 class="text-white font-semibold text-sm">Formalización</h5>
+                    <p class="text-xs text-gray-400 mt-0.5">Perfil laboral de empleados</p>
                   </div>
                 </div>
-              </div>
-              <div class="space-y-3">
-                <div class="soft-ui-row">
-                  <span class="text-gray-300 font-inter font-medium text-base">Formalización de Empleados</span>
-                  <span class="text-xs font-bold text-green-500">Módulo Base</span>
-                </div>
-              </div>
-            </div>
 
-            <!-- MÓDULO AUTOGESTIÓN (POR DEFECTO) -->
-            <div class="soft-ui-card">
-              <div class="flex items-center justify-between gap-4 mb-6">
-                <div class="flex items-center gap-4">
-                  <div class="soft-ui-icon-box text-blue-400">
-                    <svg class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                <!-- Autogestión -->
+                <div class="bg-gray-800/40 border border-gray-700/50 p-4 rounded-xl flex items-center gap-4 hover:bg-gray-800/80 transition-colors">
+                  <div class="w-10 h-10 rounded-lg bg-gray-700/50 flex items-center justify-center text-blue-400 shrink-0">
+                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
                     </svg>
                   </div>
                   <div>
-                    <h4 class="text-white font-inter font-bold text-lg">Módulo AUTOGESTIÓN</h4>
-                    <p class="text-sm text-gray-400 mt-1">
-                      Portal de uso interno y personal para los empleados.
-                    </p>
+                    <h5 class="text-white font-semibold text-sm">Autogestión</h5>
+                    <p class="text-xs text-gray-400 mt-0.5">Portal de uso personal</p>
                   </div>
                 </div>
-              </div>
-              <div class="space-y-3">
-                <div class="soft-ui-row">
-                  <span class="text-gray-300 font-inter font-medium text-base">Portal de Autogestión</span>
-                  <span class="text-xs font-bold text-green-500">Módulo Base</span>
-                </div>
-              </div>
-            </div>
 
-            <!-- MÓDULO GESTIÓN DE TAREAS (POR DEFECTO) -->
-            <div class="soft-ui-card">
-              <div class="flex items-center justify-between gap-4 mb-6">
-                <div class="flex items-center gap-4">
-                  <div class="soft-ui-icon-box text-orange-400">
-                    <svg class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                <!-- Tareas -->
+                <div class="bg-gray-800/40 border border-gray-700/50 p-4 rounded-xl flex items-center gap-4 hover:bg-gray-800/80 transition-colors">
+                  <div class="w-10 h-10 rounded-lg bg-gray-700/50 flex items-center justify-center text-orange-400 shrink-0">
+                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25zM6.75 12h.008v.008H6.75V12zm0 3h.008v.008H6.75V15zm0 3h.008v.008H6.75V18z" />
                     </svg>
                   </div>
                   <div>
-                    <h4 class="text-white font-inter font-bold text-lg">Módulo GESTIÓN DE TAREAS</h4>
-                    <p class="text-sm text-gray-400 mt-1">
-                      Checklist y asignación de tareas por sección.
-                    </p>
+                    <h5 class="text-white font-semibold text-sm">Gestión de Tareas</h5>
+                    <p class="text-xs text-gray-400 mt-0.5">Checklist y asignación</p>
                   </div>
                 </div>
-              </div>
-              <div class="space-y-3">
-                <div class="soft-ui-row">
-                  <span class="text-gray-300 font-inter font-medium text-base">Checklist de Tareas</span>
-                  <span class="text-xs font-bold text-green-500">Módulo Base</span>
-                </div>
-              </div>
-            </div>
 
-            <!-- MÓDULO IA (POR DEFECTO) -->
-            <div class="soft-ui-card">
-              <div class="flex items-center justify-between gap-4 mb-6">
-                <div class="flex items-center gap-4">
-                  <div class="soft-ui-icon-box text-purple-400">
-                    <svg class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                <!-- Gestiva IA -->
+                <div class="bg-gray-800/40 border border-gray-700/50 p-4 rounded-xl flex items-center gap-4 hover:bg-gray-800/80 transition-colors">
+                  <div class="w-10 h-10 rounded-lg bg-gray-700/50 flex items-center justify-center text-purple-400 shrink-0">
+                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z" />
                     </svg>
                   </div>
                   <div>
-                    <h4 class="text-white font-inter font-bold text-lg">Módulo GESTIVA AI</h4>
-                    <p class="text-sm text-gray-400 mt-1">
-                      Asistente de inteligencia artificial y automatización.
-                    </p>
+                    <h5 class="text-white font-semibold text-sm">Gestiva AI</h5>
+                    <p class="text-xs text-gray-400 mt-0.5">Asistente de inteligencia</p>
                   </div>
                 </div>
-              </div>
-              <div class="space-y-3">
-                <div class="soft-ui-row">
-                  <span class="text-gray-300 font-inter font-medium text-base">Control de Módulo IA</span>
-                  <span class="text-xs font-bold text-green-500">Módulo Base</span>
-                </div>
+
               </div>
             </div>
 
@@ -1622,12 +1561,12 @@
                 </div>
 
                 <div class="space-y-3">
-                  @for (sub of paquete.modulos; track sub.id) {
+                  @for (modulo of paquete.modulos; track modulo.id) {
                     <div class="soft-ui-row">
-                      <span class="text-gray-300 font-inter font-medium text-base">{{ sub.nombre }}</span>
+                      <span class="text-gray-300 font-inter font-medium text-base">{{ modulo.nombre }}</span>
                       <button
-                        (click)="toggleModulo(paquete.id, sub.id)"
-                        [class]="'soft-ui-toggle ' + (sub.activo ? 'active' : 'inactive')"
+                        (click)="toggleModulo(paquete.id, modulo.id)"
+                        [class]="'soft-ui-toggle ' + (modulo.activo ? 'active' : 'inactive')"
                       >
                         <div class="soft-ui-toggle-thumb"></div>
                       </button>
@@ -1680,7 +1619,9 @@
             </div>
           } @else {
             <div class="empty-state mt-8">
-              <i class="fas fa-hand-pointer text-4xl mb-4 text-gray-500"></i>
+              <svg class="w-12 h-12 mb-4 text-gray-500 mx-auto" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15.042 21.672L13.684 16.6m0 0l-2.51 2.225.141-.141-9.61-7.208 19.152-4.144-6.425 14.54a.75.75 0 01-1.39.066l-2.316-5.34z" />
+              </svg>
               <p>Por favor selecciona una empresa en el menú de arriba para ver y gestionar sus módulos.</p>
             </div>
           }
